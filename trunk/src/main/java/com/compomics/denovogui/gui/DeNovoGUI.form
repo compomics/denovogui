@@ -3,10 +3,10 @@
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" value="DeNovoGUI"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -23,24 +23,21 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jTabbedPane1" alignment="0" max="32767" attributes="0"/>
+          <Component id="tabbedPane" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="jTabbedPane1" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="199" max="-2" attributes="0"/>
-          </Group>
+          <Component id="tabbedPane" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+    <Container class="javax.swing.JTabbedPane" name="tabbedPane">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel1">
+        <Container class="javax.swing.JPanel" name="deNovoSearchPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="De Novo Search">
@@ -53,20 +50,20 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="outputFolderPnl" max="32767" attributes="0"/>
-                          <Component id="inputFilesPnl" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="exeFolderPnl" alignment="0" max="32767" attributes="0"/>
-                          <Component id="logPnl" max="32767" attributes="0"/>
+                          <Component id="outputFolderPanel" max="32767" attributes="0"/>
+                          <Component id="pepNovoLocationPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="loggingPanel" max="32767" attributes="0"/>
+                          <Component id="inputFilesPanel" alignment="0" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="modsPnl" alignment="0" max="32767" attributes="0"/>
-                          <Component id="settingsPnl" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jPanel9" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="modificationsPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="searchSettingsPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="deNovoProgressPanel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -74,32 +71,31 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="inputFilesPnl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="exeFolderPnl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="outputFolderPnl" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="searchSettingsPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="modificationsPanel" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="deNovoProgressPanel" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="settingsPnl" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="inputFilesPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="pepNovoLocationPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="outputFolderPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="loggingPanel" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="modsPnl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jPanel9" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="logPnl" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="40" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="inputFilesPnl">
+            <Container class="javax.swing.JPanel" name="inputFilesPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -113,13 +109,13 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="inputFilesLbl" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputFilesTtf" pref="388" max="32767" attributes="0"/>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputFilesBrowseBtn" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                          <Component id="inputClearBtn" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumFilesLabel" min="-2" pref="100" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumFilesTextField" max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                          <Component id="browseSpectrumFilesButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="clearSpectrumFilesButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -129,10 +125,10 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="inputFilesLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="inputFilesTtf" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="inputFilesBrowseBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="inputClearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="spectrumFilesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="spectrumFilesTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="browseSpectrumFilesButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="clearSpectrumFilesButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -140,35 +136,35 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="inputFilesLbl">
+                <Component class="javax.swing.JLabel" name="spectrumFilesLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Spectrum File(s):"/>
+                    <Property name="text" type="java.lang.String" value="Spectrum File(s)"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="inputFilesTtf">
+                <Component class="javax.swing.JTextField" name="spectrumFilesTextField">
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputFilesTtfActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumFilesTextFieldActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="inputFilesBrowseBtn">
+                <Component class="javax.swing.JButton" name="browseSpectrumFilesButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Browse"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputFilesBrowseBtnActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="browseSpectrumFilesButtonActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="inputClearBtn">
+                <Component class="javax.swing.JButton" name="clearSpectrumFilesButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Clear"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputClearBtnActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearSpectrumFilesButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="exeFolderPnl">
+            <Container class="javax.swing.JPanel" name="pepNovoLocationPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -181,13 +177,13 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="exeFolderLbl" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                          <Component id="exeFolderTtf" max="32767" attributes="0"/>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                          <Component id="exeFolderBrowseBtn" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="pepNovoLocationLabel" min="-2" pref="100" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="pepNovoLocationTextField" max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="popNovoLocationBrowseButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -196,9 +192,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="exeFolderLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="exeFolderTtf" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="exeFolderBrowseBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="pepNovoLocationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="pepNovoLocationTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="popNovoLocationBrowseButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -206,27 +202,27 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="exeFolderLbl">
+                <Component class="javax.swing.JLabel" name="pepNovoLocationLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="PepNovo Location:"/>
+                    <Property name="text" type="java.lang.String" value="PepNovo Location"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="exeFolderTtf">
+                <Component class="javax.swing.JTextField" name="pepNovoLocationTextField">
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exeFolderTtfActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoLocationTextFieldActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="exeFolderBrowseBtn">
+                <Component class="javax.swing.JButton" name="popNovoLocationBrowseButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Browse"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exeFolderBrowseBtnActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popNovoLocationBrowseButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="outputFolderPnl">
+            <Container class="javax.swing.JPanel" name="outputFolderPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -240,11 +236,11 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="outputFolderLbl" min="-2" max="-2" attributes="0"/>
+                          <Component id="outputFolderLabel" min="-2" pref="100" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="outputFolderTextField" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="outputFolderTtf" max="32767" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="outputFolderBrowseBtn" min="-2" max="-2" attributes="0"/>
+                          <Component id="outputFolderBrowseButton" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -254,9 +250,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="outputFolderLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="outputFolderTtf" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="outputFolderBrowseBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="outputFolderLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="outputFolderTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="outputFolderBrowseButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -264,27 +260,27 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="outputFolderLbl">
+                <Component class="javax.swing.JLabel" name="outputFolderLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Output Location:"/>
+                    <Property name="text" type="java.lang.String" value="Output Location"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="outputFolderTtf">
+                <Component class="javax.swing.JTextField" name="outputFolderTextField">
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFolderTtfActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFolderTextFieldActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="outputFolderBrowseBtn">
+                <Component class="javax.swing.JButton" name="outputFolderBrowseButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Browse"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFolderBrowseBtnActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFolderBrowseButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="logPnl">
+            <Container class="javax.swing.JPanel" name="loggingPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -296,7 +292,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="642" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -306,11 +302,11 @@
                 </DimensionLayout>
               </Layout>
             </Container>
-            <Container class="javax.swing.JPanel" name="settingsPnl">
+            <Container class="javax.swing.JPanel" name="searchSettingsPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Settings"/>
+                    <TitledBorder title="Search Settings"/>
                   </Border>
                 </Property>
               </Properties>
@@ -322,34 +318,34 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="24" max="32767" attributes="0"/>
-                                  <Component id="enzymeCbx" min="-2" pref="210" max="-2" attributes="0"/>
+                                  <Component id="enzymeLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="modelComboBox" min="-2" pref="210" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="modelLbl" min="-2" max="-2" attributes="0"/>
+                                  <Component id="modelLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="modelCbx" min="-2" pref="210" max="-2" attributes="0"/>
+                                  <Component id="enzymeComboBox" min="-2" pref="210" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="filterQualityChx" min="-2" max="-2" attributes="0"/>
-                                      <Component id="PrecursorCorrChx" min="-2" max="-2" attributes="0"/>
-                                      <Component id="chargeCorrChx" min="-2" max="-2" attributes="0"/>
+                                      <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
+                                      <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
+                                      <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="fragIonTolLbl" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="precTolLbl" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="solutionsLbl" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="numberOfSolutionsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="precTolSpn" max="32767" attributes="0"/>
-                                      <Component id="fragIonTolSpn" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="solutionsSpn" alignment="1" pref="50" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="precursorMassToleranceSpinner" max="32767" attributes="0"/>
+                                      <Component id="numberOfSolutionsSpinner" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="fragmentMassToleranceSpinner" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -360,48 +356,49 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="enzymeCbx" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="enzymeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="modelComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="modelCbx" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="modelLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="enzymeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="modelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="fragIonTolLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="fragIonTolSpn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="precTolLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="precTolSpn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="solutionsLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="solutionsSpn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="chargeCorrChx" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="PrecursorCorrChx" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="filterQualityChx" min="-2" max="-2" attributes="0"/>
+                          <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="jLabel4">
+                <Component class="javax.swing.JLabel" name="enzymeLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Enzyme:"/>
+                    <Property name="text" type="java.lang.String" value="Enzyme"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="modelCbx">
+                <Component class="javax.swing.JComboBox" name="enzymeComboBox">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="1">
@@ -410,15 +407,15 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modelCbxActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enzymeComboBoxActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JLabel" name="modelLbl">
+                <Component class="javax.swing.JLabel" name="modelLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Model:"/>
+                    <Property name="text" type="java.lang.String" value="Model"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="enzymeCbx">
+                <Component class="javax.swing.JComboBox" name="modelComboBox">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="2">
@@ -428,72 +425,75 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enzymeCbxActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modelComboBoxActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JLabel" name="fragIonTolLbl">
+                <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance:"/>
+                    <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JSpinner" name="fragIonTolSpn">
+                <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
                   <Properties>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="0.5" maximum="2.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="precTolLbl">
+                <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance:"/>
+                    <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JSpinner" name="precTolSpn">
+                <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
                   <Properties>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="0.1" maximum="2.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.01" type="number"/>
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="solutionsLbl">
+                <Component class="javax.swing.JLabel" name="numberOfSolutionsLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="No. Solutions (max. 20):"/>
+                    <Property name="text" type="java.lang.String" value="No. Solutions (max. 20)"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JSpinner" name="solutionsSpn">
+                <Component class="javax.swing.JSpinner" name="numberOfSolutionsSpinner">
                   <Properties>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="10" maximum="20" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="chargeCorrChx">
+                <Component class="javax.swing.JCheckBox" name="spectrumChargeCheckBox">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Use Spectrum Charge (No Correction)"/>
+                    <Property name="iconTextGap" type="int" value="15"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chargeCorrChxActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumChargeCheckBoxActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="PrecursorCorrChx">
+                <Component class="javax.swing.JCheckBox" name="spectrumPrecursorCheckBox">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Use Spectrum Precursor m/z (No Correction)"/>
+                    <Property name="iconTextGap" type="int" value="15"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PrecursorCorrChxActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumPrecursorCheckBoxActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="filterQualityChx">
+                <Component class="javax.swing.JCheckBox" name="filterLowQualityCheckBox">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Filter Low Quality Spectra"/>
+                    <Property name="iconTextGap" type="int" value="15"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterQualityChxActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterLowQualityCheckBoxActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="modsPnl">
+            <Container class="javax.swing.JPanel" name="modificationsPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -508,10 +508,10 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane1" alignment="1" pref="0" max="32767" attributes="0"/>
+                              <Component id="modificationsTableScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="jButton7" min="-2" max="-2" attributes="0"/>
+                                  <Component id="configureModificationsButton" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -521,23 +521,24 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jScrollPane1" min="-2" pref="183" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton7" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
+                          <Component id="modificationsTableScrollPane" pref="175" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="configureModificationsButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+                <Container class="javax.swing.JScrollPane" name="modificationsTableScrollPane">
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="modsTbl">
+                    <Component class="javax.swing.JTable" name="modificationsTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                           <Table columnCount="3" rowCount="4">
@@ -572,17 +573,17 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JButton" name="jButton7">
+                <Component class="javax.swing.JButton" name="configureModificationsButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Configure"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton7ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configureModificationsButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel9">
+            <Container class="javax.swing.JPanel" name="deNovoProgressPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -595,14 +596,15 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="progressLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jProgressBar1" min="-2" pref="103" max="-2" attributes="0"/>
+                          <Component id="deNovoProgressBar" min="-2" pref="78" max="-2" attributes="0"/>
+                          <EmptySpace pref="9" max="32767" attributes="0"/>
+                          <Component id="startButton" linkSize="2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                          <Component id="cancelButton" linkSize="2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton6" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -612,11 +614,11 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                  <Component id="jButton4" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="startButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jProgressBar1" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="jLabel9" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="deNovoProgressBar" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="progressLabel" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -624,34 +626,34 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="jLabel9">
+                <Component class="javax.swing.JLabel" name="progressLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Progress:"/>
+                    <Property name="text" type="java.lang.String" value="Progress"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JProgressBar" name="jProgressBar1">
+                <Component class="javax.swing.JProgressBar" name="deNovoProgressBar">
                 </Component>
-                <Component class="javax.swing.JButton" name="jButton4">
+                <Component class="javax.swing.JButton" name="startButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Start"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton4ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startButtonActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="jButton6">
+                <Component class="javax.swing.JButton" name="cancelButton">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Cancel"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton6ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelButtonActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel2">
+        <Container class="javax.swing.JPanel" name="debovoResultsPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="De Novo Results">
@@ -664,36 +666,36 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="querySpectraPnl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="peptidesPnl" min="-2" max="-2" attributes="0"/>
+                              <Component id="querySpectraPanel" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="deNovoPeptidesPanel" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="spectrumViewerPnl" max="32767" attributes="0"/>
+                          <Component id="spectrumViewerPanel" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="spectrumViewerPnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="spectrumViewerPanel" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="peptidesPnl" max="32767" attributes="0"/>
-                          <Component id="querySpectraPnl" max="32767" attributes="0"/>
+                          <Component id="deNovoPeptidesPanel" max="32767" attributes="0"/>
+                          <Component id="querySpectraPanel" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="spectrumViewerPnl">
+            <Container class="javax.swing.JPanel" name="spectrumViewerPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -705,17 +707,31 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="spectrumPanel" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="332" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="spectrumPanel" pref="279" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="spectrumPanel">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+                </Container>
+              </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="querySpectraPnl">
+            <Container class="javax.swing.JPanel" name="querySpectraPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -729,29 +745,30 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane3" pref="493" max="32767" attributes="0"/>
+                          <Component id="querySpectraTableScrollPane" pref="449" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="jScrollPane3" pref="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="querySpectraTableScrollPane" pref="0" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+                <Container class="javax.swing.JScrollPane" name="querySpectraTableScrollPane">
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="jTable3">
+                    <Component class="javax.swing.JTable" name="querySpectraTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                           <Table columnCount="4" rowCount="4">
@@ -794,7 +811,7 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="peptidesPnl">
+            <Container class="javax.swing.JPanel" name="deNovoPeptidesPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -808,7 +825,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="473" max="32767" attributes="0"/>
+                          <Component id="deNovoPeptidesTableScrollPane" pref="448" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -817,21 +834,21 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="201" max="32767" attributes="0"/>
+                          <Component id="deNovoPeptidesTableScrollPane" pref="208" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+                <Container class="javax.swing.JScrollPane" name="deNovoPeptidesTableScrollPane">
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="jTable2">
+                    <Component class="javax.swing.JTable" name="deNovoPeptidesTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                           <Table columnCount="8" rowCount="4">
@@ -900,7 +917,7 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel13">
+        <Container class="javax.swing.JPanel" name="statisticsPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Statistics">
@@ -914,7 +931,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="histogramPnl" max="32767" attributes="0"/>
+                      <Component id="deNovoHistogramPanel" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -923,14 +940,14 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="histogramPnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="174" max="32767" attributes="0"/>
+                      <Component id="deNovoHistogramPanel" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="histogramPnl">
+            <Container class="javax.swing.JPanel" name="deNovoHistogramPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -942,15 +959,29 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="1024" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="deNovoHistogramPlotPanel" pref="935" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="430" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="deNovoHistogramPlotPanel" pref="538" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="deNovoHistogramPlotPanel">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+                </Container>
+              </SubComponents>
             </Container>
           </SubComponents>
         </Container>
