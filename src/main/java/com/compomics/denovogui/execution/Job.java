@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.execution;
 
 import java.beans.PropertyChangeListener;
@@ -15,60 +11,55 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 /**
- * <b>Job</b>
- * <p>
- * Abstract class of a job to be executed.
- * Implements the interface Executable which provides the specification of a Job.
- * </p>
+ * <b>Job</b> <p> Abstract class of a job to be executed. Implements the
+ * interface Executable which provides the specification of a Job. </p>
  *
- * @author T.Muth
+ * @author Thilo Muth
  */
 public abstract class Job implements Executable {
 
-    // The job ID
+    /**
+     * The job ID.
+     */
     protected int id;
-
-    // Default setting for the error --> NULL
+    /**
+     * Default setting for the error --> NULL.
+     */
     protected String error = null;
-
-    // Default setting on JobStatus.WAITING
+    /**
+     * Default setting on JobStatus.WAITING.
+     */
     private JobStatus status = JobStatus.WAITING;
-
-    // Default description is an empty string
+    /**
+     * Default description is an empty string.
+     */
     private String description = "";
-
-    // Filename representing the file.
+    /**
+     * Filename representing the file.
+     */
     private String filename;
-
     /**
      * Output file object.
      */
     protected File outputFile;
-
     /**
-     * The ProcessBuilder object
+     * The ProcessBuilder object.
      */
     protected ProcessBuilder procBuilder;
-
     /**
      * The Process object.
      */
     protected Process proc;
-
     /**
      * List of process commands.
      */
     protected ArrayList<String> procCommands = new ArrayList<String>();
-
     /**
      * Init the job logger.
      */
     protected static Logger log = Logger.getLogger(Job.class);
-
     protected int progress = 0;
-
     protected PropertyChangeSupport pSupport = new PropertyChangeSupport(this);
-
     private int oldProgress;
 
     /**
@@ -89,17 +80,12 @@ public abstract class Job implements Executable {
         Scanner scan = new Scanner(proc.getInputStream());
         scan.useDelimiter(System.getProperty("line.separator"));
 
-        // Temporary string variable
-        String temp;
-
-        BufferedWriter writer = null;
-
         try {
-            writer = new BufferedWriter(new FileWriter(outputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
             // Get input from scanner and send to stdout
             while (scan.hasNext()) {
-                temp = scan.next();
+                String temp = scan.next();
                 writer.write(temp);
                 writer.newLine();
 
@@ -146,6 +132,8 @@ public abstract class Job implements Executable {
 
     /**
      * Returns the error message of the job.
+     * 
+     * @param error the error
      */
     public void setError(String error) {
         this.error = error;
@@ -230,5 +218,4 @@ public abstract class Job implements Executable {
             log.info("PROCESS CANCELED.");
         }
     }
-    
 }

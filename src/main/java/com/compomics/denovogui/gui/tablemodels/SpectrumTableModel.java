@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.experiment.massspectrometry.Precursor;
@@ -9,9 +5,9 @@ import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Model for a spectrum table
+ * Model for a spectrum table.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class SpectrumTableModel extends DefaultTableModel {
 
@@ -20,17 +16,20 @@ public class SpectrumTableModel extends DefaultTableModel {
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
     /**
-     * The name of the spectrum file
+     * The name of the spectrum file.
      */
     String spectrumFile = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public SpectrumTableModel() {
     }
+
     /**
-     * Constructor
+     * Constructor.
+     * 
+     * @param spectrumFile the spectrum file
      */
     public SpectrumTableModel(String spectrumFile) {
         this.spectrumFile = spectrumFile;

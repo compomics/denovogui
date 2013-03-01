@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.qc;
 
 import com.compomics.util.experiment.identification.Identification;
@@ -10,9 +6,7 @@ import java.sql.SQLException;
 import org.jfree.chart.JFreeChart;
 
 /**
- * <b>Chart</b>
- * <p>
- * This class provides general functions of a statistics chart.
+ * <b>Chart</b> <p> This class provides general functions of a statistics chart.
  * </p>
  *
  * @author T.Muth
@@ -25,8 +19,8 @@ public abstract class Chart {
     protected JFreeChart chart = null;
 
     /**
-     * Creates an instance of the Chart object.
-     * All inheritance classes call this constructor.
+     * Creates an instance of the Chart object. All inheritance classes call
+     * this constructor.
      *
      * @param identification the identification containing all results
      */
@@ -44,6 +38,9 @@ public abstract class Chart {
      * Show the result data in the chart.
      *
      * @param identification the identification containing all results
+     * @throws IOException
+     * @throws SQLException
+     * @throws ClassNotFoundException  
      */
     protected abstract void process(Identification identification) throws IOException, SQLException, ClassNotFoundException;
 

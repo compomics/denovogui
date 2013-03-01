@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.panels;
 
 import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
@@ -9,14 +5,15 @@ import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 
 /**
  *
- * @author tmuth
+ * @author Thilo Muth
+ * @author Harald Barsnes
  */
-public class ResultPnl extends javax.swing.JPanel {
+public class ResultsPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form ResultPnl
+     * Creates new form ResultsPanel
      */
-    public ResultPnl() {
+    public ResultsPanel() {
         initComponents();
     }
 
@@ -39,7 +36,10 @@ public class ResultPnl extends javax.swing.JPanel {
         deNovoPeptidesTableScrollPane = new javax.swing.JScrollPane();
         deNovoPeptidesTable = new javax.swing.JTable();
 
+        debovoResultsPanel.setBackground(new java.awt.Color(230, 230, 230));
+
         spectrumViewerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Spectrum Viewer"));
+        spectrumViewerPanel.setOpaque(false);
 
         spectrumPanel.setLayout(new javax.swing.BoxLayout(spectrumPanel, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -61,6 +61,7 @@ public class ResultPnl extends javax.swing.JPanel {
         );
 
         querySpectraPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Query Spectra"));
+        querySpectraPanel.setOpaque(false);
 
         querySpectraTable.setModel(new SpectrumTableModel());
         querySpectraTableScrollPane.setViewportView(querySpectraTable);
@@ -83,6 +84,7 @@ public class ResultPnl extends javax.swing.JPanel {
         );
 
         deNovoPeptidesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Peptides"));
+        deNovoPeptidesPanel.setOpaque(false);
 
         deNovoPeptidesTable.setModel(new SpectrumMatchTableModel());
         deNovoPeptidesTableScrollPane.setViewportView(deNovoPeptidesTable);
@@ -134,21 +136,13 @@ public class ResultPnl extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 987, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(debovoResultsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(debovoResultsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(debovoResultsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addComponent(debovoResultsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

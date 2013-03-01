@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.denovo.PeptideAssumptionDetails;
@@ -10,24 +6,27 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * A model of table presenting the peptide assumptions of a spectrum match
+ * A model of table presenting the peptide assumptions of a spectrum match.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class SpectrumMatchTableModel extends DefaultTableModel {
 
     /**
-     * The ordered peptide assumptions of the selected spectrum match
+     * The ordered peptide assumptions of the selected spectrum match.
      */
     private ArrayList<PeptideAssumption> peptideAssumptions = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public SpectrumMatchTableModel() {
     }
+
     /**
-     * Constructor
+     * Constructor.
+     * 
+     * @param peptideAssumptions the peptide assumptions
      */
     public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions) {
         this.peptideAssumptions = peptideAssumptions;

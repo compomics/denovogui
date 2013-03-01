@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<HTML>
+    <HEAD>
+        <TITLE></TITLE>
+    </HEAD>
+    <BODY>
+        <a name="#top"/>
+        <H2><font face="VERDANA,ARIAL,HELVETICA">Tag-DB</font></H2>
+        <font face="VERDANA,ARIAL,HELVETICA">
+            Tag-DB is a software for automated <i>de novo</i> peptide sequencing of MS/MS spectra and tag-based protein identification searching.
+            <br><br>
+            As a first step the software uses the <a href="http://www.thegpm.org/TANDEM/">PepNovo+</a><font face="VERDANA,ARIAL,HELVETICA"> algorithm for the <i>de novo</i> peptide sequencing.
+            <br><br>
+            When starting the application five main tabs can be found:
+            <ol>
+                <li><u>De Novo Search:</u> <br>In this view the input MS/MS spectra can be selected. Supported input format is MGF.
+                    In the next panel the executable of the PepNovo+ algorithm must be selected. Finally, the output folder must be specified.
+                    On the right side several search settings for the <i>de novo</i> peptide sequencing can be chosen as well as modifications.
+                    When clicking on the Start button on the De Novo Search Run panel, the <i>de novo</i> peptide sequencing will be initiated.
+                    The Logging panel provides information about the processing status.
+                    </li>
+                <li><u>De Novo Results:</u><br> The MS/MS spectrum is displayed with ion annotations derived from the <i>de novo</i> sequencing.
+                In the bottom left corner the query spectra are provided in the table. When clicking on one of the rows a spectrum can be selected.
+                The bottom right side displays a table with all <i>de novo</i> hits for a selected spectrum. It also provides information from
+                <i>de novo</i> algorithm such as score, N-terminal and C-terminal gap masses.
+                Note that the Statistics tab (see below) provides useful information about the score distribution.
+                </li>
+                <li><u>Tag-DB Search:</u><br> In the top left panel a protein FASTA database file must be specified to match the derived tags against.
+                    In the top right panel the search settings for the tag-based database search can be changed.
+                    When clicking on the Start button on the Tag-DB Search Run panel, the <i>de novo</i> peptide sequencing will be initiated.
+                    The Logging panel provides information about the processing status.
+                    Note that for the FASTA database only the UniProt (SwissProt/Trembl) format is currently support in Tag-DB.
+                </li>
+                <li><u>Tag-DB Search Results:</u><br> In the top left panel the protein families are displayed in the table.
+                    The corresponding protein, peptides and PSMs can be found in the other tables. The spectrum with ion and amino acid
+                    annotations is displayed in the bottom right corner.</li>
+                <li><u>Statistics:</u><br> This view provided a histogram of the <i>de novo</i> scores based on all input MS/MS spectra.
+                It is supposed to be a quality measure for the input data.
+                </li>
+
+            </ol>
+            All derived result from the tag-based database search can be exported via the Export menu. It is possible to export all proteins, peptides or peptide-spectrum-matches (PSMs).
+            <br><br>
+            For any further questions, feel free to contact the author:</font>
+            <font face="VERDANA,ARIAL,HELVETICA"><a href="mailto:thilo.muth@gmx.de">Thilo.Muth@gmx.de</a></font>
+            <br><br>
+            For news and updates on the software visit the Tag-DB website:<br>
+            <a href="http://tag-db.googlecode.com">Tag-DB website</a>
+        <br><br>
+        <a href="#top"><font face="VERDANA,ARIAL,HELVETICA">Go to top of page</font></a><br>
+            </font>
+    </BODY>
+</HTML>

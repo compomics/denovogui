@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.panels;
 
 import com.compomics.util.experiment.biology.Enzyme;
@@ -13,24 +9,24 @@ import com.compomics.util.preferences.ModificationProfile;
 
 /**
  *
- * @author tmuth
+ * @author Thilo Muth
+ * @author Harald Barsnes
  */
-public class InputPnl extends javax.swing.JPanel {
-    
+public class InputPanel extends javax.swing.JPanel {
+
     /**
      * The compomics enzyme factory.
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
-    
     /**
-     * The compomics ptm factory.
+     * The compomics PTM factory.
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
-    
+
     /**
-     * Creates new form InputPnl
+     * Creates new form InputPanel
      */
-    public InputPnl() {
+    public InputPanel() {
         initComponents();
     }
 
@@ -82,7 +78,10 @@ public class InputPnl extends javax.swing.JPanel {
         startButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
+        deNovoSearchPanel.setBackground(new java.awt.Color(230, 230, 230));
+
         inputFilesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Input Files"));
+        inputFilesPanel.setOpaque(false);
 
         spectrumFilesLabel.setText("Spectrum File(s)");
 
@@ -134,6 +133,7 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         pepNovoLocationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Executable Folder"));
+        pepNovoLocationPanel.setOpaque(false);
 
         pepNovoLocationLabel.setText("PepNovo Location");
 
@@ -175,6 +175,7 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         outputFolderPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Output Folder"));
+        outputFolderPanel.setOpaque(false);
 
         outputFolderLabel.setText("Output Location");
 
@@ -216,12 +217,13 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         loggingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Logging"));
+        loggingPanel.setOpaque(false);
 
         javax.swing.GroupLayout loggingPanelLayout = new javax.swing.GroupLayout(loggingPanel);
         loggingPanel.setLayout(loggingPanelLayout);
         loggingPanelLayout.setHorizontalGroup(
             loggingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
+            .addGap(0, 642, Short.MAX_VALUE)
         );
         loggingPanelLayout.setVerticalGroup(
             loggingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,6 +231,7 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         searchSettingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Settings"));
+        searchSettingsPanel.setOpaque(false);
 
         enzymeLabel.setText("Enzyme");
 
@@ -262,6 +265,7 @@ public class InputPnl extends javax.swing.JPanel {
 
         spectrumChargeCheckBox.setText("Use Spectrum Charge (No Correction)");
         spectrumChargeCheckBox.setIconTextGap(15);
+        spectrumChargeCheckBox.setOpaque(false);
         spectrumChargeCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 spectrumChargeCheckBoxActionPerformed(evt);
@@ -270,6 +274,7 @@ public class InputPnl extends javax.swing.JPanel {
 
         spectrumPrecursorCheckBox.setText("Use Spectrum Precursor m/z (No Correction)");
         spectrumPrecursorCheckBox.setIconTextGap(15);
+        spectrumPrecursorCheckBox.setOpaque(false);
         spectrumPrecursorCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 spectrumPrecursorCheckBoxActionPerformed(evt);
@@ -278,6 +283,7 @@ public class InputPnl extends javax.swing.JPanel {
 
         filterLowQualityCheckBox.setText("Filter Low Quality Spectra");
         filterLowQualityCheckBox.setIconTextGap(15);
+        filterLowQualityCheckBox.setOpaque(false);
         filterLowQualityCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterLowQualityCheckBoxActionPerformed(evt);
@@ -350,6 +356,7 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         modificationsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifications"));
+        modificationsPanel.setOpaque(false);
 
         modificationsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -392,6 +399,7 @@ public class InputPnl extends javax.swing.JPanel {
         );
 
         deNovoProgressPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Search Run"));
+        deNovoProgressPanel.setOpaque(false);
 
         progressLabel.setText("Progress");
 
@@ -424,16 +432,18 @@ public class InputPnl extends javax.swing.JPanel {
                 .addComponent(cancelButton)
                 .addContainerGap())
         );
+
+        deNovoProgressPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancelButton, startButton});
+
         deNovoProgressPanelLayout.setVerticalGroup(
             deNovoProgressPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoProgressPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(deNovoProgressPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(deNovoProgressPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(startButton)
-                        .addComponent(cancelButton))
+                .addGroup(deNovoProgressPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(deNovoProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(startButton)
+                    .addComponent(cancelButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -484,18 +494,18 @@ public class InputPnl extends javax.swing.JPanel {
             .addGap(0, 987, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(deNovoSearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGap(0, 0, 0)
+                    .addComponent(deNovoSearchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(0, 0, 0)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
+            .addGap(0, 605, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(deNovoSearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGap(0, 0, 0)
+                    .addComponent(deNovoSearchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(0, 0, 0)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -558,7 +568,6 @@ public class InputPnl extends javax.swing.JPanel {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cancelButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseSpectrumFilesButton;
     private javax.swing.JButton cancelButton;
@@ -600,7 +609,7 @@ public class InputPnl extends javax.swing.JPanel {
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables
 
-  /**
+    /**
      * Returns the search parameters as set in the GUI
      *
      * @return the search parameters as set in the GUI
@@ -648,5 +657,4 @@ public class InputPnl extends javax.swing.JPanel {
         }
         return searchParameters;
     }
-
 }

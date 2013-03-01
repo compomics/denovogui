@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.io;
 
 import com.compomics.util.denovo.PeptideAssumptionDetails;
@@ -21,14 +17,14 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * This class allows exporting the results in a text file
+ * This class allows exporting the results in a text file.
  *
  * @author Thilo Muth
  */
 public class TextExporter {
 
     /**
-     * Separator used for the export
+     * Separator used for the export.
      */
     private static final String SEP = "\t";
 
@@ -46,6 +42,8 @@ public class TextExporter {
      * @param filePath The file path to the exported file.
      * @param identification The identification result.
      * @throws IOException Exception thrown when the file access fails.
+     * @throws SQLException
+     * @throws ClassNotFoundException  
      */
     public static void exportPSMs(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException {
         // Init the buffered writer.
@@ -90,11 +88,13 @@ public class TextExporter {
     }
 
     /**
-     * This method exports the denovo assumptions.
+     * This method exports the de novo assumptions.
      *
      * @param filePath The file path to the exported file.
      * @param identification The identification result.
      * @throws IOException Exception thrown when the file access fails.
+     * @throws SQLException
+     * @throws ClassNotFoundException  
      */
     public static void exportAssumptions(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException {
         // Init the buffered writer.
@@ -145,13 +145,11 @@ public class TextExporter {
         writer.close();
     }
 
-            /**
-             * Returns the PSM header string.
-             *
-             * @return The PSM header string.
-             */
-    
-
+    /**
+     * Returns the PSM header string.
+     *
+     * @return The PSM header string.
+     */
     private static String getPSMHeader() {
         return "#" + SEP
                 + "File" + SEP
@@ -178,5 +176,4 @@ public class TextExporter {
                 + "rank score" + SEP
                 + "Pepnovo score" + SEP;
     }
-    
 }

@@ -1,37 +1,41 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.denovogui.DenovoSearchHandler;
-import com.compomics.denovogui.DenovoguiWrapper;
-import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
-import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.denovogui.DeNovoSearchHandler;
+import com.compomics.denovogui.DeNovoGUIWrapper;
+import com.compomics.denovogui.gui.panels.InputPanel;
+import com.compomics.denovogui.gui.panels.ResultsPanel;
+import com.compomics.denovogui.gui.panels.StatisticsPanel;
+import com.compomics.denovogui.util.Properties;
+import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.db.ObjectsCache;
-import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
-import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
-import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.gui.UtilitiesGUIDefaults;
+import java.awt.Toolkit;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import net.jimmc.jshortcut.JShellLink;
 
 /**
  *
@@ -52,12 +56,10 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * The enzyme file
      */
     private final static String ENZYME_FILE = "resources/conf/enzymes.xml";
-    
     /**
      * The compomics enzyme factory.
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
-    
     /**
      * The spectrum factory.
      */
@@ -77,17 +79,76 @@ public class DeNovoGUI extends javax.swing.JFrame {
     /**
      * The search handler
      */
-    private DenovoSearchHandler searchHandler;
+    private DeNovoSearchHandler searchHandler;
     /**
      * The search parameters
      */
     private SearchParameters searchParameters = null;
+    /**
+     * The input panel.
+     */
+    private InputPanel inputPanel;
+    /**
+     * The results panel.
+     */
+    private ResultsPanel resultsPanel;
+    /**
+     * The statistics panel.
+     */
+    private StatisticsPanel statisticsPanel;
+    /**
+     * If set to true all messages will be sent to a log file.
+     */
+    private static boolean useLogFile = true;
 
     /**
      * Creates new form DeNovoGUI
      */
     public DeNovoGUI() {
+
+        // check for new version
+        CompomicsWrapper.checkForNewVersion(new Properties().getVersion(), "DeNovoGUI", "denovogui");
+
+        // set up the ErrorLog
+        setUpLogFile();
+
+        // add desktop shortcut?
+        if (!getJarFilePath().equalsIgnoreCase(".")
+                && System.getProperty("os.name").lastIndexOf("Windows") != -1
+                && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
+
+            // @TODO: add support for desktop icons in mac and linux??
+
+            // delete the firstRun file such that the user is not asked the next time around
+            boolean fileDeleted = new File(getJarFilePath() + "/resources/conf/firstRun").delete();
+
+            if (!fileDeleted) {
+                JOptionPane.showMessageDialog(this, "Failed to delete the file /resources/conf/firstRun.\n"
+                        + "Please contact the developers.", "File Error", JOptionPane.OK_OPTION);
+            }
+
+            int value = JOptionPane.showConfirmDialog(this,
+                    "Create a shortcut to DeNovoGUI on the desktop?",
+                    "Create Desktop Shortcut?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (value == JOptionPane.YES_OPTION) {
+                addShortcutAtDeskTop();
+            }
+        }
+
+
         initComponents();
+
+        setUpGUI();
+        
+        // set the title
+        this.setTitle("DeNovoGUI " + new Properties().getVersion());
+
+        // set the title of the frame and add the icon
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+
         // Load modifications
         try {
             ptmFactory.importModifications(getModificationsFile(), false);
@@ -109,6 +170,57 @@ public class DeNovoGUI extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error while reading " + ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    /**
+     * Set up the GUI.
+     */
+    private void setUpGUI() {
+        inputPanel = new InputPanel();
+        resultsPanel = new ResultsPanel();
+        statisticsPanel = new StatisticsPanel();
+        inputJPanel.add(inputPanel);
+        resultsJPanel.add(resultsPanel);
+        statisticsJPanel.add(statisticsPanel);
+    }
+
+    /**
+     * Set up the log file.
+     */
+    private void setUpLogFile() {
+        if (useLogFile && !getJarFilePath().equalsIgnoreCase(".")) {
+            try {
+                String path = getJarFilePath() + "/resources/DeNovoGUI.log";
+
+                File file = new File(path);
+                System.setOut(new java.io.PrintStream(new FileOutputStream(file, true)));
+                System.setErr(new java.io.PrintStream(new FileOutputStream(file, true)));
+
+                // creates a new log file if it does not exist
+                if (!file.exists()) {
+                    boolean fileCreated = file.createNewFile();
+
+                    if (fileCreated) {
+                        FileWriter w = new FileWriter(file);
+                        BufferedWriter bw = new BufferedWriter(w);
+                        bw.close();
+                        w.close();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Failed to create the file log file.\n"
+                                + "Please contact the developers.", "File Error", JOptionPane.OK_OPTION);
+                    }
+                }
+                System.out.println("\n\n" + new Date() + ": DeNovoGUI version " + new Properties().getVersion() + ".\n");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(
+                        null, "An error occured when trying to create the DeNovoGUI log file.",
+                        "Error Creating Log File", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -120,73 +232,170 @@ public class DeNovoGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        inputPane = new javax.swing.JTabbedPane();
-        inputPnl1 = new com.compomics.denovogui.gui.panels.InputPnl();
-        resultPnl1 = new com.compomics.denovogui.gui.panels.ResultPnl();
-        statisticsPnl1 = new com.compomics.denovogui.gui.panels.StatisticsPnl();
+        tabbedPane = new javax.swing.JTabbedPane();
+        inputJPanel = new javax.swing.JPanel();
+        resultsJPanel = new javax.swing.JPanel();
+        statisticsJPanel = new javax.swing.JPanel();
+        menuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        importResultsMenuItem = new javax.swing.JMenuItem();
+        exitMenuItem = new javax.swing.JMenuItem();
+        exportMenu = new javax.swing.JMenu();
+        helpMenu = new javax.swing.JMenu();
+        helpMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DeNovoGUI");
 
-        inputPane.addTab("De Novo Search", inputPnl1);
-        inputPane.addTab("De Novo Results", resultPnl1);
-        inputPane.addTab("Statistics", statisticsPnl1);
+        tabbedPane.setBackground(new java.awt.Color(230, 230, 230));
+
+        inputJPanel.setLayout(new javax.swing.BoxLayout(inputJPanel, javax.swing.BoxLayout.LINE_AXIS));
+        tabbedPane.addTab("Input", inputJPanel);
+
+        resultsJPanel.setLayout(new javax.swing.BoxLayout(resultsJPanel, javax.swing.BoxLayout.LINE_AXIS));
+        tabbedPane.addTab("Results", resultsJPanel);
+
+        statisticsJPanel.setLayout(new javax.swing.BoxLayout(statisticsJPanel, javax.swing.BoxLayout.LINE_AXIS));
+        tabbedPane.addTab("Statistics", statisticsJPanel);
+
+        fileMenu.setMnemonic('F');
+        fileMenu.setText("File");
+
+        importResultsMenuItem.setText("Import Results");
+        importResultsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importResultsMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(importResultsMenuItem);
+
+        exitMenuItem.setMnemonic('x');
+        exitMenuItem.setText("Exit");
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(exitMenuItem);
+
+        menuBar.add(fileMenu);
+
+        exportMenu.setMnemonic('E');
+        exportMenu.setText("Export");
+        menuBar.add(exportMenu);
+
+        helpMenu.setMnemonic('H');
+        helpMenu.setText("Help");
+
+        helpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        helpMenuItem.setMnemonic('H');
+        helpMenuItem.setText("Help");
+        helpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(helpMenuItem);
+
+        aboutMenuItem.setMnemonic('A');
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
+
+        menuBar.add(helpMenu);
+
+        setJMenuBar(menuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(inputPane)
-                .addGap(23, 23, 23))
+            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 851, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(inputPane)
+            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * Close the tool.
+     *
+     * @param evt
+     */
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        dispose();
+        System.exit(0);
+    }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    /**
+     * Open the help dialog.
+     *
+     * @param evt
+     */
+    private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_helpMenuItemActionPerformed
+
+    /**
+     * Open the about dialog.
+     *
+     * @param evt
+     */
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    /**
+     * Import existing de novo results.
+     *
+     * @param evt
+     */
+    private void importResultsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importResultsMenuItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_importResultsMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DeNovoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DeNovoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DeNovoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DeNovoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DeNovoGUI().setVisible(true);
-            }
-        });
+        // set the look and feel
+        boolean numbusLookAndFeelSet = false;
+        try {
+            numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
+        } catch (Exception e) {
+        }
+
+        if (!numbusLookAndFeelSet) {
+            JOptionPane.showMessageDialog(null,
+                    "Failed to set the default look and feel. Using backup look and feel.\n"
+                    + "DeNovoGUI will work but not look as good as it should...", "Look and Feel",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+        new DeNovoGUI();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTabbedPane inputPane;
-    private com.compomics.denovogui.gui.panels.InputPnl inputPnl1;
-    private com.compomics.denovogui.gui.panels.ResultPnl resultPnl1;
-    private com.compomics.denovogui.gui.panels.StatisticsPnl statisticsPnl1;
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenu exportMenu;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JMenuItem importResultsMenuItem;
+    private javax.swing.JPanel inputJPanel;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JPanel resultsJPanel;
+    private javax.swing.JPanel statisticsJPanel;
+    private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -204,14 +413,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }
 
     /**
-     * Starts the search
+     * Starts the search.
      */
     private void startSearch() {
-        searchParameters = inputPnl1.getSearchParametersFromGUI();
-        searchHandler = new DenovoSearchHandler(null);
+        searchParameters = inputPanel.getSearchParametersFromGUI();
+        searchHandler = new DeNovoSearchHandler(null);
         searchHandler.startSearch(null, searchParameters, null);
     }
-    
+
     /**
      * Returns the user defined modifications file.
      *
@@ -226,7 +435,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }
 
     /**
-     * Loads the mgf files in the spectrum factory
+     * Loads the mgf files in the spectrum factory.
      *
      * @param mgfFiles loads the mgf files in the spectrum factory
      * @throws FileNotFoundException
@@ -283,11 +492,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @return the path to the jar file
      */
     protected String getJarFilePath() {
-        return DenovoguiWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DenovoguiWrapper.toolName);
+        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
     }
 
     /**
-     * Table model for the modifications table
+     * Table model for the modifications table.
      */
     private class ModificationsTableModel extends DefaultTableModel {
 
@@ -391,6 +600,39 @@ public class DeNovoGUI extends javax.swing.JFrame {
                 if (value) {
                     fixedModifications.put(modificationName, false);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Ask the user if he/she wants to add a shortcut at the desktop.
+     */
+    private void addShortcutAtDeskTop() {
+
+        String jarFilePath = getJarFilePath();
+
+        if (!jarFilePath.equalsIgnoreCase(".")) {
+
+            // remove the initial '/' at the start of the line
+            if (jarFilePath.startsWith("\\") && !jarFilePath.startsWith("\\\\")) {
+                jarFilePath = jarFilePath.substring(1);
+            }
+
+            //utilitiesUserPreferences.setDeNovoPath(jarFilePath); // @TODO: add this method to utilities
+
+            String iconFileLocation = jarFilePath + "\\resources\\denovogui.ico";
+            String jarFileLocation = jarFilePath + "\\DeNovoGUI-" + new Properties().getVersion() + ".jar";
+
+            try {
+                JShellLink link = new JShellLink();
+                link.setFolder(JShellLink.getDirectory("desktop"));
+                link.setName("DeNovoGUI " + new Properties().getVersion());
+                link.setIconLocation(iconFileLocation);
+                link.setPath(jarFileLocation);
+                link.save();
+            } catch (Exception e) {
+                System.out.println("An error occurred when trying to create a desktop shortcut...");
+                e.printStackTrace();
             }
         }
     }

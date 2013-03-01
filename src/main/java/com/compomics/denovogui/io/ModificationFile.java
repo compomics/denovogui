@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.io;
 
 import com.compomics.util.experiment.biology.AminoAcid;
@@ -25,7 +21,6 @@ import java.util.Map;
  * @author Thilo Muth
  */
 public class ModificationFile {
-    
 
     /**
      * Comma / semi-colon separated format.
@@ -56,6 +51,9 @@ public class ModificationFile {
      * Inverted mapping from modification ID to modification names.
      */
     private static HashMap<String, String> invertedModIdMap;
+    /**
+     * The PTM type color map.
+     */
     private static HashMap<Integer, Color> ptmTypeColorMap;
 
     /**
@@ -132,6 +130,9 @@ public class ModificationFile {
         writer.close();
     }
 
+    /**
+     * Fill the modification ID map.
+     */
     private static void fillModIdMap() {
         modIdMap = new HashMap<String, String>();
         PTMFactory ptmFactory = PTMFactory.getInstance();
@@ -242,8 +243,9 @@ public class ModificationFile {
 
     /**
      * Returns the list of modification in a pep novo format for search
+     *
      * @param modifications the list of modifications to export
-     * @return 
+     * @return the list of modification in a pep novo format
      */
     public static String getModsString(ArrayList<String> modifications) {
         if (modIdMap == null) {
