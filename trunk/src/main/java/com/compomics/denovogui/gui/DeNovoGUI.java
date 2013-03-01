@@ -43,11 +43,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
     /**
      * Modification file.
      */
-    private final static String MODIFICATION_FILE = "resources/conf/tagdb_mods.xml";
+    private final static String MODIFICATION_FILE = "resources/conf/denovogui_mods.xml";
     /**
      * User modification file.
      */
-    private final static String USER_MODIFICATION_FILE = "resources/conf/tagdb_usermods.xml";
+    private final static String USER_MODIFICATION_FILE = "resources/conf/denovogui_usermods.xml";
     /**
      * The enzyme file
      */
