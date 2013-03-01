@@ -1,18 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.util;
 
 import java.io.InputStream;
 
 /**
- * This class contains many of the properties that are used during the
- * use of the tool.
+ * This class contains many of the properties that are used during the use of
+ * the tool.
  *
- * @author  Harald Barsnes
+ * @author Harald Barsnes
  */
 public class Properties {
+
     /**
      * Creates a new empty Properties object.
      */
@@ -29,12 +26,12 @@ public class Properties {
         java.util.Properties p = new java.util.Properties();
 
         try {
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("denovoGUI.properties");
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("denovogui.properties");
             p.load(is);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return p.getProperty("denovoGUI.version");
+        return p.getProperty("denovogui.version");
     }
 }

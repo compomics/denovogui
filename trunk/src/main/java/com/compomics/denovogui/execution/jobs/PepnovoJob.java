@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
@@ -11,12 +7,10 @@ import com.compomics.util.experiment.identification.SearchParameters;
 import java.io.File;
 
 /**
- * <b>PepnovoJob</b>
- * <p>
- * This job class runs the PepNovo+ software in wrapper mode.
- * </p>
+ * <b>PepnovoJob</b> <p> This job class runs the PepNovo+ software in wrapper
+ * mode. </p>
  *
- * @author T.Muth
+ * @author Thilo Muth
  */
 public class PepnovoJob extends Job {
 
@@ -24,22 +18,18 @@ public class PepnovoJob extends Job {
      * Name of the PepNovo+ executable.
      */
     public final static String PEPNOVO_EXE = "PepNovo.exe";
-
     /**
      * The spectrumFile file.
      */
     private File spectrumFile;
-
     /**
      * The search parameters.
      */
     private SearchParameters searchParameters;
-
     /**
      * The path to the PepNovo executable.
      */
     private File pepNovoFolder;
-
     /**
      * The output path.
      */
@@ -49,9 +39,9 @@ public class PepnovoJob extends Job {
      * Constructor for the PepnovoJob.
      *
      * @param pepNovoFolder The path to the PepNovo executable.
-     * @param mgfFile       The spectrum MGF file.
-     * @param outputFolder    The output folder.
-     * @param searchParameters        The search parameters.
+     * @param mgfFile The spectrum MGF file.
+     * @param outputFolder The output folder.
+     * @param searchParameters The search parameters.
      */
     public PepnovoJob(File pepNovoFolder, File mgfFile, File outputFolder, SearchParameters searchParameters) {
         this.pepNovoFolder = pepNovoFolder;
@@ -131,10 +121,12 @@ public class PepnovoJob extends Job {
     }
 
     /**
-     * Returns the expected result file for a given spectrum file in a given output folder
+     * Returns the expected result file for a given spectrum file in a given
+     * output folder.
+     *
      * @param folder the output folder
      * @param spectrumFileName the spectrum file name
-     * @return 
+     * @return the results file
      */
     public static File getOutputFile(File folder, String spectrumFileName) {
         return new File(folder, spectrumFileName + ".out");
@@ -150,5 +142,4 @@ public class PepnovoJob extends Job {
             log.info(">> De novo search has been canceled.");
         }
     }
-    
 }

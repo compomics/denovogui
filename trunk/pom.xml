@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.compomics.denovogui</groupId>
-    <artifactId>denovogui</artifactId>
+    <artifactId>DeNovoGUI</artifactId>
     <packaging>jar</packaging>
-    <version>0.1</version>
-    <name>denovogui</name>
+    <version>0.1.0-beta</version>
+    <name>DeNovoGUI</name>
     <url>http://denovogui.googlecode.com</url>
 
 
@@ -97,7 +97,7 @@
             </plugin>
 
             <!-- Jar plugin -->
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
@@ -106,7 +106,7 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <mainClass></mainClass>
+                            <mainClass>com.compomics.denovogui.DeNovoGUIWrapper</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                         </manifest>
@@ -114,7 +114,7 @@
                     <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}
                     </outputDirectory>
                 </configuration>
-            </plugin-->
+            </plugin>
 
             <!-- Dependency plugin -->
             <plugin>
@@ -169,14 +169,13 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/
+                            <outputDirectory>${project.build.directory}/${project.name}-${project.version}/
                             </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>./</directory>
                                     <includes>
-                                        <include>conf/</include>
-                                        <include>example_data/</include>
+                                        <include>resources/</include>
                                         <include>README.txt</include>
                                     </includes>
                                 </resource>
@@ -212,6 +211,30 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Zip the jar file and the dependencies -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/zip.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>single</goal>
+                            <!-- goals == mojos -->
                         </goals>
                     </execution>
                 </executions>
@@ -325,6 +348,14 @@
             <groupId>jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.0.13</version>
+        </dependency>
+        
+        <!-- use for adding desktop shortcuts -->
+        <dependency>
+            <groupId>net.jimmc</groupId>
+            <artifactId>jshortcut</artifactId>
+            <version>0.4-oberzalek</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 

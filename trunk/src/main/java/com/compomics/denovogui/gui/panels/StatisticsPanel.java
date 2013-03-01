@@ -1,19 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.panels;
 
 /**
  *
- * @author tmuth
+ * @author Thilo Muth
+ * @author Harald Barsnes
  */
-public class StatisticsPnl extends javax.swing.JPanel {
+public class StatisticsPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form StatisticsPnl
+     * Creates new form StatisticsPanel.
      */
-    public StatisticsPnl() {
+    public StatisticsPanel() {
         initComponents();
     }
 
@@ -30,7 +27,10 @@ public class StatisticsPnl extends javax.swing.JPanel {
         deNovoHistogramPanel = new javax.swing.JPanel();
         deNovoHistogramPlotPanel = new javax.swing.JPanel();
 
+        statisticsPanel.setBackground(new java.awt.Color(230, 230, 230));
+
         deNovoHistogramPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Score Histogram"));
+        deNovoHistogramPanel.setOpaque(false);
 
         deNovoHistogramPlotPanel.setLayout(new javax.swing.BoxLayout(deNovoHistogramPlotPanel, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -72,21 +72,13 @@ public class StatisticsPnl extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 930, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(statisticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(statisticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(statisticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addComponent(statisticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

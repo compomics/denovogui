@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.qc;
 
 import com.compomics.util.experiment.identification.Advocate;
@@ -20,17 +16,18 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
-
 /**
- * <p>Class to plot a histogram of the number of peaks of all intensity values.</p>
+ * <p>Class to plot a histogram of the number of peaks of all intensity
+ * values.</p>
  *
- * @author T.Muth
+ * @author Thilo Muth
  */
 public class ScoreHistogram extends Chart {
 
     private double[] data;
+
     /**
-     * Constructs a denovo score histogram
+     * Constructs a de novo score histogram
      *
      * @param identification the identification
      */
@@ -81,7 +78,7 @@ public class ScoreHistogram extends Chart {
         plot.setDomainGridlinesVisible(false);
         plot.setRangeGridlinesVisible(false);
         plot.setOutlineVisible(false);
-        
+
         XYBarRenderer renderer = new XYBarRenderer();
         renderer.setShadowVisible(false);
         plot.setRenderer(renderer);
@@ -91,5 +88,4 @@ public class ScoreHistogram extends Chart {
     public String getChartTitle() {
         return "De Novo Score Histogram";
     }
-    
 }

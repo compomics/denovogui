@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.util.Properties;
@@ -9,22 +5,23 @@ import com.compomics.software.CompomicsWrapper;
 import java.io.File;
 
 /**
- * Wrapper to start the tool
+ * Wrapper to start the tool.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
-public class DenovoguiWrapper extends CompomicsWrapper {
+public class DeNovoGUIWrapper extends CompomicsWrapper {
 
     /**
      * The name of the jar file. Must be equal to the name given in the pom
      * file.
      */
-    public static final String toolName = "DenovoGUI";
+    public static final String toolName = "DeNovoGUI";
+
     /**
      * Starts the launcher by calling the launch method. Use this as the main
      * class in the jar file.
      */
-    public DenovoguiWrapper() {
+    public DeNovoGUIWrapper() {
         this(null);
     }
 
@@ -34,11 +31,11 @@ public class DenovoguiWrapper extends CompomicsWrapper {
      *
      * @param args the command line arguments (ignored if null)
      */
-    public DenovoguiWrapper(String[] args) {
+    public DeNovoGUIWrapper(String[] args) {
 
         // get the version number set in the pom file
         String jarFileName = toolName + "-" + new Properties().getVersion() + ".jar";
-        String path = this.getClass().getResource("DenovoguiWrapper.class").getPath();
+        String path = this.getClass().getResource("DeNovoGUIWrapper.class").getPath();
         // remove starting 'file:' tag if there
         if (path.startsWith("file:")) {
             path = path.substring("file:".length(), path.indexOf(jarFileName));
@@ -51,7 +48,7 @@ public class DenovoguiWrapper extends CompomicsWrapper {
         File jarFile = new File(path, jarFileName);
         // get the splash 
         String splash = "denovogui-splash.png";
-        String mainClass = "denovogui.gui.DeNovoGUI";
+        String mainClass = "com.compomics.denovogui.gui.DeNovoGUI";
 
         launchTool(toolName, jarFile, splash, mainClass, args);
     }
@@ -63,7 +60,6 @@ public class DenovoguiWrapper extends CompomicsWrapper {
      * @param args
      */
     public static void main(String[] args) {
-        new DenovoguiWrapper(args);
+        new DeNovoGUIWrapper(args);
     }
-    
 }

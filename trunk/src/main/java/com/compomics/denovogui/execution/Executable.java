@@ -1,18 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.execution;
 
 /**
- * <b>Executable</b>
- * <p>
- * Executable-Interface implemented by the Job class.
- * </p>
+ * <b>Executable</b> <p> Executable-Interface implemented by the Job class. </p>
  *
- * @author T.Muth
+ * @author Thilo Muth
  */
 public interface Executable {
+
     /**
      * Return a description for the job.
      *
@@ -28,7 +22,7 @@ public interface Executable {
     public JobStatus getStatus();
 
     /**
-     * Returns the error (if any error has occurred)
+     * Returns the error (if any error has occurred).
      *
      * @return error The error represented as String.
      */
@@ -43,5 +37,4 @@ public interface Executable {
      * Cancels the job.
      */
     public void cancel();
-    
 }
