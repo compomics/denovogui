@@ -6,6 +6,7 @@ package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
 import java.io.File;
 
@@ -42,20 +43,20 @@ public class PepnovoJob extends Job {
     /**
      * The output path.
      */
-    private String outputPath;
+    private File outputFolder;
 
     /**
      * Constructor for the PepnovoJob.
      *
      * @param pepNovoFolder The path to the PepNovo executable.
      * @param mgfFile       The spectrum MGF file.
-     * @param outputPath    The path to the output.
+     * @param outputFolder    The output folder.
      * @param searchParameters        The search parameters.
      */
-    public PepnovoJob(File pepNovoFolder, File mgfFile, String outputPath, SearchParameters searchParameters) {
+    public PepnovoJob(File pepNovoFolder, File mgfFile, File outputFolder, SearchParameters searchParameters) {
         this.pepNovoFolder = pepNovoFolder;
         this.spectrumFile = mgfFile;
-        this.outputPath = outputPath;
+        this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
         initJob();
     }
@@ -112,11 +113,11 @@ public class PepnovoJob extends Job {
         if (searchParameters.generateQuery()) {
             procCommands.add("-msb_generate_query");
             procCommands.add("-msb_query_name");
-            procCommands.add(outputPath + System.getProperty("file.separator") + spectrumFile.getName() + ".query");
+            procCommands.add(outputFolder.getAbsolutePath() + System.getProperty("file.separator") + spectrumFile.getName() + ".query");
         }
 
         // Add output path
-        outputFile = new File(outputPath + System.getProperty("file.separator") + spectrumFile.getName() + ".out");
+        outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
         procCommands.trimToSize();
 
         // Set the description - yet not used
@@ -130,12 +131,13 @@ public class PepnovoJob extends Job {
     }
 
     /**
-     * Returns the name of the pepnovo output file.
-     *
-     * @return the name of the pepnovo output file
+     * Returns the expected result file for a given spectrum file in a given output folder
+     * @param folder the output folder
+     * @param spectrumFileName the spectrum file name
+     * @return 
      */
-    public String getOutputFilePath() {
-        return outputFile.getAbsolutePath();
+    public static File getOutputFile(File folder, String spectrumFileName) {
+        return new File(folder, spectrumFileName + ".out");
     }
 
     /**
