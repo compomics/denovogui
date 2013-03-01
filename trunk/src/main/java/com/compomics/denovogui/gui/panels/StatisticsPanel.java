@@ -1,5 +1,7 @@
 package com.compomics.denovogui.gui.panels;
 
+import com.compomics.denovogui.gui.DeNovoGUI;
+
 /**
  *
  * @author Thilo Muth
@@ -8,10 +10,18 @@ package com.compomics.denovogui.gui.panels;
 public class StatisticsPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form StatisticsPanel.
+     * A references to the main frame.
      */
-    public StatisticsPanel() {
+    private DeNovoGUI deNovoGUI;
+
+    /**
+     * Creates a new StatisticsPanel.
+     * 
+     * @param deNovoGUI a references to the main frame
+     */
+    public StatisticsPanel(DeNovoGUI deNovoGUI) {
         initComponents();
+        this.deNovoGUI = deNovoGUI;
     }
 
     /**

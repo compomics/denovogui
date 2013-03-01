@@ -1,5 +1,6 @@
 package com.compomics.denovogui.gui.panels;
 
+import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTM;
@@ -22,12 +23,19 @@ public class InputPanel extends javax.swing.JPanel {
      * The compomics PTM factory.
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
+    /**
+     * A references to the main frame.
+     */
+    private DeNovoGUI deNovoGUI;
 
     /**
-     * Creates new form InputPanel
+     * Creates a new InputPanel.
+     * 
+     * @param deNovoGUI a references to the main frame
      */
-    public InputPanel() {
+    public InputPanel(DeNovoGUI deNovoGUI) {
         initComponents();
+        this.deNovoGUI = deNovoGUI;
     }
 
     /**

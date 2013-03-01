@@ -21,6 +21,7 @@ import com.compomics.util.experiment.identification.identifications.Ms2Identific
 import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
+import com.compomics.util.gui.error_handlers.BugReport;
 import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,6 +102,10 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * If set to true all messages will be sent to a log file.
      */
     private static boolean useLogFile = true;
+    /**
+     * The last folder opened by the user. Defaults to user.home.
+     */
+    private String lastSelectedFolder = "user.home";
 
     /**
      * Creates new form DeNovoGUI
@@ -107,7 +113,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
     public DeNovoGUI() {
 
         // check for new version
-        CompomicsWrapper.checkForNewVersion(new Properties().getVersion(), "DeNovoGUI", "denovogui");
+        CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
 
         // set up the ErrorLog
         setUpLogFile();
@@ -144,7 +150,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
         setUpGUI();
         
         // set the title
-        this.setTitle("DeNovoGUI " + new Properties().getVersion());
+        this.setTitle("DeNovoGUI " + getVersion());
 
         // set the title of the frame and add the icon
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
@@ -179,9 +185,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Set up the GUI.
      */
     private void setUpGUI() {
-        inputPanel = new InputPanel();
-        resultsPanel = new ResultsPanel();
-        statisticsPanel = new StatisticsPanel();
+        inputPanel = new InputPanel(this);
+        resultsPanel = new ResultsPanel(this);
+        statisticsPanel = new StatisticsPanel(this);
         inputJPanel.add(inputPanel);
         resultsJPanel.add(resultsPanel);
         statisticsJPanel.add(statisticsPanel);
@@ -213,7 +219,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
                                 + "Please contact the developers.", "File Error", JOptionPane.OK_OPTION);
                     }
                 }
-                System.out.println("\n\n" + new Date() + ": DeNovoGUI version " + new Properties().getVersion() + ".\n");
+                System.out.println("\n\n" + new Date() + ": DeNovoGUI version " + getVersion() + ".\n");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(
                         null, "An error occured when trying to create the DeNovoGUI log file.",
@@ -243,6 +249,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
         exportMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
+        jSeparator17 = new javax.swing.JPopupMenu.Separator();
+        logReportMenu = new javax.swing.JMenuItem();
+        jSeparator16 = new javax.swing.JPopupMenu.Separator();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -297,6 +306,17 @@ public class DeNovoGUI extends javax.swing.JFrame {
             }
         });
         helpMenu.add(helpMenuItem);
+        helpMenu.add(jSeparator17);
+
+        logReportMenu.setMnemonic('B');
+        logReportMenu.setText("Bug Report");
+        logReportMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logReportMenuActionPerformed(evt);
+            }
+        });
+        helpMenu.add(logReportMenu);
+        helpMenu.add(jSeparator16);
 
         aboutMenuItem.setMnemonic('A');
         aboutMenuItem.setText("About");
@@ -363,6 +383,15 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_importResultsMenuItemActionPerformed
 
     /**
+     * Opens a new bug report dialog.
+     *
+     * @param evt
+     */
+    private void logReportMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logReportMenuActionPerformed
+        new BugReport(this, lastSelectedFolder, "DeNovoGUI", "denovogui", getVersion(), new File(getJarFilePath() + "/resources/DeNovoGUI.log"));
+    }//GEN-LAST:event_logReportMenuActionPerformed
+
+    /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -392,6 +421,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JMenuItem importResultsMenuItem;
     private javax.swing.JPanel inputJPanel;
+    private javax.swing.JPopupMenu.Separator jSeparator16;
+    private javax.swing.JPopupMenu.Separator jSeparator17;
+    private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel resultsJPanel;
     private javax.swing.JPanel statisticsJPanel;
@@ -635,5 +667,42 @@ public class DeNovoGUI extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Returns the last selected folder.
+     *
+     * @return the last selected folder
+     */
+    public String getLastSelectedFolder() {
+        return lastSelectedFolder;
+    }
+
+    /**
+     * Set the last selected folder.
+     *
+     * @param lastSelectedFolder the folder to set
+     */
+    public void setLastSelectedFolder(String lastSelectedFolder) {
+        this.lastSelectedFolder = lastSelectedFolder;
+    }
+
+    /**
+     * Retrieves the version number set in the pom file.
+     *
+     * @return the version number of PeptideShaker
+     */
+    public String getVersion() {
+
+        java.util.Properties p = new java.util.Properties();
+
+        try {
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("denovogui.properties");
+            p.load(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return p.getProperty("denovogui.version");
     }
 }
