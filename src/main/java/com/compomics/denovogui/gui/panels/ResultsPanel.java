@@ -1,5 +1,6 @@
 package com.compomics.denovogui.gui.panels;
 
+import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 
@@ -11,10 +12,18 @@ import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 public class ResultsPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form ResultsPanel
+     * A references to the main frame.
      */
-    public ResultsPanel() {
+    private DeNovoGUI deNovoGUI;
+
+    /**
+     * Creates a new ResultsPanel.
+     * 
+     * @param deNovoGUI a references to the main frame
+     */
+    public ResultsPanel(DeNovoGUI deNovoGUI) {
         initComponents();
+        this.deNovoGUI = deNovoGUI;
     }
 
     /**
