@@ -765,7 +765,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_filterLowQualityCheckBoxActionPerformed
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        // TODO add your handling code here:
+        startSearch();
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -878,8 +878,13 @@ public class DeNovoGUI extends javax.swing.JFrame {
         return result;
     }
 
+    /**
+     * Starts the search
+     */
     private void startSearch() {
-        
+        searchParameters = getSearchParametersFromGUI();
+        searchHandler = new DenovoSearchHandler(null);
+        searchHandler.startSearch(null, searchParameters, null);
     }
     
     /**
