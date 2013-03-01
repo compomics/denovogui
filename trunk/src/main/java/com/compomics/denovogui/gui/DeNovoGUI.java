@@ -1,5 +1,38 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.denovogui.DenovoSearchHandler;
+import com.compomics.denovogui.DenovoguiWrapper;
+import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
+import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.denovo.PeptideAssumptionDetails;
+import com.compomics.util.experiment.MsExperiment;
+import com.compomics.util.experiment.ProteomicAnalysis;
+import com.compomics.util.experiment.SampleAnalysisSet;
+import com.compomics.util.experiment.biology.Enzyme;
+import com.compomics.util.experiment.biology.EnzymeFactory;
+import com.compomics.util.experiment.biology.PTM;
+import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.Sample;
+import com.compomics.util.experiment.identification.Identification;
+import com.compomics.util.experiment.identification.IdentificationMethod;
+import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.SequenceFactory;
+import com.compomics.util.experiment.identification.identifications.Ms2Identification;
+import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.preferences.ModificationProfile;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Thilo Muth
@@ -8,10 +41,72 @@ package com.compomics.denovogui.gui;
 public class DeNovoGUI extends javax.swing.JFrame {
 
     /**
+     * Modification file.
+     */
+    private final static String MODIFICATION_FILE = "resources/conf/tagdb_mods.xml";
+    /**
+     * User modification file.
+     */
+    private final static String USER_MODIFICATION_FILE = "resources/conf/tagdb_usermods.xml";
+    /**
+     * The enzyme file
+     */
+    private final static String ENZYME_FILE = "resources/conf/enzymes.xml";
+    /**
+     * The compomics enzyme factory.
+     */
+    private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+    /**
+     * The spectrum factory.
+     */
+    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance(1000);
+    /**
+     * The factory used to handle the modifications.
+     */
+    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    /**
+     * The location of the folder used for caching.
+     */
+    public final static String CACHE_DIRECTORY = "resources/cache";
+    /**
+     * De novo identification
+     */
+    private Identification identification;
+    /**
+     * The search handler
+     */
+    private DenovoSearchHandler searchHandler;
+    /**
+     * The search parameters
+     */
+    private SearchParameters searchParameters = null;
+
+    /**
      * Creates new form DeNovoGUI
      */
     public DeNovoGUI() {
         initComponents();
+        // Load modifications
+        try {
+            ptmFactory.importModifications(getModificationsFile(), false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error while reading " + MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            ptmFactory.importModifications(getUserModificationsFile(), true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error while reading " + USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Load the enzymes
+        try {
+            enzymeFactory.importEnzymes(new File(ENZYME_FILE));
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error while reading " + ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -41,9 +136,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
         loggingPanel = new javax.swing.JPanel();
         searchSettingsPanel = new javax.swing.JPanel();
         enzymeLabel = new javax.swing.JLabel();
-        enzymeComboBox = new javax.swing.JComboBox();
-        modelLabel = new javax.swing.JLabel();
         modelComboBox = new javax.swing.JComboBox();
+        modelLabel = new javax.swing.JLabel();
+        enzymeComboBox = new javax.swing.JComboBox();
         fragmentMassToleranceLabel = new javax.swing.JLabel();
         fragmentMassToleranceSpinner = new javax.swing.JSpinner();
         precursorMassToleranceLabel = new javax.swing.JLabel();
@@ -231,19 +326,19 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         enzymeLabel.setText("Enzyme");
 
-        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
-        enzymeComboBox.addActionListener(new java.awt.event.ActionListener() {
+        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
+        modelComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enzymeComboBoxActionPerformed(evt);
+                modelComboBoxActionPerformed(evt);
             }
         });
 
         modelLabel.setText("Model");
 
-        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
-        modelComboBox.addActionListener(new java.awt.event.ActionListener() {
+        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
+        enzymeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modelComboBoxActionPerformed(evt);
+                enzymeComboBoxActionPerformed(evt);
             }
         });
 
@@ -293,11 +388,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
                     .addGroup(searchSettingsPanelLayout.createSequentialGroup()
                         .addComponent(enzymeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchSettingsPanelLayout.createSequentialGroup()
                         .addComponent(modelLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchSettingsPanelLayout.createSequentialGroup()
                         .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(filterLowQualityCheckBox)
@@ -322,10 +417,10 @@ public class DeNovoGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(enzymeLabel)
-                    .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(modelLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -350,32 +445,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         modificationsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifications"));
 
-        modificationsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Fixed", "Variable", "Name"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Boolean.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        modificationsTable.setModel(new ModificationsTableModel());
         modificationsTableScrollPane.setViewportView(modificationsTable);
-        modificationsTable.getColumnModel().getColumn(0).setMinWidth(50);
-        modificationsTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-        modificationsTable.getColumnModel().getColumn(0).setMaxWidth(50);
-        modificationsTable.getColumnModel().getColumn(1).setMinWidth(50);
-        modificationsTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-        modificationsTable.getColumnModel().getColumn(1).setMaxWidth(50);
 
         configureModificationsButton.setText("Configure");
         configureModificationsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -521,25 +592,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         querySpectraPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Query Spectra"));
 
-        querySpectraTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "", "Spectrum Title", "m/z", "Charge"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        querySpectraTable.setModel(new SpectrumTableModel());
         querySpectraTableScrollPane.setViewportView(querySpectraTable);
 
         javax.swing.GroupLayout querySpectraPanelLayout = new javax.swing.GroupLayout(querySpectraPanel);
@@ -561,25 +614,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         deNovoPeptidesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Peptides"));
 
-        deNovoPeptidesTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "", "Peptide", "RankScore", "Score", "N-Gap", "C-Gap", "m/z", "Charge"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        deNovoPeptidesTable.setModel(new SpectrumMatchTableModel());
         deNovoPeptidesTableScrollPane.setViewportView(deNovoPeptidesTable);
 
         javax.swing.GroupLayout deNovoPeptidesPanelLayout = new javax.swing.GroupLayout(deNovoPeptidesPanel);
@@ -709,13 +744,13 @@ public class DeNovoGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_outputFolderBrowseButtonActionPerformed
 
-    private void enzymeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enzymeComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enzymeComboBoxActionPerformed
-
     private void modelComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelComboBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_modelComboBoxActionPerformed
+
+    private void enzymeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enzymeComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_enzymeComboBoxActionPerformed
 
     private void spectrumChargeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumChargeCheckBoxActionPerformed
         // TODO add your handling code here:
@@ -828,4 +863,254 @@ public class DeNovoGUI extends javax.swing.JFrame {
     private javax.swing.JPanel statisticsPanel;
     private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Returns the modifications file.
+     *
+     * @return the modifications file
+     */
+    public File getModificationsFile() {
+        File result = new File(getJarFilePath() + File.separator + MODIFICATION_FILE);
+
+        if (!result.exists()) {
+            JOptionPane.showMessageDialog(null, MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return result;
+    }
+
+    private void startSearch() {
+        
+    }
+    
+    /**
+     * Returns the user defined modifications file.
+     *
+     * @return the user defined modifications file
+     */
+    public File getUserModificationsFile() {
+        File result = new File(getJarFilePath() + File.separator + USER_MODIFICATION_FILE);
+        if (!result.exists()) {
+            JOptionPane.showMessageDialog(null, USER_MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the search parameters as set in the GUI
+     *
+     * @return the search parameters as set in the GUI
+     */
+    public SearchParameters getSearchParametersFromGUI() {
+        SearchParameters searchParameters = new SearchParameters();
+
+        // @TODO: implement other enzymes
+        Enzyme enzyme = null;
+        if (enzymeComboBox.getSelectedIndex() == 0) {
+            enzyme = enzymeFactory.getEnzyme("Trypsin");
+        } else {
+            enzyme = enzymeFactory.getEnzyme("No enzyme");
+        }
+        searchParameters.setEnzyme(enzyme);
+        // @TODO: implement other models
+        String fragmentationModel = (String) modelComboBox.getSelectedItem();
+        searchParameters.setFragmentationModel(fragmentationModel);
+        double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();
+        searchParameters.setFragmentIonAccuracy(fragmentIonTolerance);
+        double precursorIonTolerance = (Double) precursorMassToleranceSpinner.getValue();
+        searchParameters.setPrecursorAccuracy(precursorIonTolerance);
+        //@TODO: what about missed cleavages?
+//        int nMissedCleavages = (Integer) missedCleavagesSpinner.getValue();
+//        searchParameters.setnMissedCleavages(nMissedCleavages);
+        int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
+        searchParameters.setHitListLength(maxHitListLength);
+        boolean estimateCharge = !spectrumChargeCheckBox.isSelected();
+        searchParameters.setEstimateCharge(estimateCharge);
+        boolean estimatePrecursorMass = !spectrumPrecursorCheckBox.isSelected();
+        searchParameters.correctPrecursorMass(estimatePrecursorMass);
+        boolean filterLowQualitySpectra = filterLowQualityCheckBox.isSelected();
+        searchParameters.setDiscardLowQualitySpectra(filterLowQualitySpectra);
+        ModificationProfile modificationProfile = searchParameters.getModificationProfile();
+        for (int row = 0; row < modificationsTable.getRowCount(); row++) {
+            if ((Boolean) modificationsTable.getValueAt(row, 0)) {
+                String modName = (String) modificationsTable.getValueAt(row, 2);
+                PTM ptm = ptmFactory.getPTM(modName);
+                modificationProfile.addFixedModification(ptm);
+            } else if ((Boolean) modificationsTable.getValueAt(row, 0)) {
+                String modName = (String) modificationsTable.getValueAt(row, 2);
+                PTM ptm = ptmFactory.getPTM(modName);
+                modificationProfile.addVariableModification(ptm);
+            }
+        }
+        return searchParameters;
+    }
+
+    /**
+     * Loads the mgf files in the spectrum factory
+     *
+     * @param mgfFiles loads the mgf files in the spectrum factory
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void loadSpectra(ArrayList<File> mgfFiles) throws FileNotFoundException, IOException, ClassNotFoundException {
+        // Add spectrum files to the spectrum factory
+        for (File spectrumFile : mgfFiles) {
+            //@TODO: add progress bar
+            spectrumFactory.addSpectra(spectrumFile);
+        }
+    }
+
+    /**
+     * Imports the pepnovo results from the given files and puts all matches in
+     * the identification
+     *
+     * @param outFiles the pepnovo result files as a list
+     */
+    private void importPepnovoResults(ArrayList<String> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+        //@TODO: let the user reference his project
+        String projectReference = "project reference";
+        String sampleReference = "sample reference";
+        int replicateNumber = 0;
+        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
+        MsExperiment experiment = new MsExperiment(projectReference);
+        Sample sample = new Sample(sampleReference);
+        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
+        experiment.addAnalysisSet(sample, analysisSet);
+        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
+        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
+        // The identification object
+        identification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
+        identification.setIsDB(true);
+        // The cache used whenever the identification becomes too big
+        String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
+        ObjectsCache objectsCache = new ObjectsCache();
+        objectsCache.setAutomatedMemoryManagement(true);
+        identification.establishConnection(dbFolder, true, objectsCache);
+
+        for (String fileAsString : outFiles) {
+            // initiate the parser
+            File file = new File(fileAsString);
+            PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(file);
+            // put the identification results in the identification object
+            identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
+        }
+    }
+
+    /**
+     * Returns the path to the jar file.
+     *
+     * @return the path to the jar file
+     */
+    protected String getJarFilePath() {
+        return DenovoguiWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DenovoguiWrapper.toolName);
+    }
+
+    /**
+     * Table model for the modifications table
+     */
+    private class ModificationsTableModel extends DefaultTableModel {
+
+        /**
+         * List of all modifications
+         */
+        private ArrayList<String> modifications = null;
+        /**
+         * Map of the fixed modifications
+         */
+        private HashMap<String, Boolean> fixedModifications;
+        /**
+         * Map of the variable modifications
+         */
+        private HashMap<String, Boolean> variableModifications;
+
+        /**
+         * Constructor
+         */
+        public ModificationsTableModel() {
+            modifications = ptmFactory.getPTMs();
+            Collections.sort(modifications);
+            fixedModifications = new HashMap<String, Boolean>();
+            variableModifications = new HashMap<String, Boolean>();
+            for (String modificationName : modifications) {
+                fixedModifications.put(modificationName, false);
+                variableModifications.put(modificationName, false);
+            }
+        }
+
+        @Override
+        public int getRowCount() {
+            if (modifications == null) {
+                return 0;
+            }
+            return modifications.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            switch (column) {
+                case 0:
+                    return "Fixed";
+                case 1:
+                    return "Variable";
+                case 2:
+                    return " ";
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            String modificationName = modifications.get(row);
+            switch (column) {
+                case 0:
+                    return fixedModifications.get(modificationName);
+                case 1:
+                    return variableModifications.get(modificationName);
+                case 2:
+                    return modificationName;
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public Class getColumnClass(int columnIndex) {
+            for (int i = 0; i < getRowCount(); i++) {
+                if (getValueAt(i, columnIndex) != null) {
+                    return getValueAt(i, columnIndex).getClass();
+                }
+            }
+            return String.class;
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0 || columnIndex == 1;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            if (columnIndex == 0) {
+                String modificationName = modifications.get(rowIndex);
+                Boolean value = (Boolean) aValue;
+                fixedModifications.put(modificationName, value);
+                if (value) {
+                    variableModifications.put(modificationName, false);
+                }
+            } else if (columnIndex == 0) {
+                String modificationName = modifications.get(rowIndex);
+                Boolean value = (Boolean) aValue;
+                variableModifications.put(modificationName, value);
+                if (value) {
+                    fixedModifications.put(modificationName, false);
+                }
+            }
+        }
+    }
 }
