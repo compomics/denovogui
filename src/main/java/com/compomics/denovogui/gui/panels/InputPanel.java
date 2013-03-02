@@ -43,11 +43,11 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     /**
      * Indicates whether the run was canceled.
      */
-    private boolean runCanceled = false;    
+    private boolean runCanceled = false;
 
     /**
      * Creates a new InputPanel.
-     * 
+     *
      * @param deNovoGUI a references to the main frame
      */
     public InputPanel(DeNovoGUI deNovoGUI) {
@@ -518,7 +518,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     }//GEN-LAST:event_spectrumFilesTextFieldActionPerformed
 
     private void browseSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSpectrumFilesButtonActionPerformed
-       browseSpectraFolder();
+        browseSpectraFolder();
     }//GEN-LAST:event_browseSpectrumFilesButtonActionPerformed
 
     private void clearSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectrumFilesButtonActionPerformed
@@ -533,7 +533,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     }//GEN-LAST:event_pepNovoLocationTextFieldActionPerformed
 
     private void popNovoLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popNovoLocationBrowseButtonActionPerformed
-       browsePepnovoFolder();
+        browsePepnovoFolder();
     }//GEN-LAST:event_popNovoLocationBrowseButtonActionPerformed
 
     private void outputFolderTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderTextFieldActionPerformed
@@ -715,7 +715,13 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
     @Override
     public void setRunFinished() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            if (!runCanceled) {
+                deNovoGUI.displayResults();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -772,7 +778,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     public void setWaitingText(String text) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 
     /**
      * Table model for the modifications table.
@@ -882,8 +887,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             }
         }
     }
-    
-    
+
     /**
      * This method is called when choosing which results folder to use.
      */
@@ -910,7 +914,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             deNovoGUI.setOutputFolder(outputFolder);
         }
     }
-    
+
     /**
      * This method is called when the Browse button for Pepnovo is pressed.
      */
@@ -927,21 +931,22 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File pepNovoFolder = fc.getSelectedFile();            
+            File pepNovoFolder = fc.getSelectedFile();
             if (checkPepnovoFolder(pepNovoFolder)) {
                 deNovoGUI.setLastSelectedFolder(pepNovoFolder.getAbsolutePath());
                 deNovoGUI.setPepNovoFolder(pepNovoFolder);
                 pepNovoLocationTextField.setText(pepNovoFolder.getAbsolutePath());
-                
+
             } else {
                 JOptionPane.showMessageDialog(this, new String[]{"Incorrect PepNovo folder specified.", "Please try again, or press cancel to exit."}, "Incorrect PepNovo Folder", JOptionPane.WARNING_MESSAGE);
                 browsePepnovoFolder();
             }
         }
     }
-    
+
     /**
-     * This method is called when the Browse button for the input files is pressed.
+     * This method is called when the Browse button for the input files is
+     * pressed.
      */
     public void browseSpectraFolder() {
         // First check whether a file has already been selected.
@@ -980,7 +985,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         }
         //TODO: setButtonConfiguration();
     }
-    
+
     /**
      * This method checks for the folder being the Pepnovo folder.
      *
@@ -1004,12 +1009,12 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         }
         return result;
     }
-    
+
     /**
      * This method sets the button configuration.
      */
     public void setButtonConfiguration() {
-        if(checkForValidConfiguration()) {
+        if (checkForValidConfiguration()) {
             startButton.setEnabled(true);
             cancelButton.setEnabled(false);
         } else {
@@ -1017,9 +1022,10 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             cancelButton.setEnabled(false);
         }
     }
-    
-     /**
+
+    /**
      * This method checks whether the start configuration is valid or not.
+     *
      * @return Boolean if the start configuration is valid.
      */
     public boolean checkForValidConfiguration() {

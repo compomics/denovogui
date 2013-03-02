@@ -1,6 +1,8 @@
 package com.compomics.denovogui.gui.tablemodels;
 
+import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.massspectrometry.Precursor;
+import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,6 +17,10 @@ public class SpectrumTableModel extends DefaultTableModel {
      * The spectrum factory.
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+    /**
+     * The identification
+     */
+    private Identification identification;
     /**
      * The name of the spectrum file.
      */
@@ -31,8 +37,9 @@ public class SpectrumTableModel extends DefaultTableModel {
      * 
      * @param spectrumFile the spectrum file
      */
-    public SpectrumTableModel(String spectrumFile) {
+    public SpectrumTableModel(String spectrumFile, Identification identification) {
         this.spectrumFile = spectrumFile;
+        this.identification = identification;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -59,6 +66,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                 return "m/z";
             case 3:
                 return "Charge";
+            case 4:
+                return "id";
             default:
                 return "";
         }
@@ -90,6 +99,10 @@ public class SpectrumTableModel extends DefaultTableModel {
                     e.printStackTrace();
                     return "Error";
                 }
+            case 4:
+                spectrumTitle = spectrumFactory.getSpectrumTitles(spectrumFile).get(row);
+                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                return identification.matchExists(spectrumKey);
             default:
                 return "";
         }

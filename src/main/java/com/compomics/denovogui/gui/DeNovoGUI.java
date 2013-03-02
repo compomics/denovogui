@@ -118,7 +118,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Spectra files list.
      */
     private List<File> spectrumFiles = new ArrayList<File>();
-    
+
     /**
      * Creates new form DeNovoGUI
      */
@@ -460,6 +460,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Starts the search.
      */
     public void startSearch() {
+        try {
+            loadSpectra(spectrumFiles);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         searchParameters = inputPanel.getSearchParametersFromGUI();
         searchHandler = new DeNovoSearchHandler(pepNovoFolder);
         searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, inputPanel);
@@ -478,11 +483,15 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @throws ClassNotFoundException
      * @throws Exception
      */
-    public void displayResults(File outputFolder, ArrayList<File> spectrumFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public void displayResults() throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
         ArrayList<File> outputFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
             File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
-            outputFiles.add(resultFile);
+            if (resultFile.exists()) {
+                outputFiles.add(resultFile);
+            } else {
+                inputPanel.appendReport("File " + Util.getFileName(file) + " not found.", true, true);
+            }
         }
         importPepnovoResults(outputFiles);
         resultsPanel.diplayResults();
@@ -510,7 +519,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void loadSpectra(ArrayList<File> mgfFiles) throws FileNotFoundException, IOException, ClassNotFoundException {
+    private void loadSpectra(List<File> mgfFiles) throws FileNotFoundException, IOException, ClassNotFoundException {
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : mgfFiles) {
             //@TODO: add progress bar
@@ -612,23 +621,25 @@ public class DeNovoGUI extends javax.swing.JFrame {
     public void setLastSelectedFolder(String lastSelectedFolder) {
         this.lastSelectedFolder = lastSelectedFolder;
     }
-    
+
     /**
      * Sets the output folder.
+     *
      * @param outputFolder Output folder.
      */
     public void setOutputFolder(File outputFolder) {
         this.outputFolder = outputFolder;
     }
-    
+
     /**
      * Sets the PepNovo folder.
+     *
      * @param pepNovoFolder PepNovo folder.
      */
     public void setPepNovoFolder(File pepNovoFolder) {
         this.pepNovoFolder = pepNovoFolder;
     }
-    
+
     /**
      * Returns the identification containing all results.
      *
@@ -640,6 +651,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
     /**
      * Returns the selected spectrum files.
+     *
      * @return The selected spectrum files.
      */
     public List<File> getSpectrumFiles() {
@@ -648,12 +660,13 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
     /**
      * Sets the selected spectrum file.
+     *
      * @param spectrumFiles Spectrum files.
      */
     public void setSpectrumFiles(List<File> spectrumFiles) {
         this.spectrumFiles = spectrumFiles;
     }
-    
+
     /**
      * Retrieves the version number set in the pom file.
      *
