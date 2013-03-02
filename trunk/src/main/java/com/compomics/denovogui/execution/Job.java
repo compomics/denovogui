@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 
 /**
@@ -84,7 +85,7 @@ public abstract class Job implements Executable {
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
             // Get input from scanner and send to stdout
-            while (scan.hasNext()) {
+            while (scan.hasNext() && !waitingHandler.isRunCanceled()) {
                 String temp = scan.next();
                 writer.write(temp);
                 writer.newLine();
@@ -98,7 +99,7 @@ public abstract class Job implements Executable {
                 if (temp.startsWith(">>") || temp.startsWith("#Processed spectra")) {
                     waitingHandler.increaseProgressValue();
                 }
-                log.info(temp);
+                waitingHandler.displayMessage(temp, "progress", JOptionPane.INFORMATION_MESSAGE); 
             }
             writer.flush();
             writer.close();

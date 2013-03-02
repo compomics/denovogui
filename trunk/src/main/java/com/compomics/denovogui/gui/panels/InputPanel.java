@@ -1,6 +1,7 @@
 package com.compomics.denovogui.gui.panels;
 
 import com.compomics.denovogui.gui.DeNovoGUI;
+import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTM;
@@ -8,12 +9,17 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.preferences.ModificationProfile;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
@@ -37,7 +43,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     /**
      * Indicates whether the run was canceled.
      */
-    private boolean runCanceled = false;
+    private boolean runCanceled = false;    
 
     /**
      * Creates a new InputPanel.
@@ -72,7 +78,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         outputFolderLabel = new javax.swing.JLabel();
         outputFolderTextField = new javax.swing.JTextField();
         outputFolderBrowseButton = new javax.swing.JButton();
-        loggingPanel = new javax.swing.JPanel();
         searchSettingsPanel = new javax.swing.JPanel();
         enzymeLabel = new javax.swing.JLabel();
         modelComboBox = new javax.swing.JComboBox();
@@ -96,6 +101,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         deNovoProgressBar = new javax.swing.JProgressBar();
         startButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        loggingPanel1 = new com.compomics.denovogui.gui.panels.LoggingPanel();
 
         deNovoSearchPanel.setBackground(new java.awt.Color(230, 230, 230));
 
@@ -233,20 +239,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                     .addComponent(outputFolderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(outputFolderBrowseButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        loggingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Logging"));
-        loggingPanel.setOpaque(false);
-
-        javax.swing.GroupLayout loggingPanelLayout = new javax.swing.GroupLayout(loggingPanel);
-        loggingPanel.setLayout(loggingPanelLayout);
-        loggingPanelLayout.setHorizontalGroup(
-            loggingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 642, Short.MAX_VALUE)
-        );
-        loggingPanelLayout.setVerticalGroup(
-            loggingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         searchSettingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Settings"));
@@ -404,7 +396,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             modificationsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(modificationsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(configureModificationsButton)
                 .addContainerGap())
@@ -466,10 +458,10 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             .addGroup(deNovoSearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(deNovoSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(outputFolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pepNovoLocationPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(loggingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(inputFilesPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(loggingPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(outputFolderPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(inputFilesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(deNovoSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(modificationsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -495,7 +487,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(outputFolderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(loggingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(loggingPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -503,7 +495,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 987, Short.MAX_VALUE)
+            .addGap(0, 994, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -512,7 +504,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 605, Short.MAX_VALUE)
+            .addGap(0, 644, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -526,11 +518,14 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     }//GEN-LAST:event_spectrumFilesTextFieldActionPerformed
 
     private void browseSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSpectrumFilesButtonActionPerformed
-        // TODO add your handling code here:
+       browseSpectraFolder();
     }//GEN-LAST:event_browseSpectrumFilesButtonActionPerformed
 
     private void clearSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectrumFilesButtonActionPerformed
-        // TODO add your handling code here:
+        deNovoGUI.setSpectrumFiles(new ArrayList<File>());
+        spectrumFilesTextField.setText(deNovoGUI.getSpectrumFiles().size() + " file(s) selected");
+        startButton.setEnabled(false);
+        cancelButton.setEnabled(false);
     }//GEN-LAST:event_clearSpectrumFilesButtonActionPerformed
 
     private void pepNovoLocationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoLocationTextFieldActionPerformed
@@ -538,7 +533,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     }//GEN-LAST:event_pepNovoLocationTextFieldActionPerformed
 
     private void popNovoLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popNovoLocationBrowseButtonActionPerformed
-        // TODO add your handling code here:
+       browsePepnovoFolder();
     }//GEN-LAST:event_popNovoLocationBrowseButtonActionPerformed
 
     private void outputFolderTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderTextFieldActionPerformed
@@ -546,7 +541,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     }//GEN-LAST:event_outputFolderTextFieldActionPerformed
 
     private void outputFolderBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderBrowseButtonActionPerformed
-        // TODO add your handling code here:
+        browseOutputFolder();
     }//GEN-LAST:event_outputFolderBrowseButtonActionPerformed
 
     private void modelComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelComboBoxActionPerformed
@@ -595,7 +590,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     private javax.swing.JLabel fragmentMassToleranceLabel;
     private javax.swing.JSpinner fragmentMassToleranceSpinner;
     private javax.swing.JPanel inputFilesPanel;
-    private javax.swing.JPanel loggingPanel;
+    private com.compomics.denovogui.gui.panels.LoggingPanel loggingPanel1;
     private javax.swing.JComboBox modelComboBox;
     private javax.swing.JLabel modelLabel;
     private javax.swing.JPanel modificationsPanel;
@@ -645,9 +640,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         searchParameters.setFragmentIonAccuracy(fragmentIonTolerance);
         double precursorIonTolerance = (Double) precursorMassToleranceSpinner.getValue();
         searchParameters.setPrecursorAccuracy(precursorIonTolerance);
-        //@TODO: what about missed cleavages?
-//        int nMissedCleavages = (Integer) missedCleavagesSpinner.getValue();
-//        searchParameters.setnMissedCleavages(nMissedCleavages);
         int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
         searchParameters.setHitListLength(maxHitListLength);
         boolean estimateCharge = !spectrumChargeCheckBox.isSelected();
@@ -768,7 +760,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
     @Override
     public void displayMessage(String message, String title, int messageType) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        loggingPanel1.append(message);
     }
 
     @Override
@@ -889,5 +881,149 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 }
             }
         }
+    }
+    
+    
+    /**
+     * This method is called when choosing which results folder to use.
+     */
+    private void browseOutputFolder() {
+        // TODO: Setup default start location here!
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
+            File temp = new File(outputFolderTextField.getText());
+            if (temp.isDirectory()) {
+                startLocation = temp;
+            } else {
+                startLocation = temp.getParentFile();
+            }
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File outputFolder;
+            outputFolder = fc.getSelectedFile();
+            outputFolderTextField.setText(outputFolder.getAbsolutePath());
+            deNovoGUI.setLastSelectedFolder(outputFolder.getAbsolutePath());
+            deNovoGUI.setOutputFolder(outputFolder);
+        }
+    }
+    
+    /**
+     * This method is called when the Browse button for Pepnovo is pressed.
+     */
+    public void browsePepnovoFolder() {
+        // TODO: Setup default start location here!
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        if (pepNovoLocationTextField != null && pepNovoLocationTextField.getText() != null && !pepNovoLocationTextField.getText().trim().equals("")) {
+            File temp = new File(pepNovoLocationTextField.getText());
+            if (temp.exists() && temp.isDirectory()) {
+                startLocation = temp;
+            }
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File pepNovoFolder = fc.getSelectedFile();            
+            if (checkPepnovoFolder(pepNovoFolder)) {
+                deNovoGUI.setLastSelectedFolder(pepNovoFolder.getAbsolutePath());
+                deNovoGUI.setPepNovoFolder(pepNovoFolder);
+                pepNovoLocationTextField.setText(pepNovoFolder.getAbsolutePath());
+                
+            } else {
+                JOptionPane.showMessageDialog(this, new String[]{"Incorrect PepNovo folder specified.", "Please try again, or press cancel to exit."}, "Incorrect PepNovo Folder", JOptionPane.WARNING_MESSAGE);
+                browsePepnovoFolder();
+            }
+        }
+    }
+    
+    /**
+     * This method is called when the Browse button for the input files is pressed.
+     */
+    public void browseSpectraFolder() {
+        // First check whether a file has already been selected.
+        // If so, start from that file's parent.
+
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        List<File> spectrumFiles = deNovoGUI.getSpectrumFiles();
+        if (spectrumFiles.size() > 0) {
+            File temp = spectrumFiles.get(0);
+            startLocation = temp.getParentFile();
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fc.setMultiSelectionEnabled(true);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File[] files = fc.getSelectedFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    File[] currentFiles = files[i].listFiles();
+                    for (int k = 0; k < currentFiles.length; k++) {
+                        if (fc.getFileFilter().accept(currentFiles[k])) {
+                            spectrumFiles.add(currentFiles[k]);
+                        }
+                    }
+                } else {
+                    spectrumFiles.add(files[i]);
+                }
+            }
+            spectrumFilesTextField.setText(spectrumFiles.size() + " file(s) selected");
+            deNovoGUI.setSpectrumFiles(spectrumFiles);
+            //filename = spectraFiles.get(0).getName();
+            // TODO: Set back the progress bar..
+
+        }
+        //TODO: setButtonConfiguration();
+    }
+    
+    /**
+     * This method checks for the folder being the Pepnovo folder.
+     *
+     * @param file File with the Pepnovo folder
+     * @return boolean to show whether the Pepnovo folder is correct.
+     */
+    public boolean checkPepnovoFolder(File file) {
+        boolean result = false;
+        if (file.exists() && file.isDirectory()) {
+            String[] fileNames = file.list();
+            int count = 0;
+            for (int i = 0; i < fileNames.length; i++) {
+                String lFileName = fileNames[i];
+                if (lFileName.startsWith("PepNovo")) {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                result = true;
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * This method sets the button configuration.
+     */
+    public void setButtonConfiguration() {
+        if(checkForValidConfiguration()) {
+            startButton.setEnabled(true);
+            cancelButton.setEnabled(false);
+        } else {
+            startButton.setEnabled(false);
+            cancelButton.setEnabled(false);
+        }
+    }
+    
+     /**
+     * This method checks whether the start configuration is valid or not.
+     * @return Boolean if the start configuration is valid.
+     */
+    public boolean checkForValidConfiguration() {
+        boolean appFolderValid = checkPepnovoFolder(new File(pepNovoLocationTextField.getText()));
+        return (appFolderValid && deNovoGUI.getSpectrumFiles().size() > 0 && outputFolderTextField.getText().length() > 0);
     }
 }
