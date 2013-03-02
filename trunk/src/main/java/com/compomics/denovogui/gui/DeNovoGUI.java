@@ -24,6 +24,7 @@ import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdf
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import net.jimmc.jshortcut.JShellLink;
 
 /**
@@ -156,6 +158,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
             }
         }
 
+        // set the font color for the titlted borders, looks better than the default black
+        UIManager.put("TitledBorder.titleColor", new Color(59, 59, 59));
 
         initComponents();
 
@@ -347,11 +351,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 851, Short.MAX_VALUE)
+            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1103, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+            .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
         );
 
         pack();

@@ -16,7 +16,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="994" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="1158" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
@@ -54,15 +54,15 @@
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="pepNovoLocationPanel" alignment="0" max="32767" attributes="0"/>
-                      <Component id="loggingPanel1" alignment="0" max="32767" attributes="0"/>
+                      <Component id="loggingPanel" alignment="0" pref="725" max="32767" attributes="0"/>
                       <Component id="outputFolderPanel" alignment="0" max="32767" attributes="0"/>
                       <Component id="inputFilesPanel" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                      <Component id="modificationsPanel" alignment="0" max="32767" attributes="0"/>
-                      <Component id="searchSettingsPanel" alignment="0" max="32767" attributes="0"/>
-                      <Component id="deNovoProgressPanel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="modificationsPanel" max="32767" attributes="0"/>
+                      <Component id="searchSettingsPanel" alignment="1" max="32767" attributes="0"/>
+                      <Component id="deNovoProgressPanel" alignment="1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
@@ -73,21 +73,21 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="searchSettingsPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="modificationsPanel" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="deNovoProgressPanel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="inputFilesPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoLocationPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="outputFolderPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="loggingPanel1" pref="400" max="32767" attributes="0"/>
+                          <Component id="loggingPanel" pref="400" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -115,9 +115,9 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="spectrumFilesTextField" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="browseSpectrumFilesButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="browseSpectrumFilesButton" linkSize="2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="clearSpectrumFilesButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="clearSpectrumFilesButton" linkSize="2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -128,7 +128,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="spectrumFilesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumFilesTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Component id="spectrumFilesTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="browseSpectrumFilesButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="clearSpectrumFilesButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -144,9 +144,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="spectrumFilesTextField">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumFilesTextFieldActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="browseSpectrumFilesButton">
               <Properties>
@@ -196,7 +193,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="pepNovoLocationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="pepNovoLocationTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Component id="pepNovoLocationTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="popNovoLocationBrowseButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -211,9 +208,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="pepNovoLocationTextField">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoLocationTextFieldActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="popNovoLocationBrowseButton">
               <Properties>
@@ -255,7 +249,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="outputFolderLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="outputFolderTextField" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Component id="outputFolderTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="outputFolderBrowseButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -270,9 +264,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="outputFolderTextField">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFolderTextFieldActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="outputFolderBrowseButton">
               <Properties>
@@ -303,12 +294,12 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="enzymeLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="enzymeComboBox" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="enzymeComboBox" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="modelLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="modelComboBox" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="modelComboBox" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -319,16 +310,23 @@
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="numberOfSolutionsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="precursorMassToleranceSpinner" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="numberOfSolutionsSpinner" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="fragmentMassToleranceSpinner" alignment="1" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="numberOfSolutionsLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="precursorMassToleranceSpinner" linkSize="3" alignment="1" min="-2" pref="210" max="-2" attributes="0"/>
+                                  <Component id="fragmentMassToleranceSpinner" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
+                                  <Component id="numberOfSolutionsSpinner" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -354,10 +352,10 @@
                           <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -366,7 +364,7 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
@@ -389,9 +387,6 @@
                   </StringArray>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modelComboBoxActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="modelLabel">
               <Properties>
@@ -407,9 +402,6 @@
                   </StringArray>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enzymeComboBoxActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
               <Properties>
@@ -453,9 +445,6 @@
                 <Property name="iconTextGap" type="int" value="15"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumChargeCheckBoxActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="spectrumPrecursorCheckBox">
               <Properties>
@@ -463,9 +452,6 @@
                 <Property name="iconTextGap" type="int" value="15"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spectrumPrecursorCheckBoxActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="filterLowQualityCheckBox">
               <Properties>
@@ -473,9 +459,6 @@
                 <Property name="iconTextGap" type="int" value="15"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterLowQualityCheckBoxActionPerformed"/>
-              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -509,7 +492,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="modificationsTableScrollPane" pref="202" max="32767" attributes="0"/>
+                      <Component id="modificationsTableScrollPane" pref="0" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="configureModificationsButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -567,8 +550,8 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="progressLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="deNovoProgressBar" min="-2" pref="78" max="-2" attributes="0"/>
-                      <EmptySpace pref="9" max="32767" attributes="0"/>
+                      <Component id="deNovoProgressBar" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="startButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
@@ -617,7 +600,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="com.compomics.denovogui.gui.panels.LoggingPanel" name="loggingPanel1">
+        <Component class="com.compomics.denovogui.gui.panels.LoggingPanel" name="loggingPanel">
         </Component>
       </SubComponents>
     </Container>

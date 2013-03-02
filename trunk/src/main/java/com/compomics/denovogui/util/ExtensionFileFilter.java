@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.util;
 
 import java.io.File;
@@ -23,11 +19,11 @@ public class ExtensionFileFilter extends javax.swing.filechooser.FileFilter {
     private boolean caseSensitive = false;
 
     /**
-     * Constructor that takes the file extension to filter on, and whether filtering
-     * should be case sensitive.
+     * Constructor that takes the file extension to filter on, and whether
+     * filtering should be case sensitive.
      *
-     * @param aExtension     String with the extension. If not already prefixed with '.',
-     *                       the '.' will automatically be prefixed.
+     * @param aExtension String with the extension. If not already prefixed with
+     * '.', the '.' will automatically be prefixed.
      * @param aCaseSensitive boolean to indicate case sensitivity.
      */
     public ExtensionFileFilter(String aExtension, boolean aCaseSensitive) {
@@ -89,6 +85,7 @@ public class ExtensionFileFilter extends javax.swing.filechooser.FileFilter {
     /**
      * The description of this filter. For example: "JPG and GIF Images"
      *
+     * @return the description of this filter
      * @see javax.swing.filechooser.FileView#getName
      */
     public String getDescription() {
