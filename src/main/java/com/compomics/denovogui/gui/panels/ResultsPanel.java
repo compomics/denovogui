@@ -3,6 +3,18 @@ package com.compomics.denovogui.gui.panels;
 import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.util.experiment.identification.Identification;
+import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.advocates.SearchEngine;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.massspectrometry.Spectrum;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -15,6 +27,10 @@ public class ResultsPanel extends javax.swing.JPanel {
      * A references to the main frame.
      */
     private DeNovoGUI deNovoGUI;
+    /**
+     * The spectrum factory.
+     */
+    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
 
     /**
      * Creates a new ResultsPanel.
@@ -73,6 +89,11 @@ public class ResultsPanel extends javax.swing.JPanel {
         querySpectraPanel.setOpaque(false);
 
         querySpectraTable.setModel(new SpectrumTableModel());
+        querySpectraTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                querySpectraTableMouseReleased(evt);
+            }
+        });
         querySpectraTableScrollPane.setViewportView(querySpectraTable);
 
         javax.swing.GroupLayout querySpectraPanelLayout = new javax.swing.GroupLayout(querySpectraPanel);
@@ -154,6 +175,11 @@ public class ResultsPanel extends javax.swing.JPanel {
             .addComponent(debovoResultsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void querySpectraTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_querySpectraTableMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_querySpectraTableMouseReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel deNovoPeptidesPanel;
     private javax.swing.JTable deNovoPeptidesTable;
@@ -165,4 +191,60 @@ public class ResultsPanel extends javax.swing.JPanel {
     private javax.swing.JPanel spectrumPanel;
     private javax.swing.JPanel spectrumViewerPanel;
     // End of variables declaration//GEN-END:variables
+
+
+    /**
+     * Displays new results
+     */
+    public void diplayResults() {
+        TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile());
+        querySpectraTable.setModel(tableModel);
+        querySpectraTable.setRowSelectionInterval(0, 0);
+        //@TODO: update gui
+    }
+    
+    /**
+     * Returns the name of the spectrum file displayed
+     * @return the name of the spectrum file displayed
+     */
+    public String getSelectedSpectrumFile() {
+        //@TODO: allow the user to chose the file
+        return spectrumFactory.getMgfFileNames().get(0);
+    }
+    
+    /**
+     * Returns the title of the selected spectrum
+     * @return the title of the selected spectrum
+     */
+    public String getSelectedSpectrumTitle() {
+        int selectedRow = querySpectraTable.getSelectedRow();
+        int modelRow = querySpectraTable.convertRowIndexToModel(selectedRow);
+        return spectrumFactory.getSpectrumTitles(getSelectedSpectrumFile()).get(modelRow);
+    }
+
+    /**
+     * Updates the assumption table based on the selected line
+     */
+    public void updateAssumptionsTable() throws IllegalArgumentException, SQLException, IOException, ClassNotFoundException {
+        
+        ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
+        
+        Identification identification = deNovoGUI.getIdentification();
+        String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
+        
+        if (identification.matchExists(psmKey)) {
+        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+        HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+        Collections.sort(scores, Collections.reverseOrder());
+        for (Double score : scores) {
+            assumptions.addAll(assumptionsMap.get(score));
+        }
+        }
+        TableModel tableModel = new SpectrumMatchTableModel(assumptions);
+        deNovoPeptidesTable.setModel(tableModel);
+        deNovoPeptidesTable.setRowSelectionInterval(0, 0);
+        //@TODO: update gui
+    }
+
 }

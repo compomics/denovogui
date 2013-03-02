@@ -2,11 +2,13 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSearchHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
+import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.gui.panels.InputPanel;
 import com.compomics.denovogui.gui.panels.ResultsPanel;
 import com.compomics.denovogui.gui.panels.StatisticsPanel;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
@@ -447,10 +449,33 @@ public class DeNovoGUI extends javax.swing.JFrame {
     /**
      * Starts the search.
      */
-    private void startSearch() {
+    public void startSearch() {
         searchParameters = inputPanel.getSearchParametersFromGUI();
         searchHandler = new DeNovoSearchHandler(null);
-        searchHandler.startSearch(null, searchParameters, null);
+        searchHandler.startSearch(null, searchParameters, null, inputPanel);
+    }
+    
+    /**
+     * Loads the results of the given spectrum files and loads everything in the identification.
+     * 
+     * @param outputFolder the folder where the identification files are located
+     * @param spectrumFiles the spectrum files searched
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws Exception 
+     */
+    public void displayResults(File outputFolder, ArrayList<File> spectrumFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+        ArrayList<File> outputFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
+            outputFiles.add(resultFile);
+        }
+        importPepnovoResults(outputFiles);
+        resultsPanel.diplayResults();
+        //@TODO: select the result pane
     }
 
     /**
@@ -488,7 +513,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      *
      * @param outFiles the pepnovo result files as a list
      */
-    private void importPepnovoResults(ArrayList<String> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    private void importPepnovoResults(ArrayList<File> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
         //@TODO: let the user reference his project
         String projectReference = "project reference";
         String sampleReference = "sample reference";
@@ -509,9 +534,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
         objectsCache.setAutomatedMemoryManagement(true);
         identification.establishConnection(dbFolder, true, objectsCache);
 
-        for (String fileAsString : outFiles) {
+        for (File file : outFiles) {
             // initiate the parser
-            File file = new File(fileAsString);
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(file);
             // put the identification results in the identification object
             identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
@@ -525,115 +549,6 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     protected String getJarFilePath() {
         return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
-    }
-
-    /**
-     * Table model for the modifications table.
-     */
-    private class ModificationsTableModel extends DefaultTableModel {
-
-        /**
-         * List of all modifications
-         */
-        private ArrayList<String> modifications = null;
-        /**
-         * Map of the fixed modifications
-         */
-        private HashMap<String, Boolean> fixedModifications;
-        /**
-         * Map of the variable modifications
-         */
-        private HashMap<String, Boolean> variableModifications;
-
-        /**
-         * Constructor
-         */
-        public ModificationsTableModel() {
-            modifications = ptmFactory.getPTMs();
-            Collections.sort(modifications);
-            fixedModifications = new HashMap<String, Boolean>();
-            variableModifications = new HashMap<String, Boolean>();
-            for (String modificationName : modifications) {
-                fixedModifications.put(modificationName, false);
-                variableModifications.put(modificationName, false);
-            }
-        }
-
-        @Override
-        public int getRowCount() {
-            if (modifications == null) {
-                return 0;
-            }
-            return modifications.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch (column) {
-                case 0:
-                    return "Fixed";
-                case 1:
-                    return "Variable";
-                case 2:
-                    return " ";
-                default:
-                    return "";
-            }
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            String modificationName = modifications.get(row);
-            switch (column) {
-                case 0:
-                    return fixedModifications.get(modificationName);
-                case 1:
-                    return variableModifications.get(modificationName);
-                case 2:
-                    return modificationName;
-                default:
-                    return "";
-            }
-        }
-
-        @Override
-        public Class getColumnClass(int columnIndex) {
-            for (int i = 0; i < getRowCount(); i++) {
-                if (getValueAt(i, columnIndex) != null) {
-                    return getValueAt(i, columnIndex).getClass();
-                }
-            }
-            return String.class;
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex == 0 || columnIndex == 1;
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (columnIndex == 0) {
-                String modificationName = modifications.get(rowIndex);
-                Boolean value = (Boolean) aValue;
-                fixedModifications.put(modificationName, value);
-                if (value) {
-                    variableModifications.put(modificationName, false);
-                }
-            } else if (columnIndex == 0) {
-                String modificationName = modifications.get(rowIndex);
-                Boolean value = (Boolean) aValue;
-                variableModifications.put(modificationName, value);
-                if (value) {
-                    fixedModifications.put(modificationName, false);
-                }
-            }
-        }
     }
     
     /**
@@ -687,6 +602,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
         this.lastSelectedFolder = lastSelectedFolder;
     }
 
+    /**
+     * Returns the identification containing all results
+     * @return the identification
+     */
+    public Identification getIdentification() {
+        return identification;
+    }
+    
     /**
      * Retrieves the version number set in the pom file.
      *
