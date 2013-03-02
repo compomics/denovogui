@@ -34,7 +34,7 @@ public class ResultsPanel extends javax.swing.JPanel {
 
     /**
      * Creates a new ResultsPanel.
-     * 
+     *
      * @param deNovoGUI a references to the main frame
      */
     public ResultsPanel(DeNovoGUI deNovoGUI) {
@@ -179,7 +179,6 @@ public class ResultsPanel extends javax.swing.JPanel {
     private void querySpectraTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_querySpectraTableMouseReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_querySpectraTableMouseReleased
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel deNovoPeptidesPanel;
     private javax.swing.JTable deNovoPeptidesTable;
@@ -192,9 +191,8 @@ public class ResultsPanel extends javax.swing.JPanel {
     private javax.swing.JPanel spectrumViewerPanel;
     // End of variables declaration//GEN-END:variables
 
-
     /**
-     * Displays new results
+     * Displays new results.
      */
     public void diplayResults() {
         TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile());
@@ -202,18 +200,20 @@ public class ResultsPanel extends javax.swing.JPanel {
         querySpectraTable.setRowSelectionInterval(0, 0);
         //@TODO: update gui
     }
-    
+
     /**
-     * Returns the name of the spectrum file displayed
+     * Returns the name of the spectrum file displayed.
+     *
      * @return the name of the spectrum file displayed
      */
     public String getSelectedSpectrumFile() {
         //@TODO: allow the user to chose the file
         return spectrumFactory.getMgfFileNames().get(0);
     }
-    
+
     /**
-     * Returns the title of the selected spectrum
+     * Returns the title of the selected spectrum.
+     *
      * @return the title of the selected spectrum
      */
     public String getSelectedSpectrumTitle() {
@@ -223,28 +223,32 @@ public class ResultsPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Updates the assumption table based on the selected line
+     * Updates the assumption table based on the selected line.
+     * 
+     * @throws IllegalArgumentException
+     * @throws SQLException 
+     * @throws IOException
+     * @throws ClassNotFoundException  
      */
     public void updateAssumptionsTable() throws IllegalArgumentException, SQLException, IOException, ClassNotFoundException {
-        
+
         ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
-        
+
         Identification identification = deNovoGUI.getIdentification();
         String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
-        
+
         if (identification.matchExists(psmKey)) {
-        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-        HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
-        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-        Collections.sort(scores, Collections.reverseOrder());
-        for (Double score : scores) {
-            assumptions.addAll(assumptionsMap.get(score));
-        }
+            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+            HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+            Collections.sort(scores, Collections.reverseOrder());
+            for (Double score : scores) {
+                assumptions.addAll(assumptionsMap.get(score));
+            }
         }
         TableModel tableModel = new SpectrumMatchTableModel(assumptions);
         deNovoPeptidesTable.setModel(tableModel);
         deNovoPeptidesTable.setRowSelectionInterval(0, 0);
         //@TODO: update gui
     }
-
 }

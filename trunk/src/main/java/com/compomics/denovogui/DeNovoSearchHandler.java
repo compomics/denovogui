@@ -34,6 +34,7 @@ public class DeNovoSearchHandler {
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
+     * @param waitingHandler the waiting handler 
      */
     public void startSearch(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 

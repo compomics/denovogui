@@ -1,8 +1,6 @@
 package com.compomics.denovogui.execution;
 
 import com.compomics.util.gui.waiting.WaitingHandler;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

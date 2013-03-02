@@ -34,11 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 import net.jimmc.jshortcut.JShellLink;
 
 /**
@@ -150,7 +147,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
         initComponents();
 
         setUpGUI();
-        
+
         // set the title
         this.setTitle("DeNovoGUI " + getVersion());
 
@@ -454,10 +451,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
         searchHandler = new DeNovoSearchHandler(null);
         searchHandler.startSearch(null, searchParameters, null, inputPanel);
     }
-    
+
     /**
-     * Loads the results of the given spectrum files and loads everything in the identification.
-     * 
+     * Loads the results of the given spectrum files and loads everything in the
+     * identification.
+     *
      * @param outputFolder the folder where the identification files are located
      * @param spectrumFiles the spectrum files searched
      * @throws SQLException
@@ -465,7 +463,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @throws IOException
      * @throws IllegalArgumentException
      * @throws ClassNotFoundException
-     * @throws Exception 
+     * @throws Exception
      */
     public void displayResults(File outputFolder, ArrayList<File> spectrumFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
         ArrayList<File> outputFiles = new ArrayList<File>();
@@ -550,7 +548,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
     protected String getJarFilePath() {
         return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
     }
-    
+
     /**
      * Ask the user if he/she wants to add a shortcut at the desktop.
      */
@@ -583,7 +581,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
             }
         }
     }
-    
+
     /**
      * Returns the last selected folder.
      *
@@ -603,13 +601,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }
 
     /**
-     * Returns the identification containing all results
+     * Returns the identification containing all results.
+     *
      * @return the identification
      */
     public Identification getIdentification() {
         return identification;
     }
-    
+
     /**
      * Retrieves the version number set in the pom file.
      *
