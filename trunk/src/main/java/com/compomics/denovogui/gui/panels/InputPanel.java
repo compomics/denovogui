@@ -6,14 +6,21 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.preferences.ModificationProfile;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import javax.swing.JEditorPane;
+import javax.swing.JProgressBar;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class InputPanel extends javax.swing.JPanel {
+public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
     /**
      * The compomics enzyme factory.
@@ -27,6 +34,10 @@ public class InputPanel extends javax.swing.JPanel {
      * A references to the main frame.
      */
     private DeNovoGUI deNovoGUI;
+    /**
+     * indicates whether the run was canceled
+     */
+    private boolean runCanceled = false;
 
     /**
      * Creates a new InputPanel.
@@ -366,14 +377,7 @@ public class InputPanel extends javax.swing.JPanel {
         modificationsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifications"));
         modificationsPanel.setOpaque(false);
 
-        modificationsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
+        modificationsTable.setModel(new ModificationsTableModel());
         modificationsTableScrollPane.setViewportView(modificationsTable);
 
         configureModificationsButton.setText("Configure");
@@ -570,11 +574,12 @@ public class InputPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_configureModificationsButtonActionPerformed
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        // TODO add your handling code here:
+        runCanceled = false;
+        deNovoGUI.startSearch();
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        // TODO add your handling code here:
+        setRunCanceled();
     }//GEN-LAST:event_cancelButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseSpectrumFilesButton;
@@ -664,5 +669,225 @@ public class InputPanel extends javax.swing.JPanel {
             }
         }
         return searchParameters;
+    }
+
+    @Override
+    public void setIndeterminate(boolean indeterminate) {
+        deNovoProgressBar.setIndeterminate(indeterminate);
+    }
+
+    @Override
+    public void setMaxProgressValue(int maxProgressValue) {
+        deNovoProgressBar.setMaximum(maxProgressValue);
+    }
+
+    @Override
+    public void increaseProgressValue() {
+        increaseProgressValue(1);
+    }
+
+    @Override
+    public void increaseProgressValue(int increment) {
+        deNovoProgressBar.setValue(deNovoProgressBar.getValue() + increment);
+    }
+
+    @Override
+    public void setMaxSecondaryProgressValue(int maxProgressValue) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void resetSecondaryProgressBar() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void increaseSecondaryProgressValue() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setSecondaryProgressValue(int value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void increaseSecondaryProgressValue(int amount) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setSecondaryProgressDialogIndeterminate(boolean indeterminate) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setRunFinished() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setRunCanceled() {
+        runCanceled = true;
+    }
+
+    @Override
+    public void appendReport(String report, boolean includeDate, boolean addNewLine) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void appendReportNewLineNoDate() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void appendReportEndLine() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isRunCanceled() {
+        return runCanceled;
+    }
+
+    @Override
+    public boolean isRunFinished() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public JProgressBar getSecondaryProgressBar() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public JProgressBar getPrimaryProgressBar() {
+        return deNovoProgressBar;
+    }
+
+    @Override
+    public void displayMessage(String message, String title, int messageType) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void displayHtmlMessage(JEditorPane messagePane, String title, int messageType) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setWaitingText(String text) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+
+    /**
+     * Table model for the modifications table.
+     */
+    private class ModificationsTableModel extends DefaultTableModel {
+
+        /**
+         * List of all modifications
+         */
+        private ArrayList<String> modifications = null;
+        /**
+         * Map of the fixed modifications
+         */
+        private HashMap<String, Boolean> fixedModifications;
+        /**
+         * Map of the variable modifications
+         */
+        private HashMap<String, Boolean> variableModifications;
+
+        /**
+         * Constructor
+         */
+        public ModificationsTableModel() {
+            modifications = ptmFactory.getPTMs();
+            Collections.sort(modifications);
+            fixedModifications = new HashMap<String, Boolean>();
+            variableModifications = new HashMap<String, Boolean>();
+            for (String modificationName : modifications) {
+                fixedModifications.put(modificationName, false);
+                variableModifications.put(modificationName, false);
+            }
+        }
+
+        @Override
+        public int getRowCount() {
+            if (modifications == null) {
+                return 0;
+            }
+            return modifications.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            switch (column) {
+                case 0:
+                    return "Fixed";
+                case 1:
+                    return "Variable";
+                case 2:
+                    return " ";
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            String modificationName = modifications.get(row);
+            switch (column) {
+                case 0:
+                    return fixedModifications.get(modificationName);
+                case 1:
+                    return variableModifications.get(modificationName);
+                case 2:
+                    return modificationName;
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public Class getColumnClass(int columnIndex) {
+            for (int i = 0; i < getRowCount(); i++) {
+                if (getValueAt(i, columnIndex) != null) {
+                    return getValueAt(i, columnIndex).getClass();
+                }
+            }
+            return String.class;
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0 || columnIndex == 1;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            if (columnIndex == 0) {
+                String modificationName = modifications.get(rowIndex);
+                Boolean value = (Boolean) aValue;
+                fixedModifications.put(modificationName, value);
+                if (value) {
+                    variableModifications.put(modificationName, false);
+                }
+            } else if (columnIndex == 0) {
+                String modificationName = modifications.get(rowIndex);
+                Boolean value = (Boolean) aValue;
+                variableModifications.put(modificationName, value);
+                if (value) {
+                    fixedModifications.put(modificationName, false);
+                }
+            }
+        }
     }
 }

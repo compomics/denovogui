@@ -2,6 +2,7 @@ package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -34,11 +35,11 @@ public class DeNovoSearchHandler {
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
      */
-    public void startSearch(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder) {
+    public void startSearch(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : spectrumFiles) {
-            PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters);
+            PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
             job.execute();
         }
     }

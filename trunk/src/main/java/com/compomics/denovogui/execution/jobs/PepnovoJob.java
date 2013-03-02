@@ -4,6 +4,7 @@ import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
 
 /**
@@ -42,12 +43,14 @@ public class PepnovoJob extends Job {
      * @param mgfFile The spectrum MGF file.
      * @param outputFolder The output folder.
      * @param searchParameters The search parameters.
+     * @param waitingHandler the waiting handler
      */
-    public PepnovoJob(File pepNovoFolder, File mgfFile, File outputFolder, SearchParameters searchParameters) {
+    public PepnovoJob(File pepNovoFolder, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
         this.pepNovoFolder = pepNovoFolder;
         this.spectrumFile = mgfFile;
         this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
+        this.waitingHandler = waitingHandler;
         initJob();
     }
 

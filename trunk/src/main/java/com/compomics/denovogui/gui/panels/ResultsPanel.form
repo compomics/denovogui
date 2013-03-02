@@ -153,6 +153,9 @@
                       <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="querySpectraTableMouseReleased"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

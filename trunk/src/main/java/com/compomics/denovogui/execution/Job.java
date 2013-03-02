@@ -1,5 +1,6 @@
 package com.compomics.denovogui.execution;
 
+import com.compomics.util.gui.waiting.WaitingHandler;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedWriter;
@@ -58,9 +59,10 @@ public abstract class Job implements Executable {
      * Init the job logger.
      */
     protected static Logger log = Logger.getLogger(Job.class);
-    protected int progress = 0;
-    protected PropertyChangeSupport pSupport = new PropertyChangeSupport(this);
-    private int oldProgress;
+    /**
+     * Waiting handler displaying feedback to the user
+     */
+    protected WaitingHandler waitingHandler;
 
     /**
      * Executes a job.
@@ -96,9 +98,7 @@ public abstract class Job implements Executable {
                 }
 
                 if (temp.startsWith(">>") || temp.startsWith("#Processed spectra")) {
-                    oldProgress = progress;
-                    progress++;
-                    pSupport.firePropertyChange("progress", progress, oldProgress);
+                    waitingHandler.increaseProgressValue();
                 }
                 log.info(temp);
             }
@@ -191,22 +191,6 @@ public abstract class Job implements Executable {
      */
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    /**
-     * @return the progress
-     */
-    public int getProgress() {
-        return progress;
-    }
-
-    /**
-     * Adds the property change listener.
-     *
-     * @param l
-     */
-    public void addPropertyChangeListener(PropertyChangeListener l) {
-        pSupport.addPropertyChangeListener(l);
     }
 
     /**
