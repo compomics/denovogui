@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import net.jimmc.jshortcut.JShellLink;
 
@@ -105,7 +106,19 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * The last folder opened by the user. Defaults to user.home.
      */
     private String lastSelectedFolder = "user.home";
-
+    /**
+     * The selected output folder for the de novo search.
+     */
+    private File outputFolder;
+    /**
+     * The selected PepNovo folder.
+     */
+    private File pepNovoFolder;
+    /**
+     * Spectra files list.
+     */
+    private List<File> spectrumFiles = new ArrayList<File>();
+    
     /**
      * Creates new form DeNovoGUI
      */
@@ -448,8 +461,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     public void startSearch() {
         searchParameters = inputPanel.getSearchParametersFromGUI();
-        searchHandler = new DeNovoSearchHandler(null);
-        searchHandler.startSearch(null, searchParameters, null, inputPanel);
+        searchHandler = new DeNovoSearchHandler(pepNovoFolder);
+        searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, inputPanel);
     }
 
     /**
@@ -599,7 +612,23 @@ public class DeNovoGUI extends javax.swing.JFrame {
     public void setLastSelectedFolder(String lastSelectedFolder) {
         this.lastSelectedFolder = lastSelectedFolder;
     }
-
+    
+    /**
+     * Sets the output folder.
+     * @param outputFolder Output folder.
+     */
+    public void setOutputFolder(File outputFolder) {
+        this.outputFolder = outputFolder;
+    }
+    
+    /**
+     * Sets the PepNovo folder.
+     * @param pepNovoFolder PepNovo folder.
+     */
+    public void setPepNovoFolder(File pepNovoFolder) {
+        this.pepNovoFolder = pepNovoFolder;
+    }
+    
     /**
      * Returns the identification containing all results.
      *
@@ -609,6 +638,22 @@ public class DeNovoGUI extends javax.swing.JFrame {
         return identification;
     }
 
+    /**
+     * Returns the selected spectrum files.
+     * @return The selected spectrum files.
+     */
+    public List<File> getSpectrumFiles() {
+        return spectrumFiles;
+    }
+
+    /**
+     * Sets the selected spectrum file.
+     * @param spectrumFiles Spectrum files.
+     */
+    public void setSpectrumFiles(List<File> spectrumFiles) {
+        this.spectrumFiles = spectrumFiles;
+    }
+    
     /**
      * Retrieves the version number set in the pom file.
      *

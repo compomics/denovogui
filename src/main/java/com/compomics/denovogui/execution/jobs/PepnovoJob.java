@@ -3,6 +3,7 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
+import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
@@ -73,7 +74,8 @@ public class PepnovoJob extends Job {
         // Add modifications
         procCommands.add("-PTMs");
         //@TODO implement fixed modifications
-        procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications())); //params.getMods());
+        procCommands.add("C+57");
+        //procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications())); //params.getMods());
 
         // Add fragment tolerance
         procCommands.add("-fragment_tolerance");
@@ -112,7 +114,7 @@ public class PepnovoJob extends Job {
         // Add output path
         outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
         procCommands.trimToSize();
-
+        
         // Set the description - yet not used
         setDescription("PEPNOVO");
         procBuilder = new ProcessBuilder(procCommands);

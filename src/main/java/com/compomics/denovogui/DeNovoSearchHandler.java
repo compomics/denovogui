@@ -4,13 +4,14 @@ import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This handle the searches with the search parameters taken from the GUI or the
  * command line.
  *
  * @author Marc Vaudel
+ * @author Thilo Muth
  */
 public class DeNovoSearchHandler {
 
@@ -36,7 +37,7 @@ public class DeNovoSearchHandler {
      * @param outputFolder the output folder
      * @param waitingHandler the waiting handler 
      */
-    public void startSearch(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
+    public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : spectrumFiles) {
