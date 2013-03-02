@@ -35,7 +35,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
      */
     private DeNovoGUI deNovoGUI;
     /**
-     * indicates whether the run was canceled
+     * Indicates whether the run was canceled.
      */
     private boolean runCanceled = false;
 
