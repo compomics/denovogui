@@ -19,7 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
 
 /**
  *
@@ -53,6 +53,20 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     public InputPanel(DeNovoGUI deNovoGUI) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
+        setUpGUI();
+    }
+
+    /**
+     * Set up the GUI.
+     */
+    private void setUpGUI() {
+        modificationsTable.getColumn("Fixed").setCellRenderer(new NimbusCheckBoxRenderer());
+        modificationsTable.getColumn("Variable").setCellRenderer(new NimbusCheckBoxRenderer());
+
+        // make sure that the scroll panes are see-through
+        modificationsTableScrollPane.getViewport().setOpaque(false);
+
+        modificationsTable.getTableHeader().setReorderingAllowed(false);
     }
 
     /**
@@ -101,7 +115,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         deNovoProgressBar = new javax.swing.JProgressBar();
         startButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        loggingPanel1 = new com.compomics.denovogui.gui.panels.LoggingPanel();
+        loggingPanel = new com.compomics.denovogui.gui.panels.LoggingPanel();
 
         deNovoSearchPanel.setBackground(new java.awt.Color(230, 230, 230));
 
@@ -109,12 +123,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         inputFilesPanel.setOpaque(false);
 
         spectrumFilesLabel.setText("Spectrum File(s)");
-
-        spectrumFilesTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spectrumFilesTextFieldActionPerformed(evt);
-            }
-        });
 
         browseSpectrumFilesButton.setText("Browse");
         browseSpectrumFilesButton.addActionListener(new java.awt.event.ActionListener() {
@@ -145,13 +153,16 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addComponent(clearSpectrumFilesButton)
                 .addContainerGap())
         );
+
+        inputFilesPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {browseSpectrumFilesButton, clearSpectrumFilesButton});
+
         inputFilesPanelLayout.setVerticalGroup(
             inputFilesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(inputFilesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(inputFilesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(spectrumFilesLabel)
-                    .addComponent(spectrumFilesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spectrumFilesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(browseSpectrumFilesButton)
                     .addComponent(clearSpectrumFilesButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -161,12 +172,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         pepNovoLocationPanel.setOpaque(false);
 
         pepNovoLocationLabel.setText("PepNovo Location");
-
-        pepNovoLocationTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pepNovoLocationTextFieldActionPerformed(evt);
-            }
-        });
 
         popNovoLocationBrowseButton.setText("Browse");
         popNovoLocationBrowseButton.addActionListener(new java.awt.event.ActionListener() {
@@ -194,7 +199,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addContainerGap()
                 .addGroup(pepNovoLocationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(pepNovoLocationLabel)
-                    .addComponent(pepNovoLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pepNovoLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(popNovoLocationBrowseButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -203,12 +208,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         outputFolderPanel.setOpaque(false);
 
         outputFolderLabel.setText("Output Location");
-
-        outputFolderTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                outputFolderTextFieldActionPerformed(evt);
-            }
-        });
 
         outputFolderBrowseButton.setText("Browse");
         outputFolderBrowseButton.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +235,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addContainerGap()
                 .addGroup(outputFolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(outputFolderLabel)
-                    .addComponent(outputFolderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(outputFolderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(outputFolderBrowseButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -247,20 +246,10 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         enzymeLabel.setText("Enzyme");
 
         modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
-        modelComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modelComboBoxActionPerformed(evt);
-            }
-        });
 
         modelLabel.setText("Model");
 
         enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
-        enzymeComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enzymeComboBoxActionPerformed(evt);
-            }
-        });
 
         fragmentMassToleranceLabel.setText("Fragment Mass Tolerance");
 
@@ -277,29 +266,14 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         spectrumChargeCheckBox.setText("Use Spectrum Charge (No Correction)");
         spectrumChargeCheckBox.setIconTextGap(15);
         spectrumChargeCheckBox.setOpaque(false);
-        spectrumChargeCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spectrumChargeCheckBoxActionPerformed(evt);
-            }
-        });
 
         spectrumPrecursorCheckBox.setText("Use Spectrum Precursor m/z (No Correction)");
         spectrumPrecursorCheckBox.setIconTextGap(15);
         spectrumPrecursorCheckBox.setOpaque(false);
-        spectrumPrecursorCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spectrumPrecursorCheckBoxActionPerformed(evt);
-            }
-        });
 
         filterLowQualityCheckBox.setText("Filter Low Quality Spectra");
         filterLowQualityCheckBox.setIconTextGap(15);
         filterLowQualityCheckBox.setOpaque(false);
-        filterLowQualityCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filterLowQualityCheckBoxActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout searchSettingsPanelLayout = new javax.swing.GroupLayout(searchSettingsPanel);
         searchSettingsPanel.setLayout(searchSettingsPanelLayout);
@@ -323,17 +297,24 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                             .addComponent(spectrumChargeCheckBox))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fragmentMassToleranceLabel)
-                            .addComponent(precursorMassToleranceLabel)
-                            .addComponent(numberOfSolutionsLabel))
-                        .addGap(18, 18, 18)
                         .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(precursorMassToleranceSpinner)
-                            .addComponent(numberOfSolutionsSpinner)
-                            .addComponent(fragmentMassToleranceSpinner))))
+                            .addGroup(searchSettingsPanelLayout.createSequentialGroup()
+                                .addComponent(numberOfSolutionsLabel)
+                                .addGap(52, 52, 52))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, searchSettingsPanelLayout.createSequentialGroup()
+                                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(precursorMassToleranceLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(fragmentMassToleranceLabel, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
+
+        searchSettingsPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {enzymeComboBox, fragmentMassToleranceSpinner, modelComboBox, numberOfSolutionsSpinner, precursorMassToleranceSpinner});
+
         searchSettingsPanelLayout.setVerticalGroup(
             searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchSettingsPanelLayout.createSequentialGroup()
@@ -349,17 +330,17 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fragmentMassToleranceLabel)
                     .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(precursorMassToleranceLabel)
-                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(precursorMassToleranceLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(numberOfSolutionsLabel)
                     .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(spectrumChargeCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(spectrumPrecursorCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filterLowQualityCheckBox)
@@ -396,7 +377,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             modificationsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(modificationsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(configureModificationsButton)
                 .addContainerGap())
@@ -429,8 +410,8 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addContainerGap()
                 .addComponent(progressLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(deNovoProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(deNovoProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(startButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cancelButton)
@@ -459,14 +440,14 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 .addContainerGap()
                 .addGroup(deNovoSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pepNovoLocationPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(loggingPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(loggingPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
                     .addComponent(outputFolderPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(inputFilesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(deNovoSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(modificationsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(searchSettingsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deNovoProgressPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(deNovoSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(modificationsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchSettingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deNovoProgressPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         deNovoSearchPanelLayout.setVerticalGroup(
@@ -487,7 +468,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(outputFolderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(loggingPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(loggingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -495,7 +476,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 994, Short.MAX_VALUE)
+            .addGap(0, 1158, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -513,14 +494,55 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void spectrumFilesTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumFilesTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_spectrumFilesTextFieldActionPerformed
-
+    /**
+     * This method is called when the Browse button for the input files is
+     * pressed.
+     *
+     * @param evt
+     */
     private void browseSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSpectrumFilesButtonActionPerformed
-        browseSpectraFolder();
+        // First check whether a file has already been selected.
+        // If so, start from that file's parent.
+
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        List<File> spectrumFiles = deNovoGUI.getSpectrumFiles();
+        if (spectrumFiles.size() > 0) {
+            File temp = spectrumFiles.get(0);
+            startLocation = temp.getParentFile();
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fc.setMultiSelectionEnabled(true);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File[] files = fc.getSelectedFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    File[] currentFiles = files[i].listFiles();
+                    for (int k = 0; k < currentFiles.length; k++) {
+                        if (fc.getFileFilter().accept(currentFiles[k])) {
+                            spectrumFiles.add(currentFiles[k]);
+                        }
+                    }
+                } else {
+                    spectrumFiles.add(files[i]);
+                }
+            }
+            spectrumFilesTextField.setText(spectrumFiles.size() + " file(s) selected");
+            deNovoGUI.setSpectrumFiles(spectrumFiles);
+            //filename = spectraFiles.get(0).getName();
+            // TODO: Set back the progress bar..
+
+        }
+        //TODO: setButtonConfiguration();
     }//GEN-LAST:event_browseSpectrumFilesButtonActionPerformed
 
+    /**
+     * Clear the spectrum files selection.
+     *
+     * @param evt
+     */
     private void clearSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectrumFilesButtonActionPerformed
         deNovoGUI.setSpectrumFiles(new ArrayList<File>());
         spectrumFilesTextField.setText(deNovoGUI.getSpectrumFiles().size() + " file(s) selected");
@@ -528,51 +550,63 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         cancelButton.setEnabled(false);
     }//GEN-LAST:event_clearSpectrumFilesButtonActionPerformed
 
-    private void pepNovoLocationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoLocationTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pepNovoLocationTextFieldActionPerformed
-
+    /**
+     * Opens the file chooser to select the PopNovo installation.
+     *
+     * @param evt
+     */
     private void popNovoLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popNovoLocationBrowseButtonActionPerformed
         browsePepnovoFolder();
     }//GEN-LAST:event_popNovoLocationBrowseButtonActionPerformed
 
-    private void outputFolderTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_outputFolderTextFieldActionPerformed
-
+    /**
+     * Opens the file chooser to select the output folder.
+     *
+     * @param evt
+     */
     private void outputFolderBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderBrowseButtonActionPerformed
-        browseOutputFolder();
+        // TODO: Setup default start location here!
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
+            File temp = new File(outputFolderTextField.getText());
+            if (temp.isDirectory()) {
+                startLocation = temp;
+            } else {
+                startLocation = temp.getParentFile();
+            }
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File outputFolder;
+            outputFolder = fc.getSelectedFile();
+            outputFolderTextField.setText(outputFolder.getAbsolutePath());
+            deNovoGUI.setLastSelectedFolder(outputFolder.getAbsolutePath());
+            deNovoGUI.setOutputFolder(outputFolder);
+        }
     }//GEN-LAST:event_outputFolderBrowseButtonActionPerformed
-
-    private void modelComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modelComboBoxActionPerformed
-
-    private void enzymeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enzymeComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enzymeComboBoxActionPerformed
-
-    private void spectrumChargeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumChargeCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_spectrumChargeCheckBoxActionPerformed
-
-    private void spectrumPrecursorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumPrecursorCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_spectrumPrecursorCheckBoxActionPerformed
-
-    private void filterLowQualityCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterLowQualityCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_filterLowQualityCheckBoxActionPerformed
 
     private void configureModificationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureModificationsButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_configureModificationsButtonActionPerformed
 
+    /**
+     * Start the search.
+     *
+     * @param evt
+     */
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         runCanceled = false;
         deNovoGUI.startSearch();
     }//GEN-LAST:event_startButtonActionPerformed
 
+    /**
+     * Cancel the search.
+     *
+     * @param evt
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         setRunCanceled();
     }//GEN-LAST:event_cancelButtonActionPerformed
@@ -590,7 +624,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     private javax.swing.JLabel fragmentMassToleranceLabel;
     private javax.swing.JSpinner fragmentMassToleranceSpinner;
     private javax.swing.JPanel inputFilesPanel;
-    private com.compomics.denovogui.gui.panels.LoggingPanel loggingPanel1;
+    private com.compomics.denovogui.gui.panels.LoggingPanel loggingPanel;
     private javax.swing.JComboBox modelComboBox;
     private javax.swing.JLabel modelLabel;
     private javax.swing.JPanel modificationsPanel;
@@ -618,7 +652,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Returns the search parameters as set in the GUI
+     * Returns the search parameters as set in the GUI.
      *
      * @return the search parameters as set in the GUI
      */
@@ -626,7 +660,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         SearchParameters searchParameters = new SearchParameters();
 
         // @TODO: implement other enzymes
-        Enzyme enzyme = null;
+        Enzyme enzyme;
         if (enzymeComboBox.getSelectedIndex() == 0) {
             enzyme = enzymeFactory.getEnzyme("Trypsin");
         } else {
@@ -650,12 +684,12 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         searchParameters.setDiscardLowQualitySpectra(filterLowQualitySpectra);
         ModificationProfile modificationProfile = searchParameters.getModificationProfile();
         for (int row = 0; row < modificationsTable.getRowCount(); row++) {
-            if ((Boolean) modificationsTable.getValueAt(row, 0)) {
-                String modName = (String) modificationsTable.getValueAt(row, 2);
+            if ((Boolean) modificationsTable.getValueAt(row, 1)) {
+                String modName = (String) modificationsTable.getValueAt(row, 0);
                 PTM ptm = ptmFactory.getPTM(modName);
                 modificationProfile.addFixedModification(ptm);
-            } else if ((Boolean) modificationsTable.getValueAt(row, 0)) {
-                String modName = (String) modificationsTable.getValueAt(row, 2);
+            } else if ((Boolean) modificationsTable.getValueAt(row, 2)) {
+                String modName = (String) modificationsTable.getValueAt(row, 0);
                 PTM ptm = ptmFactory.getPTM(modName);
                 modificationProfile.addVariableModification(ptm);
             }
@@ -766,7 +800,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
     @Override
     public void displayMessage(String message, String title, int messageType) {
-        loggingPanel1.append(message);
+        loggingPanel.append(message);
     }
 
     @Override
@@ -828,11 +862,11 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
         public String getColumnName(int column) {
             switch (column) {
                 case 0:
-                    return "Fixed";
-                case 1:
-                    return "Variable";
-                case 2:
                     return " ";
+                case 1:
+                    return "Fixed";
+                case 2:
+                    return "Variable";
                 default:
                     return "";
             }
@@ -843,11 +877,11 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
             String modificationName = modifications.get(row);
             switch (column) {
                 case 0:
-                    return fixedModifications.get(modificationName);
-                case 1:
-                    return variableModifications.get(modificationName);
-                case 2:
                     return modificationName;
+                case 1:
+                    return fixedModifications.get(modificationName);
+                case 2:
+                    return variableModifications.get(modificationName);
                 default:
                     return "";
             }
@@ -865,19 +899,19 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex == 0 || columnIndex == 1;
+            return columnIndex == 1 || columnIndex == 2;
         }
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (columnIndex == 0) {
+            if (columnIndex == 1) {
                 String modificationName = modifications.get(rowIndex);
                 Boolean value = (Boolean) aValue;
                 fixedModifications.put(modificationName, value);
                 if (value) {
                     variableModifications.put(modificationName, false);
                 }
-            } else if (columnIndex == 0) {
+            } else if (columnIndex == 2) {
                 String modificationName = modifications.get(rowIndex);
                 Boolean value = (Boolean) aValue;
                 variableModifications.put(modificationName, value);
@@ -885,33 +919,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                     fixedModifications.put(modificationName, false);
                 }
             }
-        }
-    }
-
-    /**
-     * This method is called when choosing which results folder to use.
-     */
-    private void browseOutputFolder() {
-        // TODO: Setup default start location here!
-        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
-        if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
-            File temp = new File(outputFolderTextField.getText());
-            if (temp.isDirectory()) {
-                startLocation = temp;
-            } else {
-                startLocation = temp.getParentFile();
-            }
-        }
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setMultiSelectionEnabled(false);
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File outputFolder;
-            outputFolder = fc.getSelectedFile();
-            outputFolderTextField.setText(outputFolder.getAbsolutePath());
-            deNovoGUI.setLastSelectedFolder(outputFolder.getAbsolutePath());
-            deNovoGUI.setOutputFolder(outputFolder);
         }
     }
 
@@ -942,48 +949,6 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
                 browsePepnovoFolder();
             }
         }
-    }
-
-    /**
-     * This method is called when the Browse button for the input files is
-     * pressed.
-     */
-    public void browseSpectraFolder() {
-        // First check whether a file has already been selected.
-        // If so, start from that file's parent.
-
-        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
-        List<File> spectrumFiles = deNovoGUI.getSpectrumFiles();
-        if (spectrumFiles.size() > 0) {
-            File temp = spectrumFiles.get(0);
-            startLocation = temp.getParentFile();
-        }
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
-        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        fc.setMultiSelectionEnabled(true);
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File[] files = fc.getSelectedFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    File[] currentFiles = files[i].listFiles();
-                    for (int k = 0; k < currentFiles.length; k++) {
-                        if (fc.getFileFilter().accept(currentFiles[k])) {
-                            spectrumFiles.add(currentFiles[k]);
-                        }
-                    }
-                } else {
-                    spectrumFiles.add(files[i]);
-                }
-            }
-            spectrumFilesTextField.setText(spectrumFiles.size() + " file(s) selected");
-            deNovoGUI.setSpectrumFiles(spectrumFiles);
-            //filename = spectraFiles.get(0).getName();
-            // TODO: Set back the progress bar..
-
-        }
-        //TODO: setButtonConfiguration();
     }
 
     /**

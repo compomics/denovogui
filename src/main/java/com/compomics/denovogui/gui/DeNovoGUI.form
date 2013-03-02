@@ -103,12 +103,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tabbedPane" alignment="0" pref="851" max="32767" attributes="0"/>
+          <Component id="tabbedPane" alignment="0" pref="1103" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tabbedPane" pref="595" max="32767" attributes="0"/>
+          <Component id="tabbedPane" pref="673" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>

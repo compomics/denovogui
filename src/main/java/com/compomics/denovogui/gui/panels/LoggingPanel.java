@@ -1,25 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui.panels;
 
 import java.awt.Point;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
 
 /**
  *
- * @author tmuth
+ * @author Thilo Muth
  */
 public class LoggingPanel extends javax.swing.JPanel {
-    
+
     private static final int MAXLINES = 1000;
-    
+
     /**
-     * Creates new form LoggingPanel
+     * Creates a new LoggingPanel.
      */
     public LoggingPanel() {
         initComponents();
@@ -27,36 +21,36 @@ public class LoggingPanel extends javax.swing.JPanel {
 
     public void append(String str) {
         // append string
-        jTextArea1.append(str + System.getProperty("line.separator"));
+        loggingPanelTextArea.append(str + System.getProperty("line.separator"));
 
         // check line count
-        int lines = jTextArea1.getLineCount();
+        int lines = loggingPanelTextArea.getLineCount();
         if (lines > MAXLINES) {
             try {
-                jTextArea1.getDocument().remove(0, lines - MAXLINES);
+                loggingPanelTextArea.getDocument().remove(0, lines - MAXLINES);
             } catch (BadLocationException exception) {
                 exception.printStackTrace();
             }
         }
 
         // scroll down
-        Point point = new Point(0, jTextArea1.getSize().height);
-        JViewport port = jScrollPane1.getViewport();
+        Point point = new Point(0, loggingPanelTextArea.getSize().height);
+        JViewport port = loggingPanelScrollPane.getViewport();
         port.setViewPosition(point);
     }
-  
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        loggingPanelScrollPane = new javax.swing.JScrollPane();
+        loggingPanelTextArea = new javax.swing.JTextArea();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Logging"));
+        setOpaque(false);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        loggingPanelTextArea.setColumns(20);
+        loggingPanelTextArea.setRows(5);
+        loggingPanelScrollPane.setViewportView(loggingPanelTextArea);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -64,18 +58,19 @@ public class LoggingPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+                .addComponent(loggingPanelScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(loggingPanelScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane loggingPanelScrollPane;
+    private javax.swing.JTextArea loggingPanelTextArea;
     // End of variables declaration//GEN-END:variables
 }
