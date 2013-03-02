@@ -2,6 +2,7 @@ package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
 import java.util.List;
@@ -39,6 +40,8 @@ public class DeNovoSearchHandler {
      */
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
+        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+        waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : spectrumFiles) {
             PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);

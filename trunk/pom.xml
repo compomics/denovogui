@@ -319,10 +319,6 @@
                     <groupId>xerces</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>derby</artifactId>
-                    <groupId>org.apache.derby</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>ssj</artifactId>
                     <groupId>umontreal.iro.lecuyer.gof</groupId>
                 </exclusion>

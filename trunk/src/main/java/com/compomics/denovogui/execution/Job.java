@@ -111,6 +111,7 @@ public abstract class Job implements Executable {
         try {
             proc.waitFor();
             setStatus(JobStatus.FINISHED);
+            waitingHandler.setRunFinished();
         } catch (InterruptedException e) {
             setError(e.getMessage());
             setStatus(JobStatus.ERROR);
@@ -119,6 +120,7 @@ public abstract class Job implements Executable {
                 log.warn("SUBPROCESS KILLED!");
                 proc.destroy();
             }
+            waitingHandler.setRunCanceled();
         }
     }
 
