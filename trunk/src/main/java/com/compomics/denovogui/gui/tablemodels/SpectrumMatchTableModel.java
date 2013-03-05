@@ -100,7 +100,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return peptideAssumption.getTheoreticMz();
             case 7:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getIdentificationCharge().toString();
+                return peptideAssumption.getIdentificationCharge().value;
             default:
                 return "";
         }

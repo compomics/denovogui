@@ -36,6 +36,7 @@ public class SpectrumTableModel extends DefaultTableModel {
      * Constructor.
      * 
      * @param spectrumFile the spectrum file
+     * @param identification the identifications
      */
     public SpectrumTableModel(String spectrumFile, Identification identification) {
         this.spectrumFile = spectrumFile;
@@ -67,7 +68,7 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 3:
                 return "Charge";
             case 4:
-                return "id";
+                return "  ";
             default:
                 return "";
         }
@@ -94,7 +95,14 @@ public class SpectrumTableModel extends DefaultTableModel {
                 try {
                     spectrumTitle = spectrumFactory.getSpectrumTitles(spectrumFile).get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    return precursor.getPossibleChargesAsString();
+                    
+                    if (precursor.getPossibleCharges().size() == 1) {
+                        return precursor.getPossibleCharges().get(0).value;
+                    } else if (precursor.getPossibleCharges().size() > 1) {
+                        return precursor.getPossibleCharges().get(0).value; // @TODO: better support for multiple charges
+                    } else {
+                        return null;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     return "Error";
