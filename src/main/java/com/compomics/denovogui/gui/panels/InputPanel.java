@@ -60,6 +60,11 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
      * Set up the GUI.
      */
     private void setUpGUI() {
+
+        if (deNovoGUI.getPepNovoFolder() != null) {
+            pepNovoLocationTextField.setText(deNovoGUI.getPepNovoFolder().getAbsolutePath());
+        }
+
         modificationsTable.getColumn("Fixed").setCellRenderer(new NimbusCheckBoxRenderer());
         modificationsTable.getColumn("Variable").setCellRenderer(new NimbusCheckBoxRenderer());
 

@@ -123,6 +123,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Spectra files list.
      */
     private List<File> spectrumFiles = new ArrayList<File>();
+    /**
+     * The color used for the sparkline bar chart plots.
+     */
+    private Color sparklineColor = new Color(110, 196, 97);
+    /**
+     * The label with for the numbers in the jsparklines columns.
+     */
+    private int labelWidth = 50;
 
     /**
      * Creates new form DeNovoGUI
@@ -165,6 +173,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
         UIManager.put("TitledBorder.titleColor", new Color(59, 59, 59));
 
         initComponents();
+
+        // set the default PepNovo folder
+        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
+            pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
+        }
 
         setUpGUI();
 
@@ -481,8 +494,6 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Loads the results of the given spectrum files and loads everything in the
      * identification.
      *
-     * @param outputFolder the folder where the identification files are located
-     * @param spectrumFiles the spectrum files searched
      * @throws SQLException
      * @throws FileNotFoundException
      * @throws IOException
@@ -567,9 +578,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
             // put the identification results in the identification object
             HashSet<SpectrumMatch> allSpectrumMatches = idfileReader.getAllSpectrumMatches(null);
             Iterator iter = allSpectrumMatches.iterator();
-            while(iter.hasNext()){
+            while (iter.hasNext()) {
                 SpectrumMatch sm = (SpectrumMatch) iter.next();
-                System.out.println("in: " + sm.getKey());
+                //System.out.println("in: " + sm.getKey());
             }
             identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
         }
@@ -654,6 +665,15 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }
 
     /**
+     * Returns the PepNovo folder.
+     *
+     * @return the pepNovoFolder
+     */
+    public File getPepNovoFolder() {
+        return pepNovoFolder;
+    }
+
+    /**
      * Returns the identification containing all results.
      *
      * @return the identification
@@ -697,5 +717,23 @@ public class DeNovoGUI extends javax.swing.JFrame {
         }
 
         return p.getProperty("denovogui.version");
+    }
+
+    /**
+     * Return the color used for the sparklines.
+     *
+     * @return the sparklineColor
+     */
+    public Color getSparklineColor() {
+        return sparklineColor;
+    }
+
+    /**
+     * Returns the label width for the sparklines.
+     *
+     * @return the labelWidth
+     */
+    public int getLabelWidth() {
+        return labelWidth;
     }
 }
