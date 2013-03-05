@@ -20,6 +20,7 @@ import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -36,6 +37,8 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -562,6 +565,12 @@ public class DeNovoGUI extends javax.swing.JFrame {
             // initiate the parser
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(file);
             // put the identification results in the identification object
+            HashSet<SpectrumMatch> allSpectrumMatches = idfileReader.getAllSpectrumMatches(null);
+            Iterator iter = allSpectrumMatches.iterator();
+            while(iter.hasNext()){
+                SpectrumMatch sm = (SpectrumMatch) iter.next();
+                System.out.println("in: " + sm.getKey());
+            }
             identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
         }
     }
