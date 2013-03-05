@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,12 @@ public class PepNovoIdfileReaderTest extends TestCase {
         HashSet<SpectrumMatch> allSpectrumMatches = idfileReader.getAllSpectrumMatches(null);
         //get the Iterator
         Iterator iter = allSpectrumMatches.iterator();
-        SpectrumMatch sm = (SpectrumMatch) iter.next();
-        assertEquals("test.mgf.out_cus_1530: Scan 2818 (rt=24.5551) [ELEEIVQPIISK]", sm.getKey());
+        while(iter.hasNext()){
+            SpectrumMatch sm = (SpectrumMatch) iter.next();
+            if(sm.getKey().contains("Scan 835")){
+               assertEquals("test.mgf.out_cus_7: Scan 835 (rt=12.4589) [NQIGDKEK]", sm.getKey());         
+            }
+        }
+        
     }
 }

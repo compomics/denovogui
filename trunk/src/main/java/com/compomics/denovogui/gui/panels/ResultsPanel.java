@@ -198,13 +198,25 @@ public class ResultsPanel extends javax.swing.JPanel {
         TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), deNovoGUI.getIdentification());
         querySpectraTable.setModel(tableModel);
         querySpectraTable.setRowSelectionInterval(0, 0);
+        
+        updateAssumptionsTable();
         //@TODO: update gui
     }
 
     /**
-     * Returns the name of the spectrum file displayed.
+     * Returns the name of the output file displayed.
      *
-     * @return the name of the spectrum file displayed
+     * @return the name of the output file displayed
+     */
+    public String getSelectedOutputFile() {
+        //@TODO: allow the user to chose the file
+        return getSelectedSpectrumFile().replaceFirst("mgf", "mgf.out");
+    }
+    
+    /**
+     * Returns the name of the output file displayed.
+     *
+     * @return the name of the output file displayed
      */
     public String getSelectedSpectrumFile() {
         //@TODO: allow the user to chose the file
@@ -236,8 +248,10 @@ public class ResultsPanel extends javax.swing.JPanel {
             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
 
             Identification identification = deNovoGUI.getIdentification();
-            String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
-
+            
+            String psmKey = Spectrum.getSpectrumKey(getSelectedOutputFile(), getSelectedSpectrumTitle());
+            
+            System.out.println(psmKey);
             if (identification.matchExists(psmKey)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
                 HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
@@ -249,6 +263,7 @@ public class ResultsPanel extends javax.swing.JPanel {
             }
             TableModel tableModel = new SpectrumMatchTableModel(assumptions);
             deNovoPeptidesTable.setModel(tableModel);
+            
             //@TODO: update gui
         } catch (Exception e) {
             e.printStackTrace();
