@@ -65,7 +65,7 @@ public class ModificationFile {
      * This method writes the modifications to a file.
      *
      * @param filePath The folder where the file shall be saved.
-     * @param mods The modification profile of the search.
+     * @param modificationProfile The modification profile of the search.
      * @throws java.io.IOException Exception thrown when the file access fails.
      */
     public static void writeFile(File filePath, ModificationProfile modificationProfile) throws IOException {
