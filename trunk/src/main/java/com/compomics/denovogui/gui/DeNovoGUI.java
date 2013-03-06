@@ -736,4 +736,13 @@ public class DeNovoGUI extends javax.swing.JFrame {
     public int getLabelWidth() {
         return labelWidth;
     }
+
+    /**
+     * Returns the current search parameters.
+     * 
+     * @return the searchParameters
+     */
+    public SearchParameters getSearchParameters() {
+        return searchParameters;
+    }
 }
