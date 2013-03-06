@@ -13,10 +13,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This handle the searches with the search parameters taken from the GUI or the
@@ -52,6 +56,7 @@ public class DeNovoSearchHandler {
      */
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
         
+        long startTime = System.nanoTime();
         SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
 
@@ -81,12 +86,20 @@ public class DeNovoSearchHandler {
         }
         
         // Execute the jobs from the queue.
-        int i = 1;
         for (PepnovoJob job : jobs){
             threadExecutor.execute(job);
-            System.out.println("started job no.: " + i);
-            i++;
         }
         
+        // Wait for executor service to shutdown (necessary for reliable exectime calculation.
+        try {
+            
+            threadExecutor.shutdown();
+            threadExecutor.awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
+        System.out.println("used time (sec): " + elapsedTime);
     }
 }
