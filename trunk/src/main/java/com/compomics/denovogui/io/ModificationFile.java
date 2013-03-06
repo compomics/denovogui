@@ -24,7 +24,7 @@ import java.util.Map;
 public class ModificationFile {
 
     /**
-     * The name of the file
+     * The name of the file.
      */
     private static final String name = "PepNovo_PTMs.txt";
     /**
@@ -92,7 +92,7 @@ public class ModificationFile {
     }
 
     /**
-     * Writes the lines corresponding to the given ptm name
+     * Writes the lines corresponding to the given PTM name.
      *
      * @param writer the writer used to write
      * @param mod the name of the modifications of interest
