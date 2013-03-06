@@ -3,12 +3,14 @@ package com.compomics.denovogui;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.gui.DeNovoGUI;
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -78,12 +80,25 @@ public class DeNovoSearchHandler {
         
         // Job queue.
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
-        
-        // Add spectrum files to the spectrum factory
-        for (File spectrumFile : spectrumFiles) {
-            PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
-            jobs.add(job);            
+        try {
+            int nSpectra = FileProcessor.getNumberOfSpectra(spectrumFiles);
+            System.out.println("no. spectra: " + nSpectra);
+            
+            int chunkSize = nSpectra / nCores;
+            System.out.println("chunk size: " + chunkSize);
+            List<File> chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
+            
+            // Distribute the chunked spectra to the different jobs.
+            for (File spectrumFile : chunkFiles) {
+                PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
+                jobs.add(job);
+            }       
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
+     
         
         // Execute the jobs from the queue.
         for (PepnovoJob job : jobs){
