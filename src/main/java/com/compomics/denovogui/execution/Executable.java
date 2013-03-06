@@ -29,11 +29,6 @@ public interface Executable {
     public String getError();
 
     /**
-     * Executes the job.
-     */
-    public void execute();
-
-    /**
      * Cancels the job.
      */
     public void cancel();

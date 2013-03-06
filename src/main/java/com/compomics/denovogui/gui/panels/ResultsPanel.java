@@ -904,13 +904,13 @@ public class ResultsPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Returns the name of the output file displayed.
+     * Returns the name of the spectrum file displayed.
      *
-     * @return the name of the output file displayed
+     * @return the name of the spectrum file displayed
      */
     public String getSelectedSpectrumFile() {
         return spectrumFactory.getMgfFileNames().get(0); //@TODO: allow the user to chose the file
-    }
+    }    
 
     /**
      * Returns the title of the selected spectrum.

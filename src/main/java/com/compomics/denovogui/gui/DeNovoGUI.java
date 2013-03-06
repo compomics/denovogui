@@ -26,7 +26,10 @@ import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +43,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import net.jimmc.jshortcut.JShellLink;
 
@@ -131,12 +136,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * The label with for the numbers in the jsparklines columns.
      */
     private int labelWidth = 50;
+    private final DeNovoGUI denovogui;
 
     /**
      * Creates new form DeNovoGUI
      */
     public DeNovoGUI() {
-
+        denovogui = this;
+        
         // check for new version
         CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
 
@@ -480,14 +487,39 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * Starts the search.
      */
     public void startSearch() {
-        try {
-            loadSpectra(spectrumFiles);
-        } catch (Exception e) {
-            e.printStackTrace();
+       SearchTask searchTask = new SearchTask();
+       searchTask.execute();
+    }
+    
+     @SuppressWarnings("rawtypes")
+    private class SearchTask extends SwingWorker {
+         private int max;
+
+         protected Object doInBackground() throws Exception {
+
+             try {
+                 loadSpectra(spectrumFiles);
+
+                 searchParameters = inputPanel.getSearchParametersFromGUI();
+                 searchHandler = new DeNovoSearchHandler(pepNovoFolder);
+                 searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, inputPanel);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+
+             return 0;
+         }
+
+        /**
+         * Returns the result when the PepNovo+ has finished.
+         */
+        public void finished() {
+            JOptionPane.showMessageDialog(denovogui, 
+                    "The de novo search has finished.\n"
+                    + "See the Results tab for details.", 
+                    "Search Successful", JOptionPane.INFORMATION_MESSAGE);         
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
-        searchParameters = inputPanel.getSearchParametersFromGUI();
-        searchHandler = new DeNovoSearchHandler(pepNovoFolder);
-        searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, inputPanel);
     }
 
     /**

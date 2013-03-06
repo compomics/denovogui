@@ -39,7 +39,7 @@ public class PepNovoIdfileReaderTest extends TestCase {
         while(iter.hasNext()){
             SpectrumMatch sm = (SpectrumMatch) iter.next();
             if(sm.getKey().contains("Scan 835")){
-               assertEquals("test.mgf.out_cus_7: Scan 835 (rt=12.4589) [NQIGDKEK]", sm.getKey());         
+               assertEquals("test.mgf_cus_7: Scan 835 (rt=12.4589) [NQIGDKEK]", sm.getKey());         
             }
         }
         
