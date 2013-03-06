@@ -7,6 +7,7 @@ import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * <b>PepnovoJob</b> <p> This job class runs the PepNovo+ software in wrapper
@@ -59,7 +60,7 @@ public class PepnovoJob extends Job {
      * Initializes the job, setting up the commands for the ProcessBuilder.
      */
     private void initJob() {
-        
+
         // full path to executable
         procCommands.add(pepNovoFolder.getAbsolutePath() + "/" + PEPNOVO_EXE);
         procCommands.trimToSize();
@@ -73,9 +74,11 @@ public class PepnovoJob extends Job {
         procCommands.add(searchParameters.getFragmentationModel());
 
         // Add modifications
-        procCommands.add("-PTMs");
-        //@TODO implement fixed modifications
-        procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications())); //params.getMods());
+        ArrayList<String> modifications = searchParameters.getModificationProfile().getAllModifications();
+        if (!modifications.isEmpty()) {
+            procCommands.add("-PTMs");
+            procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications()));
+        }
 
         // Add fragment tolerance
         procCommands.add("-fragment_tolerance");
@@ -114,7 +117,7 @@ public class PepnovoJob extends Job {
         // Add output path
         outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
         procCommands.trimToSize();
-        
+
         // Set the description - yet not used
         setDescription("PEPNOVO");
         procBuilder = new ProcessBuilder(procCommands);

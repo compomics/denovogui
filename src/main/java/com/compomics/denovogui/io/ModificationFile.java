@@ -93,18 +93,20 @@ public class ModificationFile {
 
     /**
      * Writes the lines corresponding to the given ptm name
+     *
      * @param writer the writer used to write
      * @param mod the name of the modifications of interest
-     * @param variable a string (see static fields) indicating whether the modification is fixed or variable
-     * @throws IOException 
+     * @param variable a string (see static fields) indicating whether the
+     * modification is fixed or variable
+     * @throws IOException
      */
     private static void writePtmLine(BufferedWriter writer, String mod, String variable) throws IOException {
         // Get the PTMFactory
         PTMFactory ptmFactory = PTMFactory.getInstance();
         PTM ptm = ptmFactory.getPTM(mod);
-        String connector = "+";
-        if (ptm.getMass() < 0) {
-            connector = "-";
+        String connector = "";
+        if (ptm.getMass() > 0) {
+            connector = "+";
         }
         // Mass offset maximum -50 Da
 

@@ -908,15 +908,6 @@ public class ResultsPanel extends javax.swing.JPanel {
      *
      * @return the name of the output file displayed
      */
-    public String getSelectedOutputFile() {
-        return getSelectedSpectrumFile().replaceFirst("mgf", "mgf.out"); //@TODO: allow the user to chose the file
-    }
-
-    /**
-     * Returns the name of the output file displayed.
-     *
-     * @return the name of the output file displayed
-     */
     public String getSelectedSpectrumFile() {
         return spectrumFactory.getMgfFileNames().get(0); //@TODO: allow the user to chose the file
     }
@@ -940,7 +931,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         try {
             assumptions = new ArrayList<PeptideAssumption>();
             Identification identification = deNovoGUI.getIdentification();
-            String psmKey = Spectrum.getSpectrumKey(getSelectedOutputFile(), getSelectedSpectrumTitle());
+            String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
             if (identification.matchExists(psmKey)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
