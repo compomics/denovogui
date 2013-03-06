@@ -59,6 +59,7 @@ public class PepnovoJob extends Job {
      * Initializes the job, setting up the commands for the ProcessBuilder.
      */
     private void initJob() {
+        
         // full path to executable
         procCommands.add(pepNovoFolder.getAbsolutePath() + "/" + PEPNOVO_EXE);
         procCommands.trimToSize();
@@ -74,8 +75,7 @@ public class PepnovoJob extends Job {
         // Add modifications
         procCommands.add("-PTMs");
         //@TODO implement fixed modifications
-        procCommands.add("C+57");
-        //procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications())); //params.getMods());
+        procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications())); //params.getMods());
 
         // Add fragment tolerance
         procCommands.add("-fragment_tolerance");

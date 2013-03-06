@@ -3,6 +3,7 @@ package com.compomics.denovogui.io;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +23,10 @@ import java.util.Map;
  */
 public class ModificationFile {
 
+    /**
+     * The name of the file
+     */
+    private static final String name = "PepNovo_PTMs.txt";
     /**
      * Comma / semi-colon separated format.
      */
@@ -59,75 +64,82 @@ public class ModificationFile {
     /**
      * This method writes the modifications to a file.
      *
-     * @param filePath The file path to the exported file.
-     * @param mods The modifications.
+     * @param filePath The folder where the file shall be saved.
+     * @param mods The modification profile of the search.
      * @throws java.io.IOException Exception thrown when the file access fails.
      */
-    public static void writeFile(String filePath, List<String> mods) throws IOException {
+    public static void writeFile(File filePath, ModificationProfile modificationProfile) throws IOException {
         // Init the buffered writer.
-        BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath)));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath, name)));
 
         // PTM file header
         writer.append(getHeader());
         writer.newLine();
 
-        // Get the PTMFactory
-        PTMFactory ptmFactory = PTMFactory.getInstance();
         modIdMap = new HashMap<String, String>();
-        // Connector string: plus for positive modifications, minus for negative ones
-        String connector = "";
 
-        // Write the modifications
-        for (String mod : mods) {
-            PTM ptm = ptmFactory.getPTM(mod);
-            if (ptm.getMass() > 0) {
-                connector = "+";
-            } else {
-                connector = "";
-            }
-
-            // Mass offset maximum -50 Da
-
-            // Write a line for each residue
-            for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
-
-                if (ptm.getMass() > -50) {
-                    if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                        writer.append("N_TERM" + SEP);
-                        writer.append(Double.toString(ptm.getMass()) + SPACE);
-                        writer.append(VARIABLE_PTM + SPACE);
-                        writer.append("N_TERM" + SPACE);
-                        writer.append("^" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
-                    } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                        writer.append("C_TERM" + SEP);
-                        writer.append(Double.toString(ptm.getMass()) + SPACE);
-                        writer.append(VARIABLE_PTM + SPACE);
-                        writer.append("C_TERM" + SPACE);
-                        writer.append("$" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
-                    } else {
-                        writer.append(residue.singleLetterCode + SEP);
-                        writer.append(Double.toString(ptm.getMass()) + SPACE);
-                        if (ptm.getMass() == 57.021464) {
-                            writer.append(FIXED_PTM + SPACE);
-                        } else {
-                            writer.append(VARIABLE_PTM + SPACE);
-                        }
-                        writer.append(ALL_LOCATIONS + SPACE);
-                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
-                    }
-                    writer.append(ptm.getName().toUpperCase());
-                    writer.newLine();
-                }
-            }
+        // Write the fixed modifications
+        for (String mod : modificationProfile.getFixedModifications()) {
+            writePtmLine(writer, mod, FIXED_PTM);
+        }
+        // Write the variable modifications
+        for (String mod : modificationProfile.getVariableModifications()) {
+            writePtmLine(writer, mod, VARIABLE_PTM);
         }
 
         writer.flush();
         writer.close();
+    }
+
+    /**
+     * Writes the lines corresponding to the given ptm name
+     * @param writer the writer used to write
+     * @param mod the name of the modifications of interest
+     * @param variable a string (see static fields) indicating whether the modification is fixed or variable
+     * @throws IOException 
+     */
+    private static void writePtmLine(BufferedWriter writer, String mod, String variable) throws IOException {
+        // Get the PTMFactory
+        PTMFactory ptmFactory = PTMFactory.getInstance();
+        PTM ptm = ptmFactory.getPTM(mod);
+        String connector = "+";
+        if (ptm.getMass() < 0) {
+            connector = "-";
+        }
+        // Mass offset maximum -50 Da
+
+        // Write a line for each residue
+        for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
+
+            if (ptm.getMass() > -50) {
+                if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
+                        || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
+                    writer.append("N_TERM" + SEP);
+                    writer.append(Double.toString(ptm.getMass()) + SPACE);
+                    writer.append(variable + SPACE);
+                    writer.append("N_TERM" + SPACE);
+                    writer.append("^" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                    modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
+                } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
+                        || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
+                    writer.append("C_TERM" + SEP);
+                    writer.append(Double.toString(ptm.getMass()) + SPACE);
+                    writer.append(variable + SPACE);
+                    writer.append("C_TERM" + SPACE);
+                    writer.append("$" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                    modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
+                } else {
+                    writer.append(residue.singleLetterCode + SEP);
+                    writer.append(Double.toString(ptm.getMass()) + SPACE);
+                    writer.append(variable + SPACE);
+                    writer.append(ALL_LOCATIONS + SPACE);
+                    writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                    modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                }
+                writer.append(ptm.getName().toUpperCase());
+                writer.newLine();
+            }
+        }
     }
 
     /**

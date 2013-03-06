@@ -1,6 +1,7 @@
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
+import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
@@ -36,12 +37,22 @@ public class DeNovoSearchHandler {
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
-     * @param waitingHandler the waiting handler 
+     * @param waitingHandler the waiting handler
      */
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
+
+        // Write the modification file
+        try {
+            File folder = new File(pepNovoFolder, "Models");
+            ModificationFile.writeFile(folder, searchParameters.getModificationProfile());
+        } catch (Exception e) {
+            waitingHandler.appendReport("An error occurred while writing the modification file.", true, true);
+            e.printStackTrace();
+        }
+
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : spectrumFiles) {
             PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
