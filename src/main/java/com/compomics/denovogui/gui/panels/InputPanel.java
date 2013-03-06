@@ -262,7 +262,7 @@ public class InputPanel extends javax.swing.JPanel implements WaitingHandler {
 
         precursorMassToleranceLabel.setText("Precursor Mass Tolerance");
 
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.1d, 0.0d, 2.0d, 0.01d));
+        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 2.0d, 0.01d));
 
         numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
 

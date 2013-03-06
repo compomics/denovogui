@@ -423,7 +423,7 @@
             <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="0.1" maximum="2.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+                  <SpinnerModel initial="1.0" maximum="2.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.01" type="number"/>
                 </Property>
               </Properties>
             </Component>
