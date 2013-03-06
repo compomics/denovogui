@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  *
  * @author Thilo Muth
  */
-public abstract class Job implements Executable {
+public abstract class Job implements Executable, Runnable {
 
     /**
      * The job ID.
@@ -66,7 +66,8 @@ public abstract class Job implements Executable {
     /**
      * Executes a job.
      */
-    public void execute() {
+    @Override
+    public void run() {
         proc = null;
         try {
             proc = procBuilder.start();

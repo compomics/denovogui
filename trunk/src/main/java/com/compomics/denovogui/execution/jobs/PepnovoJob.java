@@ -150,4 +150,9 @@ public class PepnovoJob extends Job {
             log.info(">> De novo search has been canceled.");
         }
     }
+
+    @Override
+    public void run() {
+        super.run();
+    }
 }
