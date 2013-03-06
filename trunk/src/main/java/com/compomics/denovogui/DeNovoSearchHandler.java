@@ -1,11 +1,16 @@
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
+import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +45,7 @@ public class DeNovoSearchHandler {
      * @param waitingHandler the waiting handler
      */
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
-
+        
         SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
 
