@@ -95,6 +95,7 @@ public class ResultsPanel extends javax.swing.JPanel {
     private void setUpGUI() {
 
         spectrumAnnotationMenuPanel.add(annotationMenuBar);
+        updateAnnotationPreferences();
 
         // make sure that the scroll panes are see-through
         querySpectraTableScrollPane.getViewport().setOpaque(false);
@@ -345,6 +346,7 @@ public class ResultsPanel extends javax.swing.JPanel {
 
         deNovoMenu.setText("De Novo");
 
+        forwardIonsDeNovoCheckBoxMenuItem.setSelected(true);
         forwardIonsDeNovoCheckBoxMenuItem.setText("f-ions");
         forwardIonsDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -353,6 +355,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         });
         deNovoMenu.add(forwardIonsDeNovoCheckBoxMenuItem);
 
+        rewindIonsDeNovoCheckBoxMenuItem.setSelected(true);
         rewindIonsDeNovoCheckBoxMenuItem.setText("r-ions");
         rewindIonsDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -458,7 +461,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         splitterMenu7.setText("|");
         annotationMenuBar.add(splitterMenu7);
 
-        debovoResultsPanel.setBackground(new java.awt.Color(230, 230, 230));
+        debovoResultsPanel.setBackground(new java.awt.Color(255, 255, 255));
 
         spectrumViewerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Spectrum Viewer"));
         spectrumViewerPanel.setOpaque(false);
@@ -766,8 +769,8 @@ public class ResultsPanel extends javax.swing.JPanel {
 
     /**
      * Update the spectrum colors.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void annotationColorsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annotationColorsJMenuItemActionPerformed
         //new SpectrumColorsDialog(this); // @TODO: re-add me!
@@ -775,8 +778,8 @@ public class ResultsPanel extends javax.swing.JPanel {
 
     /**
      * Export the spectrum.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void exportSpectrumGraphicsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumGraphicsJMenuItemActionPerformed
         //new ExportGraphicsDialog(this, this, true, (Component) spectrumJPanel); @TODO: re-add me!
@@ -784,13 +787,11 @@ public class ResultsPanel extends javax.swing.JPanel {
 
     /**
      * Export spectrum as mgf.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void exportSpectrumValuesJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumValuesJMenuItemActionPerformed
-        
         // @TODO: re-add me!
-
 //        String spectrumAsMgf = null;
 //
 //        spectrumAsMgf = getSpectrumAsMgf();
@@ -820,20 +821,17 @@ public class ResultsPanel extends javax.swing.JPanel {
 
     /**
      * Opens the help dialog.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
-       
         // @TODO: re-add me!
-
 //        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 //
 //                new HelpDialog(this, getClass().getResource("/helpFiles/IonTable.html"),
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/peptide-shaker.gif")),
 //                    "PeptideShaker - Help");
-
 //        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_helpMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -910,7 +908,7 @@ public class ResultsPanel extends javax.swing.JPanel {
      */
     public String getSelectedSpectrumFile() {
         return spectrumFactory.getMgfFileNames().get(0); //@TODO: allow the user to chose the file
-    }    
+    }
 
     /**
      * Returns the title of the selected spectrum.
@@ -989,9 +987,9 @@ public class ResultsPanel extends javax.swing.JPanel {
                 annotationPreferences.setCurrentSettings(
                         currentPeptide, peptideAssumption.getIdentificationCharge().value,
                         !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
-                
+
                 annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy());
-                
+
                 ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
                         annotationPreferences.getNeutralLosses(),
                         annotationPreferences.getValidatedCharges(),
@@ -1031,7 +1029,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         spectrumJPanel.revalidate();
         spectrumJPanel.repaint();
     }
-    
+
     /**
      * Update the annotation menu bar with the current annotation preferences.
      *
@@ -1270,7 +1268,9 @@ public class ResultsPanel extends javax.swing.JPanel {
             annotationPreferences.setDeNovoCharge(2);
         }
 
-        updateSpectrum();
+        if (deNovoPeptidesTable.getSelectedRow() != -1) {
+            updateSpectrum();
+        }
     }
 
     /**

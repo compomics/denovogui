@@ -3,7 +3,6 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
-import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;

@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 
 /**
@@ -100,7 +99,7 @@ public abstract class Job implements Executable, Runnable {
                 if (temp.startsWith(">>") || temp.startsWith("#Processed spectra")) {
                     waitingHandler.increaseProgressValue();
                 }
-                waitingHandler.displayMessage(temp, "progress", JOptionPane.INFORMATION_MESSAGE); 
+                waitingHandler.appendReport(temp, false, true); 
             }
             writer.flush();
             writer.close();
