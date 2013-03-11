@@ -295,10 +295,6 @@
                     <groupId>javax.servlet</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>swing-layout</artifactId>
-                    <groupId>org.swinglabs</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>batik-all</artifactId>
                     <groupId>batik</groupId>
                 </exclusion>
