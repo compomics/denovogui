@@ -6,22 +6,22 @@ import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.gui.panels.ResultsPanel;
 import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.denovogui.util.Properties;
+import com.compomics.software.CommandLineUtils;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.software.ToolFactory;
 import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
-import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
-import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
-import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -29,7 +29,6 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
-import com.compomics.util.preferences.ModificationProfile;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -42,20 +41,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.filechooser.FileFilter;
 import net.jimmc.jshortcut.JShellLink;
-import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
 
 /**
  * The main DeNovoGUI frame.
@@ -74,7 +68,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     private final static String USER_MODIFICATION_FILE = "resources/conf/denovogui_usermods.xml";
     /**
-     * The enzyme file
+     * The enzyme file.
      */
     private final static String ENZYME_FILE = "resources/conf/enzymes.xml";
     /**
@@ -94,15 +88,15 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     public final static String CACHE_DIRECTORY = "resources/cache";
     /**
-     * De novo identification
+     * De novo identification.
      */
     private Identification identification;
     /**
-     * The search handler
+     * The search handler.
      */
     private DeNovoSearchHandler searchHandler;
     /**
-     * The search parameters
+     * The search parameters.
      */
     private SearchParameters searchParameters = null;
     /**
@@ -150,11 +144,27 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * The progress dialog.
      */
     private ProgressDialogX progressDialog;
+    /**
+     * The text to display when default settings are loaded.
+     */
+    public static final String defaultSettingsTxt = "[not selected]";
+    /**
+     * The text to display when user defined settings are loaded.
+     */
+    public static final String userSettingsTxt = "[user settings]";
+    /**
+     * The parameter file.
+     */
+    private File parametersFile = null;
 
     /**
-     * Creates new form DeNovoGUI
+     * Creates a new DeNovoGUI.
+     *
+     * @param spectrumFiles the spectrum files (can be null)
+     * @param searchParameters the search parameters (can be null)
+     * @param outputFolder the output folder (can be null)
      */
-    public DeNovoGUI() {
+    public DeNovoGUI(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder) {
 
         // check for new version
         CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
@@ -206,7 +216,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
         // set the title of the frame and add the icon
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
 
-        // Load modifications
+        // load modifications
         try {
             ptmFactory.importModifications(getModificationsFile(), false);
         } catch (Exception e) {
@@ -220,7 +230,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error while reading " + USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Load the enzymes
+        // load the enzymes
         try {
             enzymeFactory.importEnzymes(new File(ENZYME_FILE));
         } catch (Exception e) {
@@ -228,27 +238,45 @@ public class DeNovoGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error while reading " + ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        if (searchParameters == null) {
+            searchParameters = new SearchParameters();
+            searchParameters.setHitListLength(20); // @TODO: should not be hardcoded here, but default is 25, and de novo max is 20...
+            searchParameters.setPrecursorAccuracy(1.0); // @TODO: should not be hardcoded here, but default is 10, and de novo max is 5...
+            setDefaultParameters(); // label the configs as default
+        } else {
+            loadModifications(searchParameters);
+            settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
+        }
+
+        // set the default enzyme to trypsin
+        if (searchParameters.getEnzyme() == null) {
+            searchParameters.setEnzyme(EnzymeFactory.getInstance().getEnzyme("Trypsin"));
+        }
+
+        this.searchParameters = searchParameters;
+
+        // set the results folder
+        if (outputFolder != null && outputFolder.exists()) {
+            setOutputFolder(outputFolder);
+        }
+
+        // set the spectrum files
+        if (spectrumFiles != null) {
+            setSpectrumFiles(spectrumFiles);
+        }
+
         setLocationRelativeTo(null);
         setVisible(true);
+
+        validateInput(false);
+        this.searchParameters = searchParameters;
     }
 
     /**
      * Set up the GUI.
      */
     private void setUpGUI() {
-
-        modificationsTable.getColumn("Fixed").setMinWidth(70);
-        modificationsTable.getColumn("Fixed").setMaxWidth(70);
-        modificationsTable.getColumn("Variable").setMinWidth(70);
-        modificationsTable.getColumn("Variable").setMaxWidth(70);
-
-        modificationsTable.getColumn("Fixed").setCellRenderer(new NimbusCheckBoxRenderer());
-        modificationsTable.getColumn("Variable").setCellRenderer(new NimbusCheckBoxRenderer());
-
-        // make sure that the scroll panes are see-through
-        modificationsTableScrollPane.getViewport().setOpaque(false);
-
-        modificationsTable.getTableHeader().setReorderingAllowed(false);
+        // @TODO: should there be anything here?
     }
 
     /**
@@ -297,38 +325,31 @@ public class DeNovoGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         backgroundPanel = new javax.swing.JPanel();
-        inputFilesPanel = new javax.swing.JPanel();
-        spectrumFilesLabel = new javax.swing.JLabel();
-        spectrumFilesTextField = new javax.swing.JTextField();
-        browseSpectrumFilesButton = new javax.swing.JButton();
-        clearSpectrumFilesButton = new javax.swing.JButton();
-        outputFolderPanel = new javax.swing.JPanel();
-        outputFolderLabel = new javax.swing.JLabel();
-        outputFolderTextField = new javax.swing.JTextField();
-        outputFolderBrowseButton = new javax.swing.JButton();
-        searchSettingsPanel = new javax.swing.JPanel();
-        enzymeLabel = new javax.swing.JLabel();
-        modelComboBox = new javax.swing.JComboBox();
-        modelLabel = new javax.swing.JLabel();
-        enzymeComboBox = new javax.swing.JComboBox();
-        fragmentMassToleranceLabel = new javax.swing.JLabel();
-        fragmentMassToleranceSpinner = new javax.swing.JSpinner();
-        precursorMassToleranceLabel = new javax.swing.JLabel();
-        precursorMassToleranceSpinner = new javax.swing.JSpinner();
-        numberOfSolutionsLabel = new javax.swing.JLabel();
-        numberOfSolutionsSpinner = new javax.swing.JSpinner();
-        spectrumChargeCheckBox = new javax.swing.JCheckBox();
-        spectrumPrecursorCheckBox = new javax.swing.JCheckBox();
-        filterLowQualityCheckBox = new javax.swing.JCheckBox();
-        modificationsPanel = new javax.swing.JPanel();
-        modificationsTableScrollPane = new javax.swing.JScrollPane();
-        modificationsTable = new javax.swing.JTable();
+        searchEnginesPanel = new javax.swing.JPanel();
+        enablePepNovoJCheckBox = new javax.swing.JCheckBox();
+        pepNovoLinkLabel = new javax.swing.JLabel();
+        pepNovoButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
+        inputFilesPanel1 = new javax.swing.JPanel();
+        spectraFilesLabel = new javax.swing.JLabel();
+        clearSpectraButton = new javax.swing.JButton();
+        addSpectraButton = new javax.swing.JButton();
+        spectrumFilesTextField = new javax.swing.JTextField();
+        configurationFileLbl = new javax.swing.JLabel();
+        settingsFileJTextField = new javax.swing.JTextField();
+        viewConfigurationsButton = new javax.swing.JButton();
+        loadConfigurationsButton = new javax.swing.JButton();
+        resultFolderLbl = new javax.swing.JLabel();
+        outputFolderTextField = new javax.swing.JTextField();
+        resultFolderBrowseButton = new javax.swing.JButton();
+        aboutButton = new javax.swing.JButton();
+        deNovoGuiWebPageJLabel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        importResultsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        settingsMenuItem = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
         modsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         pepNovoMenuItem = new javax.swing.JMenuItem();
@@ -341,216 +362,77 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DeNovoGUI");
+        setResizable(false);
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
-        inputFilesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Input Files"));
-        inputFilesPanel.setOpaque(false);
+        searchEnginesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Engines"));
+        searchEnginesPanel.setOpaque(false);
 
-        spectrumFilesLabel.setText("Spectrum File(s)");
-
-        browseSpectrumFilesButton.setText("Browse");
-        browseSpectrumFilesButton.addActionListener(new java.awt.event.ActionListener() {
+        enablePepNovoJCheckBox.setSelected(true);
+        enablePepNovoJCheckBox.setToolTipText("Enable PepNovo+");
+        enablePepNovoJCheckBox.setOpaque(false);
+        enablePepNovoJCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                browseSpectrumFilesButtonActionPerformed(evt);
+                enablePepNovoJCheckBoxActionPerformed(evt);
             }
         });
 
-        clearSpectrumFilesButton.setText("Clear");
-        clearSpectrumFilesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearSpectrumFilesButtonActionPerformed(evt);
+        pepNovoLinkLabel.setText("<html>De Novo Peptide Sequencing via Probabilistic Network Modeling - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo web page</a></html> ");
+        pepNovoLinkLabel.setToolTipText("Open the OMSSA web page");
+        pepNovoLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pepNovoLinkLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pepNovoLinkLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pepNovoLinkLabelMouseExited(evt);
             }
         });
 
-        javax.swing.GroupLayout inputFilesPanelLayout = new javax.swing.GroupLayout(inputFilesPanel);
-        inputFilesPanel.setLayout(inputFilesPanelLayout);
-        inputFilesPanelLayout.setHorizontalGroup(
-            inputFilesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(inputFilesPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(spectrumFilesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(spectrumFilesTextField)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(browseSpectrumFilesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(clearSpectrumFilesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+        pepNovoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pepnovo.png"))); // NOI18N
+        pepNovoButton.setToolTipText("Open the PepNovo+ web page");
+        pepNovoButton.setBorder(null);
+        pepNovoButton.setBorderPainted(false);
+        pepNovoButton.setContentAreaFilled(false);
+        pepNovoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pepNovoButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pepNovoButtonMouseExited(evt);
+            }
+        });
+        pepNovoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pepNovoButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
+        searchEnginesPanel.setLayout(searchEnginesPanelLayout);
+        searchEnginesPanelLayout.setHorizontalGroup(
+            searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(enablePepNovoJCheckBox)
+                .addGap(71, 71, 71)
+                .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(44, Short.MAX_VALUE))
         );
-        inputFilesPanelLayout.setVerticalGroup(
-            inputFilesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(inputFilesPanelLayout.createSequentialGroup()
+        searchEnginesPanelLayout.setVerticalGroup(
+            searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(inputFilesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spectrumFilesLabel)
-                    .addComponent(spectrumFilesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(browseSpectrumFilesButton)
-                    .addComponent(clearSpectrumFilesButton))
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(enablePepNovoJCheckBox)
+                    .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        outputFolderPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Output Folder"));
-        outputFolderPanel.setOpaque(false);
-
-        outputFolderLabel.setText("Output Location");
-
-        outputFolderBrowseButton.setText("Browse");
-        outputFolderBrowseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                outputFolderBrowseButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout outputFolderPanelLayout = new javax.swing.GroupLayout(outputFolderPanel);
-        outputFolderPanel.setLayout(outputFolderPanelLayout);
-        outputFolderPanelLayout.setHorizontalGroup(
-            outputFolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outputFolderPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(outputFolderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputFolderTextField)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(outputFolderBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        outputFolderPanelLayout.setVerticalGroup(
-            outputFolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outputFolderPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(outputFolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(outputFolderLabel)
-                    .addComponent(outputFolderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(outputFolderBrowseButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        searchSettingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Settings"));
-        searchSettingsPanel.setOpaque(false);
-
-        enzymeLabel.setText("Enzyme");
-
-        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
-
-        modelLabel.setText("Model");
-
-        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
-
-        fragmentMassToleranceLabel.setText("Fragment Mass Tolerance");
-
-        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 2.0d, 0.1d));
-
-        precursorMassToleranceLabel.setText("Precursor Mass Tolerance");
-
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 2.0d, 0.01d));
-
-        numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
-
-        numberOfSolutionsSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 1, 20, 1));
-
-        spectrumChargeCheckBox.setText("Use Spectrum Charge (No Correction)");
-        spectrumChargeCheckBox.setIconTextGap(15);
-        spectrumChargeCheckBox.setOpaque(false);
-
-        spectrumPrecursorCheckBox.setText("Use Spectrum Precursor m/z (No Correction)");
-        spectrumPrecursorCheckBox.setIconTextGap(15);
-        spectrumPrecursorCheckBox.setOpaque(false);
-
-        filterLowQualityCheckBox.setText("Filter Low Quality Spectra");
-        filterLowQualityCheckBox.setIconTextGap(15);
-        filterLowQualityCheckBox.setOpaque(false);
-
-        javax.swing.GroupLayout searchSettingsPanelLayout = new javax.swing.GroupLayout(searchSettingsPanel);
-        searchSettingsPanel.setLayout(searchSettingsPanelLayout);
-        searchSettingsPanelLayout.setHorizontalGroup(
-            searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(enzymeLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(modelLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(filterLowQualityCheckBox)
-                            .addComponent(spectrumPrecursorCheckBox)
-                            .addComponent(spectrumChargeCheckBox))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                                .addComponent(numberOfSolutionsLabel)
-                                .addGap(52, 52, 52))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, searchSettingsPanelLayout.createSequentialGroup()
-                                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(precursorMassToleranceLabel, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fragmentMassToleranceLabel, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
-        );
-        searchSettingsPanelLayout.setVerticalGroup(
-            searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(enzymeLabel)
-                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modelLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fragmentMassToleranceLabel)
-                    .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(precursorMassToleranceLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(numberOfSolutionsLabel)
-                    .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(spectrumChargeCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(spectrumPrecursorCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(filterLowQualityCheckBox)
-                .addContainerGap(12, Short.MAX_VALUE))
-        );
-
-        modificationsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifications"));
-        modificationsPanel.setOpaque(false);
-
-        modificationsTable.setModel(new ModificationsTableModel());
-        modificationsTableScrollPane.setViewportView(modificationsTable);
-
-        javax.swing.GroupLayout modificationsPanelLayout = new javax.swing.GroupLayout(modificationsPanel);
-        modificationsPanel.setLayout(modificationsPanelLayout);
-        modificationsPanelLayout.setHorizontalGroup(
-            modificationsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(modificationsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        modificationsPanelLayout.setVerticalGroup(
-            modificationsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(modificationsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(modificationsTableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
         );
 
         searchButton.setBackground(new java.awt.Color(0, 153, 0));
@@ -565,6 +447,150 @@ public class DeNovoGUI extends javax.swing.JFrame {
             }
         });
 
+        inputFilesPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Input & Output"));
+        inputFilesPanel1.setOpaque(false);
+
+        spectraFilesLabel.setText("Spectrum File(s)");
+
+        clearSpectraButton.setText("Clear");
+        clearSpectraButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearSpectraButtonActionPerformed(evt);
+            }
+        });
+
+        addSpectraButton.setText("Add");
+        addSpectraButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSpectraButtonActionPerformed(evt);
+            }
+        });
+
+        spectrumFilesTextField.setEditable(false);
+        spectrumFilesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        configurationFileLbl.setText("Settings File");
+
+        settingsFileJTextField.setEditable(false);
+        settingsFileJTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        viewConfigurationsButton.setText("Edit");
+        viewConfigurationsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewConfigurationsButtonActionPerformed(evt);
+            }
+        });
+
+        loadConfigurationsButton.setText("Load");
+        loadConfigurationsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadConfigurationsButtonActionPerformed(evt);
+            }
+        });
+
+        resultFolderLbl.setText("Output Folder");
+
+        outputFolderTextField.setEditable(false);
+        outputFolderTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        resultFolderBrowseButton.setText("Browse");
+        resultFolderBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resultFolderBrowseButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout inputFilesPanel1Layout = new javax.swing.GroupLayout(inputFilesPanel1);
+        inputFilesPanel1.setLayout(inputFilesPanel1Layout);
+        inputFilesPanel1Layout.setHorizontalGroup(
+            inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inputFilesPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(inputFilesPanel1Layout.createSequentialGroup()
+                        .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(configurationFileLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(resultFolderLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(outputFolderTextField)
+                            .addComponent(settingsFileJTextField))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(viewConfigurationsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(resultFolderBrowseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(inputFilesPanel1Layout.createSequentialGroup()
+                        .addComponent(spectraFilesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spectrumFilesTextField)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(addSpectraButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(clearSpectraButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                    .addComponent(loadConfigurationsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        inputFilesPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addSpectraButton, clearSpectraButton, loadConfigurationsButton, resultFolderBrowseButton, viewConfigurationsButton});
+
+        inputFilesPanel1Layout.setVerticalGroup(
+            inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inputFilesPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(spectraFilesLabel)
+                    .addComponent(spectrumFilesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(clearSpectraButton)
+                    .addComponent(addSpectraButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(configurationFileLbl)
+                    .addComponent(settingsFileJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(viewConfigurationsButton)
+                    .addComponent(loadConfigurationsButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(resultFolderLbl)
+                    .addComponent(resultFolderBrowseButton)
+                    .addComponent(outputFolderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        aboutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/denovogui_shadow.png"))); // NOI18N
+        aboutButton.setToolTipText("Open the DeNovoGUI web page");
+        aboutButton.setBorder(null);
+        aboutButton.setBorderPainted(false);
+        aboutButton.setContentAreaFilled(false);
+        aboutButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                aboutButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                aboutButtonMouseExited(evt);
+            }
+        });
+        aboutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutButtonActionPerformed(evt);
+            }
+        });
+
+        deNovoGuiWebPageJLabel.setForeground(new java.awt.Color(0, 0, 255));
+        deNovoGuiWebPageJLabel.setText("<html><u><i>For additional information see http://denovogui.googlecode.com</i></u></html>");
+        deNovoGuiWebPageJLabel.setToolTipText("Open the DeNovoGUI web page");
+        deNovoGuiWebPageJLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deNovoGuiWebPageJLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                deNovoGuiWebPageJLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                deNovoGuiWebPageJLabelMouseExited(evt);
+            }
+        });
+
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
         backgroundPanel.setLayout(backgroundPanelLayout);
         backgroundPanelLayout.setHorizontalGroup(
@@ -572,43 +598,37 @@ public class DeNovoGUI extends javax.swing.JFrame {
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inputFilesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputFolderPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(backgroundPanelLayout.createSequentialGroup()
-                        .addComponent(searchSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(modificationsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(searchEnginesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(inputFilesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(backgroundPanelLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(45, 45, 45)
+                        .addComponent(deNovoGuiWebPageJLabel)
+                        .addGap(26, 26, 26)
+                        .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21))))
         );
         backgroundPanelLayout.setVerticalGroup(
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(inputFilesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchEnginesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputFolderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchSettingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(modificationsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(inputFilesPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
-
-        importResultsMenuItem.setText("Import Results");
-        importResultsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                importResultsMenuItemActionPerformed(evt);
-            }
-        });
-        fileMenu.add(importResultsMenuItem);
 
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText("Exit");
@@ -623,6 +643,16 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         editMenu.setMnemonic('E');
         editMenu.setText("Edit");
+
+        settingsMenuItem.setMnemonic('S');
+        settingsMenuItem.setText("Search Settings");
+        settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(settingsMenuItem);
+        editMenu.add(jSeparator2);
 
         modsMenuItem.setText("Modifications");
         modsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -723,15 +753,6 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     /**
-     * Import existing de novo results.
-     *
-     * @param evt
-     */
-    private void importResultsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importResultsMenuItemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_importResultsMenuItemActionPerformed
-
-    /**
      * Opens a new bug report dialog.
      *
      * @param evt
@@ -750,11 +771,132 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_pepNovoMenuItemActionPerformed
 
     /**
+     * Start the de novo sequencing.
+     *
+     * @param evt
+     */
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+
+        // no search parameters set, use the defaults
+        if (searchParameters == null) {
+            searchParameters = new SearchParameters();
+        }
+
+        waitingDialog = new WaitingDialog(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
+                //null, // @TODO: add tips?
+                "De Novo Search",
+                "DeNovoGUI",
+                new Properties().getVersion(),
+                true);
+        waitingDialog.setLocationRelativeTo(this);
+
+        startSearch(waitingDialog);
+
+        if (!waitingDialog.isRunCanceled()) {
+            try {
+                displayResults();
+            } catch (Exception e) {
+                e.printStackTrace(); // @TODO: better error handling!!
+            }
+        }
+    }//GEN-LAST:event_searchButtonActionPerformed
+
+    /**
+     * Edit the modifications.
+     *
+     * @param evt
+     */
+    private void modsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modsMenuItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_modsMenuItemActionPerformed
+
+    /**
+     * Enable/disable PepNovo.
+     *
+     * @param evt
+     */
+    private void enablePepNovoJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enablePepNovoJCheckBoxActionPerformed
+
+        // @TODO: add testsing of the PepNovo installation
+
+        validateInput(false);
+    }//GEN-LAST:event_enablePepNovoJCheckBoxActionPerformed
+
+    /**
+     * Open the PepNovo web page.
+     *
+     * @param evt
+     */
+    private void pepNovoLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoLinkLabelMouseClicked
+        pepNovoButtonActionPerformed(null);
+    }//GEN-LAST:event_pepNovoLinkLabelMouseClicked
+
+    /**
+     * Change the cursor to a hand cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoLinkLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoLinkLabelMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_pepNovoLinkLabelMouseEntered
+
+    /**
+     * Change the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoLinkLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoLinkLabelMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pepNovoLinkLabelMouseExited
+
+    /**
+     * Change the cursor to a hand cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_pepNovoButtonMouseEntered
+
+    /**
+     * Change the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pepNovoButtonMouseExited
+
+    /**
+     * Open the PepNovo web page.
+     *
+     * @param evt
+     */
+    private void pepNovoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoButtonActionPerformed
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://proteomics.ucsd.edu/Software/PepNovo.html");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pepNovoButtonActionPerformed
+
+    /**
+     * Clear the spectrum selection.
+     *
+     * @param evt
+     */
+    private void clearSpectraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectraButtonActionPerformed
+        setSpectrumFiles(new ArrayList<File>());
+        spectrumFilesTextField.setText(getSpectrumFiles().size() + " file(s) selected");
+        validateInput(false);
+    }//GEN-LAST:event_clearSpectraButtonActionPerformed
+
+    /**
      * Opens a file browser to select the spectrum files.
      *
      * @param evt
      */
-    private void browseSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSpectrumFilesButtonActionPerformed
+    private void addSpectraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSpectraButtonActionPerformed
         // First check whether a file has already been selected.
         // If so, start from that file's parent.
 
@@ -790,26 +932,84 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
         }
 
-        setButtonConfiguration();
-    }//GEN-LAST:event_browseSpectrumFilesButtonActionPerformed
+        validateInput(false);
+    }//GEN-LAST:event_addSpectraButtonActionPerformed
 
     /**
-     * Clear the spectrum selection.
+     * Open the settings dialog.
      *
      * @param evt
      */
-    private void clearSpectrumFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectrumFilesButtonActionPerformed
-        setSpectrumFiles(new ArrayList<File>());
-        spectrumFilesTextField.setText(getSpectrumFiles().size() + " file(s) selected");
-        searchButton.setEnabled(false);
-    }//GEN-LAST:event_clearSpectrumFilesButtonActionPerformed
+    private void viewConfigurationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConfigurationsButtonActionPerformed
+        new SettingsDialog(this, searchParameters, true, true);
+    }//GEN-LAST:event_viewConfigurationsButtonActionPerformed
+
+    /**
+     * Load search parameters from a file.
+     *
+     * @param evt
+     */
+    private void loadConfigurationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfigurationsButtonActionPerformed
+
+        // First check whether a file has already been selected.
+        // If so, start from that file's parent.
+        File startLocation = new File(lastSelectedFolder);
+        if (searchParameters.getParametersFile() != null && !settingsFileJTextField.getText().trim().equals("")
+                && !settingsFileJTextField.getText().trim().equals(defaultSettingsTxt)
+                && !settingsFileJTextField.getText().trim().equals(userSettingsTxt)) {
+            startLocation = searchParameters.getParametersFile().getParentFile();
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
+
+                return myFile.getName().toLowerCase().endsWith(".properties")
+                        || myFile.getName().toLowerCase().endsWith(".parameters")
+                        || myFile.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "DeNovoGUI search parameters";
+            }
+        };
+        fc.setFileFilter(filter);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            lastSelectedFolder = file.getAbsolutePath();
+            try {
+                searchParameters = SearchParameters.getIdentificationParameters(file);
+                loadModifications(searchParameters);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the search paramters.", "File Error", JOptionPane.ERROR_MESSAGE);
+            }
+            parametersFile = file;
+            searchParameters.setParametersFile(parametersFile);
+            settingsFileJTextField.setText(parametersFile.getName());
+
+            SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+            boolean valid = settingsDialog.validateParametersInput(false);
+
+            if (!valid) {
+                settingsDialog.validateParametersInput(true);
+                settingsDialog.setVisible(true);
+            }
+        }
+
+        validateInput(false);
+    }//GEN-LAST:event_loadConfigurationsButtonActionPerformed
 
     /**
      * Open a file chooser where the output folder can be selected.
      *
      * @param evt
      */
-    private void outputFolderBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputFolderBrowseButtonActionPerformed
+    private void resultFolderBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resultFolderBrowseButtonActionPerformed
+
         // TODO: Setup default start location here!
         File startLocation = new File(lastSelectedFolder);
         if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
@@ -825,55 +1025,84 @@ public class DeNovoGUI extends javax.swing.JFrame {
         fc.setMultiSelectionEnabled(false);
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File outputFolder;
-            outputFolder = fc.getSelectedFile();
-            outputFolderTextField.setText(outputFolder.getAbsolutePath());
-            lastSelectedFolder = outputFolder.getAbsolutePath();
-            setOutputFolder(outputFolder);
+            File tempOutputFolder = fc.getSelectedFile();
+            outputFolderTextField.setText(tempOutputFolder.getAbsolutePath());
+            lastSelectedFolder = tempOutputFolder.getAbsolutePath();
+            setOutputFolder(tempOutputFolder);
         }
 
-        setButtonConfiguration();
-    }//GEN-LAST:event_outputFolderBrowseButtonActionPerformed
+        validateInput(false);
+    }//GEN-LAST:event_resultFolderBrowseButtonActionPerformed
 
     /**
-     * Start the de novo sequencing.
+     * Edit the search settings.
      *
      * @param evt
      */
-    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-
-        waitingDialog = new WaitingDialog(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
-                //null, // @TODO: add tips?
-                "De Novo Search",
-                "DeNovoGUI",
-                new Properties().getVersion(),
-                true);
-        waitingDialog.setLocationRelativeTo(this);
-
-        startSearch(waitingDialog);
-
-        if (!waitingDialog.isRunCanceled()) {
-            try {
-                displayResults();
-            } catch (Exception e) {
-                e.printStackTrace(); // @TODO: better error handling!!
-            }
-        }
-    }//GEN-LAST:event_searchButtonActionPerformed
+    private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuItemActionPerformed
+        new SettingsDialog(this, searchParameters, true, true);
+    }//GEN-LAST:event_settingsMenuItemActionPerformed
 
     /**
-     * Edit the modifications.
+     * Changes the cursor back to a hand cursor.
      *
      * @param evt
      */
-    private void modsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modsMenuItemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modsMenuItemActionPerformed
+    private void aboutButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_aboutButtonMouseEntered
 
     /**
-     * The main methos.
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void aboutButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_aboutButtonMouseExited
+
+    /**
+     * Open the DeNovoGUI web page.
+     *
+     * @param evt
+     */
+    private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://denovogui.googlecode.com");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_aboutButtonActionPerformed
+
+    /**
+     * Open the DeNovoGUI web page.
+     *
+     * @param evt
+     */
+    private void deNovoGuiWebPageJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoGuiWebPageJLabelMouseClicked
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://denovogui.googlecode.com");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseClicked
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void deNovoGuiWebPageJLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoGuiWebPageJLabelMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void deNovoGuiWebPageJLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoGuiWebPageJLabelMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseExited
+
+    /**
+     * The main method.
      *
      * @param args the command line arguments
      */
@@ -893,51 +1122,89 @@ public class DeNovoGUI extends javax.swing.JFrame {
                     JOptionPane.WARNING_MESSAGE);
         }
 
-        new DeNovoGUI();
+        ArrayList<File> spectrumFiles = null;
+        SearchParameters searchParameters = null;
+        File outputFolder = null;
+        boolean spectrum = false, parameters = false, output = false;
+
+        for (String arg : args) {
+            if (spectrum) {
+                try {
+                    ArrayList<String> extensions = new ArrayList<String>();
+                    extensions.add(".mgf");
+                    spectrumFiles = CommandLineUtils.getFiles(arg, extensions);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null,
+                            "Failed importing spectrum files from command line option " + arg + ".", "Spectrum files",
+                            JOptionPane.WARNING_MESSAGE);
+                    e.printStackTrace();
+                }
+                spectrum = false;
+            }
+            if (parameters) {
+                File searchParametersFile = new File(arg);
+                try {
+                    searchParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null,
+                            "Failed to import search parameters from: " + searchParametersFile.getAbsolutePath() + ".", "Search Parameters",
+                            JOptionPane.WARNING_MESSAGE);
+                    e.printStackTrace();
+                }
+                parameters = false;
+            }
+            if (output) {
+                outputFolder = new File(arg);
+            }
+            if (arg.equals(ToolFactory.searchGuiSpectrumFileOption)) { // @TODO: generalize the option names
+                spectrum = true;
+            }
+            if (arg.equals(ToolFactory.searchGuiParametersFileOption)) { // @TODO: generalize the option names
+                parameters = true;
+            }
+            if (arg.equals(ToolFactory.outputFolderOption)) {
+                parameters = true;
+            }
+        }
+
+        new DeNovoGUI(spectrumFiles, searchParameters, outputFolder);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aboutButton;
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton addSpectraButton;
     private javax.swing.JPanel backgroundPanel;
-    private javax.swing.JButton browseSpectrumFilesButton;
-    private javax.swing.JButton clearSpectrumFilesButton;
+    private javax.swing.JButton clearSpectraButton;
+    private javax.swing.JLabel configurationFileLbl;
+    private javax.swing.JLabel deNovoGuiWebPageJLabel;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JComboBox enzymeComboBox;
-    private javax.swing.JLabel enzymeLabel;
+    private javax.swing.JCheckBox enablePepNovoJCheckBox;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JCheckBox filterLowQualityCheckBox;
-    private javax.swing.JLabel fragmentMassToleranceLabel;
-    private javax.swing.JSpinner fragmentMassToleranceSpinner;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
-    private javax.swing.JMenuItem importResultsMenuItem;
-    private javax.swing.JPanel inputFilesPanel;
+    private javax.swing.JPanel inputFilesPanel1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JComboBox modelComboBox;
-    private javax.swing.JLabel modelLabel;
-    private javax.swing.JPanel modificationsPanel;
-    private javax.swing.JTable modificationsTable;
-    private javax.swing.JScrollPane modificationsTableScrollPane;
     private javax.swing.JMenuItem modsMenuItem;
-    private javax.swing.JLabel numberOfSolutionsLabel;
-    private javax.swing.JSpinner numberOfSolutionsSpinner;
-    private javax.swing.JButton outputFolderBrowseButton;
-    private javax.swing.JLabel outputFolderLabel;
-    private javax.swing.JPanel outputFolderPanel;
     private javax.swing.JTextField outputFolderTextField;
+    private javax.swing.JButton pepNovoButton;
+    private javax.swing.JLabel pepNovoLinkLabel;
     private javax.swing.JMenuItem pepNovoMenuItem;
-    private javax.swing.JLabel precursorMassToleranceLabel;
-    private javax.swing.JSpinner precursorMassToleranceSpinner;
+    private javax.swing.JButton resultFolderBrowseButton;
+    private javax.swing.JLabel resultFolderLbl;
     private javax.swing.JButton searchButton;
-    private javax.swing.JPanel searchSettingsPanel;
-    private javax.swing.JCheckBox spectrumChargeCheckBox;
-    private javax.swing.JLabel spectrumFilesLabel;
+    private javax.swing.JPanel searchEnginesPanel;
+    private javax.swing.JTextField settingsFileJTextField;
+    private javax.swing.JMenuItem settingsMenuItem;
+    private javax.swing.JLabel spectraFilesLabel;
     private javax.swing.JTextField spectrumFilesTextField;
-    private javax.swing.JCheckBox spectrumPrecursorCheckBox;
+    private javax.swing.JButton viewConfigurationsButton;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -1026,8 +1293,6 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
             try {
                 loadSpectra(spectrumFiles);
-
-                searchParameters = getSearchParametersFromGUI();
                 searchHandler = new DeNovoSearchHandler(pepNovoFolder);
                 searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
@@ -1096,7 +1361,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
             public void run() {
 
                 try {
-                    
+
                     // @TODO: use progress bar to show actual progress
 
                     ArrayList<File> outputFiles = new ArrayList<File>();
@@ -1179,24 +1444,24 @@ public class DeNovoGUI extends javax.swing.JFrame {
         experiment.addAnalysisSet(sample, analysisSet);
         ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
         analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
-        
+
         // The identification object
         identification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
         identification.setIsDB(true);
-        
+
         // The cache used whenever the identification becomes too big
         String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
         ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
         identification.establishConnection(dbFolder, true, objectsCache);
 
-        
+
         // @TODO: use waiting dialog here?
-        
+
         for (File file : outFiles) {
             // initiate the parser
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(file);
-             
+
             // put the identification results in the identification object
             identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
         }
@@ -1390,181 +1655,143 @@ public class DeNovoGUI extends javax.swing.JFrame {
     }
 
     /**
-     * Table model for the modifications table.
-     */
-    private class ModificationsTableModel extends DefaultTableModel {
-
-        /**
-         * List of all modifications
-         */
-        private ArrayList<String> modifications = null;
-        /**
-         * Map of the fixed modifications
-         */
-        private HashMap<String, Boolean> fixedModifications;
-        /**
-         * Map of the variable modifications
-         */
-        private HashMap<String, Boolean> variableModifications;
-
-        /**
-         * Constructor
-         */
-        public ModificationsTableModel() {
-            modifications = ptmFactory.getPTMs();
-            Collections.sort(modifications);
-            fixedModifications = new HashMap<String, Boolean>();
-            variableModifications = new HashMap<String, Boolean>();
-            for (String modificationName : modifications) {
-                fixedModifications.put(modificationName, false);
-                variableModifications.put(modificationName, false);
-            }
-        }
-
-        @Override
-        public int getRowCount() {
-            if (modifications == null) {
-                return 0;
-            }
-            return modifications.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch (column) {
-                case 0:
-                    return " ";
-                case 1:
-                    return "Fixed";
-                case 2:
-                    return "Variable";
-                default:
-                    return "";
-            }
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            String modificationName = modifications.get(row);
-            switch (column) {
-                case 0:
-                    return modificationName;
-                case 1:
-                    return fixedModifications.get(modificationName);
-                case 2:
-                    return variableModifications.get(modificationName);
-                default:
-                    return "";
-            }
-        }
-
-        @Override
-        public Class getColumnClass(int columnIndex) {
-            for (int i = 0; i < getRowCount(); i++) {
-                if (getValueAt(i, columnIndex) != null) {
-                    return getValueAt(i, columnIndex).getClass();
-                }
-            }
-            return String.class;
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex == 1 || columnIndex == 2;
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (columnIndex == 1) {
-                String modificationName = modifications.get(rowIndex);
-                Boolean value = (Boolean) aValue;
-                fixedModifications.put(modificationName, value);
-                if (value) {
-                    variableModifications.put(modificationName, false);
-                }
-            } else if (columnIndex == 2) {
-                String modificationName = modifications.get(rowIndex);
-                Boolean value = (Boolean) aValue;
-                variableModifications.put(modificationName, value);
-                if (value) {
-                    fixedModifications.put(modificationName, false);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the search parameters as set in the GUI.
+     * Set the search parameters.
      *
-     * @return the search parameters as set in the GUI
+     * @param searchParameters the search parameters to set
      */
-    public SearchParameters getSearchParametersFromGUI() {
-        
-        SearchParameters tempSearchParameters = new SearchParameters();
-
-        // @TODO: implement other enzymes
-        Enzyme enzyme;
-        if (enzymeComboBox.getSelectedIndex() == 0) {
-            enzyme = enzymeFactory.getEnzyme("Trypsin");
+    public void setSearchParameters(SearchParameters searchParameters) {
+        this.searchParameters = searchParameters;
+        parametersFile = searchParameters.getParametersFile();
+        if (parametersFile != null) {
+            settingsFileJTextField.setText(parametersFile.getName());
         } else {
-            enzyme = enzymeFactory.getEnzyme("No enzyme");
+            settingsFileJTextField.setText(userSettingsTxt);
         }
-        tempSearchParameters.setEnzyme(enzyme);
-        
-        // @TODO: implement other models
-        String fragmentationModel = (String) modelComboBox.getSelectedItem();
-        tempSearchParameters.setFragmentationModel(fragmentationModel);
-        double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();
-        tempSearchParameters.setFragmentIonAccuracy(fragmentIonTolerance);
-        double precursorIonTolerance = (Double) precursorMassToleranceSpinner.getValue();
-        tempSearchParameters.setPrecursorAccuracy(precursorIonTolerance);
-        int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
-        tempSearchParameters.setHitListLength(maxHitListLength);
-        boolean estimateCharge = !spectrumChargeCheckBox.isSelected();
-        tempSearchParameters.setEstimateCharge(estimateCharge);
-        boolean estimatePrecursorMass = !spectrumPrecursorCheckBox.isSelected();
-        tempSearchParameters.correctPrecursorMass(estimatePrecursorMass);
-        boolean filterLowQualitySpectra = filterLowQualityCheckBox.isSelected();
-        tempSearchParameters.setDiscardLowQualitySpectra(filterLowQualitySpectra);
-        
-        ModificationProfile modificationProfile = tempSearchParameters.getModificationProfile();
-        for (int row = 0; row < modificationsTable.getRowCount(); row++) {
-            if ((Boolean) modificationsTable.getValueAt(row, 1)) {
-                String modName = (String) modificationsTable.getValueAt(row, 0);
-                PTM ptm = ptmFactory.getPTM(modName);
-                modificationProfile.addFixedModification(ptm);
-            } else if ((Boolean) modificationsTable.getValueAt(row, 2)) {
-                String modName = (String) modificationsTable.getValueAt(row, 0);
-                PTM ptm = ptmFactory.getPTM(modName);
-                modificationProfile.addVariableModification(ptm);
+        validateInput(false);
+    }
+
+    /**
+     * Verifies that the modifications backed-up in the search parameters are
+     * loaded and alerts the user in case conflicts are found.
+     *
+     * @param searchParameters the search parameters to load
+     */
+    public void loadModifications(SearchParameters searchParameters) {
+        ArrayList<String> toCheck = ptmFactory.loadBackedUpModifications(searchParameters, false); // @TODO: have to set the searchparams???
+        if (!toCheck.isEmpty()) {
+            String message = "The definition of the following PTM(s) seems to have change and was not loaded:\n";
+            for (int i = 0; i < toCheck.size(); i++) {
+                if (i > 0) {
+                    if (i < toCheck.size() - 1) {
+                        message += ", ";
+                    } else {
+                        message += " and ";
+                    }
+                    message += toCheck.get(i);
+                }
+            }
+            message += ".\nPlease verify the definition of the PTM(s) in the modifications editor.";
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    message,
+                    "PTM definition obsolete", JOptionPane.OK_OPTION);
+        }
+    }
+
+    /**
+     * Validates the input.
+     *
+     * @param showMessage if true an error messages are shown to the users
+     * @return a boolean indicating if the input is valid.
+     */
+    private boolean validateInput(boolean showMessage) {
+
+        boolean valid = true;
+
+        if (!enablePepNovoJCheckBox.isSelected()) {
+            if (showMessage && valid) {
+                JOptionPane.showMessageDialog(this, "You need to select at least one search engine.", "No Search Engines Selected", JOptionPane.WARNING_MESSAGE);
+            }
+            valid = false;
+        }
+
+        if (spectrumFiles.isEmpty()) {
+            if (showMessage && valid) {
+                JOptionPane.showMessageDialog(this, "You need to select at least one spectrum file.", "Spectra Files Not Found", JOptionPane.WARNING_MESSAGE);
+            }
+            spectraFilesLabel.setForeground(Color.RED);
+            spectraFilesLabel.setToolTipText("Please select at least one spectrum file");
+            valid = false;
+        } else {
+            spectraFilesLabel.setToolTipText(null);
+            spectraFilesLabel.setForeground(Color.BLACK);
+        }
+
+        if (valid) {
+            valid = validateParametersInput(showMessage);
+            if (!valid) {
+                //feedbackLabel.setText("<html> <a href><font color=red>Something went wrong with the search parameters but no help could be found. Please contact the developers.</font></a> </html>");
+                //feedbackLabel.setVisible(true);
+                // @TODO: show search params dialog
             }
         }
-        return tempSearchParameters;
-    }
 
-    /**
-     * This method sets the button configuration.
-     */
-    public void setButtonConfiguration() {
-        if (checkForValidConfiguration()) {
-            searchButton.setEnabled(true);
+        // validate the output folder
+        if (outputFolderTextField.getText() == null || outputFolderTextField.getText().trim().equals("")) {
+            if (showMessage && valid) {
+                JOptionPane.showMessageDialog(this, "You need to specify an output folder.", "Output Folder Not Found", JOptionPane.WARNING_MESSAGE);
+            }
+            resultFolderLbl.setForeground(Color.RED);
+            resultFolderLbl.setToolTipText("Please select an output folder");
+            valid = false;
+        } else if (!new File(outputFolderTextField.getText()).exists()) {
+            int value = JOptionPane.showConfirmDialog(this, "The selected output folder does not exist. Do you want to create it?", "Folder Not Found", JOptionPane.YES_NO_OPTION);
+
+            if (value == JOptionPane.YES_OPTION) {
+                boolean success = new File(outputFolderTextField.getText()).mkdir();
+
+                if (!success) {
+                    JOptionPane.showMessageDialog(this, "Failed to create the output folder. Please create it manually and re-select it.", "File Error", JOptionPane.ERROR_MESSAGE);
+                    valid = false;
+                } else {
+                    resultFolderLbl.setForeground(Color.BLACK);
+                    resultFolderLbl.setToolTipText(null);
+                }
+            }
         } else {
-            searchButton.setEnabled(false);
+            resultFolderLbl.setForeground(Color.BLACK);
+            resultFolderLbl.setToolTipText(null);
         }
+
+        if (searchParameters == null) {
+            configurationFileLbl.setForeground(Color.RED);
+            configurationFileLbl.setToolTipText("Please check the search settings");
+        } else {
+            // @TODO: do we need to check more??
+        }
+
+        searchButton.setEnabled(valid);
+        return valid;
     }
 
     /**
-     * This method checks whether the start configuration is valid or not.
+     * Inspects the parameters validity.
      *
-     * @return Boolean if the start configuration is valid.
+     * @param showMessage if true an error messages are shown to the users
+     * @return a boolean indicating if the parameters are valid
      */
-    public boolean checkForValidConfiguration() {
-        boolean appFolderValid = checkPepNovoFolder(pepNovoFolder);
-        return (appFolderValid && getSpectrumFiles().size() > 0 && outputFolderTextField.getText().length() > 0);
+    public boolean validateParametersInput(boolean showMessage) {
+
+        boolean valid = true;
+
+        // @TODO: do we need any validation here??
+
+        return valid;
+    }
+
+    /**
+     * Shows the user that these are default settings.
+     */
+    private void setDefaultParameters() {
+        settingsFileJTextField.setText(defaultSettingsTxt);
     }
 }
