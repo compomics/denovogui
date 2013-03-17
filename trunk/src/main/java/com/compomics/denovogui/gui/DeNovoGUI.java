@@ -26,6 +26,9 @@ import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdf
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
+import com.compomics.util.gui.error_handlers.HelpDialog;
+import com.compomics.util.gui.ptm.ModificationsDialog;
+import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
@@ -57,7 +60,7 @@ import net.jimmc.jshortcut.JShellLink;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoGUI extends javax.swing.JFrame {
+public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
      * Modification file.
@@ -132,7 +135,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     private WaitingDialog waitingDialog;
     /**
-     * If set to true SearchGUI is ran from the command line only, i.e., no GUI
+     * If set to true DeNovoGUI is ran from the command line only, i.e., no GUI
      * will appear.
      */
     private static boolean useCommandLine = false;
@@ -147,7 +150,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
     /**
      * The text to display when default settings are loaded.
      */
-    public static final String defaultSettingsTxt = "[not selected]";
+    public static final String defaultSettingsTxt = "[default]";
     /**
      * The text to display when user defined settings are loaded.
      */
@@ -156,6 +159,14 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * The parameter file.
      */
     private File parametersFile = null;
+    /**
+     * The list of the default modifications.
+     */
+    private ArrayList<String> modificationUse = new ArrayList<String>();
+    /**
+     * Reference for the separation of modifications.
+     */
+    public static final String MODIFICATION_SEPARATOR = "//";
 
     /**
      * Creates a new DeNovoGUI.
@@ -207,6 +218,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
         if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
         }
+        
+        searchHandler = new DeNovoSearchHandler(pepNovoFolder);
 
         setUpGUI();
 
@@ -247,6 +260,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
             loadModifications(searchParameters);
             settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
         }
+
+        loadModificationUse(searchHandler.loadModificationsUse());
 
         // set the default enzyme to trypsin
         if (searchParameters.getEnzyme() == null) {
@@ -740,7 +755,10 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @param evt
      */
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
-        // TODO add your handling code here:
+        new HelpDialog(this, getClass().getResource("/html/DeNovoGUI.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "DeNovoGUI - Help", 700, 10);
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
     /**
@@ -749,7 +767,10 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @param evt
      */
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        // TODO add your handling code here:
+        new HelpDialog(this, getClass().getResource("/html/AboutDeNovoGUI.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "About DeNovoGUI", 700, 10);
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     /**
@@ -781,6 +802,8 @@ public class DeNovoGUI extends javax.swing.JFrame {
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
         }
+        
+        saveConfigurationFile(); // save the ptms usage
 
         waitingDialog = new WaitingDialog(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -809,7 +832,7 @@ public class DeNovoGUI extends javax.swing.JFrame {
      * @param evt
      */
     private void modsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modsMenuItemActionPerformed
-        // TODO add your handling code here:
+        new ModificationsDialog(this, this, true);
     }//GEN-LAST:event_modsMenuItemActionPerformed
 
     /**
@@ -901,9 +924,9 @@ public class DeNovoGUI extends javax.swing.JFrame {
         // If so, start from that file's parent.
 
         File startLocation = new File(lastSelectedFolder);
-        List<File> spectrumFiles = getSpectrumFiles();
-        if (spectrumFiles.size() > 0) {
-            File temp = spectrumFiles.get(0);
+        List<File> tempSpectrumFiles = getSpectrumFiles();
+        if (tempSpectrumFiles.size() > 0) {
+            File temp = tempSpectrumFiles.get(0);
             startLocation = temp.getParentFile();
         }
         JFileChooser fc = new JFileChooser(startLocation);
@@ -918,18 +941,17 @@ public class DeNovoGUI extends javax.swing.JFrame {
                     File[] currentFiles = files[i].listFiles();
                     for (int k = 0; k < currentFiles.length; k++) {
                         if (fc.getFileFilter().accept(currentFiles[k])) {
-                            spectrumFiles.add(currentFiles[k]);
+                            tempSpectrumFiles.add(currentFiles[k]);
                         }
                     }
                 } else {
-                    spectrumFiles.add(files[i]);
+                    tempSpectrumFiles.add(files[i]);
                 }
             }
-            spectrumFilesTextField.setText(spectrumFiles.size() + " file(s) selected");
-            setSpectrumFiles(spectrumFiles);
+            spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
+            setSpectrumFiles(tempSpectrumFiles);
             //filename = spectraFiles.get(0).getName();
             // TODO: Set back the progress bar..
-
         }
 
         validateInput(false);
@@ -1268,6 +1290,11 @@ public class DeNovoGUI extends javax.swing.JFrame {
         }
     }
 
+    @Override
+    public void updateModifications() {
+        // do nothing
+    }
+
     @SuppressWarnings("rawtypes")
     private class SearchTask extends SwingWorker {
 
@@ -1293,7 +1320,6 @@ public class DeNovoGUI extends javax.swing.JFrame {
 
             try {
                 loadSpectra(spectrumFiles);
-                searchHandler = new DeNovoSearchHandler(pepNovoFolder);
                 searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1793,5 +1819,86 @@ public class DeNovoGUI extends javax.swing.JFrame {
      */
     private void setDefaultParameters() {
         settingsFileJTextField.setText(defaultSettingsTxt);
+    }
+
+    /**
+     * Returns a line with the most used modifications.
+     *
+     * @return a line containing the most used modifications
+     */
+    public String getModificationUseAsString() {
+        String result = "";
+        for (String name : modificationUse) {
+            result += name + MODIFICATION_SEPARATOR;
+        }
+        return result;
+    }
+
+    /**
+     * Returns a list with the most used modifications.
+     *
+     * @return a list with the most used modifications
+     */
+    public ArrayList<String> getModificationUse() {
+        return modificationUse;
+    }
+
+    /**
+     * Loads the use of modifications from a line.
+     *
+     * @param aLine modification use line from the configuration file
+     */
+    private void loadModificationUse(String aLine) {
+        ArrayList<String> modificationUses = new ArrayList<String>();
+
+        // Split the different modifications.
+        int start;
+
+        while ((start = aLine.indexOf(MODIFICATION_SEPARATOR)) >= 0) {
+            String name = aLine.substring(0, start);
+            aLine = aLine.substring(start + 2);
+            if (!name.trim().equals("")) {
+                modificationUses.add(name);
+            }
+        }
+
+        for (String name : modificationUses) {
+            start = name.indexOf("_");
+            String modificationName = name;
+
+            if (start != -1) {
+                modificationName = name.substring(0, start); // old format, remove usage statistics
+            }
+
+            if (ptmFactory.containsPTM(modificationName)) {
+                modificationUse.add(modificationName);
+            }
+        }
+    }
+    
+    /**
+     * This method saves PTM usage in the conf folder.
+     */
+    private void saveConfigurationFile() {
+
+        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
+
+        if (!folder.exists()) {
+            JOptionPane.showMessageDialog(this, new String[]{"Unable to find folder: '" + folder.getAbsolutePath() + "'!",
+                        "Could not save PTM usage."}, "Folder Not Found", JOptionPane.WARNING_MESSAGE);
+        } else {
+            File output = new File(folder, DeNovoSearchHandler.DENOVOGUI_COMFIGURATION_FILE);
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(output));
+                bw.write("Modification use:" + System.getProperty("line.separator"));
+                bw.write(getModificationUseAsString() + System.getProperty("line.separator"));
+                bw.flush();
+                bw.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+                JOptionPane.showMessageDialog(this, new String[]{"Unable to write file: '" + ioe.getMessage() + "'!",
+                            "Could not save PTM usage."}, "File Location Error", JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }
 }
