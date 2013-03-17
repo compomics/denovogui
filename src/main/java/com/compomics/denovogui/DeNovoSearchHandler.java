@@ -3,11 +3,14 @@ package com.compomics.denovogui;
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -17,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  * This handle the searches with the search parameters taken from the GUI or the
@@ -36,6 +40,10 @@ public class DeNovoSearchHandler {
      * If true, debug output will be given.
      */
     private boolean debug = false;
+    /**
+     * Default PTM selection.
+     */
+    public static final String DENOVOGUI_COMFIGURATION_FILE = "DeNovoGUI_configuration.txt";
 
     /**
      * Constructor.
@@ -126,5 +134,48 @@ public class DeNovoSearchHandler {
         if (debug) {
             System.out.println("used time (sec): " + elapsedTime);
         }
+    }
+    
+    /**
+     * Returns a string with the modifications used.
+     *
+     * @return String with the X!Tandem location, as specified in the file, or
+     * 'null' if the file could not be found, or is empty.
+     */
+    public String loadModificationsUse() {
+        String result = "";
+
+        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
+        if (folder.exists()) {
+            File input = new File(folder, DENOVOGUI_COMFIGURATION_FILE);
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(input));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    // Skip empty lines and comment ('#') lines.
+                    line = line.trim();
+                    if (line.equals("") || line.startsWith("#")) {
+                        // skip lines
+                    } else if (line.equals("Modification use:")) {
+                        result = br.readLine().trim();
+                    }
+                }
+                br.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace(); // @TODO: this exception should be thrown to the GUI!
+                JOptionPane.showMessageDialog(null, "An error occured when trying to load the modifications preferences.",
+                        "Configuration import Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the path to the jar file.
+     *
+     * @return the path to the jar file
+     */
+    public String getJarFilePath() {
+        return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoSearchHandler.class").getPath(), "DeNovoGUI");
     }
 }

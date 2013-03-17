@@ -41,9 +41,9 @@
         </developer>
         <developer>
             <name>Marc Vaudel</name>
-            <id>mvaudel</id>
+            <id>marc</id>
             <email></email>
-            <organization></organization>
+            <organization>Department of Biomedicine, University of Bergen, Norway</organization>
             <roles>
                 <role>Java Developer</role>
             </roles>
@@ -284,7 +284,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.11.20</version>
+            <version>3.11.21</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
