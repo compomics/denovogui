@@ -24,6 +24,7 @@ import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
@@ -167,6 +168,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * Reference for the separation of modifications.
      */
     public static final String MODIFICATION_SEPARATOR = "//";
+    /**
+     * The exception handler
+     */
+    private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
 
     /**
      * Creates a new DeNovoGUI.
@@ -218,7 +223,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
         }
-        
+
         searchHandler = new DeNovoSearchHandler(pepNovoFolder);
 
         setUpGUI();
@@ -802,7 +807,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
         }
-        
+
         saveConfigurationFile(); // save the ptms usage
 
         waitingDialog = new WaitingDialog(this,
@@ -821,7 +826,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             try {
                 displayResults();
             } catch (Exception e) {
-                e.printStackTrace(); // @TODO: better error handling!!
+                catchException(e);
             }
         }
     }//GEN-LAST:event_searchButtonActionPerformed
@@ -1322,7 +1327,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadSpectra(spectrumFiles);
                 searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
-                e.printStackTrace();
+                catchException(e);
             }
 
             return 0;
@@ -1415,7 +1420,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                     resultsDialog.setVisible(true);
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
-                    e.printStackTrace(); // @TODO: add better error handling!!
+                    catchException(e);
                 }
             }
         }.start();
@@ -1619,8 +1624,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         try {
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("denovogui.properties");
             p.load(is);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            catchException(e);
         }
 
         return p.getProperty("denovogui.version");
@@ -1844,6 +1849,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
+     * Method called whenever an exception is caught.
+     *
+     * @param e the exception caught
+     */
+    public void catchException(Exception e) {
+        exceptionHandler.catchException(e);
+    }
+
+    /**
      * Loads the use of modifications from a line.
      *
      * @param aLine modification use line from the configuration file
@@ -1875,7 +1889,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         }
     }
-    
+
     /**
      * This method saves PTM usage in the conf folder.
      */
