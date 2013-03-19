@@ -756,7 +756,7 @@ public class ResultsPanel extends javax.swing.JPanel {
             try {
                 annotationPreferences.resetAutomaticAnnotation();
             } catch (Exception e) {
-                e.printStackTrace();
+                deNovoGUI.catchException(e);
             }
 
             for (int availableCharge : chargeMenus.keySet()) {
@@ -953,8 +953,8 @@ public class ResultsPanel extends javax.swing.JPanel {
             updateSpectrum();
 
         } catch (Exception e) {
-            e.printStackTrace();
-        }
+                deNovoGUI.catchException(e);
+            }
     }
 
     /**
@@ -1015,14 +1015,8 @@ public class ResultsPanel extends javax.swing.JPanel {
                 updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
                 currentSpectrumKey = spectrumKey;
 
-            } catch (IOException e) {
-                e.printStackTrace(); // @TODO: add better error handling
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace(); // @TODO: add better error handling
-            } catch (MzMLUnmarshallerException e) {
-                e.printStackTrace(); // @TODO: add better error handling
-            } catch (InterruptedException e) {
-                e.printStackTrace(); // @TODO: add better error handling
+            } catch (Exception e) {
+                deNovoGUI.catchException(e);
             }
         }
 
