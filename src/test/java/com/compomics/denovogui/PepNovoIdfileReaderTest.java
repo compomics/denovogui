@@ -5,7 +5,6 @@
 package com.compomics.denovogui;
 
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
-import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import java.io.File;
 import java.io.IOException;

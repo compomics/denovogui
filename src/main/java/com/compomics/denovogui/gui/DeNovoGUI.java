@@ -22,7 +22,7 @@ import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
-import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
+import com.compomics.denovogui.PepNovoIdfileReader;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -169,7 +169,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public static final String MODIFICATION_SEPARATOR = "//";
     /**
-     * The exception handler
+     * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
 
