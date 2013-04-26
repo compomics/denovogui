@@ -45,7 +45,7 @@ public class TextExporter {
      * @throws SQLException
      * @throws ClassNotFoundException  
      */
-    public static void exportPSMs(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException {
+    public static void exportPSMs(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
         // Init the buffered writer.
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath)));
 
@@ -96,7 +96,7 @@ public class TextExporter {
      * @throws SQLException
      * @throws ClassNotFoundException  
      */
-    public static void exportAssumptions(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException {
+    public static void exportAssumptions(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
         // Init the buffered writer.
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath)));
 
