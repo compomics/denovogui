@@ -36,7 +36,7 @@ public class ScoreHistogram extends Chart {
     }
 
     @Override
-    protected void process(Identification identification) throws IOException, SQLException, ClassNotFoundException {
+    protected void process(Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
         // List of all the scores
         List<Double> scores = new ArrayList<Double>();
         for (String spectrumFile : identification.getSpectrumFiles()) {
