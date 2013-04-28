@@ -85,7 +85,7 @@ public class PepnovoJob extends Job {
 
         // Add solution number
         procCommands.add("-num_solutions");
-        procCommands.add(String.valueOf(searchParameters.getHitListLength()));
+        procCommands.add(String.valueOf(searchParameters.getHitListLengthDeNovo()));
 
         // Precursor tolerance
         procCommands.add("-pm_tolerance");
