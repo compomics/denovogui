@@ -32,14 +32,44 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
 -search_params	        Serialized com.compomics.util.experiment.identification.SearchParameters 
                         object created by SearchGUI.
 
-...
+-prec_tol		Precursor ion mass tolerance, default is '10' (ppm).
+
+-frag_tol		Fragment ion mass tolerance in Da, default is '0.5' (Da).
+
+-enzyme		        Enzyme, default is 'Trypsin'. Available enzymes
+                        are listed in the GUI. (Names are case sensitive.)
+
+-fixed_mods		The fixed (lower case) modifications as a comma separated list. 
+                        Modifications are configured in the GUI.
+                        Example: -fixed_mods "carbamidomethyl c".
+
+-variable_mods	        The variable (lower case) modifications as a comma separated list. 
+                        The modifications are configured in the GUI.
+                        Example: -variable_mods "oxidation of m, phosphorylation of s".
+
+-pep_novo_folder        The folder where PepNovo+ is installed, defaults                        
+                        to the version provided with DeNovoGUI.
 }}}
 
 
 *Optional advanced parameters:*
 
 {{{
-...
+-de_novo_count          Number of de novo solutions per spectrum.
+                        Default: '10'. Max: '20'.
+
+-estimate_charge        Estimate the precursor charge, 1: true, 0: false, default is '1'.
+
+-correct_precursor      Correct the precursor mass, 1: true, 0: false, default is '1'.
+
+-discard_spectra        Discard low quality spectra, 1: true, 0: false, default is '1'.
+
+-fragmentation_model    The PepNovo+ fragmentation model. Default is 'CID_IT_TRYP'.
+
+-generate_blast         Generate a BLAST query, 1: true, 0: false, default is '0'.
+
+-pep_novo_folder        The folder where PepNovo+ is installed. 
+                        Defaults to the version provided with DeNovoGUI.
 }}}
 
 ==Comma Separated List==
@@ -69,7 +99,8 @@ And here is an example setting the search parameters directly:
 java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI 
 -spectrum_files "C:/my_folder" 
 -output_folder "C:/my_folder/output"
-...
+-prec_tol 5 -frag_tol 0.7 -enzyme Trypsin
+-variable_mods "oxidation of m, phosphorylation of s"
 }}}
 
 _Note that for readability the commands are here split over multiple lines. When used the commands should of course be single lines._
