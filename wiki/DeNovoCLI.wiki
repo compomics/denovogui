@@ -1,0 +1,79 @@
+#summary How to use DeNovoGUI from the command line .
+#labels Featured
+
+=DeNovoGUI Command Line Interface=
+
+The command line interface to *DeNovoGUI*, referred to as *DeNovoCLI*, makes is easy to use *DeNovoGUI* in a command line setting, for example as part of a bigger software pipeline.
+
+*DeNovoCLI* takes a set of spectrum files as input and uses the PepNovo+ algorithm to de novo sequence each spectrum according to the given search parameters.
+
+Note that the spectra must be provided in the Mascot Generic File (mgf) format.
+
+The search parameters can be provided as a serialized instance of the compomics utilities com.compomics.util.experiment.identification.SearchParameters object or to set individually using the command line options.
+
+*General command line:*
+
+{{{
+java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
+}}}
+
+*Mandatory parameters:*
+
+{{{
+-spectrum_files	        Spectrum files (mgf format), comma separated list or an entire folder.
+                        Example: "file1.mgf, file2.mgf".
+
+-output_folder		The output folder.
+}}}
+
+*Optional common parameters:*
+
+{{{
+-search_params	        Serialized com.compomics.util.experiment.identification.SearchParameters 
+                        object created by SearchGUI.
+
+...
+}}}
+
+
+*Optional advanced parameters:*
+
+{{{
+...
+}}}
+
+==Comma Separated List==
+
+When using comma separated lists as input for the mgf files or the PTMs, please pay attention to the quotes required. Surround the full content of the option in quotes and not the individual items:
+
+{{{
+-spectrum_files "C:\..\file_1.mgf, C:\..\file_2.mgf"
+
+-variable_mods "oxidation of m, phosphorylation of s"
+}}}
+
+==Examples==
+
+Here is an example for Windows using a search parameters file. _X_, _Y_ and _Z_ have to be replaced by the actual version of *DeNovoGUI* and _my folder_ by the folder containing the desired files:
+
+{{{
+java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI 
+-spectrum_files "C:/my_folder" 
+-output_folder "C:/my_folder/output"
+-search_params "C:/my_folder/DeNovoGUI.parameters" 
+}}}
+
+And here is an example setting the search parameters directly:
+
+{{{
+java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI 
+-spectrum_files "C:/my_folder" 
+-output_folder "C:/my_folder/output"
+...
+}}}
+
+_Note that for readability the commands are here split over multiple lines. When used the commands should of course be single lines._
+
+== Help==
+
+If you experience any problems with the command line or have any suggestion please contact us via the [https://groups.google.com/group/peptide-shaker PeptideShaker mailing list].
