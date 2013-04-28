@@ -3,9 +3,9 @@
 
 =DeNovoGUI Command Line Interface=
 
-The command line interface to *DeNovoGUI*, referred to as *DeNovoCLI*, makes is easy to use *DeNovoGUI* in a command line setting, for example as part of a bigger software pipeline.
+The command line interface to DeNovoGUI, referred to as DeNovoCLI, makes is easy to use DeNovoGUI in a command line setting, for example as part of a bigger software pipeline.
 
-*DeNovoCLI* takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] algorithm to de novo sequence each spectrum according to the given search parameters.
+DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] algorithm to de novo sequence each spectrum according to the given search parameters.
 
 Note that the spectra must be provided in the Mascot Generic File (mgf) format.
 
@@ -55,8 +55,7 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
 *Optional advanced parameters:*
 
 {{{
--de_novo_count          Number of de novo solutions per spectrum.
-                        Default: '10'. Max: '20'.
+-de_novo_count          Number of de novo solutions per spectrum. Default: '10'. Max: '20'.
 
 -estimate_charge        Estimate the precursor charge, 1: true, 0: false, default is '1'.
 
@@ -84,7 +83,7 @@ When using comma separated lists as input for the mgf files or the PTMs, please 
 
 ==Examples==
 
-Here is an example for Windows using a search parameters file. _X_, _Y_ and _Z_ have to be replaced by the actual version of *DeNovoGUI* and _my folder_ by the folder containing the desired files:
+Here is an example for Windows using a search parameters file. _X_, _Y_ and _Z_ have to be replaced by the actual version of DeNovoGUI and _my folder_ by the folder containing the desired files:
 
 {{{
 java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI 
