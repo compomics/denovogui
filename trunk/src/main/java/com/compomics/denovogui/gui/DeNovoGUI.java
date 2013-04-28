@@ -64,18 +64,6 @@ import net.jimmc.jshortcut.JShellLink;
 public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
-     * Modification file.
-     */
-    private final static String MODIFICATION_FILE = "resources/conf/denovogui_mods.xml";
-    /**
-     * User modification file.
-     */
-    private final static String USER_MODIFICATION_FILE = "resources/conf/denovogui_usermods.xml";
-    /**
-     * The enzyme file.
-     */
-    private final static String ENZYME_FILE = "resources/conf/enzymes.xml";
-    /**
      * The compomics enzyme factory.
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
@@ -98,7 +86,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The search handler.
      */
-    private DeNovoSearchHandler searchHandler;
+    private DeNovoSearchHandler deNovoSearchHandler;
     /**
      * The search parameters.
      */
@@ -224,7 +212,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
         }
 
-        searchHandler = new DeNovoSearchHandler(pepNovoFolder);
+        deNovoSearchHandler = new DeNovoSearchHandler(pepNovoFolder);
 
         setUpGUI();
 
@@ -236,24 +224,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         // load modifications
         try {
-            ptmFactory.importModifications(getModificationsFile(), false);
+            ptmFactory.importModifications(new File(DeNovoSearchHandler.MODIFICATION_FILE), false);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         try {
-            ptmFactory.importModifications(getUserModificationsFile(), true);
+            ptmFactory.importModifications(new File(DeNovoSearchHandler.USER_MODIFICATION_FILE), true);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
 
         // load the enzymes
         try {
-            enzymeFactory.importEnzymes(new File(ENZYME_FILE));
+            enzymeFactory.importEnzymes(new File(DeNovoSearchHandler.ENZYME_FILE));
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
         }
 
         if (searchParameters == null) {
@@ -266,7 +254,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
         }
 
-        loadModificationUse(searchHandler.loadModificationsUse());
+        loadModificationUse(deNovoSearchHandler.loadModificationsUse());
 
         // set the default enzyme to trypsin
         if (searchParameters.getEnzyme() == null) {
@@ -1235,20 +1223,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Returns the modifications file.
-     *
-     * @return the modifications file
-     */
-    public File getModificationsFile() {
-        File result = new File(getJarFilePath() + File.separator + MODIFICATION_FILE);
-
-        if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return result;
-    }
-
-    /**
      * Starts the search.
      *
      * @param waitingHandler the waiting handler
@@ -1325,7 +1299,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             try {
                 loadSpectra(spectrumFiles);
-                searchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
+                deNovoSearchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
@@ -1424,19 +1398,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 }
             }
         }.start();
-    }
-
-    /**
-     * Returns the user defined modifications file.
-     *
-     * @return the user defined modifications file
-     */
-    public File getUserModificationsFile() {
-        File result = new File(getJarFilePath() + File.separator + USER_MODIFICATION_FILE);
-        if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, USER_MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return result;
     }
 
     /**

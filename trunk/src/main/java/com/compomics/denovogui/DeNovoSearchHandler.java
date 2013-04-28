@@ -44,6 +44,18 @@ public class DeNovoSearchHandler {
      * Default PTM selection.
      */
     public static final String DENOVOGUI_COMFIGURATION_FILE = "DeNovoGUI_configuration.txt";
+    /**
+     * Modification file.
+     */
+    public final static String MODIFICATION_FILE = "resources/conf/denovogui_mods.xml";
+    /**
+     * User modification file.
+     */
+    public final static String USER_MODIFICATION_FILE = "resources/conf/denovogui_usermods.xml";
+    /**
+     * The enzyme file.
+     */
+    public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
 
     /**
      * Constructor.
@@ -135,7 +147,7 @@ public class DeNovoSearchHandler {
             System.out.println("used time (sec): " + elapsedTime);
         }
     }
-    
+
     /**
      * Returns a string with the modifications used.
      *
@@ -169,7 +181,7 @@ public class DeNovoSearchHandler {
         }
         return result;
     }
-    
+
     /**
      * Returns the path to the jar file.
      *
@@ -177,5 +189,47 @@ public class DeNovoSearchHandler {
      */
     public String getJarFilePath() {
         return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoSearchHandler.class").getPath(), "DeNovoGUI");
+    }
+
+    /**
+     * Returns the modifications file.
+     *
+     * @param jarFolder the folder containing the jar file
+     * @return the modifications file
+     */
+    public static File getModificationsFile(String jarFolder) {
+        File result = new File(jarFolder, MODIFICATION_FILE);
+        if (!result.exists()) {
+            JOptionPane.showMessageDialog(null, MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the user defined enzymes file.
+     *
+     * @param jarFolder the folder containing the jar file
+     * @return the user defined enzymes file
+     */
+    public static File getEnzymesFile(String jarFolder) {
+        File result = new File(jarFolder, ENZYME_FILE);
+        if (!result.exists()) {
+            JOptionPane.showMessageDialog(null, ENZYME_FILE + " not found.", "Enzymes File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the user defined modifications file.
+     *
+     * @param jarFolder the folder containing the jar file
+     * @return the user defined modifications file
+     */
+    public static File getUserModificationsFile(String jarFolder) {
+        File result = new File(jarFolder, USER_MODIFICATION_FILE);
+        if (!result.exists()) {
+            JOptionPane.showMessageDialog(null, USER_MODIFICATION_FILE + " not found.", "User Modification File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return result;
     }
 }

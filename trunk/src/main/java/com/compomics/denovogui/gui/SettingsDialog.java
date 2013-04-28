@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
