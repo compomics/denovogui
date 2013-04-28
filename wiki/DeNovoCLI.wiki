@@ -5,11 +5,11 @@
 
 The command line interface to *DeNovoGUI*, referred to as *DeNovoCLI*, makes is easy to use *DeNovoGUI* in a command line setting, for example as part of a bigger software pipeline.
 
-*DeNovoCLI* takes a set of spectrum files as input and uses the PepNovo+ algorithm to de novo sequence each spectrum according to the given search parameters.
+*DeNovoCLI* takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] algorithm to de novo sequence each spectrum according to the given search parameters.
 
 Note that the spectra must be provided in the Mascot Generic File (mgf) format.
 
-The search parameters can be provided as a serialized instance of the compomics utilities com.compomics.util.experiment.identification.SearchParameters object or to set individually using the command line options.
+The search parameters can be provided as a serialized instance of the [http://compomics-utilities.googlecode.com compomics utilities] com.compomics.util.experiment.identification.SearchParameters object or to set individually using the command line options.
 
 *General command line:*
 
