@@ -276,6 +276,29 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportSpectrumValuesJMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenu1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Assumptions"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="exportSingleAssumptionsJMenuItem">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Single"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportSingleAssumptionsJMenuItemActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="exportAllAssumptionsJMenuItem">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="All"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportAllAssumptionsJMenuItemActionPerformed"/>
+                  </Events>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="splitterMenu6">
