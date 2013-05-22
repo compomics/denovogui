@@ -279,12 +279,10 @@
             <scope>test</scope>
         </dependency>
 
-
-        <!-- logging dependencies -->
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.13.18</version>
+            <version>3.13.23</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
@@ -293,22 +291,6 @@
                 <exclusion>
                     <artifactId>servlet-api</artifactId>
                     <groupId>javax.servlet</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>batik-all</artifactId>
-                    <groupId>batik</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>pdf-transcoder</artifactId>
-                    <groupId>batik</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jfreechart</artifactId>
-                    <groupId>jfree</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>xercesImpl</artifactId>
-                    <groupId>xerces</groupId>
                 </exclusion>
                 <exclusion>
                     <artifactId>ssj</artifactId>

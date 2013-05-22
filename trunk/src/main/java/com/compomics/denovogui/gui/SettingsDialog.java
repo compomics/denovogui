@@ -962,8 +962,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Add a fixed modification.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void addFixedModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFixedModificationActionPerformed
         int nSelected = fixedModsTable.getRowCount();
@@ -1009,8 +1009,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Remove a fixed modification.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void removeFixedModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeFixedModificationActionPerformed
         int nSelected = fixedModsTable.getRowCount();
@@ -1047,8 +1047,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Change the cursor back to the default cursor.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void fixedModsTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixedModsTableMouseExited
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -1056,8 +1056,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Change the color of a fixed PTM.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void fixedModsTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixedModsTableMouseReleased
         int row = fixedModsTable.rowAtPoint(evt.getPoint());
@@ -1099,8 +1099,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Add a variable modification.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void addVariableModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addVariableModificationActionPerformed
         int nSelected = variableModsTable.getRowCount();
@@ -1152,8 +1152,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Remove a variable modification.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void removeVariableModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeVariableModificationActionPerformed
         int nSelected = variableModsTable.getRowCount();
@@ -1190,8 +1190,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Change the cursor back to the default cursor.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void variableModsTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_variableModsTableMouseExited
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -1199,8 +1199,8 @@ public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * Change the color of a fixed PTM.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void variableModsTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_variableModsTableMouseReleased
         int row = variableModsTable.rowAtPoint(evt.getPoint());
@@ -1431,6 +1431,10 @@ public class SettingsDialog extends javax.swing.JDialog {
             modificationProfile.setColor(modName, (Color) variableModsTable.getValueAt(i, 0));
         }
         tempSearchParameters.setModificationProfile(modificationProfile);
+
+        if (settingsFileJTextField.getText().length() > 0) {
+            tempSearchParameters.setParametersFile(new File(settingsFileJTextField.getText()));
+        }
 
         return tempSearchParameters;
     }
