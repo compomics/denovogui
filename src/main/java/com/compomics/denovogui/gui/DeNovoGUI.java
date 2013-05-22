@@ -23,6 +23,7 @@ import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.denovogui.PepNovoIdfileReader;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -46,6 +47,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -160,6 +162,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
+    private PepNovoIdfileReader idfileReader;
 
     /**
      * Creates a new DeNovoGUI.
@@ -1452,10 +1455,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         for (File file : outFiles) {
             // initiate the parser
-            PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(file);
+            idfileReader = new PepNovoIdfileReader(file);
+            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
 
             // put the identification results in the identification object
-            identification.addSpectrumMatch(idfileReader.getAllSpectrumMatches(null));
+            identification.addSpectrumMatch(spectrumMatches);
+            
         }
     }
 
@@ -1799,7 +1804,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         }
         return result;
     }
-
+    
+    /**
+     * Returns the IdfileReader.
+     * @return IdfileReader instance.
+     */
+    public PepNovoIdfileReader getIdfileReader() {
+        return idfileReader;
+    }
+    
     /**
      * Returns a list with the most used modifications.
      *
