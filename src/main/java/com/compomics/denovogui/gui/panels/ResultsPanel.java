@@ -23,35 +23,42 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.gui.error_handlers.HelpDialog;
+import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
+import com.compomics.util.gui.export_graphics.ExportGraphicsDialogParent;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import com.compomics.util.preferences.AnnotationPreferences;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
 import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
+import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
 /**
  *
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class ResultsPanel extends javax.swing.JPanel {
+public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDialogParent {
 
     /**
      * A references to the main frame.
@@ -85,7 +92,14 @@ public class ResultsPanel extends javax.swing.JPanel {
      * The compomics PTM factory.
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
-    private String lastSelectedFolder;
+    /**
+     * The query spectra table column header tooltips.
+     */
+    private ArrayList<String> querySpectraTableToolTips;
+    /**
+     * The de novo peptides table column header tooltips.
+     */
+    private ArrayList<String> deNovoPeptidesTableToolTips;
 
     /**
      * Creates a new ResultsPanel.
@@ -123,6 +137,28 @@ public class ResultsPanel extends javax.swing.JPanel {
         JPanel peptideCorner = new JPanel();
         peptideCorner.setBackground(deNovoPeptidesTable.getTableHeader().getBackground());
         deNovoPeptidesTableScrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, peptideCorner);
+
+        // hide items that are not implemented
+        annotationColorsJMenuItem.setVisible(false);
+        jSeparator14.setVisible(false);
+
+        // setup the column header tooltips
+        querySpectraTableToolTips = new ArrayList<String>();
+        querySpectraTableToolTips.add(null);
+        querySpectraTableToolTips.add("Spectrum Title");
+        querySpectraTableToolTips.add("Precusor m/z");
+        querySpectraTableToolTips.add("Precursor Charge");
+        querySpectraTableToolTips.add("Identified");
+
+        deNovoPeptidesTableToolTips = new ArrayList<String>();
+        deNovoPeptidesTableToolTips.add(null);
+        deNovoPeptidesTableToolTips.add("Peptide Sequences");
+        deNovoPeptidesTableToolTips.add("Rank Score");
+        deNovoPeptidesTableToolTips.add("Score");
+        deNovoPeptidesTableToolTips.add("N-Gap");
+        deNovoPeptidesTableToolTips.add("C-Gap");
+        deNovoPeptidesTableToolTips.add("m/z");
+        deNovoPeptidesTableToolTips.add("Charge");
     }
 
     /**
@@ -140,25 +176,25 @@ public class ResultsPanel extends javax.swing.JPanel {
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
         querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
-        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor())); 
+        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
-        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor())); 
+        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
 
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
 
-        deNovoPeptidesTable.getColumn("RankScore").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMinRankScore(), idfileReader.getMaxRankScore(), Color.BLUE, Color.RED)); 
+        deNovoPeptidesTable.getColumn("RankScore").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMinRankScore(), idfileReader.getMaxRankScore(), Color.BLUE, Color.RED));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("RankScore").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
         deNovoPeptidesTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxPepNovoScore(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxNGap(), deNovoGUI.getSparklineColor())); 
+        deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxNGap(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxCGap(), deNovoGUI.getSparklineColor())); 
+        deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxCGap(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor())); 
+        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor())); 
+        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
     }
 
@@ -210,7 +246,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         exportGraphicsMenu = new javax.swing.JMenu();
         exportSpectrumGraphicsJMenuItem = new javax.swing.JMenuItem();
         exportSpectrumValuesJMenuItem = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        exportAssumptionsMenu = new javax.swing.JMenu();
         exportSingleAssumptionsJMenuItem = new javax.swing.JMenuItem();
         exportAllAssumptionsJMenuItem = new javax.swing.JMenuItem();
         splitterMenu6 = new javax.swing.JMenu();
@@ -224,10 +260,34 @@ public class ResultsPanel extends javax.swing.JPanel {
         spectrumAnnotationMenuPanel = new javax.swing.JPanel();
         querySpectraPanel = new javax.swing.JPanel();
         querySpectraTableScrollPane = new javax.swing.JScrollPane();
-        querySpectraTable = new javax.swing.JTable();
+        querySpectraTable = new JTable() {
+            protected JTableHeader createDefaultTableHeader() {
+                return new JTableHeader(columnModel) {
+                    public String getToolTipText(MouseEvent e) {
+                        java.awt.Point p = e.getPoint();
+                        int index = columnModel.getColumnIndexAtX(p.x);
+                        int realIndex = columnModel.getColumn(index).getModelIndex();
+                        String tip = (String) querySpectraTableToolTips.get(realIndex);
+                        return tip;
+                    }
+                };
+            }
+        };
         deNovoPeptidesPanel = new javax.swing.JPanel();
         deNovoPeptidesTableScrollPane = new javax.swing.JScrollPane();
-        deNovoPeptidesTable = new javax.swing.JTable();
+        deNovoPeptidesTable = new JTable() {
+            protected JTableHeader createDefaultTableHeader() {
+                return new JTableHeader(columnModel) {
+                    public String getToolTipText(MouseEvent e) {
+                        java.awt.Point p = e.getPoint();
+                        int index = columnModel.getColumnIndexAtX(p.x);
+                        int realIndex = columnModel.getColumn(index).getModelIndex();
+                        String tip = (String) deNovoPeptidesTableToolTips.get(realIndex);
+                        return tip;
+                    }
+                };
+            }
+        };
 
         annotationMenuBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         annotationMenuBar.setOpaque(false);
@@ -453,7 +513,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         });
         exportGraphicsMenu.add(exportSpectrumValuesJMenuItem);
 
-        jMenu1.setText("Assumptions");
+        exportAssumptionsMenu.setText("Assumptions");
 
         exportSingleAssumptionsJMenuItem.setText("Single");
         exportSingleAssumptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -461,7 +521,7 @@ public class ResultsPanel extends javax.swing.JPanel {
                 exportSingleAssumptionsJMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(exportSingleAssumptionsJMenuItem);
+        exportAssumptionsMenu.add(exportSingleAssumptionsJMenuItem);
 
         exportAllAssumptionsJMenuItem.setText("All");
         exportAllAssumptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -469,9 +529,9 @@ public class ResultsPanel extends javax.swing.JPanel {
                 exportAllAssumptionsJMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(exportAllAssumptionsJMenuItem);
+        exportAssumptionsMenu.add(exportAllAssumptionsJMenuItem);
 
-        exportGraphicsMenu.add(jMenu1);
+        exportGraphicsMenu.add(exportAssumptionsMenu);
 
         annotationMenuBar.add(exportGraphicsMenu);
 
@@ -809,65 +869,46 @@ public class ResultsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_annotationColorsJMenuItemActionPerformed
 
     /**
-     * Opens the help dialog.
-     *
-     * @param evt
-     */
-    private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
-        // @TODO: re-add me!
-//        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-//
-//                new HelpDialog(this, getClass().getResource("/helpFiles/IonTable.html"),
-//                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-//                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/peptide-shaker.gif")),
-//                    "PeptideShaker - Help");
-//        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-    }//GEN-LAST:event_helpMenuItemActionPerformed
-
-    /**
-     * Export spectrum as mgf.
-     *
-     * @param evt
-     */
-    private void exportSpectrumValuesJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumValuesJMenuItemActionPerformed
-        // @TODO: re-add me!
-        //        String spectrumAsMgf = null;
-        //
-        //        spectrumAsMgf = getSpectrumAsMgf();
-        //
-        //        if (spectrumAsMgf != null) {
-            //
-            //            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", "Save As...", false);
-            //
-            //            if (selectedFile != null) {
-                //                try {
-                    //                    FileWriter w = new FileWriter(selectedFile);
-                    //                    BufferedWriter bw = new BufferedWriter(w);
-                    //                    bw.write(spectrumAsMgf);
-                    //                    bw.close();
-                    //                    w.close();
-                    //
-                    //                    JOptionPane.showMessageDialog(this, "Spectrum saved to " + selectedFile.getPath() + ".",
-                        //                        "File Saved", JOptionPane.INFORMATION_MESSAGE);
-                    //                } catch (IOException e) {
-                    //                    e.printStackTrace();
-                    //                    JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                        //                        + "See resources/PeptideShaker.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
-                    //                }
-                //            }
-            //        }
-    }//GEN-LAST:event_exportSpectrumValuesJMenuItemActionPerformed
-
-    /**
-     * Export the spectrum.
+     * Opens the export graphics dialog.
      *
      * @param evt
      */
     private void exportSpectrumGraphicsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumGraphicsJMenuItemActionPerformed
-        //new ExportGraphicsDialog(this, this, true, (Component) spectrumJPanel); @TODO: re-add me!
-
+        new ExportGraphicsDialog(deNovoGUI, this, true, (Component) spectrumJPanel);
     }//GEN-LAST:event_exportSpectrumGraphicsJMenuItemActionPerformed
-    
+
+    /**
+     * Export spectrum as MGF.
+     *
+     * @param evt
+     */
+    private void exportSpectrumValuesJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumValuesJMenuItemActionPerformed
+
+        String spectrumAsMgf = getSpectrumAsMgf();
+
+        if (spectrumAsMgf != null) {
+
+            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder(), "Save As...", false);
+
+            if (selectedFile != null) {
+                try {
+                    FileWriter w = new FileWriter(selectedFile);
+                    BufferedWriter bw = new BufferedWriter(w);
+                    bw.write(spectrumAsMgf);
+                    bw.close();
+                    w.close();
+
+                    JOptionPane.showMessageDialog(this, "Spectrum saved to " + selectedFile.getPath() + ".",
+                            "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
+                            + "See resources/PeptideShaker.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        }
+    }//GEN-LAST:event_exportSpectrumValuesJMenuItemActionPerformed
+
     /**
      * Export assumptions for a single spectrum.
      *
@@ -991,6 +1032,17 @@ public class ResultsPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_exportAllAssumptionsJMenuItemActionPerformed
 
+    /**
+     * Open the help dialog.
+     *
+     * @param evt
+     */
+    private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
+        new HelpDialog(deNovoGUI, getClass().getResource("/html/SpectrumPanel.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                "Spectrum - Help", 500, 0);
+    }//GEN-LAST:event_helpMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem adaptCheckBoxMenuItem;
@@ -1009,6 +1061,7 @@ public class ResultsPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
     private javax.swing.JMenuItem exportAllAssumptionsJMenuItem;
+    private javax.swing.JMenu exportAssumptionsMenu;
     private javax.swing.JMenu exportGraphicsMenu;
     private javax.swing.JMenuItem exportSingleAssumptionsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumGraphicsJMenuItem;
@@ -1018,7 +1071,6 @@ public class ResultsPanel extends javax.swing.JPanel {
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator19;
     private javax.swing.JPopupMenu.Separator jSeparator5;
@@ -1088,7 +1140,7 @@ public class ResultsPanel extends javax.swing.JPanel {
 
         try {
             assumptions = new ArrayList<PeptideAssumption>();
-            Identification identification = deNovoGUI.getIdentification();            
+            Identification identification = deNovoGUI.getIdentification();
             String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
             if (identification.matchExists(psmKey)) {
@@ -1113,8 +1165,8 @@ public class ResultsPanel extends javax.swing.JPanel {
             updateSpectrum();
 
         } catch (Exception e) {
-                deNovoGUI.catchException(e);
-            }
+            deNovoGUI.catchException(e);
+        }
     }
 
     /**
@@ -1448,5 +1500,57 @@ public class ResultsPanel extends javax.swing.JPanel {
 //        }
 
         return reporterIonsSubtypes;
+    }
+
+    @Override
+    public void setSelectedExportFolder(String selectedFolder) {
+        deNovoGUI.setLastSelectedFolder(selectedFolder);
+    }
+
+    @Override
+    public String getDefaultExportFolder() {
+        return deNovoGUI.getLastSelectedFolder();
+    }
+
+    @Override
+    public Image getNormalIcon() {
+        return Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png"));
+    }
+
+    @Override
+    public Image getWaitingIcon() {
+        return Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png"));
+    }
+
+    /**
+     * Returns the current spectrum as an MGF string.
+     *
+     * @return the current spectrum as an MGF string
+     */
+    public String getSpectrumAsMgf() {
+
+        String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
+
+        if (spectrumFactory.spectrumLoaded(spectrumKey) && deNovoPeptidesTable.getSelectedRow() != -1) {
+
+            StringBuilder spectraAsMgf = new StringBuilder();
+
+            try {
+                MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
+                spectraAsMgf.append(currentSpectrum.asMgf());
+                return spectraAsMgf.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+            } catch (MzMLUnmarshallerException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        return null;
     }
 }

@@ -809,6 +809,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 "DeNovoGUI",
                 new Properties().getVersion(),
                 true);
+        waitingDialog.setCloseDialogWhenImportCompletes(true, true);
         waitingDialog.setLocationRelativeTo(this);
 
         startSearch(waitingDialog);
@@ -931,6 +932,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         fc.setMultiSelectionEnabled(true);
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
+
+            lastSelectedFolder = fc.getSelectedFile().getAbsolutePath();
+
             File[] files = fc.getSelectedFiles();
             for (int i = 0; i < files.length; i++) {
                 if (files[i].isDirectory()) {
@@ -947,7 +951,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
             setSpectrumFiles(tempSpectrumFiles);
             //filename = spectraFiles.get(0).getName();
-            // TODO: Set back the progress bar..
+            // @TODO: re-add back the progress bar..?
         }
 
         validateInput(false);
@@ -1460,7 +1464,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             // put the identification results in the identification object
             identification.addSpectrumMatch(spectrumMatches);
-            
+
         }
     }
 
@@ -1804,15 +1808,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         }
         return result;
     }
-    
+
     /**
      * Returns the IdfileReader.
+     *
      * @return IdfileReader instance.
      */
     public PepNovoIdfileReader getIdfileReader() {
         return idfileReader;
     }
-    
+
     /**
      * Returns a list with the most used modifications.
      *
@@ -1873,7 +1878,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         if (!folder.exists()) {
             JOptionPane.showMessageDialog(this, new String[]{"Unable to find folder: '" + folder.getAbsolutePath() + "'!",
-                        "Could not save PTM usage."}, "Folder Not Found", JOptionPane.WARNING_MESSAGE);
+                "Could not save PTM usage."}, "Folder Not Found", JOptionPane.WARNING_MESSAGE);
         } else {
             File output = new File(folder, DeNovoSearchHandler.DENOVOGUI_COMFIGURATION_FILE);
             try {
@@ -1885,7 +1890,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 JOptionPane.showMessageDialog(this, new String[]{"Unable to write file: '" + ioe.getMessage() + "'!",
-                            "Could not save PTM usage."}, "File Location Error", JOptionPane.WARNING_MESSAGE);
+                    "Could not save PTM usage."}, "File Location Error", JOptionPane.WARNING_MESSAGE);
             }
         }
     }

@@ -45,66 +45,55 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * The standard format.
      */
     public static final String tableHeader = "#Index	RnkScr	PnvScr	N-Gap	C-Gap	[M+H]	Charge	Sequence";
-    
     /**
      * The minimum PepNovo score.
      */
     private double minPepNovoScore = Double.MAX_VALUE;
-    
     /**
      * The maximum PepNovo score.
      */
     private double maxPepNovoScore = Double.MIN_VALUE;
-    
-     /**
+    /**
      * The minimum rank score.
      */
     private double minRankScore = Double.MAX_VALUE;
-    
     /**
      * The maximum rank score.
      */
     private double maxRankScore = Double.MIN_VALUE;
-    
     /**
      * The minimum N-terminal gap.
      */
     private double minNGap = Double.MAX_VALUE;
-    
     /**
      * The maximum N-terminal gap.
      */
     private double maxNGap = Double.MIN_VALUE;
-    
     /**
      * The minimum C-terminal gap.
      */
     private double minCGap = Double.MAX_VALUE;
-    
     /**
      * The maximum C-terminal gap.
      */
     private double maxCGap = Double.MIN_VALUE;
-    
     /**
      * The minimum charge.
      */
     private int minCharge = Integer.MAX_VALUE;
-    
     /**
      * The maximum charge.
      */
     private int maxCharge = Integer.MIN_VALUE;
-    
     /**
      * The minimum m/z value.
      */
     private double minMz = Double.MAX_VALUE;
-    
     /**
      * The maximum m/z value.
      */
-    private double maxMz= Double.MIN_VALUE;
+    private double maxMz = Double.MIN_VALUE;
+
     /**
      * Default constructor for the purpose of instantiation.
      */
@@ -156,12 +145,12 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         while ((line = bufferedRandomAccessFile.readLine()) != null) {
             if (line.startsWith(">>")) {
                 long currentIndex = bufferedRandomAccessFile.getFilePointer();
-                
+
                 String[] temp = line.split("\\s+");
                 String formatted = "";
                 for (int i = 3; i < temp.length; i++) {
-                        formatted += (temp[i] + " ");
-                }                
+                    formatted += (temp[i] + " ");
+                }
                 int endIndex = formatted.lastIndexOf("#Problem");
                 if (endIndex == -1) {
                     endIndex = formatted.lastIndexOf("(SQS");
@@ -219,10 +208,11 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
         return spectrumMatches;
     }
-    
+
     /**
-     * Returns the spectrum file name.
-     * This method assumes that the pepnovo output file is the mgf file name + ".out"
+     * Returns the spectrum file name. This method assumes that the pepnovo
+     * output file is the mgf file name + ".out"
+     *
      * @return the spectrum file name
      */
     public String getMgfFileName() {
@@ -253,29 +243,53 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         String[] lineComponents = line.trim().split("\t");
 
         Double rankScore = new Double(lineComponents[1]);
-        if(rankScore < minRankScore) minRankScore = rankScore;
-        if(rankScore > maxRankScore) maxRankScore = rankScore;
+        if (rankScore < minRankScore) {
+            minRankScore = rankScore;
+        }
+        if (rankScore > maxRankScore) {
+            maxRankScore = rankScore;
+        }
         Double pepNovoScore = new Double(lineComponents[2]);
-        if(pepNovoScore < minPepNovoScore) minPepNovoScore = pepNovoScore;
-        if(pepNovoScore > maxPepNovoScore) maxPepNovoScore = pepNovoScore;
+        if (pepNovoScore < minPepNovoScore) {
+            minPepNovoScore = pepNovoScore;
+        }
+        if (pepNovoScore > maxPepNovoScore) {
+            maxPepNovoScore = pepNovoScore;
+        }
         Double nGap = new Double(lineComponents[3]);
-        if(nGap < minNGap) minNGap = nGap;
-        if(nGap > maxNGap) maxNGap = nGap;
+        if (nGap < minNGap) {
+            minNGap = nGap;
+        }
+        if (nGap > maxNGap) {
+            maxNGap = nGap;
+        }
         Double cGap = new Double(lineComponents[4]);
-        if(cGap < minCGap) minCGap = cGap;
-        if(cGap > maxCGap) maxCGap = cGap;
+        if (cGap < minCGap) {
+            minCGap = cGap;
+        }
+        if (cGap > maxCGap) {
+            maxCGap = cGap;
+        }
         Integer charge = new Integer(lineComponents[6]);
-        if(charge < minCharge) minCharge = charge;
-        if(charge > maxCharge) maxCharge = charge;
+        if (charge < minCharge) {
+            minCharge = charge;
+        }
+        if (charge > maxCharge) {
+            maxCharge = charge;
+        }
         String sequence = lineComponents[7];
         ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
 
         Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
         PeptideAssumption result = new PeptideAssumption(peptide, rank, Advocate.PEPNOVO, new Charge(Charge.PLUS, charge), rankScore, fileName);
         double theoreticMz = result.getTheoreticMz();
-        if(theoreticMz < minMz) minMz = theoreticMz;
-        if(theoreticMz > maxMz) maxMz = theoreticMz;
-        PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();        
+        if (theoreticMz < minMz) {
+            minMz = theoreticMz;
+        }
+        if (theoreticMz > maxMz) {
+            maxMz = theoreticMz;
+        }
+        PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
         peptideAssumptionDetails.setPepNovoScore(pepNovoScore);
         peptideAssumptionDetails.setcTermGap(cGap);
         peptideAssumptionDetails.setnTermGap(nGap);
@@ -286,38 +300,43 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
     /**
      * Returns the minimum PepNovo score.
+     *
      * @return Minimum PepNovo score
      */
     public double getMinPepNovoScore() {
         return minPepNovoScore;
     }
-    
+
     /**
      * Returns the maximum PepNovo score.
+     *
      * @return Maximum PepNovo score
      */
     public double getMaxPepNovoScore() {
         return maxPepNovoScore;
-    }   
-    
+    }
+
     /**
      * Returns the minimum rank score.
+     *
      * @return Minimum rank score
      */
     public double getMinRankScore() {
         return minRankScore;
     }
-    
+
     /**
      * Returns the maximum rank score.
+     *
      * @return Maximum rank score
      */
     public double getMaxRankScore() {
         return maxRankScore;
     }
-    
+
     /**
      * Returns the minimum N-terminal gap.
+     *
      * @return Minimum N-terminal gap.
      */
     public double getMinNGap() {
@@ -326,58 +345,64 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
     /**
      * Returns the maximum N-terminal gap.
+     *
      * @return Maximum N-terminal gap
      */
     public double getMaxNGap() {
         return maxNGap;
     }
-    
+
     /**
      * Returns the minimum C-terminal gap.
+     *
      * @return Minimum C-terminal gap.
      */
     public double getMinCGap() {
         return minCGap;
     }
-    
+
     /**
      * Returns the maximum C-terminal gap.
+     *
      * @return Maximum C-terminal gap.
      */
     public double getMaxCGap() {
         return maxCGap;
     }
-    
+
     /**
      * Returns the minimum charge.
+     *
      * @return Minimum charge.
      */
     public int getMinCharge() {
         return minCharge;
     }
-    
+
     /**
      * Returns the maximum charge.
+     *
      * @return Maximum charge.
      */
     public int getMaxCharge() {
         return maxCharge;
     }
-    
+
     /**
      * Returns the minimum m/z value.
+     *
      * @return Minimum m/z value.
      */
     public double getMinMz() {
         return minMz;
     }
-    
+
     /**
      * Returns the maximum m/z value.
+     *
      * @return Maximum m/z value.
      */
     public double getMaxMz() {
         return maxMz;
     }
-    
 }
