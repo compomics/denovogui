@@ -888,7 +888,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
         if (spectrumAsMgf != null) {
 
-            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder(), "Save As...", false);
+            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getOutputFolder().getAbsolutePath(), "Save As...", false);
 
             if (selectedFile != null) {
                 try {
@@ -920,7 +920,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
         String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
         if (identification.matchExists(psmKey)) {
 
-            File selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
+            File selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getOutputFolder().getAbsolutePath(), false);
 
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
@@ -929,39 +929,37 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             SpectrumMatch spectrumMatch = null;
             try {
                 spectrumMatch = identification.getSpectrumMatch(psmKey);
-            } catch (Exception ex) {
-                deNovoGUI.catchException(ex);
-            }
-            HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
-            if (selectedFile != null) {
-                try {
+                HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+
+                if (selectedFile != null) {
+
                     FileWriter w = new FileWriter(selectedFile);
                     BufferedWriter bw = new BufferedWriter(w);
 
                     // Write spectrum title.
-                    bw.write(getSelectedSpectrumTitle());
+                    bw.write(">" + getSelectedSpectrumTitle());
                     bw.newLine();
 
                     ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                     Collections.sort(scores, Collections.reverseOrder());
                     for (int i = 0; i < scores.size(); i++) {
                         for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
-                            bw.write(assumption.getPeptide().getSequence());
-                            if (i < scores.size() - 1) {
-                                bw.write(";");
-                            }
+                            bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
+                            bw.newLine();                          
                         }
                     }
                     bw.close();
                     w.close();
                     JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".",
                             "File Saved", JOptionPane.INFORMATION_MESSAGE);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                            + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
+                        + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                deNovoGUI.catchException(ex);
             }
 
         }
@@ -993,30 +991,24 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
                     if (identification.matchExists(psmKey)) {
                         SpectrumMatch spectrumMatch = null;
-                        try {
-                            spectrumMatch = identification.getSpectrumMatch(psmKey);
-                        } catch (Exception ex) {
-                            deNovoGUI.catchException(ex);
-                        }
+
+                        spectrumMatch = identification.getSpectrumMatch(psmKey);
+
                         HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
                         if (selectedFile != null) {
-
                             // Write spectrum title.
-                            bw.write(spectrumTitle);
+                            bw.write(">" + spectrumTitle);
                             bw.newLine();
 
                             ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                             Collections.sort(scores, Collections.reverseOrder());
                             for (int i = 0; i < scores.size(); i++) {
                                 for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
-                                    bw.write(assumption.getPeptide().getSequence());
-                                    if (i < scores.size() - 1) {
-                                        bw.write(";");
-                                    }
+                                    bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
+                                    bw.newLine();
                                 }
-                            }
-                            bw.newLine();
+                            }                            
                         }
                     }
                 }
@@ -1025,10 +1017,13 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             w.close();
             JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".",
                     "File Saved", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
                     + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            deNovoGUI.catchException(ex);
         }
     }//GEN-LAST:event_exportAllAssumptionsJMenuItemActionPerformed
 

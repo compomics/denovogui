@@ -1536,6 +1536,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     public void setOutputFolder(File outputFolder) {
         this.outputFolder = outputFolder;
     }
+    
+    /**
+     * Gets the output folder.
+     * @return outputFolder Output folder.
+     */
+    public File getOutputFolder() {
+        return outputFolder;
+    }
 
     /**
      * Sets the PepNovo folder.
