@@ -963,7 +963,6 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             }
 
         }
-
     }//GEN-LAST:event_exportSingleAssumptionsJMenuItemActionPerformed
 
     /**
@@ -1015,8 +1014,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             }
             bw.close();
             w.close();
-            JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".",
-                    "File Saved", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (IOException e) {
             e.printStackTrace();
