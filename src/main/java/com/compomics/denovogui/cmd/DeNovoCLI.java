@@ -4,6 +4,7 @@ import com.compomics.denovogui.DeNovoSearchHandler;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.identification.SearchParametersInputBean;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
 import java.io.PrintWriter;
@@ -109,7 +110,12 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }
-
+            // Load the spectra into the factory
+            SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+            for (File spectrumFile : searchParametersInputBean.getSpectrumFiles()) {
+                 spectrumFactory.addSpectra(spectrumFile);
+            }
+            
             DeNovoSearchHandler searchHandler = new DeNovoSearchHandler(pepNovoFolder);
             searchHandler.startSearch(searchParametersInputBean.getSpectrumFiles(), searchParametersInputBean.getSearchParameters(), searchParametersInputBean.getOutputFile(), waitingHandlerCLIImpl);
         } catch (Exception e) {
@@ -166,4 +172,6 @@ public class DeNovoCLI implements Callable {
     public String getJarFilePath() {
         return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoCLI.class").getPath(), "DeNovoGUI");
     }
+    
+    
 }

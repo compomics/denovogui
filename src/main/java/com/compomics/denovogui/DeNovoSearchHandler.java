@@ -1,10 +1,22 @@
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
+import static com.compomics.denovogui.gui.DeNovoGUI.CACHE_DIRECTORY;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.denovogui.io.TextExporter;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.util.Util;
+import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.experiment.MsExperiment;
+import com.compomics.util.experiment.ProteomicAnalysis;
+import com.compomics.util.experiment.SampleAnalysisSet;
+import com.compomics.util.experiment.biology.Sample;
+import com.compomics.util.experiment.identification.Identification;
+import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identifications.Ms2Identification;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedReader;
@@ -12,8 +24,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,6 +71,8 @@ public class DeNovoSearchHandler {
      * The enzyme file.
      */
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
+    private Identification identification;
+    private PepNovoIdfileReader idfileReader;
 
     /**
      * Constructor.
@@ -137,10 +154,23 @@ public class DeNovoSearchHandler {
         try {
             threadExecutor.shutdown();
             threadExecutor.awaitTermination(1, TimeUnit.DAYS);
-        } catch (InterruptedException ex) {
+            
+            ArrayList<File> outputFiles = new ArrayList<File>();
+            for (File file : spectrumFiles) {
+                File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
+                if (resultFile.exists()) {
+                    outputFiles.add(resultFile);
+                } 
+            }
+            // Import the PepNovo results.
+            identification = importPepNovoResults(outputFiles);
+            
+            // Auto-export the assumptions.            
+            TextExporter.exportAssumptions(new File(outputFolder, "assumptions.csv"), identification);
+        } catch (Exception ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
 
         if (debug) {
@@ -232,4 +262,60 @@ public class DeNovoSearchHandler {
         }
         return result;
     }
+    
+        /**
+     * Imports the PepNovo results from the given files and puts all matches in
+     * the identification
+     *
+     * @param outFiles the PepNovo result files as a list
+     */
+    public Identification importPepNovoResults(ArrayList<File> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+
+        //@TODO: let the user reference his project
+
+        String projectReference = "project reference";
+        String sampleReference = "sample reference";
+        int replicateNumber = 0;
+        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
+        MsExperiment experiment = new MsExperiment(projectReference);
+        Sample sample = new Sample(sampleReference);
+        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
+        experiment.addAnalysisSet(sample, analysisSet);
+        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
+        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
+
+        // The identification object
+        Identification identification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
+        identification.setIsDB(true);
+
+        // The cache used whenever the identification becomes too big
+        String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
+        ObjectsCache objectsCache = new ObjectsCache();
+        objectsCache.setAutomatedMemoryManagement(true);
+        identification.establishConnection(dbFolder, true, objectsCache);
+
+
+        // @TODO: use waiting dialog here?
+
+        for (File file : outFiles) {
+            // initiate the parser
+            idfileReader = new PepNovoIdfileReader(file);
+            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
+
+            // put the identification results in the identification object
+            identification.addSpectrumMatch(spectrumMatches);
+        }
+        
+        return identification;
+    }
+    
+    /**
+     * Returns the IdfileReader instance.
+     * @return IdfileReader instance.
+     */
+    public PepNovoIdfileReader getIdfileReader() {
+        return idfileReader;
+    }
+    
+    
 }

@@ -4,6 +4,7 @@ import com.compomics.denovogui.PepNovoIdfileReader;
 import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
@@ -37,9 +38,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -100,7 +104,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      * The de novo peptides table column header tooltips.
      */
     private ArrayList<String> deNovoPeptidesTableToolTips;
-
+    
     /**
      * Creates a new ResultsPanel.
      *
@@ -915,53 +919,21 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      * @param evt
      */
     private void exportSingleAssumptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSingleAssumptionsJMenuItemActionPerformed
+        File selectedFile = null;
 
-        Identification identification = deNovoGUI.getIdentification();
-        String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
-        if (identification.matchExists(psmKey)) {
-
-            File selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getOutputFolder().getAbsolutePath(), false);
+        try {            
+            selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
 
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
             }
+            TextExporter.exportSingleAssumptions(getSelectedSpectrumFile(), getSelectedSpectrumTitle(), selectedFile, deNovoGUI.getIdentification());
+            JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
 
-            SpectrumMatch spectrumMatch = null;
-            try {
-                spectrumMatch = identification.getSpectrumMatch(psmKey);
-
-                HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
-
-                if (selectedFile != null) {
-
-                    FileWriter w = new FileWriter(selectedFile);
-                    BufferedWriter bw = new BufferedWriter(w);
-
-                    // Write spectrum title.
-                    bw.write(">" + getSelectedSpectrumTitle());
-                    bw.newLine();
-
-                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                    Collections.sort(scores, Collections.reverseOrder());
-                    for (int i = 0; i < scores.size(); i++) {
-                        for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
-                            bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
-                            bw.newLine();                          
-                        }
-                    }
-                    bw.close();
-                    w.close();
-                    JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".",
-                            "File Saved", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                        + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
-            } catch (Exception ex) {
-                deNovoGUI.catchException(ex);
-            }
-
+        } catch (Exception ex) {
+            deNovoGUI.catchException(ex);
+            JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
+                    + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_exportSingleAssumptionsJMenuItemActionPerformed
 
@@ -972,56 +944,20 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      */
     private void exportAllAssumptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAllAssumptionsJMenuItemActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
-
-        if (selectedFile != null) {
-            deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
-        }
+        File selectedFile = null;
         try {
-            FileWriter w = new FileWriter(selectedFile);
-            BufferedWriter bw = new BufferedWriter(w);
+            selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
 
-            Identification identification = deNovoGUI.getIdentification();
-            // Iterate the spectrum files.
-            for (String fileName : spectrumFactory.getMgfFileNames()) {
-                // Iterate the spectrum titles.
-                for (String spectrumTitle : spectrumFactory.getSpectrumTitles(fileName)) {
-                    String psmKey = Spectrum.getSpectrumKey(fileName, spectrumTitle);
-
-                    if (identification.matchExists(psmKey)) {
-                        SpectrumMatch spectrumMatch = null;
-
-                        spectrumMatch = identification.getSpectrumMatch(psmKey);
-
-                        HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
-
-                        if (selectedFile != null) {
-                            // Write spectrum title.
-                            bw.write(">" + spectrumTitle);
-                            bw.newLine();
-
-                            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                            Collections.sort(scores, Collections.reverseOrder());
-                            for (int i = 0; i < scores.size(); i++) {
-                                for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
-                                    bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
-                                    bw.newLine();
-                                }
-                            }                            
-                        }
-                    }
-                }
+            if (selectedFile != null) {
+                deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
             }
-            bw.close();
-            w.close();
+            TextExporter.exportAssumptions(selectedFile, deNovoGUI.getIdentification());
             JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                    + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
         } catch (Exception ex) {
             deNovoGUI.catchException(ex);
+            JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
+                    + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_exportAllAssumptionsJMenuItemActionPerformed
 
