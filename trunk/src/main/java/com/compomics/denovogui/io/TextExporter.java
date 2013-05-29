@@ -1,7 +1,5 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.Util;
-import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
@@ -46,7 +44,8 @@ public class TextExporter {
      * @param identification The identification result.
      * @throws IOException Exception thrown when the file access fails.
      * @throws SQLException
-     * @throws ClassNotFoundException  
+     * @throws ClassNotFoundException
+     * @throws InterruptedException
      */
     public static void exportPSMs(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
         // Init the buffered writer.
@@ -89,9 +88,10 @@ public class TextExporter {
 
         writer.close();
     }
-    
+
     /**
      * This method exports the assumptions for a selected spectrum.
+     *
      * @param selectedSpectrumFile Selected MGF file name.
      * @param selectedSpectrumTitle Selected spectrum title.
      * @param selectedFile Selected output file.
@@ -99,7 +99,7 @@ public class TextExporter {
      * @throws IOException
      * @throws IllegalArgumentException
      * @throws SQLException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public static void exportSingleAssumptions(String selectedSpectrumFile, String selectedSpectrumTitle, File selectedFile, Identification identification) throws IOException, IllegalArgumentException, SQLException, ClassNotFoundException {
 
@@ -133,58 +133,58 @@ public class TextExporter {
             }
         }
     }
-    
+
     /**
      * This method exports the de novo assumptions.
      *
-     * @param filePath The file path to the exported file.
+     * @param selectedFile The file to export to.
      * @param identification The identification result.
      * @throws IOException Exception thrown when the file access fails.
      * @throws SQLException
-     * @throws ClassNotFoundException  
+     * @throws ClassNotFoundException
+     * @throws InterruptedException
      */
     public static void exportAssumptions(File selectedFile, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
-            FileWriter w = new FileWriter(selectedFile);
-            BufferedWriter bw = new BufferedWriter(w);
-            SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
-            
-            // Iterate the spectrum files.
-            for (String fileName : spectrumFactory.getMgfFileNames()) {
-                // Iterate the spectrum titles.
-                for (String spectrumTitle : spectrumFactory.getSpectrumTitles(fileName)) {
-                    String psmKey = Spectrum.getSpectrumKey(fileName, spectrumTitle);
 
-                    if (identification.matchExists(psmKey)) {
-                        SpectrumMatch spectrumMatch = null;
+        FileWriter w = new FileWriter(selectedFile);
+        BufferedWriter bw = new BufferedWriter(w);
+        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
 
-                        spectrumMatch = identification.getSpectrumMatch(psmKey);
+        // Iterate the spectrum files.
+        for (String fileName : spectrumFactory.getMgfFileNames()) {
+            // Iterate the spectrum titles.
+            for (String spectrumTitle : spectrumFactory.getSpectrumTitles(fileName)) {
+                String psmKey = Spectrum.getSpectrumKey(fileName, spectrumTitle);
 
-                        HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                if (identification.matchExists(psmKey)) {
 
-                        if (selectedFile != null) {
-                            // Write MGF file name.
-                            bw.write("MGF=" + fileName);
-                            bw.newLine();
-                            
-                            // Write spectrum title.
-                            bw.write("TITLE=" + spectrumTitle);
-                            bw.newLine();
+                    SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+                    HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
-                            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                            Collections.sort(scores, Collections.reverseOrder());
-                            for (int i = 0; i < scores.size(); i++) {
-                                for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
-                                    bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
-                                    bw.newLine();
-                                }
-                            }                            
-                        }
+                    if (selectedFile != null) {
+                        // Write MGF file name.
+                        bw.write("MGF=" + fileName);
                         bw.newLine();
+
+                        // Write spectrum title.
+                        bw.write("TITLE=" + spectrumTitle);
+                        bw.newLine();
+
+                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                        Collections.sort(scores, Collections.reverseOrder());
+                        for (int i = 0; i < scores.size(); i++) {
+                            for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
+                                bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
+                                bw.newLine();
+                            }
+                        }
                     }
+                    bw.newLine();
                 }
             }
-            bw.close();
-            w.close();
+        }
+        bw.close();
+        w.close();
     }
 
     /**
@@ -218,6 +218,4 @@ public class TextExporter {
                 + "rank score" + SEP
                 + "Pepnovo score" + SEP;
     }
-    
-    
 }

@@ -113,9 +113,9 @@ public class DeNovoCLI implements Callable {
             // Load the spectra into the factory
             SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             for (File spectrumFile : searchParametersInputBean.getSpectrumFiles()) {
-                 spectrumFactory.addSpectra(spectrumFile);
+                spectrumFactory.addSpectra(spectrumFile);
             }
-            
+
             DeNovoSearchHandler searchHandler = new DeNovoSearchHandler(pepNovoFolder);
             searchHandler.startSearch(searchParametersInputBean.getSpectrumFiles(), searchParametersInputBean.getSearchParameters(), searchParametersInputBean.getOutputFile(), waitingHandlerCLIImpl);
         } catch (Exception e) {
@@ -172,6 +172,4 @@ public class DeNovoCLI implements Callable {
     public String getJarFilePath() {
         return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoCLI.class").getPath(), "DeNovoGUI");
     }
-    
-    
 }

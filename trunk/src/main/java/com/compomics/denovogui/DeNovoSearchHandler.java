@@ -154,23 +154,23 @@ public class DeNovoSearchHandler {
         try {
             threadExecutor.shutdown();
             threadExecutor.awaitTermination(1, TimeUnit.DAYS);
-            
+
             ArrayList<File> outputFiles = new ArrayList<File>();
             for (File file : spectrumFiles) {
                 File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
                 if (resultFile.exists()) {
                     outputFiles.add(resultFile);
-                } 
+                }
             }
             // Import the PepNovo results.
             identification = importPepNovoResults(outputFiles);
-            
+
             // Auto-export the assumptions.            
             TextExporter.exportAssumptions(new File(outputFolder, "assumptions.csv"), identification);
         } catch (Exception ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
 
         if (debug) {
@@ -262,12 +262,19 @@ public class DeNovoSearchHandler {
         }
         return result;
     }
-    
-        /**
+
+    /**
      * Imports the PepNovo results from the given files and puts all matches in
-     * the identification
+     * the identification.
      *
      * @param outFiles the PepNovo result files as a list
+     * @return the Identification object
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws Exception 
      */
     public Identification importPepNovoResults(ArrayList<File> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
@@ -285,14 +292,14 @@ public class DeNovoSearchHandler {
         analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
 
         // The identification object
-        Identification identification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
-        identification.setIsDB(true);
+        Identification tempIdentification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
+        tempIdentification.setIsDB(true);
 
         // The cache used whenever the identification becomes too big
         String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
         ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
-        identification.establishConnection(dbFolder, true, objectsCache);
+        tempIdentification.establishConnection(dbFolder, true, objectsCache);
 
 
         // @TODO: use waiting dialog here?
@@ -303,19 +310,18 @@ public class DeNovoSearchHandler {
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
 
             // put the identification results in the identification object
-            identification.addSpectrumMatch(spectrumMatches);
+            tempIdentification.addSpectrumMatch(spectrumMatches);
         }
-        
-        return identification;
+
+        return tempIdentification;
     }
-    
+
     /**
      * Returns the IdfileReader instance.
+     *
      * @return IdfileReader instance.
      */
     public PepNovoIdfileReader getIdfileReader() {
         return idfileReader;
     }
-    
-    
 }
