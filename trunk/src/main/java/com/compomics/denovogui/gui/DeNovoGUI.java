@@ -1385,8 +1385,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                             //inputPanel.appendReport("File " + Util.getFileName(file) + " not found.", true, true); // @TODO: re-add me??
                         }
                     }
-
-                    importPepNovoResults(outputFiles);
+                    identification = deNovoSearchHandler.importPepNovoResults(outputFiles);
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
@@ -1420,51 +1419,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         for (File spectrumFile : mgfFiles) {
             //@TODO: add progress bar
             spectrumFactory.addSpectra(spectrumFile);
-        }
-    }
-
-    /**
-     * Imports the PepNovo results from the given files and puts all matches in
-     * the identification
-     *
-     * @param outFiles the PepNovo result files as a list
-     */
-    private void importPepNovoResults(ArrayList<File> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
-
-        //@TODO: let the user reference his project
-
-        String projectReference = "project reference";
-        String sampleReference = "sample reference";
-        int replicateNumber = 0;
-        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
-        MsExperiment experiment = new MsExperiment(projectReference);
-        Sample sample = new Sample(sampleReference);
-        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
-        experiment.addAnalysisSet(sample, analysisSet);
-        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
-        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
-
-        // The identification object
-        identification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
-        identification.setIsDB(true);
-
-        // The cache used whenever the identification becomes too big
-        String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
-        ObjectsCache objectsCache = new ObjectsCache();
-        objectsCache.setAutomatedMemoryManagement(true);
-        identification.establishConnection(dbFolder, true, objectsCache);
-
-
-        // @TODO: use waiting dialog here?
-
-        for (File file : outFiles) {
-            // initiate the parser
-            idfileReader = new PepNovoIdfileReader(file);
-            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
-
-            // put the identification results in the identification object
-            identification.addSpectrumMatch(spectrumMatches);
-
         }
     }
 
@@ -1824,7 +1778,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @return IdfileReader instance.
      */
     public PepNovoIdfileReader getIdfileReader() {
-        return idfileReader;
+        return deNovoSearchHandler.getIdfileReader();
     }
 
     /**

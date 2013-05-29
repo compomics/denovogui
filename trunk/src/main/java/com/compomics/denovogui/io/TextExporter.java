@@ -1,12 +1,15 @@
 package com.compomics.denovogui.io;
 
+import com.compomics.util.Util;
 import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.advocates.SearchEngine;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -86,7 +89,51 @@ public class TextExporter {
 
         writer.close();
     }
+    
+    /**
+     * This method exports the assumptions for a selected spectrum.
+     * @param selectedSpectrumFile Selected MGF file name.
+     * @param selectedSpectrumTitle Selected spectrum title.
+     * @param selectedFile Selected output file.
+     * @param identification De novo identification.
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
+    public static void exportSingleAssumptions(String selectedSpectrumFile, String selectedSpectrumTitle, File selectedFile, Identification identification) throws IOException, IllegalArgumentException, SQLException, ClassNotFoundException {
 
+        String psmKey = Spectrum.getSpectrumKey(selectedSpectrumFile, selectedSpectrumTitle);
+        if (identification.matchExists(psmKey)) {
+            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+
+            HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+
+            if (selectedFile != null) {
+                FileWriter w = new FileWriter(selectedFile);
+                BufferedWriter bw = new BufferedWriter(w);
+
+                // Write MGF file name.
+                bw.write("MGF=" + selectedSpectrumFile);
+                bw.newLine();
+                // Write spectrum title.
+                bw.write("TITLE=" + selectedSpectrumTitle);
+                bw.newLine();
+
+                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                Collections.sort(scores, Collections.reverseOrder());
+                for (int i = 0; i < scores.size(); i++) {
+                    for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
+                        bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
+                        bw.newLine();
+                    }
+                }
+                bw.close();
+                w.close();
+            }
+        }
+    }
+    
     /**
      * This method exports the de novo assumptions.
      *
@@ -96,53 +143,48 @@ public class TextExporter {
      * @throws SQLException
      * @throws ClassNotFoundException  
      */
-    public static void exportAssumptions(String filePath, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
-        // Init the buffered writer.
-        BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath)));
+    public static void exportAssumptions(File selectedFile, Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
+            FileWriter w = new FileWriter(selectedFile);
+            BufferedWriter bw = new BufferedWriter(w);
+            SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+            
+            // Iterate the spectrum files.
+            for (String fileName : spectrumFactory.getMgfFileNames()) {
+                // Iterate the spectrum titles.
+                for (String spectrumTitle : spectrumFactory.getSpectrumTitles(fileName)) {
+                    String psmKey = Spectrum.getSpectrumKey(fileName, spectrumTitle);
 
-        int count = 1;
+                    if (identification.matchExists(psmKey)) {
+                        SpectrumMatch spectrumMatch = null;
 
-        // header
-        writer.append(getAssumptionHeader());
-        writer.newLine();
+                        spectrumMatch = identification.getSpectrumMatch(psmKey);
 
-        PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
+                        HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
-        for (String spectrumFile : identification.getSpectrumFiles()) {
-            identification.loadSpectrumMatches(spectrumFile, null);
-            for (String spectrumTitle : identification.getSpectrumIdentification(spectrumFile)) {
-                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                int rank = 1;
-                HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.PEPNOVO);
-                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                Collections.sort(scores, Collections.reverseOrder());
-                for (double score : scores) {
-                    for (PeptideAssumption peptideAssumption : assumptionsMap.get(score)) {
-                        if (rank == 1) {
-                            writer.write(++count + SEP);
-                            writer.write(spectrumFile + SEP);
-                            writer.write(spectrumTitle + SEP);
-                        } else {
-                            writer.write(SEP + SEP + SEP);
+                        if (selectedFile != null) {
+                            // Write MGF file name.
+                            bw.write("MGF=" + fileName);
+                            bw.newLine();
+                            
+                            // Write spectrum title.
+                            bw.write("TITLE=" + spectrumTitle);
+                            bw.newLine();
+
+                            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                            Collections.sort(scores, Collections.reverseOrder());
+                            for (int i = 0; i < scores.size(); i++) {
+                                for (PeptideAssumption assumption : assumptionsMap.get(scores.get(i))) {
+                                    bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
+                                    bw.newLine();
+                                }
+                            }                            
                         }
-                        writer.write(++rank + SEP);
-                        Peptide peptide = peptideAssumption.getPeptide();
-                        //@TODO: add modifications
-                        writer.write(peptide.getSequence() + SEP);
-                        writer.write(peptide.getSequence().length() + SEP);
-                        writer.write(peptideAssumption.getIdentificationCharge().toString() + SEP);
-                        peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                        writer.write(peptideAssumptionDetails.getnTermGap() + SEP);
-                        writer.write(peptideAssumptionDetails.getcTermGap() + SEP);
-                        writer.write(peptideAssumption.getScore() + SEP);
-                        writer.write(peptideAssumptionDetails.getPepNovoScore() + SEP);
-                        writer.newLine();
+                        bw.newLine();
                     }
                 }
             }
-        }
-        writer.close();
+            bw.close();
+            w.close();
     }
 
     /**
@@ -176,4 +218,6 @@ public class TextExporter {
                 + "rank score" + SEP
                 + "Pepnovo score" + SEP;
     }
+    
+    
 }
