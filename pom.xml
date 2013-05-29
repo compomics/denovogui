@@ -53,6 +53,7 @@
 
     <!-- Build -->
     <build>
+
         <!-- Copy the resources required during building -->
         <resources>
             <resource>
