@@ -29,6 +29,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,6 +74,8 @@ public class DeNovoSearchHandler {
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
     private Identification identification;
     private PepNovoIdfileReader idfileReader;
+    private File mergedOutFile;
+    private List<File> chunkFiles;   
 
     /**
      * Constructor.
@@ -112,7 +115,6 @@ public class DeNovoSearchHandler {
         if (debug) {
             System.out.println("number of cores:" + nCores);
         }
-
         // Start a fixed thread pool
         ExecutorService threadExecutor = Executors.newFixedThreadPool(nCores);
 
@@ -131,7 +133,7 @@ public class DeNovoSearchHandler {
                 System.out.println("chunk size: " + chunkSize);
             }
 
-            List<File> chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
+            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
 
             // Distribute the chunked spectra to the different jobs.
             for (File spectrumFile : chunkFiles) {
@@ -143,41 +145,54 @@ public class DeNovoSearchHandler {
         } catch (IOException ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
         // Execute the jobs from the queue.
-        for (PepnovoJob job : jobs) {
-            threadExecutor.execute(job);
-        }
+        Iterator<PepnovoJob> iterator = jobs.iterator();
+        while (iterator.hasNext()) {
+            PepnovoJob job = iterator.next();
+            threadExecutor.execute(job);            
+        }        
 
-        // Wait for executor service to shutdown (necessary for reliable exectime calculation.
+        // Wait for executor service to shutdown.      
+        threadExecutor.shutdown();             
         try {
-            threadExecutor.shutdown();
-            threadExecutor.awaitTermination(1, TimeUnit.DAYS);
-
+            threadExecutor.awaitTermination(10, TimeUnit.MINUTES);
+            waitingHandler.setRunFinished();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        if (debug) {
+            double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
+            System.out.println("used time (sec): " + elapsedTime);
+        }
+    }
+    
+    /**
+     * This method parses the result and exports the assumptions automatically.
+     * @param outputFolder 
+     */
+    public void parseResults(File outputFolder) {
+        System.out.println("parsen...");
+        try {           
+            
             ArrayList<File> outputFiles = new ArrayList<File>();
-            for (File file : spectrumFiles) {
+            for (File file : chunkFiles) {
                 File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
+
                 if (resultFile.exists()) {
                     outputFiles.add(resultFile);
                 }
             }
+            final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
             // Import the PepNovo results.
-            identification = importPepNovoResults(outputFiles);
+            identification = importPepNovoResults(mergedFile);
 
             // Auto-export the assumptions.            
-            TextExporter.exportAssumptions(new File(outputFolder, "assumptions.csv"), identification);
+            TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.csv"), identification);
         } catch (Exception ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
-
-        if (debug) {
-            System.out.println("used time (sec): " + elapsedTime);
-        }
     }
-
+    
     /**
      * Returns a string with the modifications used.
      *
@@ -267,7 +282,7 @@ public class DeNovoSearchHandler {
      * Imports the PepNovo results from the given files and puts all matches in
      * the identification.
      *
-     * @param outFiles the PepNovo result files as a list
+     * @param outFile the PepNovo result out file
      * @return the Identification object
      * @throws SQLException
      * @throws FileNotFoundException
@@ -276,7 +291,7 @@ public class DeNovoSearchHandler {
      * @throws ClassNotFoundException
      * @throws Exception 
      */
-    public Identification importPepNovoResults(ArrayList<File> outFiles) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public Identification importPepNovoResults(File outFile) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         //@TODO: let the user reference his project
 
@@ -300,18 +315,15 @@ public class DeNovoSearchHandler {
         ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
         tempIdentification.establishConnection(dbFolder, true, objectsCache);
+        
+        // @TODO: use waiting dialog here? 
+        
+        // initiate the parser
+        idfileReader = new PepNovoIdfileReader(outFile);
+        HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
 
-
-        // @TODO: use waiting dialog here?
-
-        for (File file : outFiles) {
-            // initiate the parser
-            idfileReader = new PepNovoIdfileReader(file);
-            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
-
-            // put the identification results in the identification object
-            tempIdentification.addSpectrumMatch(spectrumMatches);
-        }
+        // put the identification results in the identification object
+        tempIdentification.addSpectrumMatch(spectrumMatches);
 
         return tempIdentification;
     }
@@ -323,5 +335,14 @@ public class DeNovoSearchHandler {
      */
     public PepNovoIdfileReader getIdfileReader() {
         return idfileReader;
+    }
+    
+    /**
+     * Returns the identification object.
+     * 
+     * @return Identification object.
+     */
+    public Identification getIdentification() {
+        return identification;
     }
 }

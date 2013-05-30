@@ -110,8 +110,7 @@ public abstract class Job implements Executable, Runnable {
 
         try {
             proc.waitFor();
-            setStatus(JobStatus.FINISHED);
-            waitingHandler.setRunFinished();
+            setStatus(JobStatus.FINISHED);            
         } catch (InterruptedException e) {
             setError(e.getMessage());
             setStatus(JobStatus.ERROR);

@@ -161,14 +161,14 @@ public class TextExporter {
                     SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
                     HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
-                    if (selectedFile != null) {
+                    if (selectedFile != null && assumptionsMap != null) {
                         // Write MGF file name.
                         bw.write("MGF=" + fileName);
                         bw.newLine();
 
                         // Write spectrum title.
                         bw.write("TITLE=" + spectrumTitle);
-                        bw.newLine();
+                        bw.newLine();                        
 
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores, Collections.reverseOrder());
@@ -177,7 +177,7 @@ public class TextExporter {
                                 bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
                                 bw.newLine();
                             }
-                        }
+                        }                        
                     }
                     bw.newLine();
                 }

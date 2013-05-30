@@ -155,8 +155,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 if (endIndex == -1) {
                     endIndex = formatted.lastIndexOf("(SQS");
                 }
-                spectrumTitle = formatted.substring(0, endIndex).trim();
-                index.put(spectrumTitle, currentIndex);
+                
+                // Condition: Skip problematic spectra not containing (SQS) at the end of the line.
+                if(endIndex > -1){
+                    spectrumTitle = formatted.substring(0, endIndex).trim();
+                    index.put(spectrumTitle, currentIndex);                                  
+                } else {                    
+                }
+                
                 if (waitingHandler != null) {
                     if (waitingHandler.isRunCanceled()) {
                         break;
@@ -187,8 +193,11 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
             int cpt = 1;
             bufferedRandomAccessFile.seek(index.get(title));
-            String line = bufferedRandomAccessFile.getNextLine();
-            if (!line.equals(tableHeader)) {
+            String line = bufferedRandomAccessFile.getNextLine();       
+            boolean solutionsFound = true;
+            if (line.startsWith("# No") || line.startsWith("# Charge")) {
+               solutionsFound = false;
+            } else if (!line.equals(tableHeader)) {
                 throw new IllegalArgumentException("Unrecognized table format. Expected: \"" + tableHeader + "\", found:\"" + line + "\".");
             }
 
@@ -197,7 +206,10 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 currentMatch.addHit(Advocate.PEPNOVO, getAssumptionFromLine(line, cpt));
                 cpt++;
             }
-            spectrumMatches.add(currentMatch);
+            if(solutionsFound){
+                spectrumMatches.add(currentMatch);
+            } 
+            
             if (waitingHandler != null) {
                 if (waitingHandler.isRunCanceled()) {
                     break;
