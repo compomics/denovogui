@@ -179,7 +179,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
-        querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
+        querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());        
         querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
         querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
@@ -1075,10 +1075,12 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             if (identification.matchExists(psmKey)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
                 HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
-                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                Collections.sort(scores, Collections.reverseOrder());
-                for (Double score : scores) {
-                    assumptions.addAll(assumptionsMap.get(score));
+                if (assumptionsMap != null) {
+                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                    Collections.sort(scores, Collections.reverseOrder());
+                    for (Double score : scores) {
+                        assumptions.addAll(assumptionsMap.get(score));
+                    }
                 }
             }
             TableModel tableModel = new SpectrumMatchTableModel(assumptions);

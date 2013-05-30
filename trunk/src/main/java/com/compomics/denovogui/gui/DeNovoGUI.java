@@ -23,6 +23,7 @@ import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.denovogui.PepNovoIdfileReader;
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
@@ -813,14 +814,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         waitingDialog.setLocationRelativeTo(this);
 
         startSearch(waitingDialog);
-
-        if (!waitingDialog.isRunCanceled()) {
-            try {
-                displayResults();
-            } catch (Exception e) {
-                catchException(e);
-            }
-        }
+        
     }//GEN-LAST:event_searchButtonActionPerformed
 
     /**
@@ -1304,27 +1298,33 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         protected Object doInBackground() throws Exception {
 
-            try {
+            try {                
                 loadSpectra(spectrumFiles);
-                deNovoSearchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
+                deNovoSearchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);                
             } catch (Exception e) {
                 catchException(e);
             }
-
             return 0;
         }
-
-        /**
-         * Returns the result when the PepNovo+ has finished.
-         */
-        public void finished() {
+        
+        @Override
+        protected void done() {
             finished = true;
+            
             if (!waitingHandler.isRunCanceled()) {
                 waitingHandler.appendReport("The de novo search has finished.", true, true);
                 waitingHandler.setRunFinished();
+            }     
+            
+            if (!waitingDialog.isRunCanceled()) {
+                try {
+                    displayResults();
+                } catch (Exception e) {
+                    catchException(e);
+                }
             }
-        }
-
+        }      
+   
         /**
          * Returns a boolean indicating whether the searches have finished.
          *
@@ -1372,20 +1372,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             @Override
             public void run() {
 
-                try {
-
-                    // @TODO: use progress bar to show actual progress
-
-                    ArrayList<File> outputFiles = new ArrayList<File>();
-                    for (File file : spectrumFiles) {
-                        File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
-                        if (resultFile.exists()) {
-                            outputFiles.add(resultFile);
-                        } else {
-                            //inputPanel.appendReport("File " + Util.getFileName(file) + " not found.", true, true); // @TODO: re-add me??
-                        }
-                    }
-                    identification = deNovoSearchHandler.importPepNovoResults(outputFiles);
+                try {         
+                    deNovoSearchHandler.parseResults(outputFolder);
+                    identification = deNovoSearchHandler.getIdentification();
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!

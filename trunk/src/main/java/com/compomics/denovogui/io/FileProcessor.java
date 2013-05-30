@@ -105,10 +105,49 @@ public class FileProcessor {
                 }
             }
         }
-
         br.close();
         bos.flush();
         bos.close();
         return chunkedFiles;
+    }
+    
+    /**
+     * Merges and deletes the (splitted) output files.
+     *
+     * @param outFiles The output files to be merged.     
+     * @return Merged output file.
+     * @throws IOException
+     */
+    public static File mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
+        File first = outFiles.get(0);
+        File mergedFile = new File(first.getParent(), first.getName().substring(0, first.getName().lastIndexOf("_")) + ".mgf.out");
+        BufferedWriter bWriter = new BufferedWriter(new FileWriter(mergedFile));
+        String line;
+        boolean isContent;
+        
+        for (File file : outFiles) {            
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            isContent = false;
+            while ((line = reader.readLine()) != null) {
+                if(line.startsWith(">>")){
+                    isContent = true;
+                }
+                if (isContent) {
+                    if (!line.startsWith("#Processed")) {
+                        bWriter.write(line);
+                        bWriter.newLine();
+                    }
+                }
+            }            
+            reader.close();
+            
+            // Delete redundant output files.
+            if(file.exists()) file.delete();
+            
+        }
+        bWriter.flush();
+        bWriter.close();
+        
+        return mergedFile;
     }
 }
