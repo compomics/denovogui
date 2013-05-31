@@ -55,7 +55,7 @@ public class DeNovoSearchHandler {
     /**
      * If true, debug output will be given.
      */
-    private boolean debug = true;
+    private boolean debug = false;
     /**
      * Default PTM selection.
      */
@@ -75,7 +75,7 @@ public class DeNovoSearchHandler {
     private Identification identification;
     private PepNovoIdfileReader idfileReader;
     private File mergedOutFile;
-    private List<File> chunkFiles;   
+    private List<File> chunkFiles;
 
     /**
      * Constructor.
@@ -149,26 +149,27 @@ public class DeNovoSearchHandler {
         Iterator<PepnovoJob> iterator = jobs.iterator();
         while (iterator.hasNext()) {
             PepnovoJob job = iterator.next();
-            threadExecutor.execute(job);            
-        }        
+            threadExecutor.execute(job);
+        }
 
         // Wait for executor service to shutdown.      
-        threadExecutor.shutdown();             
+        threadExecutor.shutdown();
         try {
             threadExecutor.awaitTermination(12, TimeUnit.HOURS);
             waitingHandler.setRunFinished();
         } catch (InterruptedException ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
         if (debug) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
             System.out.println("used time (sec): " + elapsedTime);
         }
     }
-    
+
     /**
      * This method parses the result and exports the assumptions automatically.
-     * @param outputFolder 
+     *
+     * @param outputFolder
      */
     public void parseResults(File outputFolder) {        
         try {       
@@ -185,12 +186,12 @@ public class DeNovoSearchHandler {
             identification = importPepNovoResults(mergedFile);
 
             // Auto-export the assumptions.                 
-            TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.csv"), identification);
+            TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
         } catch (Exception ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Returns a string with the modifications used.
      *
@@ -287,7 +288,7 @@ public class DeNovoSearchHandler {
      * @throws IOException
      * @throws IllegalArgumentException
      * @throws ClassNotFoundException
-     * @throws Exception 
+     * @throws Exception
      */
     public Identification importPepNovoResults(File outFile) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
@@ -313,9 +314,9 @@ public class DeNovoSearchHandler {
         ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
         tempIdentification.establishConnection(dbFolder, true, objectsCache);
-        
+
         // @TODO: use waiting dialog here? 
-        
+
         // initiate the parser
         idfileReader = new PepNovoIdfileReader(outFile);
         HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
@@ -334,10 +335,10 @@ public class DeNovoSearchHandler {
     public PepNovoIdfileReader getIdfileReader() {
         return idfileReader;
     }
-    
+
     /**
      * Returns the identification object.
-     * 
+     *
      * @return Identification object.
      */
     public Identification getIdentification() {
