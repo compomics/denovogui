@@ -109,7 +109,7 @@ public abstract class Job implements Executable, Runnable {
         scan.close();
 
         try {
-            proc.waitFor();
+            proc.waitFor();            
             setStatus(JobStatus.FINISHED);            
         } catch (InterruptedException e) {
             setError(e.getMessage());
