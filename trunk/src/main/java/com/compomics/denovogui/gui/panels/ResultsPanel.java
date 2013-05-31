@@ -922,7 +922,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
         File selectedFile = null;
 
         try {            
-            selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
+            selectedFile = Util.getUserSelectedFile(this, ".txt", "(Comma-Separated Values) *.txt", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
 
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
@@ -946,7 +946,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
         File selectedFile = null;
         try {
-            selectedFile = Util.getUserSelectedFile(this, ".csv", "(Comma-Separated Values) *.csv", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
+            selectedFile = Util.getUserSelectedFile(this, ".txt", "(Comma-Separated Values) *.txt", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
 
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
