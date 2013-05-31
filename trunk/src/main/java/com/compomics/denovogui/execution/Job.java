@@ -90,16 +90,10 @@ public abstract class Job implements Executable, Runnable {
                 writer.write(temp);
                 writer.newLine();
 
-                if (temp.endsWith("done.") || temp.endsWith("loaded.") || temp.endsWith("started.") || temp.endsWith("loaded.")) {
-                    temp += "\n";
-                } else {
-                    temp += " ";
-                }
-
                 if (temp.startsWith(">>") || temp.startsWith("#Processed spectra")) {
                     waitingHandler.increaseProgressValue();
+                    waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressBar().getValue() + "/" + waitingHandler.getPrimaryProgressBar().getMaximum() + ".", true, true);
                 }
-                waitingHandler.appendReport(temp, false, true); 
             }
             writer.flush();
             writer.close();
@@ -109,8 +103,8 @@ public abstract class Job implements Executable, Runnable {
         scan.close();
 
         try {
-            proc.waitFor();            
-            setStatus(JobStatus.FINISHED);            
+            proc.waitFor();
+            setStatus(JobStatus.FINISHED);
         } catch (InterruptedException e) {
             setError(e.getMessage());
             setStatus(JobStatus.ERROR);
@@ -132,7 +126,7 @@ public abstract class Job implements Executable, Runnable {
 
     /**
      * Returns the error message of the job.
-     * 
+     *
      * @param error the error
      */
     public void setError(String error) {

@@ -53,10 +53,6 @@ public class DeNovoSearchHandler {
      */
     private File pepNovoFolder;
     /**
-     * If true, debug output will be given.
-     */
-    private boolean debug = false;
-    /**
      * Default PTM selection.
      */
     public static final String DENOVOGUI_COMFIGURATION_FILE = "DeNovoGUI_configuration.txt";
@@ -72,9 +68,21 @@ public class DeNovoSearchHandler {
      * The enzyme file.
      */
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
+    /**
+     * The identification object.
+     */
     private Identification identification;
+    /**
+     * The identification file reader.
+     */
     private PepNovoIdfileReader idfileReader;
+    /**
+     * The merged output file.
+     */
     private File mergedOutFile;
+    /**
+     * The chunk files.
+     */
     private List<File> chunkFiles;
 
     /**
@@ -97,7 +105,7 @@ public class DeNovoSearchHandler {
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         long startTime = System.nanoTime();
-        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();        
+        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
 
         // Write the modification file
@@ -111,10 +119,8 @@ public class DeNovoSearchHandler {
 
         // Get the number of available cores
         int nCores = Runtime.getRuntime().availableProcessors();
+        waitingHandler.appendReport("Number of cores: " + nCores + ".", true, true);
 
-        if (debug) {
-            System.out.println("number of cores:" + nCores);
-        }
         // Start a fixed thread pool
         ExecutorService threadExecutor = Executors.newFixedThreadPool(nCores);
 
@@ -122,17 +128,12 @@ public class DeNovoSearchHandler {
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
         try {
             int nSpectra = FileProcessor.getNumberOfSpectra(spectrumFiles);
-
-            if (debug) {
-                System.out.println("no. spectra: " + nSpectra);
-            }
+            waitingHandler.appendReport("Number of spectra: " + nSpectra + ".", true, true);
 
             int chunkSize = nSpectra / nCores;
+            waitingHandler.appendReport("Number of spectra per core: " + chunkSize + ".", true, true);
 
-            if (debug) {
-                System.out.println("chunk size: " + chunkSize);
-            }
-
+            waitingHandler.appendReport("Preparing the spectra.", true, true);
             chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
 
             // Distribute the chunked spectra to the different jobs.
@@ -145,6 +146,10 @@ public class DeNovoSearchHandler {
         } catch (IOException ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        waitingHandler.appendReportEndLine();
+        waitingHandler.appendReport("Starting the de novo sequencing.", true, true);
+
         // Execute the jobs from the queue.
         Iterator<PepnovoJob> iterator = jobs.iterator();
         while (iterator.hasNext()) {
@@ -160,9 +165,10 @@ public class DeNovoSearchHandler {
         } catch (InterruptedException ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (debug) {
+
+        if (!waitingHandler.isRunCanceled()) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
-            System.out.println("used time (sec): " + elapsedTime);
+            waitingHandler.appendReport("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
         }
     }
 
@@ -171,8 +177,8 @@ public class DeNovoSearchHandler {
      *
      * @param outputFolder
      */
-    public void parseResults(File outputFolder) {        
-        try {       
+    public void parseResults(File outputFolder) {
+        try {
             ArrayList<File> outputFiles = new ArrayList<File>();
             for (File file : chunkFiles) {
                 File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
@@ -180,7 +186,7 @@ public class DeNovoSearchHandler {
                 if (resultFile.exists()) {
                     outputFiles.add(resultFile);
                 }
-            }            
+            }
             final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
             // Import the PepNovo results.            
             identification = importPepNovoResults(mergedFile);

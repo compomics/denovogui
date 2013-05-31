@@ -1216,6 +1216,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param waitingHandler the waiting handler
      */
     public void startSearch(WaitingHandler waitingHandler) {
+
         searchWorker = new SearchTask(waitingHandler);
         searchWorker.execute();
 
@@ -1285,8 +1286,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         protected Object doInBackground() throws Exception {
 
-            try {                
+            waitingHandler.appendReport("Starting DeNovoGUI.", true, true);
+            waitingHandler.appendReportEndLine();
+
+            try {
+                waitingHandler.appendReport("Loading the spectra.", true, true);
                 loadSpectra(spectrumFiles);
+                waitingHandler.appendReport("Done loading the spectra.", true, true);
                 deNovoSearchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);                
             } catch (Exception e) {
                 catchException(e);
@@ -1299,7 +1305,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             finished = true;
             
             if (!waitingHandler.isRunCanceled()) {
-                waitingHandler.appendReport("The de novo search has finished.", true, true);
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("The de novo search is complete.", true, true);
                 waitingHandler.setRunFinished();
             }     
             
