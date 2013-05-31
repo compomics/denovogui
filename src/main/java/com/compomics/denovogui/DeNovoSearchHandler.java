@@ -55,7 +55,7 @@ public class DeNovoSearchHandler {
     /**
      * If true, debug output will be given.
      */
-    private boolean debug = false;
+    private boolean debug = true;
     /**
      * Default PTM selection.
      */
@@ -97,7 +97,7 @@ public class DeNovoSearchHandler {
     public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         long startTime = System.nanoTime();
-        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();        
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
 
         // Write the modification file
@@ -155,7 +155,7 @@ public class DeNovoSearchHandler {
         // Wait for executor service to shutdown.      
         threadExecutor.shutdown();             
         try {
-            threadExecutor.awaitTermination(10, TimeUnit.MINUTES);
+            threadExecutor.awaitTermination(12, TimeUnit.HOURS);
             waitingHandler.setRunFinished();
         } catch (InterruptedException ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -170,10 +170,8 @@ public class DeNovoSearchHandler {
      * This method parses the result and exports the assumptions automatically.
      * @param outputFolder 
      */
-    public void parseResults(File outputFolder) {
-        System.out.println("parsen...");
-        try {           
-            
+    public void parseResults(File outputFolder) {        
+        try {       
             ArrayList<File> outputFiles = new ArrayList<File>();
             for (File file : chunkFiles) {
                 File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
@@ -181,12 +179,12 @@ public class DeNovoSearchHandler {
                 if (resultFile.exists()) {
                     outputFiles.add(resultFile);
                 }
-            }
+            }            
             final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
-            // Import the PepNovo results.
+            // Import the PepNovo results.            
             identification = importPepNovoResults(mergedFile);
 
-            // Auto-export the assumptions.            
+            // Auto-export the assumptions.                 
             TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.csv"), identification);
         } catch (Exception ex) {
             Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);

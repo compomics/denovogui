@@ -2,29 +2,18 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSearchHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
-import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.gui.panels.ResultsPanel;
 import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CommandLineUtils;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.ToolFactory;
-import com.compomics.util.Util;
-import com.compomics.util.db.ObjectsCache;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
-import com.compomics.util.experiment.MsExperiment;
-import com.compomics.util.experiment.ProteomicAnalysis;
-import com.compomics.util.experiment.SampleAnalysisSet;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.denovogui.PepNovoIdfileReader;
-import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -48,7 +37,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -811,8 +799,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 new Properties().getVersion(),
                 true);
         waitingDialog.setCloseDialogWhenImportCompletes(true, true);
-        waitingDialog.setLocationRelativeTo(this);
-
+        waitingDialog.setLocationRelativeTo(this);        
         startSearch(waitingDialog);
         
     }//GEN-LAST:event_searchButtonActionPerformed
@@ -1334,6 +1321,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             return finished;
         }
     }
+    
+    
 
     /**
      * Loads the results of the given spectrum files and loads everything in the
