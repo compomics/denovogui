@@ -130,10 +130,15 @@ public class FileProcessor {
             isContent = false;
             while ((line = reader.readLine()) != null) {
                 if(line.startsWith(">>")){
-                    isContent = true;
+                    isContent = true;                    
                 }
                 if (isContent) {
-                    if (!line.startsWith("#Processed")) {
+                    if(line.contains("#Problem")) {
+                        bWriter.write(line.substring(0, line.indexOf("#Problem")));
+                        bWriter.newLine();
+                        bWriter.write("#Problem reading spectrum...");
+                        bWriter.newLine();
+                    } else if (!line.startsWith("#Processed")) {
                         bWriter.write(line);
                         bWriter.newLine();
                     }
