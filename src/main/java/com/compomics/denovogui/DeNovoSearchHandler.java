@@ -168,6 +168,7 @@ public class DeNovoSearchHandler {
 
         if (!waitingHandler.isRunCanceled()) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
+            System.out.println("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.");
             waitingHandler.appendReport("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
         }
     }

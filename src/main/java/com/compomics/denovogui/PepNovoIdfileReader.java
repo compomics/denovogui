@@ -195,9 +195,10 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             bufferedRandomAccessFile.seek(index.get(title));
             String line = bufferedRandomAccessFile.getNextLine();       
             boolean solutionsFound = true;
-            if (line.startsWith("# No") || line.startsWith("# Charge")) {
+            if (line.startsWith("# No") || line.startsWith("# Charge") || line.startsWith("#Problem") || line.startsWith("# too")) {
                solutionsFound = false;
             } else if (!line.equals(tableHeader)) {
+                System.out.println("line: " + line);
                 throw new IllegalArgumentException("Unrecognized table format. Expected: \"" + tableHeader + "\", found:\"" + line + "\".");
             }
 
