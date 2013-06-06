@@ -118,7 +118,7 @@ public class DeNovoSearchHandler {
         }
 
         // Get the number of available cores
-        int nCores = 2; //Runtime.getRuntime().availableProcessors();
+        int nCores = Runtime.getRuntime().availableProcessors();
         waitingHandler.appendReport("Number of cores: " + nCores + ".", true, true);
 
         // Start a fixed thread pool
