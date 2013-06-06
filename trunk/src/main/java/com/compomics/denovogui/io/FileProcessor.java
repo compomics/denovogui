@@ -112,6 +112,20 @@ public class FileProcessor {
     }
     
     /**
+     * Deletes the MGF file chunks.
+     * 
+     * @param mgfFiles The MGF file chunks.
+     * @throws IOException
+     */
+    public static void deleteChunkMgfFiles(List<File> mgfFiles) throws IOException {
+        
+        for (File file : mgfFiles) {             
+            // Delete redundant chunk files.
+            if(file.exists()) file.delete();
+        }
+    }
+    
+    /**
      * Merges and deletes the (splitted) output files.
      *
      * @param outFiles The output files to be merged.     

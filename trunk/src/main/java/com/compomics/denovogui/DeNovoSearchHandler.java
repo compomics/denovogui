@@ -118,7 +118,7 @@ public class DeNovoSearchHandler {
         }
 
         // Get the number of available cores
-        int nCores = Runtime.getRuntime().availableProcessors();
+        int nCores = 2; //Runtime.getRuntime().availableProcessors();
         waitingHandler.appendReport("Number of cores: " + nCores + ".", true, true);
 
         // Start a fixed thread pool
@@ -188,7 +188,12 @@ public class DeNovoSearchHandler {
                     outputFiles.add(resultFile);
                 }
             }
+            // Merge and delete output files.
             final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
+            
+            // Delete the mgf file chunks.
+            FileProcessor.deleteChunkMgfFiles(chunkFiles);
+            
             // Import the PepNovo results.            
             identification = importPepNovoResults(mergedFile);
 
