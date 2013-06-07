@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
@@ -12,7 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * <b>TrainingModelJob</b> <p> This job class runs the PepNovo+ model training.</p>
+ * <b>TrainingModelJob</b> <p> This job class runs the PepNovo+ model
+ * training.</p>
  *
  * @author Thilo Muth
  */
@@ -26,12 +23,10 @@ public class TrainingModelJob extends Job {
      * The file contains the paths to good training files.
      */
     private File goodTrainingFile;
-    
     /**
      * The file contains the paths to bad / crap files.
      */
     private File badTrainingFile;
-    
     /**
      * The search parameters.
      */
@@ -44,14 +39,13 @@ public class TrainingModelJob extends Job {
      * The output path.
      */
     private File outputFolder;
-    
     /**
      * The name of the (newly trained) model.
      */
     private String modelName;
-    
+
     /**
-     * Constructor for the TrainingModelJob..
+     * Constructor for the TrainingModelJob.
      *
      * @param pepNovoFolder The path to the PepNovo executable.
      * @param goodTrainingFile The good training file.
@@ -80,43 +74,42 @@ public class TrainingModelJob extends Job {
         // full path to executable
         procCommands.add(pepNovoFolder.getAbsolutePath() + "/" + PEPNOVO_EXE);
         procCommands.trimToSize();
-        
+
         // Add training tolerance
         procCommands.add("-train_model");
-        
+
         // Add estimated training fragment ion tolerance.
-        procCommands.add("-train_tolerance");        
-        procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));       
+        procCommands.add("-train_tolerance");
+        procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
 
         // Link to the good training file
         procCommands.add("-list");
         procCommands.add(goodTrainingFile.getAbsolutePath());
-        
+
         procCommands.add("-neg_spec_list");
         procCommands.add(badTrainingFile.getAbsolutePath());
-        
+
         /**
-         * You can specify specific start and end training stages with the flags -strat_train_idx and -end_train_idx (you might not want or need to train all model  types).
-           The relevant training steps described in this document are:
-            0  Partitioning according to size and charge (depending on amount of training data)
-            1  Choosing set of fragment ion types
-            2  Precursor ion and fragment ion mass tolerances
-            3  Sequence Quality Score models (SQS)
-            4  Precursor Mass Correction models (PMCR)
-            5  Breakage score models (PRM node scores)
-            6  PRM score normalizers
-            7  Edge score models
+         * You can specify specific start and end training stages with the flags
+         * -strat_train_idx and -end_train_idx (you might not want or need to
+         * train all model types). The relevant training steps described in this
+         * document are: 0 Partitioning according to size and charge (depending
+         * on amount of training data) 1 Choosing set of fragment ion types 2
+         * Precursor ion and fragment ion mass tolerances 3 Sequence Quality
+         * Score models (SQS) 4 Precursor Mass Correction models (PMCR) 5
+         * Breakage score models (PRM node scores) 6 PRM score normalizers 7
+         * Edge score models
          */
         // Model start step == 0
         procCommands.add("-start_train_idx");
         // TODO: Hard-coded value
         procCommands.add(String.valueOf(0));
-        
+
         // Model end step == 7         
         procCommands.add("-end_train_idx");
         // TODO: Hard-coded value
         procCommands.add(String.valueOf(7));
-                
+
         // Add Model
         procCommands.add("-model");
         procCommands.add(modelName);
@@ -130,19 +123,18 @@ public class TrainingModelJob extends Job {
 
         //TODO: Use output path here or is the model automatically written to the model folder ?
         //outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
-        
+
         procCommands.trimToSize();
 
         // Set the description - yet not used
         setDescription("MODEL TRAINING");
-        procBuilder = new ProcessBuilder(procCommands);        
+        procBuilder = new ProcessBuilder(procCommands);
         procBuilder.directory(pepNovoFolder);
 
         // set error out and std out to same stream
         procBuilder.redirectErrorStream(true);
     }
 
-  
     /**
      * Cancels the job by destroying the process.
      */
@@ -159,4 +151,3 @@ public class TrainingModelJob extends Job {
         super.run();
     }
 }
-
