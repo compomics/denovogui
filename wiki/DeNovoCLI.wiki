@@ -69,6 +69,9 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
 
 -pep_novo_folder        The folder where PepNovo+ is installed. 
                         Defaults to the version provided with DeNovoGUI.
+
+-threads                The number of threads to use for the processing. 
+                        Default is the number of cores available.
 }}}
 
 ==Comma Separated List==
