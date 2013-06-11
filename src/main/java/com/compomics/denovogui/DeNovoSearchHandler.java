@@ -84,6 +84,10 @@ public class DeNovoSearchHandler {
      * The chunk files.
      */
     private List<File> chunkFiles;
+    /**
+     * Number of threads to use for the processing.
+     */
+    private int nThreads = Runtime.getRuntime().availableProcessors(); // @TODO: should be moved to user preferences?
 
     /**
      * Constructor.
@@ -117,12 +121,11 @@ public class DeNovoSearchHandler {
             e.printStackTrace();
         }
 
-        // Get the number of available cores
-        int nCores = Runtime.getRuntime().availableProcessors();
-        waitingHandler.appendReport("Number of cores: " + nCores + ".", true, true);
+        // Get the number of available threads
+        waitingHandler.appendReport("Number of threads: " + nThreads + ".", true, true);
 
         // Start a fixed thread pool
-        ExecutorService threadExecutor = Executors.newFixedThreadPool(nCores);
+        ExecutorService threadExecutor = Executors.newFixedThreadPool(nThreads);
 
         // Job queue.
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
@@ -130,8 +133,8 @@ public class DeNovoSearchHandler {
             int nSpectra = FileProcessor.getNumberOfSpectra(spectrumFiles);
             waitingHandler.appendReport("Number of spectra: " + nSpectra + ".", true, true);
 
-            int chunkSize = nSpectra / nCores;
-            waitingHandler.appendReport("Number of spectra per core: " + chunkSize + ".", true, true);
+            int chunkSize = nSpectra / nThreads;
+            waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
 
             waitingHandler.appendReport("Preparing the spectra.", true, true);
             chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
@@ -355,5 +358,23 @@ public class DeNovoSearchHandler {
      */
     public Identification getIdentification() {
         return identification;
+    }
+
+    /**
+     * Get the number of threads to use for the processing.
+     *
+     * @return the mgfNSpectra
+     */
+    public int getNThreads() {
+        return nThreads;
+    }
+
+    /**
+     * Set the number of threads to use.
+     *
+     * @param nThreads the nThreads to set
+     */
+    public void setNThreads(int nThreads) {
+        this.nThreads = nThreads;
     }
 }

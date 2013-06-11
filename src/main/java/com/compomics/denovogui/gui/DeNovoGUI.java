@@ -151,7 +151,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
-    private PepNovoIdfileReader idfileReader;
 
     /**
      * Creates a new DeNovoGUI.
@@ -1263,6 +1262,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         // do nothing
     }
 
+    /**
+     * Returns a reference to the DeNovoGUI command line interface.
+     *
+     * @return a reference to the DeNovoGUI command line interface
+     */
+    public DeNovoSearchHandler getDeNovoSearchHandler() {
+        return deNovoSearchHandler;
+    }
+
     @SuppressWarnings("rawtypes")
     private class SearchTask extends SwingWorker {
 
@@ -1293,7 +1301,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 waitingHandler.appendReport("Loading the spectra.", true, true);
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
-                deNovoSearchHandler.startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);                
+                getDeNovoSearchHandler().startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
@@ -1369,8 +1377,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             public void run() {
 
                 try {         
-                    deNovoSearchHandler.parseResults(outputFolder);
-                    identification = deNovoSearchHandler.getIdentification();
+                    getDeNovoSearchHandler().parseResults(outputFolder);
+                    identification = getDeNovoSearchHandler().getIdentification();
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!

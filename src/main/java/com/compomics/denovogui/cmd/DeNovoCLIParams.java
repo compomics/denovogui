@@ -36,6 +36,7 @@ public class DeNovoCLIParams {
         aOptions.addOption(SearchParametersCLIParams.MGF_SPLITTING_LIMIT.id, true, SearchParametersCLIParams.MGF_SPLITTING_LIMIT.description);
         aOptions.addOption(SearchParametersCLIParams.MGF_MAX_SPECTRA.id, true, SearchParametersCLIParams.MGF_MAX_SPECTRA.description);
         aOptions.addOption(SearchParametersCLIParams.PEP_NOVO_LOCATION.id, true, SearchParametersCLIParams.PEP_NOVO_LOCATION.description);
+        aOptions.addOption(SearchParametersCLIParams.THREADS.id, true, SearchParametersCLIParams.THREADS.description);
 
         // note: remember to add new parameters to the getOptionsAsString below as well!!
     }
@@ -69,6 +70,7 @@ public class DeNovoCLIParams {
         output += "-" + String.format(formatter, SearchParametersCLIParams.CORRECT_PRECURSOR_MASS.id) + SearchParametersCLIParams.CORRECT_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.ESTIMATE_CHARGE.id) + SearchParametersCLIParams.ESTIMATE_CHARGE.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.FRAGMENTATION_MODEL.id) + SearchParametersCLIParams.FRAGMENTATION_MODEL.description + "\n";
+        output += "-" + String.format(formatter, SearchParametersCLIParams.THREADS.id) + SearchParametersCLIParams.THREADS.description + "\n\n";
 
         return output;
     }

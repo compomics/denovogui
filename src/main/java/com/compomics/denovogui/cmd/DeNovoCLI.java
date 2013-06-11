@@ -119,7 +119,11 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
             DeNovoSearchHandler searchHandler = new DeNovoSearchHandler(pepNovoFolder);
-            searchHandler.startSearch(searchParametersInputBean.getSpectrumFiles(), searchParametersInputBean.getSearchParameters(), searchParametersInputBean.getOutputFile(), waitingHandlerCLIImpl);
+            searchHandler.setNThreads(searchParametersInputBean.getNThreads());
+            searchHandler.startSearch(searchParametersInputBean.getSpectrumFiles(), 
+                    searchParametersInputBean.getSearchParameters(), 
+                    searchParametersInputBean.getOutputFile(),
+                    waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();
         }
