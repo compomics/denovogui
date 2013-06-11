@@ -95,6 +95,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         enzymeComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
         modelComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
 
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSearchHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
+
         fixedModsJScrollPane.getViewport().setOpaque(false);
         variableModsJScrollPane.getViewport().setOpaque(false);
         modificationsJScrollPane.getViewport().setOpaque(false);
@@ -288,6 +290,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         spectrumChargeCheckBox = new javax.swing.JCheckBox();
         spectrumPrecursorCheckBox = new javax.swing.JCheckBox();
         filterLowQualityCheckBox = new javax.swing.JCheckBox();
+        numberOfThreadsLabel = new javax.swing.JLabel();
+        numberOfThreadsSpinner = new javax.swing.JSpinner();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         configurationFilePanelSettings = new javax.swing.JPanel();
@@ -368,40 +372,46 @@ public class SettingsDialog extends javax.swing.JDialog {
         filterLowQualityCheckBox.setIconTextGap(15);
         filterLowQualityCheckBox.setOpaque(false);
 
+        numberOfThreadsLabel.setText("No. Threads/Cores");
+
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+
         javax.swing.GroupLayout searchSettingsPanelLayout = new javax.swing.GroupLayout(searchSettingsPanel);
         searchSettingsPanel.setLayout(searchSettingsPanelLayout);
         searchSettingsPanelLayout.setHorizontalGroup(
             searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchSettingsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(searchSettingsPanelLayout.createSequentialGroup()
+                            .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(precursorMassToleranceLabel)
+                                .addComponent(fragmentMassToleranceLabel)
+                                .addComponent(enzymeLabel))
+                            .addGap(18, 18, 18))
+                        .addGroup(searchSettingsPanelLayout.createSequentialGroup()
+                            .addComponent(numberOfSolutionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGap(28, 28, 28)))
                     .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(precursorMassToleranceLabel)
-                            .addComponent(fragmentMassToleranceLabel)
-                            .addComponent(enzymeLabel))
-                        .addGap(18, 18, 18))
-                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(numberOfSolutionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(28, 28, 28)))
+                        .addComponent(numberOfThreadsLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(81, 81, 81)
                 .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(spectrumChargeCheckBox)
-                            .addComponent(spectrumPrecursorCheckBox)
-                            .addComponent(filterLowQualityCheckBox))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
                         .addComponent(modelLabel)
                         .addGap(31, 31, 31)
-                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spectrumChargeCheckBox)
+                    .addComponent(spectrumPrecursorCheckBox)
+                    .addComponent(filterLowQualityCheckBox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         searchSettingsPanelLayout.setVerticalGroup(
             searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -412,21 +422,31 @@ public class SettingsDialog extends javax.swing.JDialog {
                     .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(modelLabel)
                     .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fragmentMassToleranceLabel)
-                    .addComponent(spectrumChargeCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(precursorMassToleranceLabel)
-                    .addComponent(spectrumPrecursorCheckBox))
-                .addGap(3, 3, 3)
-                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfSolutionsLabel)
-                    .addComponent(filterLowQualityCheckBox))
+                .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fragmentMassToleranceLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(precursorMassToleranceLabel))
+                        .addGap(5, 5, 5)
+                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(numberOfSolutionsLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(searchSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(numberOfThreadsLabel)))
+                    .addGroup(searchSettingsPanelLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(spectrumChargeCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spectrumPrecursorCheckBox)
+                        .addGap(3, 3, 3)
+                        .addComponent(filterLowQualityCheckBox)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -607,7 +627,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addComponent(addFixedModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeFixedModification)
-                        .addContainerGap(61, Short.MAX_VALUE))
+                        .addContainerGap(27, Short.MAX_VALUE))
                     .addComponent(fixedModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -698,7 +718,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addComponent(addVariableModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeVariableModification)
-                        .addContainerGap(62, Short.MAX_VALUE))
+                        .addContainerGap(39, Short.MAX_VALUE))
                     .addComponent(variableModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -783,7 +803,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(modificationsPanel1Layout.createSequentialGroup()
                 .addGroup(modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(modificationTypesSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
+                    .addComponent(modificationTypesSplitPane)
                     .addComponent(availableModsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -832,7 +852,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -844,6 +864,9 @@ public class SettingsDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+
+        // store the number of threads
+        deNovoGUI.getDeNovoSearchHandler().setNThreads((Integer) numberOfThreadsSpinner.getValue());
 
         SearchParameters tempSearchParameters = getSearchParametersFromGUI();
 
@@ -1368,6 +1391,8 @@ public class SettingsDialog extends javax.swing.JDialog {
     private javax.swing.JTable modificationsTable;
     private javax.swing.JLabel numberOfSolutionsLabel;
     private javax.swing.JSpinner numberOfSolutionsSpinner;
+    private javax.swing.JLabel numberOfThreadsLabel;
+    private javax.swing.JSpinner numberOfThreadsSpinner;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel precursorMassToleranceLabel;
     private javax.swing.JSpinner precursorMassToleranceSpinner;

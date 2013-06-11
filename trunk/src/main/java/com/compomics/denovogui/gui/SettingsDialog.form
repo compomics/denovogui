@@ -32,7 +32,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="backgroundPanel" max="32767" attributes="0"/>
+          <Component id="backgroundPanel" min="-2" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -99,18 +99,24 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="enzymeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="enzymeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="numberOfSolutionsLabel" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
-                          <Group type="102" attributes="0">
-                              <Component id="numberOfSolutionsLabel" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="numberOfThreadsLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -118,24 +124,20 @@
                           <Component id="numberOfSolutionsSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           <Component id="precursorMassToleranceSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           <Component id="enzymeComboBox" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="numberOfThreadsSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
                               <Component id="modelLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                               <Component id="modelComboBox" min="-2" pref="210" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
+                          <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
+                          <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -149,23 +151,37 @@
                           <Component id="modelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="enzymeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumChargeCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumPrecursorCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="filterLowQualityCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                              <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -257,6 +273,18 @@
                 <Property name="text" type="java.lang.String" value="Filter Low Quality Spectra"/>
                 <Property name="iconTextGap" type="int" value="15"/>
                 <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="numberOfThreadsLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="No. Threads/Cores"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JSpinner" name="numberOfThreadsSpinner">
+              <Properties>
+                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                  <SpinnerModel initial="1" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>
@@ -451,7 +479,7 @@
                                       <Component id="addFixedModification" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="removeFixedModification" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="61" max="32767" attributes="0"/>
+                                      <EmptySpace pref="27" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="fixedModsJScrollPane" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -556,7 +584,7 @@
                                       <Component id="addVariableModification" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="removeVariableModification" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="62" max="32767" attributes="0"/>
+                                      <EmptySpace pref="39" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="variableModsJScrollPane" alignment="0" max="32767" attributes="0"/>
                               </Group>
