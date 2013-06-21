@@ -163,8 +163,8 @@
                           <Component id="aboutButton" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                           <Component id="deNovoGuiWebPageJLabel" max="32767" attributes="0"/>
-                          <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                          <Component id="searchButton" min="-2" pref="154" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="startButton" min="-2" pref="162" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -180,7 +180,7 @@
                   <Component id="inputFilesPanel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="searchButton" alignment="2" min="-2" pref="63" max="-2" attributes="0"/>
+                      <Component id="startButton" alignment="2" min="-2" pref="63" max="-2" attributes="0"/>
                       <Component id="deNovoGuiWebPageJLabel" alignment="2" min="-2" pref="51" max="-2" attributes="0"/>
                       <Component id="aboutButton" alignment="2" min="-2" pref="58" max="-2" attributes="0"/>
                   </Group>
@@ -270,25 +270,25 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="searchButton">
+        <Component class="javax.swing.JButton" name="startButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="99" red="0" type="rgb"/>
             </Property>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
               <FontInfo relative="true">
-                <Font bold="true" component="searchButton" property="font" relativeSize="true" size="0"/>
+                <Font bold="true" component="startButton" property="font" relativeSize="true" size="0"/>
               </FontInfo>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Start the Search!"/>
-            <Property name="toolTipText" type="java.lang.String" value="Click here to start the search"/>
+            <Property name="text" type="java.lang.String" value="Start Sequencing!"/>
+            <Property name="toolTipText" type="java.lang.String" value="Click here to start sequencing"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchButtonActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startButtonActionPerformed"/>
           </Events>
         </Component>
         <Container class="javax.swing.JPanel" name="inputFilesPanel1">
