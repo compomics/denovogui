@@ -328,7 +328,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         enablePepNovoJCheckBox = new javax.swing.JCheckBox();
         pepNovoLinkLabel = new javax.swing.JLabel();
         pepNovoButton = new javax.swing.JButton();
-        searchButton = new javax.swing.JButton();
+        startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
         clearSpectraButton = new javax.swing.JButton();
@@ -434,15 +434,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        searchButton.setBackground(new java.awt.Color(0, 153, 0));
-        searchButton.setFont(searchButton.getFont().deriveFont(searchButton.getFont().getStyle() | java.awt.Font.BOLD));
-        searchButton.setForeground(new java.awt.Color(255, 255, 255));
-        searchButton.setText("Start the Search!");
-        searchButton.setToolTipText("Click here to start the search");
-        searchButton.setEnabled(false);
-        searchButton.addActionListener(new java.awt.event.ActionListener() {
+        startButton.setBackground(new java.awt.Color(0, 153, 0));
+        startButton.setFont(startButton.getFont().deriveFont(startButton.getFont().getStyle() | java.awt.Font.BOLD));
+        startButton.setForeground(new java.awt.Color(255, 255, 255));
+        startButton.setText("Start Sequencing!");
+        startButton.setToolTipText("Click here to start sequencing");
+        startButton.setEnabled(false);
+        startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchButtonActionPerformed(evt);
+                startButtonActionPerformed(evt);
             }
         });
 
@@ -607,8 +607,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                         .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
                         .addComponent(deNovoGuiWebPageJLabel)
-                        .addGap(26, 26, 26)
-                        .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(21, 21, 21))))
         );
         backgroundPanelLayout.setVerticalGroup(
@@ -620,7 +620,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 .addComponent(inputFilesPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -780,7 +780,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param evt
      */
-    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
 
         // no search parameters set, use the defaults
         if (searchParameters == null) {
@@ -801,7 +801,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         waitingDialog.setLocationRelativeTo(this);        
         startSearch(waitingDialog);
         
-    }//GEN-LAST:event_searchButtonActionPerformed
+    }//GEN-LAST:event_startButtonActionPerformed
 
     /**
      * Edit the modifications.
@@ -1200,12 +1200,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JMenuItem pepNovoMenuItem;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
-    private javax.swing.JButton searchButton;
     private javax.swing.JPanel searchEnginesPanel;
     private javax.swing.JTextField settingsFileJTextField;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JLabel spectraFilesLabel;
     private javax.swing.JTextField spectrumFilesTextField;
+    private javax.swing.JButton startButton;
     private javax.swing.JButton viewConfigurationsButton;
     // End of variables declaration//GEN-END:variables
 
@@ -1726,7 +1726,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             // @TODO: do we need to check more??
         }
 
-        searchButton.setEnabled(valid);
+        startButton.setEnabled(valid);
         return valid;
     }
 
