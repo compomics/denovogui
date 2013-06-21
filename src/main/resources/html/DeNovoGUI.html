@@ -8,44 +8,20 @@
         <a name="#top"/>
         <H2>DeNovoGUI</H2>
 
-        <b>DeNovoGUI</b> is a software for automated <i>de novo</i> peptide sequencing of MS/MS spectra and tag-based protein identification searching.
+        <b>DeNovoGUI</b> provides an easy to use graphical front end to the <a href="http://proteomics.ucsd.edu/Software/PepNovo.html">PepNovo+</a> 
+        algorithm for the <i>de novo</i> sequencing of MS/MS spectra.
         <br><br>
-        As a first step the software uses the <a href="http://www.thegpm.org/TANDEM/">PepNovo+</a> algorithm for the <i>de novo</i> peptide sequencing.
-            <br><br>
-            When starting the application five main tabs can be found:
-            <ol>
-                <li><b>De Novo Search:</b> In this view the input MS/MS spectra can be selected. Supported input format is MGF.
-                    In the next panel the executable of the PepNovo+ algorithm must be selected. Finally, the output folder must be specified.
-                    On the right side several search settings for the <i>de novo</i> peptide sequencing can be chosen as well as modifications.
-                    When clicking on the Start button on the De Novo Search Run panel, the <i>de novo</i> peptide sequencing will be initiated.
-                    The Logging panel provides information about the processing status.
-                </li><br>
-                <li><b>De Novo Results:</b> The MS/MS spectrum is displayed with ion annotations derived from the <i>de novo</i> sequencing.
-                    In the bottom left corner the query spectra are provided in the table. When clicking on one of the rows a spectrum can be selected.
-                    The bottom right side displays a table with all <i>de novo</i> hits for a selected spectrum. It also provides information from
-                    <i>de novo</i> algorithm such as score, N-terminal and C-terminal gap masses.
-                    Note that the Statistics tab (see below) provides useful information about the score distribution.
-                </li><br>
-                <li><b>Tag-DB Search:</b> In the top left panel a protein FASTA database file must be specified to match the derived tags against.
-                    In the top right panel the search settings for the tag-based database search can be changed.
-                    When clicking on the Start button on the Tag-DB Search Run panel, the <i>de novo</i> peptide sequencing will be initiated.
-                    The Logging panel provides information about the processing status.
-                    Note that for the FASTA database only the UniProt (SwissProt/Trembl) format is currently support in <b>DeNovoGUI</b>.
-                </li><br>
-                <li><b>Tag-DB Search Results:</b> In the top left panel the protein families are displayed in the table.
-                    The corresponding protein, peptides and PSMs can be found in the other tables. The spectrum with ion and amino acid
-                    annotations is displayed in the bottom right corner.</li><br>
-                <li><b>Statistics:</b> This view provided a histogram of the <i>de novo</i> scores based on all input MS/MS spectra.
-                    It is supposed to be a quality measure for the input data.
-                </li>
-            </ol>
-            All derived result from the tag-based database search can be exported via the Export menu. It is possible to export all proteins, peptides or peptide-spectrum-matches (PSMs).
-            <br><br>
-            For any further questions, feel free to contact the authors:<a href="mailto:thilo.muth@gmx.de">Thilo.Muth@gmx.de</a>.
-            <br><br>
-            For news and updates on the software visit the <b>DeNovoGUI</b> website: 
-            <a href="http://denovogui.googlecode.com">DeNovoGUI website</a>.
-            <br><br>
-            <a href="#top">Go to top of page</a><br>
+        To start the sequencing all you have to do is to select (i) the spectrum file(s) (in the mgf format), (ii) the settings to use, and 
+        (iii) the output folder for the sequencing results. During sequencing you will be informed of the progress and as soon as the 
+        process is complete the results will be displayed with the found sequences annotated on the spectra.
+        <br><br>
+        <b>DeNovoGUI</b> can also be run in command line mode. For more details see <a href="http://code.google.com/p/denovogui/wiki/DeNovoCLI">DeNovoCLI</a>.
+        <br><br>
+        For any further questions, feel free to contact the authors:<a href="mailto:thilo.muth@gmx.de">Thilo.Muth@gmx.de</a>.
+        <br><br>
+        For news and updates on the software visit the <b>DeNovoGUI</b> website: 
+        <a href="http://denovogui.googlecode.com">DeNovoGUI website</a>.
+        <br><br>
+        <a href="#top">Go to top of page</a><br>
     </BODY>
 </HTML>
