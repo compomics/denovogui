@@ -39,12 +39,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -106,7 +103,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      */
     private ArrayList<String> deNovoPeptidesTableToolTips;
     /**
-     * The sequencing parameters
+     * The sequencing parameters.
      */
     private SearchParameters searchParameters;
     
@@ -114,6 +111,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      * Creates a new ResultsPanel.
      *
      * @param deNovoGUI a references to the main frame
+     * @param searchParameters the search parameters 
      */
     public ResultsPanel(DeNovoGUI deNovoGUI, SearchParameters searchParameters) {
         initComponents();

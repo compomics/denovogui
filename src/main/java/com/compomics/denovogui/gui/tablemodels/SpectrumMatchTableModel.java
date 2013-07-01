@@ -1,13 +1,9 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.denovo.PeptideAssumptionDetails;
-import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
-import com.compomics.util.experiment.identification.matches.PeptideMatch;
 import com.compomics.util.preferences.ModificationProfile;
 import java.util.ArrayList;
-import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,7 +18,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
      */
     private ArrayList<PeptideAssumption> peptideAssumptions = null;
     /**
-     * The modification profile of the search
+     * The modification profile of the search.
      */
     private ModificationProfile modificationProfile = null;
 
@@ -34,8 +30,9 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
 
     /**
      * Constructor.
-     * 
+     *
      * @param peptideAssumptions the peptide assumptions
+     * @param modificationProfile the modification profile
      */
     public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions, ModificationProfile modificationProfile) {
         this.peptideAssumptions = peptideAssumptions;
@@ -86,9 +83,6 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return row + 1;
             case 1:
                 PeptideAssumption peptideAssumption = peptideAssumptions.get(row);
-                if (peptideAssumption.getPeptide().getSequence().equals("LSMGV")) {
-                    int debug = 1;
-                }
                 return peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);

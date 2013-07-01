@@ -28,7 +28,6 @@ import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -342,7 +341,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         deNovoGuiWebPageJLabel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
@@ -628,13 +627,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
-        jMenuItem1.setText("Open Result File");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        openMenuItem.setText("Open Results...");
+        openMenuItem.setToolTipText("Open existing de novo results");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                openMenuItemActionPerformed(evt);
             }
         });
-        fileMenu.add(jMenuItem1);
+        fileMenu.add(openMenuItem);
         fileMenu.add(jSeparator3);
 
         exitMenuItem.setMnemonic('x');
@@ -1117,9 +1117,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseExited
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         openResults();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_openMenuItemActionPerformed
 
     /**
      * The main method.
@@ -1204,7 +1204,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JPanel inputFilesPanel1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
@@ -1214,6 +1213,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem modsMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JTextField outputFolderTextField;
     private javax.swing.JButton pepNovoButton;
     private javax.swing.JLabel pepNovoLinkLabel;
@@ -1412,15 +1412,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Opens a pepnovo .out result file and shows the identifications in a
-     * result panel
-     *
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws ClassNotFoundException
-     * @throws Exception
+     * Opens a PepNovo .out result file and shows the identifications in a
+     * result panel.
      */
     public void openResults() {
 
@@ -1501,9 +1494,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Parses and displays the results of a pepnovo .out file
+     * Parses and displays the results of a PepNovo .out file.
      *
-     * @param outFile the pepnovo output file
+     * @param outFile the PepNovo output file
+     * @param spectrumFile the spectrum file
      */
     public void displayResults(File outFile, File spectrumFile, SearchParameters openParameters) {
 
