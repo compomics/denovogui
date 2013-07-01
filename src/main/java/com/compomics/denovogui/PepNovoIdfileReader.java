@@ -2,9 +2,13 @@ package com.compomics.denovogui;
 
 import com.compomics.util.Util;
 import com.compomics.util.denovo.PeptideAssumptionDetails;
+import com.compomics.util.experiment.biology.AminoAcid;
+import com.compomics.util.experiment.biology.PTM;
+import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
@@ -12,6 +16,7 @@ import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.personalization.ExperimentObject;
 import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.preferences.ModificationProfile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -93,6 +98,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * The maximum m/z value.
      */
     private double maxMz = Double.MIN_VALUE;
+    /**
+     * The parameters used for sequencing
+     */
+    private SearchParameters searchParameters;
+    /**
+     * The ptm factory
+     */
+    private PTMFactory ptmFactory = PTMFactory.getInstance();
 
     /**
      * Default constructor for the purpose of instantiation.
@@ -105,13 +118,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * the file reader is no longer used.
      *
      * @param identificationFile the identification file to parse
+     * @param searchParameters the parameters used for sequencing
      * @throws FileNotFoundException exception thrown whenever the provided file
      * was not found
      * @throws IOException exception thrown whenever an error occurred while
      * reading the file
      */
-    public PepNovoIdfileReader(File identificationFile) throws FileNotFoundException, IOException {
-        this(identificationFile, null);
+    public PepNovoIdfileReader(File identificationFile, SearchParameters searchParameters) throws FileNotFoundException, IOException {
+        this(identificationFile, searchParameters, null);
     }
 
     /**
@@ -120,6 +134,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * longer used.
      *
      * @param identificationFile the identification file to parse
+     * @param searchParameters the parameters used for sequencing
      * @param waitingHandler a waiting handler providing progress feedback to
      * the user
      * @throws FileNotFoundException exception thrown whenever the provided file
@@ -127,7 +142,9 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * @throws IOException exception thrown whenever an error occurred while
      * reading the file
      */
-    public PepNovoIdfileReader(File identificationFile, WaitingHandler waitingHandler) throws FileNotFoundException, IOException {
+    public PepNovoIdfileReader(File identificationFile, SearchParameters searchParameters, WaitingHandler waitingHandler) throws FileNotFoundException, IOException {
+
+        this.searchParameters = searchParameters;
 
         bufferedRandomAccessFile = new BufferedRandomAccessFile(identificationFile, "r", 1024 * 100);
 
@@ -155,14 +172,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 if (endIndex == -1) {
                     endIndex = formatted.lastIndexOf("(SQS");
                 }
-                
+
                 // Condition: Skip problematic spectra not containing (SQS) at the end of the line.
-                if(endIndex > -1){
+                if (endIndex > -1) {
                     spectrumTitle = formatted.substring(0, endIndex).trim();
-                    index.put(spectrumTitle, currentIndex);                                  
-                } else {                    
+                    index.put(spectrumTitle, currentIndex);
+                } else {
                 }
-                
+
                 if (waitingHandler != null) {
                     if (waitingHandler.isRunCanceled()) {
                         break;
@@ -193,10 +210,10 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
             int cpt = 1;
             bufferedRandomAccessFile.seek(index.get(title));
-            String line = bufferedRandomAccessFile.getNextLine();       
+            String line = bufferedRandomAccessFile.getNextLine();
             boolean solutionsFound = true;
             if (line.startsWith("# No") || line.startsWith("# Charge") || line.startsWith("#Problem") || line.startsWith("# too")) {
-               solutionsFound = false;
+                solutionsFound = false;
             } else if (!line.equals(tableHeader)) {
                 System.out.println("line: " + line);
                 throw new IllegalArgumentException("Unrecognized table format. Expected: \"" + tableHeader + "\", found:\"" + line + "\".");
@@ -207,10 +224,10 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 currentMatch.addHit(Advocate.PEPNOVO, getAssumptionFromLine(line, cpt));
                 cpt++;
             }
-            if(solutionsFound){
+            if (solutionsFound) {
                 spectrumMatches.add(currentMatch);
-            } 
-            
+            }
+
             if (waitingHandler != null) {
                 if (waitingHandler.isRunCanceled()) {
                     break;
@@ -290,8 +307,43 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         if (charge > maxCharge) {
             maxCharge = charge;
         }
-        String sequence = lineComponents[7];
+        String pepNovoSequence = lineComponents[7];
+        String sequence = "";
         ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
+        String modification = "", lastAA = "";
+        int naa = 0;
+        for (int i = 0; i < pepNovoSequence.length(); i++) {
+            String aa = pepNovoSequence.charAt(i) + "";
+            if (aa.equals("+") || aa.equals("-")) {
+                if (!modification.equals("")) {
+                    String ptm = getPTM(modification, lastAA);
+                    ModificationMatch modMatch = new ModificationMatch(ptm, true, naa);
+                    modificationMatches.add(modMatch);
+                    modification = "";
+                }
+                modification += aa;
+            } else {
+                try {
+                    new Integer(aa);
+                    modification += aa;
+                } catch (Exception e) {
+                    if (!modification.equals("")) {
+                        String ptm = getPTM(modification, lastAA);
+                        ModificationMatch modMatch = new ModificationMatch(ptm, true, naa);
+                        modMatch.setConfident(true);
+                        modificationMatches.add(modMatch);
+                        modification = "";
+                    }
+                    AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
+                    if (aminoAcid == null) {
+                        throw new IllegalArgumentException("Attempting to parse " + aa + " as amino acid in " + pepNovoSequence + ".");
+                    }
+                    sequence += aa;
+                    lastAA = aa;
+                    naa++;
+                }
+            }
+        }
 
         Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
         PeptideAssumption result = new PeptideAssumption(peptide, rank, Advocate.PEPNOVO, new Charge(Charge.PLUS, charge), rankScore, fileName);
@@ -309,6 +361,43 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         result.addUrParam(peptideAssumptionDetails);
 
         return result;
+    }
+
+    public String getPTM(String pepNovoModification, String aa) {
+        double mass = 0;
+        try {
+            mass = new Double(pepNovoModification);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("An error occurred while parsing the modification " + pepNovoModification + ".");
+        }
+        ArrayList<PTM> candidates = new ArrayList<PTM>();
+        for (String mod : searchParameters.getModificationProfile().getAllNotFixedModifications()) {
+            PTM ptm = ptmFactory.getPTM(mod);
+            if (Math.abs(mass - ptm.getMass()) <= searchParameters.getFragmentIonAccuracy()) {
+                candidates.add(ptm);
+            }
+        }
+        if (candidates.isEmpty()) {
+            throw new IllegalArgumentException("No variable modification corresponding to " + pepNovoModification + " was found in the search parameters.");
+        }
+        ArrayList<PTM> notAACandidates = new ArrayList<PTM>();
+        for (PTM ptm : candidates) {
+            if (ptm.getType() == PTM.MODAA) {
+                // just a basic mapping here since we have very little information notably in terms of termini
+                for (AminoAcid aminoAcid : ptm.getPattern().getStandardSearchPattern().getAminoAcidsAtTarget()) {
+                    if (aminoAcid.singleLetterCode.equals(aa)) {
+                        return ptm.getName();
+                    }
+                }
+            } else {
+                notAACandidates.add(ptm);
+            }
+        }
+        if (!notAACandidates.isEmpty()) {
+            return notAACandidates.get(0).getName();
+        } else {
+            return candidates.get(0).getName();
+        }
     }
 
     /**
