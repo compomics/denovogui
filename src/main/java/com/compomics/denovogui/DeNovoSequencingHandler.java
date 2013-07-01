@@ -208,7 +208,7 @@ public class DeNovoSequencingHandler {
      *
      * @param outputFolder
      */
-    public void parseResults(File outputFolder) {
+    public void parseResults(File outputFolder, WaitingHandler waitingHandler) {
         try {
             ArrayList<File> outputFiles = new ArrayList<File>();
             for (File file : chunkFiles) {
@@ -225,7 +225,7 @@ public class DeNovoSequencingHandler {
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
 
             // Import the PepNovo results.            
-            identification = importPepNovoResults(mergedFile);
+            identification = importPepNovoResults(mergedFile, waitingHandler);
 
             // Auto-export the assumptions.                 
             TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
@@ -332,11 +332,11 @@ public class DeNovoSequencingHandler {
      * @throws ClassNotFoundException
      * @throws Exception
      */
-    public Identification importPepNovoResults(File outFile) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public Identification importPepNovoResults(File outFile, WaitingHandler waitingHandler) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         //@TODO: let the user reference his project
 
-        String projectReference = "project reference";
+        String projectReference = "DenovoGUI";
         String sampleReference = "sample reference";
         int replicateNumber = 0;
         String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
@@ -357,11 +357,9 @@ public class DeNovoSequencingHandler {
         objectsCache.setAutomatedMemoryManagement(true);
         tempIdentification.establishConnection(dbFolder, true, objectsCache);
 
-        // @TODO: use waiting dialog here? 
-
         // initiate the parser
-        idfileReader = new PepNovoIdfileReader(outFile);
-        HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(null);
+        idfileReader = new PepNovoIdfileReader(outFile, waitingHandler);
+        HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
 
         // put the identification results in the identification object
         tempIdentification.addSpectrumMatch(spectrumMatches);
