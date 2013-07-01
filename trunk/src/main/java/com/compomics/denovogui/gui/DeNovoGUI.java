@@ -1,6 +1,6 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.denovogui.DeNovoSearchHandler;
+import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.gui.panels.ResultsPanel;
 import com.compomics.denovogui.util.ExtensionFileFilter;
@@ -21,12 +21,14 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
+import com.compomics.util.gui.waiting.WaitingActionListener;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,7 +79,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The search handler.
      */
-    private DeNovoSearchHandler deNovoSearchHandler;
+    private DeNovoSequencingHandler deNovoSequencingHandler;
     /**
      * The search parameters.
      */
@@ -122,7 +124,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The search task.
      */
-    private SearchTask searchWorker;
+    private SequencingWorker sequencingWorker;
     /**
      * The progress dialog.
      */
@@ -203,7 +205,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
         }
 
-        deNovoSearchHandler = new DeNovoSearchHandler(pepNovoFolder);
+        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder);
 
         setUpGUI();
 
@@ -215,24 +217,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         // load modifications
         try {
-            ptmFactory.importModifications(new File(DeNovoSearchHandler.MODIFICATION_FILE), false);
+            ptmFactory.importModifications(new File(DeNovoSequencingHandler.MODIFICATION_FILE), false);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         try {
-            ptmFactory.importModifications(new File(DeNovoSearchHandler.USER_MODIFICATION_FILE), true);
+            ptmFactory.importModifications(new File(DeNovoSequencingHandler.USER_MODIFICATION_FILE), true);
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
 
         // load the enzymes
         try {
-            enzymeFactory.importEnzymes(new File(DeNovoSearchHandler.ENZYME_FILE));
+            enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.ENZYME_FILE));
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSearchHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
         }
 
         if (searchParameters == null) {
@@ -245,7 +247,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
         }
 
-        loadModificationUse(deNovoSearchHandler.loadModificationsUse());
+        loadModificationUse(deNovoSequencingHandler.loadModificationsUse());
 
         // set the default enzyme to trypsin
         if (searchParameters.getEnzyme() == null) {
@@ -797,10 +799,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 "DeNovoGUI",
                 new Properties().getVersion(),
                 true);
+        waitingDialog.addWaitingActionListener(new WaitingActionListener() {
+            @Override
+            public void cancelPressed() {
+                cancelSequencing();
+            }
+        });
         waitingDialog.setCloseDialogWhenImportCompletes(true, true);
-        waitingDialog.setLocationRelativeTo(this);        
+        waitingDialog.setLocationRelativeTo(this);
         startSearch(waitingDialog);
-        
+
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
@@ -1216,8 +1224,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public void startSearch(WaitingHandler waitingHandler) {
 
-        searchWorker = new SearchTask(waitingHandler);
-        searchWorker.execute();
+        sequencingWorker = new SequencingWorker(waitingHandler);
+        sequencingWorker.execute();
 
         // Display the waiting dialog
         if (waitingHandler != null && waitingHandler instanceof WaitingDialog) {
@@ -1226,34 +1234,29 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         } else {
             useCommandLine = true;
         }
-
-        while (useCommandLine && !searchWorker.isFinished()) { // @TODO: is there a better way of doing this?
-            // wait
-        }
-
-        // check if the background processes are complete (OMSSA, XTandem and PeptideShaker) 
-        while (!useCommandLine && waitingHandler != null) {
-            if (waitingHandler.isRunCanceled()) {
-                cancelSearch(); // cancel the background processes
-                break;
-            } else if (waitingHandler.isRunFinished()) {
-                break; // background processes done, break the loop
-            }
-        }
     }
 
     /**
-     * Cancel the search.
+     * Cancel the sequencing.
      */
-    public void cancelSearch() {
+    public void cancelSequencing() {
 
         if (waitingDialog != null) {
             waitingDialog.appendReportEndLine();
-            waitingDialog.appendReport("Search Cancelled.\n", true, true);
+            waitingDialog.appendReport("Sequencing Cancelled.\n", true, true);
         }
-        searchWorker.cancel(true);
+        if (sequencingWorker != null) {
+            sequencingWorker.cancel(true);
+        }
         if (waitingDialog != null) {
             waitingDialog.setRunCanceled();
+        }
+        if (deNovoSequencingHandler != null) {
+            try {
+                deNovoSequencingHandler.cancelSequencing();
+            } catch (Exception e) {
+                catchException(e);
+            }
         }
     }
 
@@ -1267,12 +1270,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @return a reference to the DeNovoGUI command line interface
      */
-    public DeNovoSearchHandler getDeNovoSearchHandler() {
-        return deNovoSearchHandler;
+    public DeNovoSequencingHandler getDeNovoSequencingHandler() {
+        return deNovoSequencingHandler;
     }
 
     @SuppressWarnings("rawtypes")
-    private class SearchTask extends SwingWorker {
+    private class SequencingWorker extends SwingWorker {
 
         /**
          * The waiting handler.
@@ -1288,10 +1291,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
          *
          * @param waitingHandler
          */
-        public SearchTask(WaitingHandler waitingHandler) {
+        public SequencingWorker(WaitingHandler waitingHandler) {
             this.waitingHandler = waitingHandler;
         }
 
+        @Override
         protected Object doInBackground() throws Exception {
 
             waitingHandler.appendReport("Starting DeNovoGUI.", true, true);
@@ -1301,23 +1305,23 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 waitingHandler.appendReport("Loading the spectra.", true, true);
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
-                getDeNovoSearchHandler().startSearch(spectrumFiles, searchParameters, outputFolder, waitingHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
             return 0;
         }
-        
+
         @Override
         protected void done() {
             finished = true;
-            
+
             if (!waitingHandler.isRunCanceled()) {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("The de novo search is complete.", true, true);
                 waitingHandler.setRunFinished();
-            }     
-            
+            }
+
             if (!waitingDialog.isRunCanceled()) {
                 try {
                     displayResults();
@@ -1325,8 +1329,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                     catchException(e);
                 }
             }
-        }      
-   
+        }
+
         /**
          * Returns a boolean indicating whether the searches have finished.
          *
@@ -1336,8 +1340,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             return finished;
         }
     }
-    
-    
 
     /**
      * Loads the results of the given spectrum files and loads everything in the
@@ -1376,9 +1378,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             @Override
             public void run() {
 
-                try {         
-                    getDeNovoSearchHandler().parseResults(outputFolder);
-                    identification = getDeNovoSearchHandler().getIdentification();
+                try {
+                    getDeNovoSequencingHandler().parseResults(outputFolder);
+                    identification = getDeNovoSequencingHandler().getIdentification();
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
@@ -1483,10 +1485,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     public void setOutputFolder(File outputFolder) {
         this.outputFolder = outputFolder;
     }
-    
+
     /**
      * Gets the output folder.
-     * 
+     *
      * @return outputFolder Output folder.
      */
     public File getOutputFolder() {
@@ -1771,7 +1773,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @return IdfileReader instance.
      */
     public PepNovoIdfileReader getIdfileReader() {
-        return deNovoSearchHandler.getIdfileReader();
+        return deNovoSequencingHandler.getIdfileReader();
     }
 
     /**
@@ -1836,7 +1838,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             JOptionPane.showMessageDialog(this, new String[]{"Unable to find folder: '" + folder.getAbsolutePath() + "'!",
                 "Could not save PTM usage."}, "Folder Not Found", JOptionPane.WARNING_MESSAGE);
         } else {
-            File output = new File(folder, DeNovoSearchHandler.DENOVOGUI_COMFIGURATION_FILE);
+            File output = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(output));
                 bw.write("Modification use:" + System.getProperty("line.separator"));

@@ -46,7 +46,7 @@ import javax.swing.JOptionPane;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoSearchHandler {
+public class DeNovoSequencingHandler {
 
     /**
      * The PepNovo folder.
@@ -88,25 +88,29 @@ public class DeNovoSearchHandler {
      * Number of threads to use for the processing.
      */
     private int nThreads = Runtime.getRuntime().availableProcessors(); // @TODO: should be moved to user preferences?
+    /**
+     * The thread executor
+     */
+    private ExecutorService threadExecutor = null;
 
     /**
      * Constructor.
      *
      * @param pepNovoFolder the pep novo folder
      */
-    public DeNovoSearchHandler(File pepNovoFolder) {
+    public DeNovoSequencingHandler(File pepNovoFolder) {
         this.pepNovoFolder = pepNovoFolder;
     }
 
     /**
-     * Starts the search.
+     * Starts the sequencing.
      *
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
      * @param waitingHandler the waiting handler
      */
-    public void startSearch(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
 
         long startTime = System.nanoTime();
         SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
@@ -125,7 +129,7 @@ public class DeNovoSearchHandler {
         waitingHandler.appendReport("Number of threads: " + nThreads + ".", true, true);
 
         // Start a fixed thread pool
-        ExecutorService threadExecutor = Executors.newFixedThreadPool(nThreads);
+        threadExecutor = Executors.newFixedThreadPool(nThreads);
 
         // Job queue.
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
@@ -137,17 +141,23 @@ public class DeNovoSearchHandler {
             waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
 
             waitingHandler.appendReport("Preparing the spectra.", true, true);
-            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize);
+            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, waitingHandler);
+        if (waitingHandler.isRunCanceled()) {
+            return;
+        }
 
+        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
             // Distribute the chunked spectra to the different jobs.
             for (File spectrumFile : chunkFiles) {
                 PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
                 jobs.add(job);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         } catch (IOException ex) {
-            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
 
         waitingHandler.appendReportEndLine();
@@ -158,6 +168,9 @@ public class DeNovoSearchHandler {
         while (iterator.hasNext()) {
             PepnovoJob job = iterator.next();
             threadExecutor.execute(job);
+            if (waitingHandler.isRunCanceled()) {
+                return;
+            }
         }
 
         // Wait for executor service to shutdown.      
@@ -166,13 +179,27 @@ public class DeNovoSearchHandler {
             threadExecutor.awaitTermination(12, TimeUnit.HOURS);
             waitingHandler.setRunFinished();
         } catch (InterruptedException ex) {
-            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+            if (!waitingHandler.isRunCanceled()) {
+                threadExecutor.shutdownNow();
+            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         if (!waitingHandler.isRunCanceled()) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
             System.out.println("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.");
             waitingHandler.appendReport("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
+        }
+    }
+    
+    /**
+     * Cancels the sequencing process
+     */
+    public void cancelSequencing() throws IOException {
+        if (threadExecutor != null) {
+            threadExecutor.shutdownNow();
+            // Delete the mgf file chunks.
+            FileProcessor.deleteChunkMgfFiles(chunkFiles);
         }
     }
 
@@ -193,17 +220,17 @@ public class DeNovoSearchHandler {
             }
             // Merge and delete output files.
             final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
-            
+
             // Delete the mgf file chunks.
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
-            
+
             // Import the PepNovo results.            
             identification = importPepNovoResults(mergedFile);
 
             // Auto-export the assumptions.                 
             TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
         } catch (Exception ex) {
-            Logger.getLogger(DeNovoSearchHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
