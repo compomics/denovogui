@@ -16,7 +16,6 @@ import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.personalization.ExperimentObject;
 import com.compomics.util.gui.waiting.WaitingHandler;
-import com.compomics.util.preferences.ModificationProfile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -99,11 +98,11 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      */
     private double maxMz = Double.MIN_VALUE;
     /**
-     * The parameters used for sequencing
+     * The parameters used for sequencing.
      */
     private SearchParameters searchParameters;
     /**
-     * The ptm factory
+     * The PTM factory.
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
 
@@ -363,6 +362,13 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         return result;
     }
 
+    /**
+     * Get a PTM.
+     * 
+     * @param pepNovoModification the PepNovo modification
+     * @param aa the amino acid
+     * @return the PTM as a string
+     */
     public String getPTM(String pepNovoModification, String aa) {
         double mass = 0;
         try {
