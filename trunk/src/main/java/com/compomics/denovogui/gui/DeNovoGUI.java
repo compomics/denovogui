@@ -1001,7 +1001,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadModifications(searchParameters);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the search paramters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the search parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
             }
             parametersFile = file;
             searchParameters.setParametersFile(parametersFile);
@@ -1389,13 +1389,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             public void run() {
 
                 try {
-                    getDeNovoSequencingHandler().parseResults(outputFolder, waitingDialog);
+                    getDeNovoSequencingHandler().parseResults(outputFolder, searchParameters, waitingDialog);
                     identification = deNovoSequencingHandler.getIdentification();
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
                     resultsDialog.setLayout(new BorderLayout());
-                    ResultsPanel resultsPanel = new ResultsPanel(finalRef);
+                    ResultsPanel resultsPanel = new ResultsPanel(finalRef, searchParameters);
                     resultsPanel.diplayResults();
                     resultsDialog.add(resultsPanel);
 
@@ -1465,7 +1465,37 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             result = fc.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File mgfFile = fc.getSelectedFile();
-                displayResults(outFile, mgfFile);
+                lastSelectedFolder = mgfFile.getParent();
+                startLocation = new File(lastSelectedFolder);
+                fc = new JFileChooser(startLocation);
+
+                filter = new FileFilter() {
+                    @Override
+                    public boolean accept(File myFile) {
+
+                        return myFile.getName().toLowerCase().endsWith(".parameters")
+                                || myFile.isDirectory();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "search parameters file (.parameters)";
+                    }
+                };
+                fc.setFileFilter(filter);
+                result = fc.showOpenDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File paramertersFile = fc.getSelectedFile();
+                    try {
+                        SearchParameters openParameters = SearchParameters.getIdentificationParameters(paramertersFile);
+                        loadModifications(openParameters);
+                        displayResults(outFile, mgfFile, openParameters);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error occured while reading " + paramertersFile + ". Please verify the search parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
             }
         }
     }
@@ -1475,10 +1505,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param outFile the pepnovo output file
      */
-    public void displayResults(File outFile, File spectrumFile) {
+    public void displayResults(File outFile, File spectrumFile, SearchParameters openParameters) {
 
         final File pepnovoFile = outFile;
         final File mgfFile = spectrumFile;
+        final SearchParameters parameters = openParameters;
 
         progressDialog = new ProgressDialogX(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1505,13 +1536,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             public void run() {
 
                 try {
-                    identification = deNovoSequencingHandler.importPepNovoResults(pepnovoFile, waitingDialog);
+                    identification = deNovoSequencingHandler.importPepNovoResults(pepnovoFile, parameters, waitingDialog);
                     spectrumFactory.addSpectra(mgfFile, waitingDialog);
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
                     resultsDialog.setLayout(new BorderLayout());
-                    ResultsPanel resultsPanel = new ResultsPanel(finalRef);
+                    ResultsPanel resultsPanel = new ResultsPanel(finalRef, parameters);
                     resultsPanel.diplayResults();
                     resultsDialog.add(resultsPanel);
 

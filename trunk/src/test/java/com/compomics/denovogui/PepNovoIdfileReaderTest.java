@@ -4,6 +4,7 @@
  */
 package com.compomics.denovogui;
 
+import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import java.io.File;
@@ -27,7 +28,7 @@ public class PepNovoIdfileReaderTest extends TestCase {
 
     @Before
     public void setUp() throws ClassNotFoundException, IOException, InterruptedException {
-        idfileReader = new PepNovoIdfileReader(new File("src/test/resources/test.mgf.out"));        
+       idfileReader = new PepNovoIdfileReader(new File("src/test/resources/test.mgf.out"), new SearchParameters());        
     }
 
     @Test

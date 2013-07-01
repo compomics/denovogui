@@ -1,8 +1,13 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.denovo.PeptideAssumptionDetails;
+import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.matches.PeptideMatch;
+import com.compomics.util.preferences.ModificationProfile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -16,6 +21,10 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
      * The ordered peptide assumptions of the selected spectrum match.
      */
     private ArrayList<PeptideAssumption> peptideAssumptions = null;
+    /**
+     * The modification profile of the search
+     */
+    private ModificationProfile modificationProfile = null;
 
     /**
      * Constructor.
@@ -28,8 +37,9 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
      * 
      * @param peptideAssumptions the peptide assumptions
      */
-    public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions) {
+    public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions, ModificationProfile modificationProfile) {
         this.peptideAssumptions = peptideAssumptions;
+        this.modificationProfile = modificationProfile;
     }
 
     @Override
@@ -76,7 +86,10 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return row + 1;
             case 1:
                 PeptideAssumption peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getPeptide().getSequence();
+                if (peptideAssumption.getPeptide().getSequence().equals("LSMGV")) {
+                    int debug = 1;
+                }
+                return peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);
                 return peptideAssumption.getScore();

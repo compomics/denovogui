@@ -15,6 +15,7 @@ import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.advocates.SearchEngine;
 import com.compomics.util.experiment.identification.matches.IonMatch;
@@ -104,15 +105,20 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      * The de novo peptides table column header tooltips.
      */
     private ArrayList<String> deNovoPeptidesTableToolTips;
+    /**
+     * The sequencing parameters
+     */
+    private SearchParameters searchParameters;
     
     /**
      * Creates a new ResultsPanel.
      *
      * @param deNovoGUI a references to the main frame
      */
-    public ResultsPanel(DeNovoGUI deNovoGUI) {
+    public ResultsPanel(DeNovoGUI deNovoGUI, SearchParameters searchParameters) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
+        this.searchParameters = searchParameters;
         setUpGUI();
     }
 
@@ -1083,7 +1089,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
                     }
                 }
             }
-            TableModel tableModel = new SpectrumMatchTableModel(assumptions);
+            TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile());
             deNovoPeptidesTable.setModel(tableModel);
 
             ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();

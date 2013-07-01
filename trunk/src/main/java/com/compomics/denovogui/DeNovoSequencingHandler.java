@@ -208,7 +208,7 @@ public class DeNovoSequencingHandler {
      *
      * @param outputFolder
      */
-    public void parseResults(File outputFolder, WaitingHandler waitingHandler) {
+    public void parseResults(File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
         try {
             ArrayList<File> outputFiles = new ArrayList<File>();
             for (File file : chunkFiles) {
@@ -225,7 +225,7 @@ public class DeNovoSequencingHandler {
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
 
             // Import the PepNovo results.            
-            identification = importPepNovoResults(mergedFile, waitingHandler);
+            identification = importPepNovoResults(mergedFile, searchParameters, waitingHandler);
 
             // Auto-export the assumptions.                 
             TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
@@ -332,7 +332,7 @@ public class DeNovoSequencingHandler {
      * @throws ClassNotFoundException
      * @throws Exception
      */
-    public Identification importPepNovoResults(File outFile, WaitingHandler waitingHandler) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public Identification importPepNovoResults(File outFile, SearchParameters searchParameters, WaitingHandler waitingHandler) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         //@TODO: let the user reference his project
 
@@ -358,7 +358,7 @@ public class DeNovoSequencingHandler {
         tempIdentification.establishConnection(dbFolder, true, objectsCache);
 
         // initiate the parser
-        idfileReader = new PepNovoIdfileReader(outFile, waitingHandler);
+        idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
         HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
 
         // put the identification results in the identification object
