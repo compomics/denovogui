@@ -117,11 +117,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private WaitingDialog waitingDialog;
     /**
-     * If set to true DeNovoGUI is ran from the command line only, i.e., no GUI
-     * will appear.
-     */
-    private static boolean useCommandLine = false;
-    /**
      * The search task.
      */
     private SequencingWorker sequencingWorker;
@@ -347,6 +342,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         deNovoGuiWebPageJLabel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         settingsMenuItem = new javax.swing.JMenuItem();
@@ -631,6 +628,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
+        jMenuItem1.setText("Open Result File");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        fileMenu.add(jMenuItem1);
+        fileMenu.add(jSeparator3);
+
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -807,7 +813,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         });
         waitingDialog.setCloseDialogWhenImportCompletes(true, true);
         waitingDialog.setLocationRelativeTo(this);
-        startSearch(waitingDialog);
+        startSequencing(waitingDialog);
 
     }//GEN-LAST:event_startButtonActionPerformed
 
@@ -1111,6 +1117,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseExited
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        openResults();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * The main method.
      *
@@ -1194,10 +1204,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JPanel inputFilesPanel1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
@@ -1222,7 +1234,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param waitingHandler the waiting handler
      */
-    public void startSearch(WaitingHandler waitingHandler) {
+    public void startSequencing(WaitingHandler waitingHandler) {
 
         sequencingWorker = new SequencingWorker(waitingHandler);
         sequencingWorker.execute();
@@ -1231,8 +1243,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         if (waitingHandler != null && waitingHandler instanceof WaitingDialog) {
             ((WaitingDialog) waitingHandler).setVisible(true);
             ((WaitingDialog) waitingHandler).setModal(true);
-        } else {
-            useCommandLine = true;
         }
     }
 
@@ -1379,8 +1389,124 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             public void run() {
 
                 try {
-                    getDeNovoSequencingHandler().parseResults(outputFolder);
-                    identification = getDeNovoSequencingHandler().getIdentification();
+                    getDeNovoSequencingHandler().parseResults(outputFolder, waitingDialog);
+                    identification = deNovoSequencingHandler.getIdentification();
+
+                    JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
+                    resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
+                    resultsDialog.setLayout(new BorderLayout());
+                    ResultsPanel resultsPanel = new ResultsPanel(finalRef);
+                    resultsPanel.diplayResults();
+                    resultsDialog.add(resultsPanel);
+
+                    progressDialog.setRunFinished();
+
+                    resultsDialog.setLocationRelativeTo(finalRef);
+                    resultsDialog.setVisible(true);
+                } catch (Exception e) {
+                    progressDialog.setRunFinished();
+                    catchException(e);
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * Opens a pepnovo .out result file and shows the identifications in a
+     * result panel
+     *
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws Exception
+     */
+    public void openResults() {
+
+        File startLocation = new File(lastSelectedFolder);
+        JFileChooser fc = new JFileChooser(startLocation);
+
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
+
+                return myFile.getName().toLowerCase().endsWith(".out")
+                        || myFile.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "pepnovo result file (.out)";
+            }
+        };
+        fc.setFileFilter(filter);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File outFile = fc.getSelectedFile();
+            lastSelectedFolder = outFile.getParent();
+            startLocation = new File(lastSelectedFolder);
+            fc = new JFileChooser(startLocation);
+
+            filter = new FileFilter() {
+                @Override
+                public boolean accept(File myFile) {
+
+                    return myFile.getName().toLowerCase().endsWith(".mgf")
+                            || myFile.isDirectory();
+                }
+
+                @Override
+                public String getDescription() {
+                    return "spectrum file (.mgf)";
+                }
+            };
+            fc.setFileFilter(filter);
+            result = fc.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File mgfFile = fc.getSelectedFile();
+                displayResults(outFile, mgfFile);
+            }
+        }
+    }
+
+    /**
+     * Parses and displays the results of a pepnovo .out file
+     *
+     * @param outFile the pepnovo output file
+     */
+    public void displayResults(File outFile, File spectrumFile) {
+
+        final File pepnovoFile = outFile;
+        final File mgfFile = spectrumFile;
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Loading Results. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+
+        final DeNovoGUI finalRef = this;
+
+        new Thread("DisplayThread") {
+            @Override
+            public void run() {
+
+                try {
+                    identification = deNovoSequencingHandler.importPepNovoResults(pepnovoFile, waitingDialog);
+                    spectrumFactory.addSpectra(mgfFile, waitingDialog);
 
                     JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
                     resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
