@@ -1,6 +1,6 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.denovogui.DeNovoSearchHandler;
+import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.identification.SearchParametersInputBean;
@@ -44,19 +44,19 @@ public class DeNovoCLI implements Callable {
         try {
             // Load modifications
             try {
-                ptmFactory.importModifications(DeNovoSearchHandler.getModificationsFile(getJarFilePath()), false);
+                ptmFactory.importModifications(DeNovoSequencingHandler.getModificationsFile(getJarFilePath()), false);
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the modifications.");
                 e.printStackTrace();
             }
             try {
-                ptmFactory.importModifications(DeNovoSearchHandler.getUserModificationsFile(getJarFilePath()), true);
+                ptmFactory.importModifications(DeNovoSequencingHandler.getUserModificationsFile(getJarFilePath()), true);
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the user modifications.");
                 e.printStackTrace();
             }
             try {
-                enzymeFactory.importEnzymes(DeNovoSearchHandler.getEnzymesFile(getJarFilePath()));
+                enzymeFactory.importEnzymes(DeNovoSequencingHandler.getEnzymesFile(getJarFilePath()));
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the enzymes.");
                 e.printStackTrace();
@@ -118,9 +118,9 @@ public class DeNovoCLI implements Callable {
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
-            DeNovoSearchHandler searchHandler = new DeNovoSearchHandler(pepNovoFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder);
             searchHandler.setNThreads(searchParametersInputBean.getNThreads());
-            searchHandler.startSearch(searchParametersInputBean.getSpectrumFiles(), 
+            searchHandler.startSequencing(searchParametersInputBean.getSpectrumFiles(), 
                     searchParametersInputBean.getSearchParameters(), 
                     searchParametersInputBean.getOutputFile(),
                     waitingHandlerCLIImpl);

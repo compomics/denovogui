@@ -106,14 +106,16 @@ public abstract class Job implements Executable, Runnable {
             proc.waitFor();
             setStatus(JobStatus.FINISHED);
         } catch (InterruptedException e) {
-            setError(e.getMessage());
-            setStatus(JobStatus.ERROR);
-            e.printStackTrace();
-            if (proc != null) {
-                log.warn("SUBPROCESS KILLED!");
-                proc.destroy();
+            if (!waitingHandler.isRunCanceled()) {
+                setError(e.getMessage());
+                setStatus(JobStatus.ERROR);
+                e.printStackTrace();
+                if (proc != null) {
+                    log.warn("SUBPROCESS KILLED!");
+                    proc.destroy();
+                }
+                waitingHandler.setRunCanceled();
             }
-            waitingHandler.setRunCanceled();
         }
     }
 

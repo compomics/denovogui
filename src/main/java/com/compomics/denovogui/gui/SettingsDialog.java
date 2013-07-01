@@ -95,7 +95,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         enzymeComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
         modelComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
 
-        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSearchHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSequencingHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
 
         fixedModsJScrollPane.getViewport().setOpaque(false);
         variableModsJScrollPane.getViewport().setOpaque(false);
@@ -866,7 +866,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 
         // store the number of threads
-        deNovoGUI.getDeNovoSearchHandler().setNThreads((Integer) numberOfThreadsSpinner.getValue());
+        deNovoGUI.getDeNovoSequencingHandler().setNThreads((Integer) numberOfThreadsSpinner.getValue());
 
         SearchParameters tempSearchParameters = getSearchParametersFromGUI();
 
