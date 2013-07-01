@@ -274,7 +274,7 @@ public class DeNovoSequencingHandler {
      * @return the path to the jar file
      */
     public String getJarFilePath() {
-        return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoSearchHandler.class").getPath(), "DeNovoGUI");
+        return CompomicsWrapper.getJarFilePath(this.getClass().getResource("DeNovoSequencingHandler.class").getPath(), "DeNovoGUI");
     }
 
     /**
