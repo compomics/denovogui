@@ -84,7 +84,7 @@ public class FileProcessor {
         waitingHandler.setSecondaryProgressValue(0);
         long progress = 0;
         int nFiles = 0;
-
+        boolean streamClosed = false;
         try {
             // Iterate over all the files.
             for (File file : files) {
@@ -113,9 +113,11 @@ public class FileProcessor {
                 int offset = 0;
                 // Cycle the file.
                 while ((line = br.getNextLine()) != null) {
-                    line = line.trim();
-                    bos.write(line);
-                    bos.newLine();
+                    line = line.trim();       
+                    if(!streamClosed) {
+                        bos.write(line); 
+                        bos.newLine();
+                    }                    
                     if (line.indexOf("END IONS") >= 0) {
                         // Increment the spectrumCounter by one.
                         spectrumCounter++;
@@ -131,6 +133,7 @@ public class FileProcessor {
                             chunkNumber++;                         
                             bos.flush();
                             bos.close();
+                            streamClosed = true;
                             
                             if (spectrumCounter != nSpectra) {
                                 String filename = file.getName();
@@ -140,6 +143,7 @@ public class FileProcessor {
                                 File output = new File(path + File.separator + outputFilename);
                                 chunkedFiles.add(output);
                                 bos = new BufferedWriter(new FileWriter(output));
+                                streamClosed = false;
                                 offset += chunkSize;                             
                                 if (addedRemaining) {
                                     chunkSize--;
@@ -169,7 +173,10 @@ public class FileProcessor {
         } finally {
             if (br != null) {
                 br.close();
-            }          
+            }   
+            if(bos != null) {
+                
+            }
         }
         return chunkedFiles;
     }
