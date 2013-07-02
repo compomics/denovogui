@@ -90,7 +90,7 @@ public abstract class Job implements Executable, Runnable {
                 writer.write(temp);
                 writer.newLine();
 
-                if (temp.startsWith(">>") || temp.startsWith("#Processed spectra")) {
+                if (temp.startsWith(">>")) {                    
                     waitingHandler.increaseProgressValue();
                     waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressBar().getValue() + "/" + waitingHandler.getPrimaryProgressBar().getMaximum() + ".", true, true);
                 }
