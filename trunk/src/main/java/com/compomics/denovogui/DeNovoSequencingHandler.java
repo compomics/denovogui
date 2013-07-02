@@ -139,20 +139,20 @@ public class DeNovoSequencingHandler {
 
             int remaining = nSpectra % nThreads;
             int chunkSize = nSpectra / nThreads;
-            if(remaining > 0) {
+            if (remaining > 0) {
                 int maxSize = chunkSize + 1;
-                waitingHandler.appendReport("Number of spectra per thread: " + maxSize + " (max) - " +  chunkSize + " (min)" + ".", true, true);
+                waitingHandler.appendReport("Number of spectra per thread: (" + chunkSize + " - " + maxSize + ").", true, true);
             } else {
                 waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
             }
 
             waitingHandler.appendReport("Preparing the spectra.", true, true);
-            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, remaining, nSpectra, waitingHandler);          
-        if (waitingHandler.isRunCanceled()) {
-            return;
-        }
+            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, remaining, nSpectra, waitingHandler);
+            if (waitingHandler.isRunCanceled()) {
+                return;
+            }
 
-        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+            waitingHandler.setSecondaryProgressDialogIndeterminate(true);
             // Distribute the chunked spectra to the different jobs.
             for (File spectrumFile : chunkFiles) {
                 PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
@@ -187,7 +187,7 @@ public class DeNovoSequencingHandler {
         } catch (InterruptedException ex) {
             if (!waitingHandler.isRunCanceled()) {
                 threadExecutor.shutdownNow();
-            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -197,9 +197,11 @@ public class DeNovoSequencingHandler {
             waitingHandler.appendReport("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
         }
     }
-    
+
     /**
-     * Cancels the sequencing process
+     * Cancels the sequencing process.
+     *
+     * @throws IOException
      */
     public void cancelSequencing() throws IOException {
         if (threadExecutor != null) {
@@ -212,7 +214,9 @@ public class DeNovoSequencingHandler {
     /**
      * This method parses the result and exports the assumptions automatically.
      *
-     * @param outputFolder
+     * @param outputFolder the output folder
+     * @param searchParameters the search parameters
+     * @param waitingHandler the waiting handler
      */
     public void parseResults(File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
         try {
