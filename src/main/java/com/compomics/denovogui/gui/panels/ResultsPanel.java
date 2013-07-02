@@ -106,12 +106,12 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
      * The sequencing parameters.
      */
     private SearchParameters searchParameters;
-    
+
     /**
      * Creates a new ResultsPanel.
      *
      * @param deNovoGUI a references to the main frame
-     * @param searchParameters the search parameters 
+     * @param searchParameters the search parameters
      */
     public ResultsPanel(DeNovoGUI deNovoGUI, SearchParameters searchParameters) {
         initComponents();
@@ -183,7 +183,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
-        querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());        
+        querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
         querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
         querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
@@ -641,6 +641,14 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 deNovoPeptidesTableMouseReleased(evt);
             }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                deNovoPeptidesTableMouseExited(evt);
+            }
+        });
+        deNovoPeptidesTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                deNovoPeptidesTableMouseMoved(evt);
+            }
         });
         deNovoPeptidesTable.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -925,7 +933,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
     private void exportSingleAssumptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSingleAssumptionsJMenuItemActionPerformed
         File selectedFile = null;
 
-        try {            
+        try {
             selectedFile = Util.getUserSelectedFile(this, ".txt", "(Comma-Separated Values) *.txt", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
 
             if (selectedFile != null) {
@@ -976,6 +984,54 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 "Spectrum - Help", 500, 0);
     }//GEN-LAST:event_helpMenuItemActionPerformed
+
+    /**
+     * Shows a tooltip with modification details if over the sequence column.
+     *
+     * @param evt
+     */
+    private void deNovoPeptidesTableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseMoved
+        int row = deNovoPeptidesTable.rowAtPoint(evt.getPoint());
+        int column = deNovoPeptidesTable.columnAtPoint(evt.getPoint());
+
+        if (row != -1 && column != -1 && deNovoPeptidesTable.getValueAt(row, column) != null) {
+            if (column == deNovoPeptidesTable.getColumn("Sequence").getModelIndex()) {
+
+                this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+                // check if we ought to show a tooltip with mod details
+                String sequence = (String) deNovoPeptidesTable.getValueAt(row, column);
+
+                if (sequence.indexOf("<span") != -1) {
+                    try {
+                        PeptideAssumption peptideAssumption = assumptions.get(row);
+                        String tooltip = getPeptideModificationTooltipAsHtml(peptideAssumption.getPeptide());
+                        deNovoPeptidesTable.setToolTipText(tooltip);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        deNovoGUI.catchException(e);
+                    }
+                } else {
+                    deNovoPeptidesTable.setToolTipText(null);
+                }
+            } else {
+                this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                deNovoPeptidesTable.setToolTipText(null);
+            }
+        } else {
+            this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+            deNovoPeptidesTable.setToolTipText(null);
+        }
+    }//GEN-LAST:event_deNovoPeptidesTableMouseMoved
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void deNovoPeptidesTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_deNovoPeptidesTableMouseExited
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem adaptCheckBoxMenuItem;
@@ -1111,8 +1167,8 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
         spectrumJPanel.removeAll();
         String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
-        
-        if (spectrumFactory.spectrumLoaded(spectrumKey)) {           
+
+        if (spectrumFactory.spectrumLoaded(spectrumKey)) {
             try {
                 MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
 
@@ -1160,7 +1216,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
                     spectrumJPanel.add(spectrumPanel);
                     updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
-                } else {   
+                } else {
                     // Show spectrum without identification.
                     SpectrumPanel spectrumPanel = new SpectrumPanel(
                             currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
@@ -1169,7 +1225,7 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
                     spectrumPanel.setBorder(null);
                     spectrumJPanel.add(spectrumPanel);
                 }
-        
+
                 currentSpectrumKey = spectrumKey;
 
             } catch (Exception e) {
@@ -1497,5 +1553,52 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
         }
 
         return null;
+    }
+
+    /**
+     * Returns a String with the HTML tooltip for the peptide indicating the
+     * modification details.
+     *
+     * @param peptide
+     * @return a String with the HTML tooltip for the peptide
+     */
+    public String getPeptideModificationTooltipAsHtml(Peptide peptide) {
+
+        // @TODO: should be merged with the same method on PeptideShaker - DisplayFeaturesGenerator -  and moved to utilities
+
+        String tooltip = "<html>";
+        ArrayList<String> alreadyAnnotated = new ArrayList<String>();
+
+        for (ModificationMatch modMatch : peptide.getModificationMatches()) {
+            String modName = modMatch.getTheoreticPtm();
+            PTM ptm = ptmFactory.getPTM(modName);
+
+            if ((ptm.getType() == PTM.MODAA && modMatch.isVariable())) {
+
+                int modSite = modMatch.getModificationSite();
+
+                if (modSite > 0) {
+                    char affectedResidue = peptide.getSequence().charAt(modSite - 1);
+                    Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
+
+                    if (!alreadyAnnotated.contains(modName + "_" + affectedResidue)) {
+                        tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                + affectedResidue
+                                + "</span>"
+                                + ": " + modName + "<br>";
+
+                        alreadyAnnotated.add(modName + "_" + affectedResidue);
+                    }
+                }
+            }
+        }
+
+        if (!tooltip.equalsIgnoreCase("<html>")) {
+            tooltip += "</html>";
+        } else {
+            tooltip = null;
+        }
+
+        return tooltip;
     }
 }
