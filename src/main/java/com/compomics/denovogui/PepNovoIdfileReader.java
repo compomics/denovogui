@@ -144,9 +144,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
     public PepNovoIdfileReader(File identificationFile, SearchParameters searchParameters, WaitingHandler waitingHandler) throws FileNotFoundException, IOException {
 
         this.searchParameters = searchParameters;
-
         bufferedRandomAccessFile = new BufferedRandomAccessFile(identificationFile, "r", 1024 * 100);
-
         fileName = Util.getFileName(identificationFile);
 
         if (waitingHandler != null) {
@@ -155,9 +153,13 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
         long progressUnit = bufferedRandomAccessFile.length() / 100;
 
+        if (progressUnit == 0) {
+            progressUnit = 1;
+        }
+
         index = new HashMap<String, Long>();
 
-        String line, spectrumTitle;
+        String line;
         while ((line = bufferedRandomAccessFile.readLine()) != null) {
             if (line.startsWith(">>")) {
                 long currentIndex = bufferedRandomAccessFile.getFilePointer();
@@ -174,9 +176,8 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
                 // Condition: Skip problematic spectra not containing (SQS) at the end of the line.
                 if (endIndex > -1) {
-                    spectrumTitle = formatted.substring(0, endIndex).trim();
+                    String spectrumTitle = formatted.substring(0, endIndex).trim();
                     index.put(spectrumTitle, currentIndex);
-                } else {
                 }
 
                 if (waitingHandler != null) {
@@ -213,7 +214,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             boolean solutionsFound = true;
             if (line.startsWith("# No") || line.startsWith("# Charge") || line.startsWith("#Problem") || line.startsWith("# too")) {
                 solutionsFound = false;
-            } else if (!line.equals(tableHeader)) {               
+            } else if (!line.equals(tableHeader)) {
                 throw new IllegalArgumentException("Unrecognized table format. Expected: \"" + tableHeader + "\", found:\"" + line + "\".");
             }
 
@@ -238,7 +239,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
     }
 
     /**
-     * Returns the spectrum file name. This method assumes that the pepnovo
+     * Returns the spectrum file name. This method assumes that the PepNovo
      * output file is the mgf file name + ".out"
      *
      * @return the spectrum file name
@@ -363,7 +364,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
     /**
      * Get a PTM.
-     * 
+     *
      * @param pepNovoModification the PepNovo modification
      * @param aa the amino acid
      * @return the PTM as a string
