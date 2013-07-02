@@ -213,8 +213,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             boolean solutionsFound = true;
             if (line.startsWith("# No") || line.startsWith("# Charge") || line.startsWith("#Problem") || line.startsWith("# too")) {
                 solutionsFound = false;
-            } else if (!line.equals(tableHeader)) {
-                System.out.println("line: " + line);
+            } else if (!line.equals(tableHeader)) {               
                 throw new IllegalArgumentException("Unrecognized table format. Expected: \"" + tableHeader + "\", found:\"" + line + "\".");
             }
 
