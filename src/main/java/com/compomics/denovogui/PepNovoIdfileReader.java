@@ -209,7 +209,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
             int cpt = 1;
             bufferedRandomAccessFile.seek(index.get(title));
-            String line = bufferedRandomAccessFile.getNextLine();
+            String line = bufferedRandomAccessFile.getNextLine().trim();
             boolean solutionsFound = true;
             if (line.startsWith("# No") || line.startsWith("# Charge") || line.startsWith("#Problem") || line.startsWith("# too")) {
                 solutionsFound = false;
