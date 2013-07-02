@@ -173,10 +173,7 @@ public class FileProcessor {
         } finally {
             if (br != null) {
                 br.close();
-            }   
-            if(bos != null) {
-                
-            }
+            }              
         }
         return chunkedFiles;
     }
