@@ -119,8 +119,7 @@ public class PepnovoJob extends Job {
 
         // Set the description - yet not used
         setDescription("PEPNOVO");
-        procBuilder = new ProcessBuilder(procCommands);
-
+        procBuilder = new ProcessBuilder(procCommands);        
         procBuilder.directory(pepNovoFolder);
 
         // set error out and std out to same stream

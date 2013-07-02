@@ -137,11 +137,17 @@ public class DeNovoSequencingHandler {
             int nSpectra = FileProcessor.getNumberOfSpectra(spectrumFiles);
             waitingHandler.appendReport("Number of spectra: " + nSpectra + ".", true, true);
 
+            int remaining = nSpectra % nThreads;
             int chunkSize = nSpectra / nThreads;
-            waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
+            if(remaining > 0) {
+                int maxSize = chunkSize + 1;
+                waitingHandler.appendReport("Number of spectra per thread: " + maxSize + " (max) - " +  chunkSize + " (min)" + ".", true, true);
+            } else {
+                waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
+            }
 
             waitingHandler.appendReport("Preparing the spectra.", true, true);
-            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, waitingHandler);
+            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, remaining, nSpectra, waitingHandler);          
         if (waitingHandler.isRunCanceled()) {
             return;
         }
@@ -222,7 +228,7 @@ public class DeNovoSequencingHandler {
             final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
 
             // Delete the mgf file chunks.
-            FileProcessor.deleteChunkMgfFiles(chunkFiles);
+            //FileProcessor.deleteChunkMgfFiles(chunkFiles);
 
             // Import the PepNovo results.            
             identification = importPepNovoResults(mergedFile, searchParameters, waitingHandler);

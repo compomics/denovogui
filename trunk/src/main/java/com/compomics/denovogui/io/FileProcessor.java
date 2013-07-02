@@ -46,17 +46,19 @@ public class FileProcessor {
     }
 
     /**
-     * Writes the chunked/merged output files.
+     * Writes the chunk/merged output files.
      *
      * @param files the files to chunk
      * @param chunkSize the chunk size
+     * @param remaining no. of remaining spectra (not fitting in file number  division)
+     * @param nSpectra no. of all spectra.
      * @param waitingHandler waiting handler displaying the progress and
      * allowing the user to cancel the progress
      *
-     * @return the chunked files.
+     * @return the chunk files.
      * @throws IOException
      */
-    public static List<File> chunkFiles(List<File> files, int chunkSize, WaitingHandler waitingHandler) throws IOException {
+    public static List<File> chunkFiles(List<File> files, int chunkSize, int remaining, int nSpectra, WaitingHandler waitingHandler) throws IOException {
 
         final String path;
         String line;
@@ -106,7 +108,9 @@ public class FileProcessor {
                     chunkedFiles.add(output);
                     bos = new BufferedWriter(new FileWriter(output));
                 }
-
+                
+                boolean addedRemaining = false;
+                int offset = 0;
                 // Cycle the file.
                 while ((line = br.getNextLine()) != null) {
                     line = line.trim();
@@ -115,19 +119,33 @@ public class FileProcessor {
                     if (line.indexOf("END IONS") >= 0) {
                         // Increment the spectrumCounter by one.
                         spectrumCounter++;
-
-                        // Each specified offset the file gets chunked.
-                        if (spectrumCounter % chunkSize == 0) {
-                            chunkNumber++;
+                        
+                        // Increase the chunkSize for each remaining spectrum.
+                        if(!addedRemaining && remaining > 0) {
+                            chunkSize++;
+                            remaining--;
+                            addedRemaining = true;
+                        }                            
+                        
+                        if (spectrumCounter % (chunkSize + offset) == 0) {
+                            chunkNumber++;                         
                             bos.flush();
                             bos.close();
-                            String filename = file.getName();
-                            int start = filename.lastIndexOf(".");
-                            String outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
-                            //outputFilename = outputFilename.replaceAll(" ", "");                                          
-                            File output = new File(path + File.separator + outputFilename);
-                            chunkedFiles.add(output);
-                            bos = new BufferedWriter(new FileWriter(output));
+                            
+                            if (spectrumCounter != nSpectra) {
+                                String filename = file.getName();
+                                int start = filename.lastIndexOf(".");
+                                String outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
+                                //outputFilename = outputFilename.replaceAll(" ", "");                                          
+                                File output = new File(path + File.separator + outputFilename);
+                                chunkedFiles.add(output);
+                                bos = new BufferedWriter(new FileWriter(output));
+                                offset += chunkSize;                             
+                                if (addedRemaining) {
+                                    chunkSize--;
+                                    addedRemaining = false;
+                                }
+                            }
                         }
                     }
 
@@ -151,11 +169,7 @@ public class FileProcessor {
         } finally {
             if (br != null) {
                 br.close();
-            }
-            if (bos != null) {
-                bos.flush();
-                bos.close();
-            }
+            }          
         }
         return chunkedFiles;
     }
