@@ -1111,55 +1111,65 @@ public class ResultsPanel extends javax.swing.JPanel implements ExportGraphicsDi
 
         spectrumJPanel.removeAll();
         String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
-
-        if (spectrumFactory.spectrumLoaded(spectrumKey) && deNovoPeptidesTable.getSelectedRow() != -1) {
-
+        
+        if (spectrumFactory.spectrumLoaded(spectrumKey)) {           
             try {
                 MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
 
                 // add the data to the spectrum panel
                 Precursor precursor = currentSpectrum.getPrecursor();
-                PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.getSelectedRow());
+                if (deNovoPeptidesTable.getSelectedRow() != -1) {
+                    PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.getSelectedRow());
 
-                SpectrumPanel spectrumPanel = new SpectrumPanel(
-                        currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
-                        precursor.getMz(), peptideAssumption.getIdentificationCharge().toString(),
-                        "", 40, false, false, false, 2, false);
-                spectrumPanel.setBorder(null);
+                    SpectrumPanel spectrumPanel = new SpectrumPanel(
+                            currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
+                            precursor.getMz(), peptideAssumption.getIdentificationCharge().toString(),
+                            "", 40, false, false, false, 2, false);
+                    spectrumPanel.setBorder(null);
 
-                Peptide currentPeptide = peptideAssumption.getPeptide();
+                    Peptide currentPeptide = peptideAssumption.getPeptide();
 
-                // add the annotations
-                SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
-                annotationPreferences.setCurrentSettings(
-                        currentPeptide, peptideAssumption.getIdentificationCharge().value,
-                        !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
+                    // add the annotations
+                    SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
+                    annotationPreferences.setCurrentSettings(
+                            currentPeptide, peptideAssumption.getIdentificationCharge().value,
+                            !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
 
-                annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy());
+                    annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy());
 
-                ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
-                        annotationPreferences.getNeutralLosses(),
-                        annotationPreferences.getValidatedCharges(),
-                        peptideAssumption.getIdentificationCharge().value,
-                        currentSpectrum, currentPeptide,
-                        currentSpectrum.getIntensityLimit(0.0), //annotationPreferences.getAnnotationIntensityLimit() // @TODO: set from the GUI
-                        annotationPreferences.getFragmentIonAccuracy(), false);
-                spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                    ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
+                            annotationPreferences.getNeutralLosses(),
+                            annotationPreferences.getValidatedCharges(),
+                            peptideAssumption.getIdentificationCharge().value,
+                            currentSpectrum, currentPeptide,
+                            currentSpectrum.getIntensityLimit(0.0), //annotationPreferences.getAnnotationIntensityLimit() // @TODO: set from the GUI
+                            annotationPreferences.getFragmentIonAccuracy(), false);
+                    spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
-                // add de novo sequencing
-                spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
-                        PeptideFragmentIon.B_ION, // @TODO: choose the reverse fragment ion type from the annotation menu bar?
-                        PeptideFragmentIon.Y_ION,
-                        annotationPreferences.getDeNovoCharge(),
-                        annotationPreferences.showForwardIonDeNovoTags(),
-                        annotationPreferences.showRewindIonDeNovoTags());
+                    // add de novo sequencing
+                    spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
+                            PeptideFragmentIon.B_ION, // @TODO: choose the reverse fragment ion type from the annotation menu bar?
+                            PeptideFragmentIon.Y_ION,
+                            annotationPreferences.getDeNovoCharge(),
+                            annotationPreferences.showForwardIonDeNovoTags(),
+                            annotationPreferences.showRewindIonDeNovoTags());
 
-                // show all or just the annotated peaks
-                spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
-                spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());
+                    // show all or just the annotated peaks
+                    spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
+                    spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());
 
-                spectrumJPanel.add(spectrumPanel);
-                updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
+                    spectrumJPanel.add(spectrumPanel);
+                    updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
+                } else {   
+                    // Show spectrum without identification.
+                    SpectrumPanel spectrumPanel = new SpectrumPanel(
+                            currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
+                            precursor.getMz(), currentSpectrum.getPrecursor().getPossibleCharges().get(0).toString(),
+                            "", 40, false, false, false, 2, false);
+                    spectrumPanel.setBorder(null);
+                    spectrumJPanel.add(spectrumPanel);
+                }
+        
                 currentSpectrumKey = spectrumKey;
 
             } catch (Exception e) {
