@@ -2,7 +2,6 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
-import com.compomics.denovogui.gui.panels.ResultsPanel;
 import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CommandLineUtils;
@@ -25,7 +24,6 @@ import com.compomics.util.gui.waiting.WaitingActionListener;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.io.BufferedWriter;
@@ -39,7 +37,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -1391,18 +1388,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 try {
                     getDeNovoSequencingHandler().parseResults(outputFolder, searchParameters, waitingDialog);
                     identification = deNovoSequencingHandler.getIdentification();
-
-                    JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
-                    resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
-                    resultsDialog.setLayout(new BorderLayout());
-                    ResultsPanel resultsPanel = new ResultsPanel(finalRef, searchParameters);
-                    resultsPanel.diplayResults();
-                    resultsDialog.add(resultsPanel);
-
+                    ResultsFrame resultsFrame = new ResultsFrame(finalRef, searchParameters);
+                    resultsFrame.diplayResults();
                     progressDialog.setRunFinished();
-
-                    resultsDialog.setLocationRelativeTo(finalRef);
-                    resultsDialog.setVisible(true);
+                    resultsFrame.setVisible(true);
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
                     catchException(e);
@@ -1498,6 +1487,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param outFile the PepNovo output file
      * @param spectrumFile the spectrum file
+     * @param openParameters the out parameters 
      */
     public void displayResults(File outFile, File spectrumFile, SearchParameters openParameters) {
 
@@ -1532,18 +1522,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 try {
                     identification = deNovoSequencingHandler.importPepNovoResults(pepnovoFile, parameters, waitingDialog);
                     spectrumFactory.addSpectra(mgfFile, waitingDialog);
-
-                    JDialog resultsDialog = new JDialog(finalRef, "De Novo Results", true);
-                    resultsDialog.setSize(1200, 800); // @TODO: size should not be hardcoded!!
-                    resultsDialog.setLayout(new BorderLayout());
-                    ResultsPanel resultsPanel = new ResultsPanel(finalRef, parameters);
-                    resultsPanel.diplayResults();
-                    resultsDialog.add(resultsPanel);
-
+                    ResultsFrame resultsFrame = new ResultsFrame(finalRef, searchParameters);
+                    resultsFrame.diplayResults();
                     progressDialog.setRunFinished();
-
-                    resultsDialog.setLocationRelativeTo(finalRef);
-                    resultsDialog.setVisible(true);
+                    resultsFrame.setVisible(true);
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
                     catchException(e);
