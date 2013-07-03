@@ -5,7 +5,7 @@
     <groupId>com.compomics.denovogui</groupId>
     <artifactId>DeNovoGUI</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.3-beta</version>
+    <version>0.1.4-beta</version>
     <name>DeNovoGUI</name>
     <url>http://denovogui.googlecode.com</url>
 
@@ -319,7 +319,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.14.1</version>
+            <version>3.14.5</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>

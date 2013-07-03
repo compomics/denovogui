@@ -56,7 +56,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
 /**
- *
+ * Panel for displaying de novo results.
+ * 
+ * @deprecated use ResultsFrame instead
+ * 
  * @author Thilo Muth
  * @author Harald Barsnes
  */
