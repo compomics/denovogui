@@ -204,7 +204,7 @@ public class FileProcessor {
     }
 
     /**
-     * Merges and deletes the (splitted) output files.
+     * Merges and deletes the (split) output files.
      *
      * @param outFiles The output files to be merged.
      * @return Merged output file.
@@ -251,7 +251,8 @@ public class FileProcessor {
     }
     
     /**
-     * Returns the TitleToFileNameMap
+     * Returns the TitleToFileNameMap.
+     *
      * @return TitleToFileNameMap instance.
      */
     public static Map<String, String> getTitleToFileNameMap() {
@@ -275,5 +276,4 @@ public class FileProcessor {
     public static void clearTitleToFileNameMap() {
         titleToFileNameMap.clear();
     }
-    
 }
