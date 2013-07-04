@@ -239,6 +239,7 @@ public class DeNovoSequencingHandler {
 
             // Auto-export the assumptions.                 
             TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
+
         } catch (Exception ex) {
             Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
