@@ -1,5 +1,6 @@
 package com.compomics.denovogui;
 
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
 import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.biology.AminoAcid;
@@ -23,6 +24,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 
 /**
@@ -201,12 +203,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
         if (waitingHandler != null) {
             waitingHandler.setMaxSecondaryProgressValue(index.size());
-        }
-
+        }        
+        // TitleToFileName mapping
+        Map<String, String> titleToFileNameMap = FileProcessor.getTitleToFileNameMap();
+        
         for (String title : index.keySet()) {
 
             String decodedTitle = URLDecoder.decode(title, "utf-8");
-            SpectrumMatch currentMatch = new SpectrumMatch(Spectrum.getSpectrumKey(getMgfFileName(), decodedTitle));
+            SpectrumMatch currentMatch = new SpectrumMatch(Spectrum.getSpectrumKey(titleToFileNameMap.get(decodedTitle), decodedTitle));
 
             int cpt = 1;
             bufferedRandomAccessFile.seek(index.get(title));
@@ -234,6 +238,9 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 waitingHandler.increaseSecondaryProgressValue();
             }
         }
+        
+        // Clears the TitleToFileName map.
+        FileProcessor.clearTitleToFileNameMap();        
 
         return spectrumMatches;
     }

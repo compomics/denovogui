@@ -1,5 +1,6 @@
 package com.compomics.denovogui.io;
 
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,7 +10,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 
 /**
@@ -18,6 +21,12 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  * @author Thilo Muth.
  */
 public class FileProcessor {
+    
+    /**
+     * The title to filename map. 
+     * TODO: Add to the SpectrumFactory ? @Marc
+     */
+    private static Map<String, String> titleToFileNameMap;
 
     /**
      * Returns the number of spectra in multiple files.
@@ -240,4 +249,31 @@ public class FileProcessor {
 
         return mergedFile;
     }
+    
+    /**
+     * Returns the TitleToFileNameMap
+     * @return TitleToFileNameMap instance.
+     */
+    public static Map<String, String> getTitleToFileNameMap() {
+        if(titleToFileNameMap == null) {
+            titleToFileNameMap = new HashMap<String, String>();
+            final SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+            List<String> mgfFileNames = spectrumFactory.getMgfFileNames();
+            for (String mgfFileName : mgfFileNames) {
+                List<String> spectrumTitles = spectrumFactory.getSpectrumTitles(mgfFileName);
+                for (String spectrumTitle : spectrumTitles) {
+                    titleToFileNameMap.put(spectrumTitle, mgfFileName);
+                }
+            }
+        }
+        return titleToFileNameMap;
+    }
+    
+    /**
+     * Clears the TitleToFileNameMap.
+     */
+    public static void clearTitleToFileNameMap() {
+        titleToFileNameMap.clear();
+    }
+    
 }
