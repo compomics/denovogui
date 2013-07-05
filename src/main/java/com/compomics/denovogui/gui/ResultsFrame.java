@@ -1,34 +1,48 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.PepNovoIdfileReader;
+import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
+import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.experiment.MsExperiment;
+import com.compomics.util.experiment.ProteomicAnalysis;
+import com.compomics.util.experiment.SampleAnalysisSet;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
 import com.compomics.util.experiment.biology.NeutralLoss;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
+import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.advocates.SearchEngine;
+import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
 import com.compomics.util.gui.export_graphics.ExportGraphicsDialogParent;
 import com.compomics.util.gui.renderers.AlignedListCellRenderer;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
+import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.preferences.AnnotationPreferences;
 import java.awt.Color;
 import java.awt.Component;
@@ -38,19 +52,26 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -110,6 +131,62 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The sequencing parameters.
      */
     private SearchParameters searchParameters;
+    /**
+     * The progress dialog.
+     */
+    private ProgressDialogX progressDialog;
+    /**
+     * The location of the folder used for caching.
+     */
+    public final static String CACHE_DIRECTORY = "resources/matches";
+    /**
+     * De novo identification.
+     */
+    private Identification identification;
+    /**
+     * The color used for the sparkline bar chart plots.
+     */
+    private Color sparklineColor = new Color(110, 196, 97);
+    /**
+     * The label with for the numbers in the jsparklines columns.
+     */
+    private int labelWidth = 50;
+    /**
+     * The maximal precursor charge found in the mgf file(s)
+     */
+    private int maxMgfCharge = 0;
+    /**
+     * The maximal precursor m/z in the mgf file(s)
+     */
+    private double maxMgfMz = 0;
+    /**
+     * The minimal rank score
+     */
+    private double minRankScore = Double.MAX_VALUE;
+    /**
+     * The maximal rank score
+     */
+    private double maxRankScore = Double.MIN_VALUE;
+    /**
+     * The maximal pepnovo score
+     */
+    private double maxPepnovoScore = Double.MIN_VALUE;
+    /**
+     * The maximal n gap
+     */
+    private double maxNGap = 0;
+    /**
+     * The maximal c gap
+     */
+    private double maxCGap = 0;
+    /**
+     * The maximal theoretic peptide mass
+     */
+    private double maxIdentificationMz = 0;
+    /**
+     * The maximal charge identified
+     */
+    private double maxIdentificationCharge = 0;
 
     /**
      * Creates a new ResultsPanel.
@@ -117,7 +194,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param deNovoGUI a references to the main frame
      * @param searchParameters the search parameters
      */
-    public ResultsFrame(DeNovoGUI deNovoGUI, SearchParameters searchParameters) {
+    public ResultsFrame(DeNovoGUI deNovoGUI, ArrayList<File> outFiles, SearchParameters searchParameters) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
@@ -125,6 +202,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set the title of the frame and add the icon
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
         setUpGUI();
+        if (outFiles != null) {
+            displayResults(outFiles);
+        } else {
+        }
+        setVisible(true);
     }
 
     /**
@@ -135,7 +217,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         spectrumFileComboBox.setRenderer(new AlignedListCellRenderer(SwingConstants.CENTER));
 
         // get the spectrum files
-        List<File> spectrumFileNames = deNovoGUI.getSpectrumFiles();
+        ArrayList<File> spectrumFileNames = deNovoGUI.getSpectrumFiles();
         String[] filesArray = new String[spectrumFileNames.size()];
         int cpt = 0;
         for (File tempFile : spectrumFileNames) {
@@ -191,7 +273,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Set the table properties.
      */
     private void setTableProperties() {
-        PepNovoIdfileReader idfileReader = deNovoGUI.getIdfileReader();
+
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
         querySpectraTable.getColumn("m/z").setMaxWidth(80);
@@ -202,26 +284,28 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
         querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
-        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
-        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
+        //@TODO: get this value from the mgf file
+//        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), sparklineColor));
+//        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
+        //@TODO: get this value from the mgf file
+//        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), sparklineColor));
+//        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
 
-        deNovoPeptidesTable.getColumn("RankScore").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMinRankScore(), idfileReader.getMaxRankScore(), Color.BLUE, Color.RED));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("RankScore").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxPepNovoScore(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxNGap(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxCGap(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth());
-        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), deNovoGUI.getSparklineColor()));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, deNovoGUI.getLabelWidth() - 30);
+        deNovoPeptidesTable.getColumn("RankScore").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("RankScore").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMgfMz, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) maxIdentificationCharge, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
     }
 
     /**
@@ -279,6 +363,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         helpJMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         splitterMenu7 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         bcakgroundPanel = new javax.swing.JPanel();
         debovoResultsPanel = new javax.swing.JPanel();
         spectrumViewerPanel = new javax.swing.JPanel();
@@ -319,8 +404,18 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         };
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
+        exportMatchesMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        helpMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator17 = new javax.swing.JPopupMenu.Separator();
+        logReportMenu = new javax.swing.JMenuItem();
+        jSeparator16 = new javax.swing.JPopupMenu.Separator();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         annotationMenuBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         annotationMenuBar.setOpaque(false);
@@ -586,6 +681,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         splitterMenu7.setText("|");
         annotationMenuBar.add(splitterMenu7);
 
+        jMenuItem3.setText("jMenuItem3");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("De Novo Results");
 
@@ -762,7 +859,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
-        exitMenuItem.setText("Exit");
+        jMenuItem1.setText("Open");
+        fileMenu.add(jMenuItem1);
+
+        jMenuItem2.setText("Open Example");
+        fileMenu.add(jMenuItem2);
+        fileMenu.add(jSeparator1);
+
+        exitMenuItem.setText("Close");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitMenuItemActionPerformed(evt);
@@ -774,7 +878,51 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         exportMenu.setMnemonic('E');
         exportMenu.setText("Export");
+
+        exportMatchesMenuItem.setText("Export matches");
+        exportMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportMatchesMenuItemActionPerformed(evt);
+            }
+        });
+        exportMenu.add(exportMatchesMenuItem);
+
         menuBar.add(exportMenu);
+
+        helpMenu.setMnemonic('H');
+        helpMenu.setText("Help");
+
+        helpMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        helpMenuItem1.setMnemonic('H');
+        helpMenuItem1.setText("Help");
+        helpMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuItem1ActionPerformed(evt);
+            }
+        });
+        helpMenu.add(helpMenuItem1);
+        helpMenu.add(jSeparator17);
+
+        logReportMenu.setMnemonic('B');
+        logReportMenu.setText("Bug Report");
+        logReportMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logReportMenuActionPerformed(evt);
+            }
+        });
+        helpMenu.add(logReportMenu);
+        helpMenu.add(jSeparator16);
+
+        aboutMenuItem.setMnemonic('A');
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
+
+        menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
 
@@ -782,13 +930,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 955, Short.MAX_VALUE)
+            .addGap(0, 963, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
+            .addGap(0, 676, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1075,7 +1223,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (selectedFile != null) {
             try {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
-                TextExporter.exportSingleAssumptions(getSelectedSpectrumFile(), getSelectedSpectrumTitle(), selectedFile, deNovoGUI.getIdentification());
+                TextExporter.exportSingleAssumptions(getSelectedSpectrumFile(), getSelectedSpectrumTitle(), selectedFile, identification);
                 JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 deNovoGUI.catchException(ex);
@@ -1096,7 +1244,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (selectedFile != null) {
             try {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
-                TextExporter.exportAssumptions(selectedFile, deNovoGUI.getIdentification());
+                TextExporter.exportAssumptions(selectedFile, identification);
                 JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 deNovoGUI.catchException(ex);
@@ -1120,15 +1268,58 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Update the spectrum data displayed.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void spectrumFileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumFileComboBoxActionPerformed
-        diplayResults();
+        displayResults();
     }//GEN-LAST:event_spectrumFileComboBoxActionPerformed
 
+    private void helpMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItem1ActionPerformed
+        new HelpDialog(this, getClass().getResource("/html/DeNovoGUI.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "DeNovoGUI - Help", 700, 10);
+    }//GEN-LAST:event_helpMenuItem1ActionPerformed
+
+    private void logReportMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logReportMenuActionPerformed
+        new BugReport(this, deNovoGUI.getLastSelectedFolder(), "DeNovoGUI", "denovogui", deNovoGUI.getVersion(), new File(deNovoGUI.getJarFilePath() + "/resources/DeNovoGUI.log"));
+    }//GEN-LAST:event_logReportMenuActionPerformed
+
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        new HelpDialog(this, getClass().getResource("/html/AboutDeNovoGUI.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "About DeNovoGUI", 700, 10);
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    private void exportMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportMatchesMenuItemActionPerformed
+
+        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+        JFileChooser fc = new JFileChooser(startLocation);
+
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
+
+                return true;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Text file (.txt)";
+            }
+        };
+        fc.setFileFilter(filter);
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            exportIdentification(file);
+        }
+    }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JCheckBoxMenuItem adaptCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem allCheckBoxMenuItem;
     private javax.swing.JMenuItem annotationColorsJMenuItem;
@@ -1149,6 +1340,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem exportAllAssumptionsJMenuItem;
     private javax.swing.JMenu exportAssumptionsMenu;
     private javax.swing.JMenu exportGraphicsMenu;
+    private javax.swing.JMenuItem exportMatchesMenuItem;
     private javax.swing.JMenu exportMenu;
     private javax.swing.JMenuItem exportSingleAssumptionsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumGraphicsJMenuItem;
@@ -1156,14 +1348,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenu fileMenu;
     private javax.swing.JCheckBoxMenuItem forwardIonsDeNovoCheckBoxMenuItem;
     private javax.swing.JMenu helpJMenu;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JMenuItem helpMenuItem1;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
+    private javax.swing.JPopupMenu.Separator jSeparator16;
+    private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator19;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenu lossMenu;
     private javax.swing.JMenu lossSplitter;
     private javax.swing.JMenuBar menuBar;
@@ -1197,11 +1398,51 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     /**
      * Displays new results.
      */
-    public void diplayResults() {
-        TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), deNovoGUI.getIdentification());
+    private void displayResults() {
+        TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification);
         querySpectraTable.setModel(tableModel);
         querySpectraTable.setRowSelectionInterval(0, 0);
         updateAssumptionsTable();
+    }
+
+    /**
+     * Exports the identification results in a text file
+     *
+     * @param file the destination file
+     */
+    public void exportIdentification(File file) {
+        final File finalFile = file;
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Loading Database. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+        new Thread("exportThread") {
+            public void run() {
+                try {
+                    TextExporter.exportPSMs(finalFile, identification, searchParameters, progressDialog);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ResultsFrame.this,
+                            "An error occurred while exporting the results.",
+                            "Export Error", JOptionPane.WARNING_MESSAGE);
+                    e.printStackTrace();
+                }
+                progressDialog.setRunFinished();
+            }
+        }.start();
     }
 
     /**
@@ -1231,7 +1472,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         try {
             assumptions = new ArrayList<PeptideAssumption>();
-            Identification identification = deNovoGUI.getIdentification();
             String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
             if (identification.matchExists(psmKey)) {
@@ -1336,6 +1576,54 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         spectrumJPanel.revalidate();
         spectrumJPanel.repaint();
+    }
+
+    /**
+     * Loads the results of the given spectrum files and loads everything in the
+     * identification.
+     *
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws Exception
+     */
+    public void displayResults(ArrayList<File> outFiles) {
+
+        final ArrayList<File> finalOutFiles = outFiles;
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Loading Results. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+        new Thread("DisplayThread") {
+            @Override
+            public void run() {
+                try {
+                    // Import the PepNovo results.            
+                    identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
+                    displayResults();
+                } catch (Exception e) {
+                    progressDialog.setRunFinished();
+                    deNovoGUI.catchException(e);
+                }
+                progressDialog.setRunFinished();
+            }
+        }.start();
     }
 
     /**
@@ -1701,5 +1989,100 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
 
         return tooltip;
+    }
+
+    /**
+     * Imports the PepNovo results from the given files and puts all matches in
+     * the identification.
+     *
+     * @param outFile the PepNovo result out file
+     * @return the Identification object
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws Exception
+     */
+    public Identification importPepNovoResults(ArrayList<File> outFiles, SearchParameters searchParameters, WaitingHandler waitingHandler) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+
+        //@TODO: let the user reference his project
+
+        String projectReference = "DenovoGUI";
+        String sampleReference = "sample reference";
+        int replicateNumber = 0;
+        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
+        MsExperiment experiment = new MsExperiment(projectReference);
+        Sample sample = new Sample(sampleReference);
+        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
+        experiment.addAnalysisSet(sample, analysisSet);
+        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
+        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
+
+        // The identification object
+        Identification tempIdentification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
+        tempIdentification.setIsDB(true);
+
+        // The cache used whenever the identification becomes too big
+        String dbFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
+        ObjectsCache objectsCache = new ObjectsCache();
+        objectsCache.setAutomatedMemoryManagement(true);
+        tempIdentification.establishConnection(dbFolder, true, objectsCache);
+
+        for (File outFile : outFiles) {
+            // initiate the parser
+            PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
+            // get spectrum matches
+            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+            // put the matches in the identification object
+            tempIdentification.addSpectrumMatch(spectrumMatches);
+            // Get gui min/max values
+            if (idfileReader.getMinRankScore() < minRankScore) {
+                minRankScore = idfileReader.getMinRankScore();
+            }
+            if (idfileReader.getMaxRankScore() > maxRankScore) {
+                maxRankScore = idfileReader.getMaxRankScore();
+            }
+            if (idfileReader.getMaxPepNovoScore() > maxPepnovoScore) {
+                maxPepnovoScore = idfileReader.getMaxPepNovoScore();
+            }
+            if (idfileReader.getMaxNGap() > maxNGap) {
+                maxNGap = idfileReader.getMaxNGap();
+            }
+            if (idfileReader.getMaxCGap() > maxNGap) {
+                maxNGap = idfileReader.getMaxCGap();
+            }
+            if (idfileReader.getMaxMz() > maxIdentificationMz) {
+                maxIdentificationMz = idfileReader.getMaxMz();
+            }
+            if (idfileReader.getMaxCharge() > maxIdentificationCharge) {
+                maxIdentificationCharge = idfileReader.getMaxCharge();
+            }
+
+        }
+
+        return tempIdentification;
+    }
+
+    private void closeConnectionsAndEmptyTempFolder() {
+        try {
+            identification.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            File matchFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY);
+            File[] tempFiles = matchFolder.listFiles();
+
+            if (tempFiles != null) {
+                for (File currentFile : tempFiles) {
+                    Util.deleteDir(currentFile);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

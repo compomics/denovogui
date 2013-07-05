@@ -203,14 +203,12 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
         if (waitingHandler != null) {
             waitingHandler.setMaxSecondaryProgressValue(index.size());
-        }        
-        // TitleToFileName mapping
-        Map<String, String> titleToFileNameMap = FileProcessor.getTitleToFileNameMap();
+        }
         
         for (String title : index.keySet()) {
 
             String decodedTitle = URLDecoder.decode(title, "utf-8");
-            SpectrumMatch currentMatch = new SpectrumMatch(Spectrum.getSpectrumKey(titleToFileNameMap.get(decodedTitle), decodedTitle));
+            SpectrumMatch currentMatch = new SpectrumMatch(Spectrum.getSpectrumKey(getMgfFileName(), decodedTitle));
 
             int cpt = 1;
             bufferedRandomAccessFile.seek(index.get(title));
@@ -238,9 +236,6 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 waitingHandler.increaseSecondaryProgressValue();
             }
         }
-        
-        // Clears the TitleToFileName map.
-        FileProcessor.clearTitleToFileNameMap();        
 
         return spectrumMatches;
     }

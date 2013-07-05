@@ -21,45 +21,14 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  * @author Thilo Muth.
  */
 public class FileProcessor {
-    
-    /**
-     * The title to filename map. 
-     * TODO: Add to the SpectrumFactory ? @Marc
-     */
-    private static Map<String, String> titleToFileNameMap;
-
-    /**
-     * Returns the number of spectra in multiple files.
-     *
-     * @param files MGF files.
-     * @return Number of spectra in multiple files.
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public static int getNumberOfSpectra(List<File> files) throws FileNotFoundException, IOException {
-        String line;
-        int counter = 0;
-        // Iterate over all the files.
-        for (File file : files) {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            // Cycle the file.
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.indexOf("END IONS") >= 0) {
-                    // Increment the spectrumCounter by one.
-                    counter++;
-                }
-            }
-        }
-        return counter;
-    }
 
     /**
      * Writes the chunk/merged output files.
      *
      * @param files the files to chunk
      * @param chunkSize the chunk size
-     * @param remaining no. of remaining spectra (not fitting in file number  division)
+     * @param remaining no. of remaining spectra (not fitting in file number
+     * division)
      * @param nSpectra no. of all spectra.
      * @param waitingHandler waiting handler displaying the progress and
      * allowing the user to cancel the progress
@@ -67,93 +36,72 @@ public class FileProcessor {
      * @return the chunk files.
      * @throws IOException
      */
-    public static List<File> chunkFiles(List<File> files, int chunkSize, int remaining, int nSpectra, WaitingHandler waitingHandler) throws IOException {
+    public static ArrayList<File> chunkFile(File file, int chunkSize, int remaining, int nSpectra, WaitingHandler waitingHandler) throws IOException {
 
         final String path;
         String line;
         int spectrumCounter = 0;
         int chunkNumber = 1;
-        BufferedWriter bos = null;
-        BufferedRandomAccessFile br = null;
-        path = files.get(0).getParent();
+        BufferedRandomAccessFile br = new BufferedRandomAccessFile(file, "r", 1024 * 100);
+        path = file.getParent();
 
-        List<File> chunkedFiles = new ArrayList<File>();
+        ArrayList<File> chunkedFiles = new ArrayList<File>();
 
-        Long progressStep = new Long(0);
-        waitingHandler.setSecondaryProgressDialogIndeterminate(false);
-        if (files.size() < 10) {
-            for (File file : files) {
-                br = new BufferedRandomAccessFile(file, "r", 1024 * 100);
-                progressStep += br.length() / 100;
-            }
+        long progressStep = br.length() / 100;
+        if (waitingHandler != null) {
+            waitingHandler.setSecondaryProgressDialogIndeterminate(false);
             waitingHandler.setMaxSecondaryProgressValue(100);
-        } else {
-            waitingHandler.setMaxSecondaryProgressValue(files.size() + 1);
+            waitingHandler.setSecondaryProgressValue(0);
         }
-        waitingHandler.setSecondaryProgressValue(0);
         long progress = 0;
-        int nFiles = 0;
         boolean streamClosed = false;
         try {
-            // Iterate over all the files.
-            for (File file : files) {
 
-                nFiles++;
-                if (files.size() >= 10) {
-                    waitingHandler.setSecondaryProgressValue(nFiles);
-                }
+            // Read the filename.
+            String filename = file.getName();
 
-                br = new BufferedRandomAccessFile(file, "r", 1024 * 100);
+            int start = filename.lastIndexOf(".");
+            String outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
+            //  outputFilename = outputFilename.replaceAll(" ", "");
+            File output = new File(path + File.separator + outputFilename);
+            chunkedFiles.add(output);
+            BufferedWriter bos = new BufferedWriter(new FileWriter(output));
 
-                // Write new output file for the first time.
-                if (spectrumCounter == 0) {
-                    // Read the filename.
-                    String filename = file.getName();
-
-                    int start = filename.lastIndexOf(".");
-                    String outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
-                    //  outputFilename = outputFilename.replaceAll(" ", "");
-                    File output = new File(path + File.separator + outputFilename);
-                    chunkedFiles.add(output);
-                    bos = new BufferedWriter(new FileWriter(output));
-                }
-                
+            try {
                 boolean addedRemaining = false;
                 int offset = 0;
                 // Cycle the file.
                 while ((line = br.getNextLine()) != null) {
-                    line = line.trim();       
-                    if(!streamClosed) {
-                        bos.write(line); 
+                    line = line.trim();
+                    if (!streamClosed) {
+                        bos.write(line);
                         bos.newLine();
-                    }                    
+                    }
                     if (line.indexOf("END IONS") >= 0) {
                         // Increment the spectrumCounter by one.
                         spectrumCounter++;
-                        
+
                         // Increase the chunkSize for each remaining spectrum.
-                        if(!addedRemaining && remaining > 0) {
+                        if (!addedRemaining && remaining > 0) {
                             chunkSize++;
                             remaining--;
                             addedRemaining = true;
-                        }                            
-                        
+                        }
+
                         if (spectrumCounter % (chunkSize + offset) == 0) {
-                            chunkNumber++;                         
+                            chunkNumber++;
                             bos.flush();
                             bos.close();
                             streamClosed = true;
-                            
+
                             if (spectrumCounter != nSpectra) {
-                                String filename = file.getName();
-                                int start = filename.lastIndexOf(".");
-                                String outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
+                                outputFilename = filename.substring(0, start) + "_" + chunkNumber + filename.substring(start);
                                 //outputFilename = outputFilename.replaceAll(" ", "");                                          
-                                File output = new File(path + File.separator + outputFilename);
+                                output = new File(path + File.separator + outputFilename);
                                 chunkedFiles.add(output);
                                 bos = new BufferedWriter(new FileWriter(output));
                                 streamClosed = false;
-                                offset += chunkSize;                             
+                                offset += chunkSize;
                                 if (addedRemaining) {
                                     chunkSize--;
                                     addedRemaining = false;
@@ -161,28 +109,23 @@ public class FileProcessor {
                             }
                         }
                     }
-
-                    if (files.size() < 10) {
-                        long readIndex = br.getFilePointer();
-                        progress += readIndex;
+                    long readIndex = br.getFilePointer();
+                    progress += readIndex;
+                    if (waitingHandler != null) {
                         if (progress > progressStep) {
                             waitingHandler.increaseSecondaryProgressValue();
                             progress = 0;
                         }
-                    }
-
-                    if (waitingHandler.isRunCanceled()) {
-                        break;
+                        if (waitingHandler.isRunCanceled()) {
+                            break;
+                        }
                     }
                 }
-                if (waitingHandler.isRunCanceled()) {
-                    break;
-                }
+            } finally {
+                bos.close();
             }
         } finally {
-            if (br != null) {
-                br.close();
-            }              
+            br.close();
         }
         return chunkedFiles;
     }
@@ -210,70 +153,71 @@ public class FileProcessor {
      * @return Merged output file.
      * @throws IOException
      */
-    public static File mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
+    public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
         File first = outFiles.get(0);
         File mergedFile = new File(first.getParent(), first.getName().substring(0, first.getName().lastIndexOf("_")) + ".mgf.out");
         BufferedWriter bWriter = new BufferedWriter(new FileWriter(mergedFile));
-        String line;
-        boolean isContent;
+        try {
+            String line;
+            boolean isContent;
 
-        for (File file : outFiles) {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            isContent = false;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith(">>")) {
-                    isContent = true;
-                }
-                if (isContent) {
-                    if (line.contains("#Problem")) {
-                        bWriter.write(line.substring(0, line.indexOf("#Problem")));
-                        bWriter.newLine();
-                        bWriter.write("#Problem reading spectrum...");
-                        bWriter.newLine();
-                    } else if (!line.startsWith("#Processed")) {
-                        bWriter.write(line);
-                        bWriter.newLine();
+            for (File file : outFiles) {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                isContent = false;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith(">>")) {
+                        isContent = true;
+                    }
+                    if (isContent) {
+                        if (line.contains("#Problem")) {
+                            bWriter.write(line.substring(0, line.indexOf("#Problem")));
+                            bWriter.newLine();
+                            bWriter.write("#Problem reading spectrum...");
+                            bWriter.newLine();
+                        } else if (!line.startsWith("#Processed")) {
+                            bWriter.write(line);
+                            bWriter.newLine();
+                        }
                     }
                 }
-            }
-            reader.close();
+                reader.close();
 
-            // Delete redundant output files.
-            if (file.exists()) {
-                file.delete();
-            }
-
-        }
-        bWriter.flush();
-        bWriter.close();
-
-        return mergedFile;
-    }
-    
-    /**
-     * Returns the TitleToFileNameMap.
-     *
-     * @return TitleToFileNameMap instance.
-     */
-    public static Map<String, String> getTitleToFileNameMap() {
-        if(titleToFileNameMap == null) {
-            titleToFileNameMap = new HashMap<String, String>();
-            final SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
-            List<String> mgfFileNames = spectrumFactory.getMgfFileNames();
-            for (String mgfFileName : mgfFileNames) {
-                List<String> spectrumTitles = spectrumFactory.getSpectrumTitles(mgfFileName);
-                for (String spectrumTitle : spectrumTitles) {
-                    titleToFileNameMap.put(spectrumTitle, mgfFileName);
+                // Delete redundant output files.
+                if (file.exists()) {
+                    file.delete();
                 }
+
             }
+            bWriter.flush();
+        } finally {
+            bWriter.close();
         }
-        return titleToFileNameMap;
     }
-    
+
     /**
-     * Clears the TitleToFileNameMap.
+     * Returns the result file corresponding to the given spectrum file and
+     * output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding out file
      */
-    public static void clearTitleToFileNameMap() {
-        titleToFileNameMap.clear();
+    public static File getOutFile(File outFolder, File spectrumFile) {
+        return new File(outFolder, spectrumFile.getName() + ".out");
+    }
+
+    /**
+     * Returns a list of out files expected from a list of spectrum files.
+     *
+     * @param outFolder the out folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getOutFiles(File outFolder, ArrayList<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            outFiles.add(getOutFile(outFolder, file));
+        }
+        return outFiles;
     }
 }

@@ -13,6 +13,7 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.PepNovoIdfileReader;
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -65,14 +66,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
     /**
-     * The location of the folder used for caching.
-     */
-    public final static String CACHE_DIRECTORY = "resources/matches";
-    /**
-     * De novo identification.
-     */
-    private Identification identification;
-    /**
      * The search handler.
      */
     private DeNovoSequencingHandler deNovoSequencingHandler;
@@ -99,15 +92,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * Spectra files list.
      */
-    private List<File> spectrumFiles = new ArrayList<File>();
-    /**
-     * The color used for the sparkline bar chart plots.
-     */
-    private Color sparklineColor = new Color(110, 196, 97);
-    /**
-     * The label with for the numbers in the jsparklines columns.
-     */
-    private int labelWidth = 50;
+    private ArrayList<File> spectrumFiles = new ArrayList<File>();
     /**
      * The dialog displayed during the search.
      */
@@ -928,7 +913,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         // If so, start from that file's parent.
 
         File startLocation = new File(lastSelectedFolder);
-        List<File> tempSpectrumFiles = getSpectrumFiles();
+        ArrayList<File> tempSpectrumFiles = getSpectrumFiles();
         if (tempSpectrumFiles.size() > 0) {
             File temp = tempSpectrumFiles.get(0);
             startLocation = temp.getParentFile();
@@ -1131,7 +1116,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseExited
 
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-        openResults();
+        new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
 
     /**
@@ -1376,178 +1361,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @throws Exception
      */
     public void displayResults() throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
-
-        progressDialog = new ProgressDialogX(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                true);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setTitle("Loading Results. Please Wait...");
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    progressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
-                }
-            }
-        }, "ProgressDialog").start();
-
-
-        final DeNovoGUI finalRef = this;
-
-        new Thread("DisplayThread") {
-            @Override
-            public void run() {
-
-                try {
-                    getDeNovoSequencingHandler().parseResults(outputFolder, searchParameters, waitingDialog);
-                    identification = deNovoSequencingHandler.getIdentification();
-                    ResultsFrame resultsFrame = new ResultsFrame(finalRef, searchParameters);
-                    resultsFrame.diplayResults();
-                    progressDialog.setRunFinished();
-                    resultsFrame.setVisible(true);
-                } catch (Exception e) {
-                    progressDialog.setRunFinished();
-                    catchException(e);
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Opens a PepNovo .out result file and shows the identifications in a
-     * result panel.
-     */
-    public void openResults() {
-
-        File startLocation = new File(lastSelectedFolder);
-        JFileChooser fc = new JFileChooser(startLocation);
-
-        FileFilter filter = new FileFilter() {
-            @Override
-            public boolean accept(File myFile) {
-
-                return myFile.getName().toLowerCase().endsWith(".out")
-                        || myFile.isDirectory();
-            }
-
-            @Override
-            public String getDescription() {
-                return "pepnovo result file (.out)";
-            }
-        };
-        fc.setFileFilter(filter);
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File outFile = fc.getSelectedFile();
-            lastSelectedFolder = outFile.getParent();
-            startLocation = new File(lastSelectedFolder);
-            fc = new JFileChooser(startLocation);
-
-            filter = new FileFilter() {
-                @Override
-                public boolean accept(File myFile) {
-
-                    return myFile.getName().toLowerCase().endsWith(".mgf")
-                            || myFile.isDirectory();
-                }
-
-                @Override
-                public String getDescription() {
-                    return "spectrum file (.mgf)";
-                }
-            };
-            fc.setFileFilter(filter);
-            result = fc.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File mgfFile = fc.getSelectedFile();
-                lastSelectedFolder = mgfFile.getParent();
-                startLocation = new File(lastSelectedFolder);
-                fc = new JFileChooser(startLocation);
-
-                filter = new FileFilter() {
-                    @Override
-                    public boolean accept(File myFile) {
-
-                        return myFile.getName().toLowerCase().endsWith(".parameters")
-                                || myFile.isDirectory();
-                    }
-
-                    @Override
-                    public String getDescription() {
-                        return "search parameters file (.parameters)";
-                    }
-                };
-                fc.setFileFilter(filter);
-                result = fc.showOpenDialog(this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File paramertersFile = fc.getSelectedFile();
-                    try {
-                        SearchParameters openParameters = SearchParameters.getIdentificationParameters(paramertersFile);
-                        loadModifications(openParameters);
-                        displayResults(outFile, mgfFile, openParameters);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error occured while reading " + paramertersFile + ". Please verify the search parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                }
-            }
-        }
-    }
-
-    /**
-     * Parses and displays the results of a PepNovo .out file.
-     *
-     * @param outFile the PepNovo output file
-     * @param spectrumFile the spectrum file
-     * @param openParameters the out parameters
-     */
-    public void displayResults(File outFile, File spectrumFile, SearchParameters openParameters) {
-
-        final File pepnovoFile = outFile;
-        final File mgfFile = spectrumFile;
-        final SearchParameters parameters = openParameters;
-
-        progressDialog = new ProgressDialogX(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                true);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setTitle("Loading Results. Please Wait...");
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    progressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
-                }
-            }
-        }, "ProgressDialog").start();
-
-
-        final DeNovoGUI finalRef = this;
-
-        new Thread("DisplayThread") {
-            @Override
-            public void run() {
-
-                try {
-                    identification = deNovoSequencingHandler.importPepNovoResults(pepnovoFile, parameters, waitingDialog);
-                    spectrumFactory.addSpectra(mgfFile, waitingDialog);
-                    ResultsFrame resultsFrame = new ResultsFrame(finalRef, searchParameters);
-                    resultsFrame.diplayResults();
-                    progressDialog.setRunFinished();
-                    resultsFrame.setVisible(true);
-                } catch (Exception e) {
-                    progressDialog.setRunFinished();
-                    catchException(e);
-                }
-            }
-        }.start();
+        ArrayList<File> outFiles = FileProcessor.getOutFiles(outputFolder, spectrumFiles);
+        new ResultsFrame(this, outFiles, searchParameters);
     }
 
     /**
@@ -1663,20 +1478,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Returns the identification containing all results.
-     *
-     * @return the identification
-     */
-    public Identification getIdentification() {
-        return identification;
-    }
-
-    /**
      * Returns the selected spectrum files.
      *
      * @return The selected spectrum files.
      */
-    public List<File> getSpectrumFiles() {
+    public ArrayList<File> getSpectrumFiles() {
         return spectrumFiles;
     }
 
@@ -1685,7 +1491,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param spectrumFiles Spectrum files.
      */
-    public void setSpectrumFiles(List<File> spectrumFiles) {
+    public void setSpectrumFiles(ArrayList<File> spectrumFiles) {
         this.spectrumFiles = spectrumFiles;
     }
 
@@ -1706,24 +1512,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         }
 
         return p.getProperty("denovogui.version");
-    }
-
-    /**
-     * Return the color used for the sparklines.
-     *
-     * @return the sparklineColor
-     */
-    public Color getSparklineColor() {
-        return sparklineColor;
-    }
-
-    /**
-     * Returns the label width for the sparklines.
-     *
-     * @return the labelWidth
-     */
-    public int getLabelWidth() {
-        return labelWidth;
     }
 
     /**
@@ -1914,15 +1702,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             result += name + MODIFICATION_SEPARATOR;
         }
         return result;
-    }
-
-    /**
-     * Returns the IdfileReader.
-     *
-     * @return IdfileReader instance.
-     */
-    public PepNovoIdfileReader getIdfileReader() {
-        return deNovoSequencingHandler.getIdfileReader();
     }
 
     /**
