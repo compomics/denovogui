@@ -1,7 +1,6 @@
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
-import static com.compomics.denovogui.gui.DeNovoGUI.CACHE_DIRECTORY;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.denovogui.io.TextExporter;
@@ -69,21 +68,9 @@ public class DeNovoSequencingHandler {
      */
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
     /**
-     * The identification object.
-     */
-    private Identification identification;
-    /**
-     * The identification file reader.
-     */
-    private PepNovoIdfileReader idfileReader;
-    /**
-     * The merged output file.
-     */
-    private File mergedOutFile;
-    /**
      * The chunk files.
      */
-    private List<File> chunkFiles;
+    private ArrayList<File> chunkFiles;
     /**
      * Number of threads to use for the processing.
      */
@@ -92,6 +79,10 @@ public class DeNovoSequencingHandler {
      * The thread executor
      */
     private ExecutorService threadExecutor = null;
+    /**
+     * The spectrum factory
+     */
+    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
 
     /**
      * Constructor.
@@ -103,7 +94,8 @@ public class DeNovoSequencingHandler {
     }
 
     /**
-     * Starts the sequencing.
+     * Starts the sequencing for a list of files which will be processed
+     * sequentially.
      *
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
@@ -111,11 +103,11 @@ public class DeNovoSequencingHandler {
      * @param exeTitle the name of the executable
      * @param waitingHandler the waiting handler
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
 
         long startTime = System.nanoTime();
-        SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
+        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
 
         // Write the modification file
         try {
@@ -126,8 +118,41 @@ public class DeNovoSequencingHandler {
             e.printStackTrace();
         }
 
+        // Back-up the parameters
+        try {
+            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, "denovoGUI.parameters"));
+        } catch (Exception e) {
+            waitingHandler.appendReport("An error occurred while writing the sequencing parameters.", true, true);
+            e.printStackTrace();
+        }
+
         // Get the number of available threads
-        waitingHandler.appendReport("Number of threads: " + nThreads + ".", true, true);
+        waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in " + spectrumFactory.getMgfFileNames().size() + " files using " + nThreads + " threads.", true, true);
+
+        for (File spectrumFile : spectrumFiles) {
+            startSequencing(spectrumFile, searchParameters, outputFolder, exeTitle, waitingHandler, spectrumFiles.size() > 2);
+        }
+
+        if (!waitingHandler.isRunCanceled()) {
+            double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
+            System.out.println("Total sequencing time: " + Util.roundDouble(elapsedTime, 2) + " sec.");
+            waitingHandler.appendReport("Total sequencing time: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
+            waitingHandler.setRunFinished();
+        }
+    }
+
+    /**
+     * Starts the sequencing for a single file.
+     *
+     * @param spectrumFile the spectrum file to process
+     * @param searchParameters the search parameters
+     * @param outputFolder the output folder
+     * @param exeTitle the name of the executable
+     * @param waitingHandler the waiting handler
+     * @param secondaryProgress if true the progress on the given file will be
+     * displayed
+     */
+    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
         // Start a fixed thread pool
         threadExecutor = Executors.newFixedThreadPool(nThreads);
@@ -135,28 +160,35 @@ public class DeNovoSequencingHandler {
         // Job queue.
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
         try {
-            int nSpectra = FileProcessor.getNumberOfSpectra(spectrumFiles);
-            waitingHandler.appendReport("Number of spectra: " + nSpectra + ".", true, true);
+            int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
 
             int remaining = nSpectra % nThreads;
             int chunkSize = nSpectra / nThreads;
+            String report = "Processing " + spectrumFile.getName() + " (" + nSpectra + " spectra, " + chunkSize;
             if (remaining > 0) {
                 int maxSize = chunkSize + 1;
-                waitingHandler.appendReport("Number of spectra per thread: (" + chunkSize + " - " + maxSize + ").", true, true);
-            } else {
-                waitingHandler.appendReport("Number of spectra per thread: " + chunkSize + ".", true, true);
+                report += "-" + maxSize;
             }
+            report += " spectra per thread).";
+            waitingHandler.appendReport(report, true, true);
 
             waitingHandler.appendReport("Preparing the spectra.", true, true);
-            chunkFiles = FileProcessor.chunkFiles(spectrumFiles, chunkSize, remaining, nSpectra, waitingHandler);
+            chunkFiles = FileProcessor.chunkFile(spectrumFile, chunkSize, remaining, nSpectra, waitingHandler);
             if (waitingHandler.isRunCanceled()) {
                 return;
             }
 
-            waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+            waitingHandler.setWaitingText("Processing " + spectrumFile.getName());
+            if (secondaryProgress) {
+                waitingHandler.resetSecondaryProgressBar();
+                waitingHandler.setMaxSecondaryProgressValue(nSpectra);
+            } else {
+                waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+            }
+
             // Distribute the chunked spectra to the different jobs.
-            for (File spectrumFile : chunkFiles) {                
-                PepnovoJob job = new PepnovoJob(pepNovoFolder, exeTitle, spectrumFile, outputFolder, searchParameters, waitingHandler);               
+            for (File chunkFile : chunkFiles) {
+                PepnovoJob job = new PepnovoJob(pepNovoFolder, exeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
                 jobs.add(job);
             }
         } catch (FileNotFoundException ex) {
@@ -168,7 +200,7 @@ public class DeNovoSequencingHandler {
         }
 
         waitingHandler.appendReportEndLine();
-        waitingHandler.appendReport("Starting the de novo sequencing.", true, true);
+        waitingHandler.appendReport("Starting de novo sequencing of " + spectrumFile.getName(), true, true);
 
         // Execute the jobs from the queue.
         Iterator<PepnovoJob> iterator = jobs.iterator();
@@ -184,7 +216,6 @@ public class DeNovoSequencingHandler {
         threadExecutor.shutdown();
         try {
             threadExecutor.awaitTermination(12, TimeUnit.HOURS);
-            waitingHandler.setRunFinished();
         } catch (InterruptedException ex) {
             if (!waitingHandler.isRunCanceled()) {
                 threadExecutor.shutdownNow();
@@ -192,11 +223,13 @@ public class DeNovoSequencingHandler {
             }
         }
 
-        if (!waitingHandler.isRunCanceled()) {
-            double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
-            System.out.println("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.");
-            waitingHandler.appendReport("Total time used: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
-        }
+        waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
+        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+
+        FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
+        // Delete the mgf file chunks.
+        FileProcessor.deleteChunkMgfFiles(chunkFiles);
+
     }
 
     /**
@@ -209,40 +242,6 @@ public class DeNovoSequencingHandler {
             threadExecutor.shutdownNow();
             // Delete the mgf file chunks.
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
-        }
-    }
-
-    /**
-     * This method parses the result and exports the assumptions automatically.
-     *
-     * @param outputFolder the output folder
-     * @param searchParameters the search parameters
-     * @param waitingHandler the waiting handler
-     */
-    public void parseResults(File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
-        try {
-            ArrayList<File> outputFiles = new ArrayList<File>();
-            for (File file : chunkFiles) {
-                File resultFile = PepnovoJob.getOutputFile(outputFolder, Util.getFileName(file));
-
-                if (resultFile.exists()) {
-                    outputFiles.add(resultFile);
-                }
-            }
-            // Merge and delete output files.
-            final File mergedFile = FileProcessor.mergeAndDeleteOutputFiles(outputFiles);
-
-            // Delete the mgf file chunks.
-            FileProcessor.deleteChunkMgfFiles(chunkFiles);
-
-            // Import the PepNovo results.            
-            identification = importPepNovoResults(mergedFile, searchParameters, waitingHandler);
-
-            // Auto-export the assumptions.                 
-            TextExporter.exportAssumptions(new File(outputFolder, mergedFile.getName().substring(0, mergedFile.getName().indexOf(".mgf")) + "_assumptions.txt"), identification);
-
-        } catch (Exception ex) {
-            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -329,72 +328,6 @@ public class DeNovoSequencingHandler {
             JOptionPane.showMessageDialog(null, USER_MODIFICATION_FILE + " not found.", "User Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         return result;
-    }
-
-    /**
-     * Imports the PepNovo results from the given files and puts all matches in
-     * the identification.
-     *
-     * @param outFile the PepNovo result out file
-     * @return the Identification object
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws ClassNotFoundException
-     * @throws Exception
-     */
-    public Identification importPepNovoResults(File outFile, SearchParameters searchParameters, WaitingHandler waitingHandler) throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
-
-        //@TODO: let the user reference his project
-
-        String projectReference = "DenovoGUI";
-        String sampleReference = "sample reference";
-        int replicateNumber = 0;
-        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
-        MsExperiment experiment = new MsExperiment(projectReference);
-        Sample sample = new Sample(sampleReference);
-        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
-        experiment.addAnalysisSet(sample, analysisSet);
-        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
-        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
-
-        // The identification object
-        Identification tempIdentification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
-        tempIdentification.setIsDB(true);
-
-        // The cache used whenever the identification becomes too big
-        String dbFolder = new File(getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
-        ObjectsCache objectsCache = new ObjectsCache();
-        objectsCache.setAutomatedMemoryManagement(true);
-        tempIdentification.establishConnection(dbFolder, true, objectsCache);
-
-        // initiate the parser
-        idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
-        HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
-
-        // put the identification results in the identification object
-        tempIdentification.addSpectrumMatch(spectrumMatches);
-
-        return tempIdentification;
-    }
-
-    /**
-     * Returns the IdfileReader instance.
-     *
-     * @return IdfileReader instance.
-     */
-    public PepNovoIdfileReader getIdfileReader() {
-        return idfileReader;
-    }
-
-    /**
-     * Returns the identification object.
-     *
-     * @return Identification object.
-     */
-    public Identification getIdentification() {
-        return identification;
     }
 
     /**

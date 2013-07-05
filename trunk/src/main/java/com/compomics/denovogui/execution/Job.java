@@ -92,6 +92,7 @@ public abstract class Job implements Executable, Runnable {
 
                 if (temp.startsWith(">>")) {                    
                     waitingHandler.increaseProgressValue();
+                    waitingHandler.increaseSecondaryProgressValue();
                     if (waitingHandler.getPrimaryProgressBar() != null) {
                         waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressBar().getValue() + "/" + waitingHandler.getPrimaryProgressBar().getMaximum() + ".", true, true);
                     } else {
