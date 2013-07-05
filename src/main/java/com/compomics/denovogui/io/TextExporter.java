@@ -174,7 +174,7 @@ public class TextExporter {
 
                         // Write spectrum title.
                         bw.write("TITLE=" + spectrumTitle);
-                        bw.newLine();                        
+                        bw.newLine();
 
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores, Collections.reverseOrder());
@@ -183,7 +183,7 @@ public class TextExporter {
                                 bw.write(assumption.getPeptide().getSequence() + "\t" + assumption.getScore());
                                 bw.newLine();
                             }
-                        }                        
+                        }
                     }
                     bw.newLine();
                 }
@@ -243,6 +243,7 @@ public class TextExporter {
     public static void exportPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
 
         FileWriter f = new FileWriter(destinationFile);
+        String leftPaddding = separator + separator + separator + separator;
 
         try {
 
@@ -250,8 +251,10 @@ public class TextExporter {
 
             try {
 
-                b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator + "Rank" + separator + "Sequence" + separator + "Variable Modifications" + separator + "Modified Sequence"
-                        + "RankScore" + separator + "Score" + separator + "N-Gap" + separator + "C-Gap" + separator + "Theoretic m/z" + separator + "Identification Charge");
+                b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
+                        + "Rank" + separator + "Sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
+                        + "RankScore" + separator + "Score" + separator + "N-Gap" + separator + "C-Gap" + separator
+                        + "Theoretic m/z" + separator + "Identification Charge");
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -264,11 +267,9 @@ public class TextExporter {
                 for (String mgfFile : identification.getSpectrumFiles()) {
                     for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
                         if (identification.matchExists(spectrumKey)) {
-                            
-                            String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            
-                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
 
+                            String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
+                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                             b.write(mgfFile + separator + spectrumTitle + separator);
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
@@ -289,7 +290,13 @@ public class TextExporter {
                                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
 
-                                b.write(++rank + separator);
+                                String padding = "";
+
+                                if (rank > 0) {
+                                    padding = leftPaddding;
+                                }
+
+                                b.write(padding + ++rank + separator);
                                 b.write(peptide.getSequence() + separator);
                                 b.write(getPeptideModificationsAsString(peptide) + separator);
                                 b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true) + separator);
@@ -311,6 +318,8 @@ public class TextExporter {
                                 }
                             }
                         }
+
+                        b.newLine();
                     }
                 }
 
