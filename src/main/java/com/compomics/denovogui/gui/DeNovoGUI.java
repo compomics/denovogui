@@ -67,7 +67,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The location of the folder used for caching.
      */
-    public final static String CACHE_DIRECTORY = "resources/cache";
+    public final static String CACHE_DIRECTORY = "resources/matches";
     /**
      * De novo identification.
      */
@@ -87,7 +87,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The last folder opened by the user. Defaults to user.home.
      */
-    private String lastSelectedFolder = "user.home";
+    private String lastSelectedFolder = "resources/example_dataset";
     /**
      * The selected output folder for the de novo search.
      */
@@ -197,8 +197,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         initComponents();
 
         // set the default PepNovo folder
-        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
-            pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
+        if (new File(getJarFilePath() + "/resources/PepNovo").exists()) {
+            pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
 
             // OS check
             if (osName.contains("mac os")) {

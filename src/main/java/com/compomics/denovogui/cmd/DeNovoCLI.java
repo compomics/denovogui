@@ -97,8 +97,8 @@ public class DeNovoCLI implements Callable {
             File pepNovoFolder = searchParametersInputBean.getPepNovoLocation();
 
             // use the default PepNovo folder if not set by user
-            if (pepNovoFolder == null && new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
-                pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
+            if (pepNovoFolder == null && new File(getJarFilePath() + "/resources/PepNovo").exists()) {
+                pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
             }
             if (pepNovoFolder == null) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Search canceled.", false, true);
