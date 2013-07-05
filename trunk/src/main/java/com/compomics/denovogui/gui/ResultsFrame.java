@@ -57,6 +57,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -68,6 +69,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
+import no.uib.jsparklines.extra.TrueFalseIconRenderer;
 import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
@@ -144,11 +146,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private int labelWidth = 50;
     /**
-     * The maximal precursor charge found in the mgf file(s)
+     * The maximal precursor charge found in the mgf file(s).
      */
     private int maxMgfCharge = 0;
     /**
-     * The maximal precursor m/z in the mgf file(s)
+     * The maximal precursor m/z in the mgf file(s).
      */
     private double maxMgfMz = 0;
     /**
@@ -268,22 +270,27 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void setTableProperties() {
 
+        double maxMz = Math.max(spectrumFactory.getMaxMz(), maxIdentificationMz);
+        //double maxCharge = Math.max(spectrumFactory.getMaxCharge(), maxIdentificationCharge); // @TODO: implement spectrumFactory.getMaxCharge()?
+        double maxCharge = maxIdentificationCharge;
+
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
-        querySpectraTable.getColumn("m/z").setMaxWidth(80);
-        querySpectraTable.getColumn("m/z").setMinWidth(80);
-        querySpectraTable.getColumn("Charge").setMaxWidth(80);
-        querySpectraTable.getColumn("Charge").setMinWidth(80);
+        querySpectraTable.getColumn("m/z").setMaxWidth(100);
+        querySpectraTable.getColumn("m/z").setMinWidth(100);
+        querySpectraTable.getColumn("Charge").setMaxWidth(100);
+        querySpectraTable.getColumn("Charge").setMinWidth(100);
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
-        querySpectraTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
-        //@TODO: get this value from the mgf file
-//        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) idfileReader.getMaxCharge(), sparklineColor));
-//        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
-        //@TODO: get this value from the mgf file
-//        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, idfileReader.getMaxMz(), sparklineColor));
-//        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
+                new ImageIcon(this.getClass().getResource("/icons/accept.png")),
+                new ImageIcon(this.getClass().getResource("/icons/Error_3.png")),
+                "Identified", "Not Identified"));
+        querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
+        querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMz, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
@@ -296,10 +303,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMgfMz, sparklineColor));
+        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMz, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) maxIdentificationCharge, sparklineColor));
+        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
+
+        querySpectraTable.revalidate();
+        querySpectraTable.repaint();
+        deNovoPeptidesTable.revalidate();
+        deNovoPeptidesTable.repaint();
     }
 
     /**
@@ -1619,11 +1631,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     // Import the PepNovo results.            
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
                     displayResults();
+                    progressDialog.setRunFinished();
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
                     deNovoGUI.catchException(e);
+                } finally {
+                    progressDialog.setRunFinished();
                 }
-                progressDialog.setRunFinished();
             }
         }.start();
     }
@@ -2011,7 +2025,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     public Identification importPepNovoResults(ArrayList<File> outFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
             throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
-        //@TODO: let the user reference his project
+        // @TODO: let the user reference his project
 
         String projectReference = "DenovoGUI";
         String sampleReference = "sample reference";
@@ -2035,13 +2049,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         tempIdentification.establishConnection(dbFolder, true, objectsCache);
 
         for (File outFile : outFiles) {
+
             // initiate the parser
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
+
             // get spectrum matches
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+
             // put the matches in the identification object
             tempIdentification.addSpectrumMatch(spectrumMatches);
-            // Get gui min/max values
+
+            // get gui min/max values
             if (idfileReader.getMinRankScore() < minRankScore) {
                 minRankScore = idfileReader.getMinRankScore();
             }
@@ -2111,6 +2129,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         progressDialog.setRunFinished();
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(ResultsFrame.this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
+                    } finally {
+                        progressDialog.setRunFinished();
                     }
                 }
             });
