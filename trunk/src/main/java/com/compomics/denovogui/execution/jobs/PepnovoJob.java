@@ -147,7 +147,7 @@ public class PepnovoJob extends Job {
     public void cancel() {
         if (proc != null) {
             proc.destroy();
-            log.info(">> De novo search has been canceled.");
+            log.info(">> De novo sequencing has been canceled.");
         }
     }
 

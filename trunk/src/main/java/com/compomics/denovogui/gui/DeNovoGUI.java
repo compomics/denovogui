@@ -10,9 +10,7 @@ import com.compomics.software.ToolFactory;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.denovogui.PepNovoIdfileReader;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
@@ -23,7 +21,6 @@ import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.gui.waiting.WaitingActionListener;
 import com.compomics.util.gui.waiting.WaitingHandler;
-import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -102,10 +99,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private SequencingWorker sequencingWorker;
     /**
-     * The progress dialog.
-     */
-    private ProgressDialogX progressDialog;
-    /**
      * The text to display when default settings are loaded.
      */
     public static final String defaultSettingsTxt = "[default]";
@@ -132,7 +125,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * Title of the PepNovo executable.
      */
-    private String exeTitle = "PepNovo_Windows.exe";
+    private String exeTitle = "PepNovo_Windows.exe"; // @TODO: should only be set once!!!
 
     /**
      * Creates a new DeNovoGUI.
@@ -361,7 +354,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
-        searchEnginesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Engines"));
+        searchEnginesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Sequencing Methods"));
         searchEnginesPanel.setOpaque(false);
 
         enablePepNovoJCheckBox.setSelected(true);
@@ -650,7 +643,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         editMenu.setText("Edit");
 
         settingsMenuItem.setMnemonic('S');
-        settingsMenuItem.setText("Search Settings");
+        settingsMenuItem.setText("Settings");
         settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 settingsMenuItemActionPerformed(evt);
@@ -799,7 +792,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
                 //null, // @TODO: add tips?
-                "De Novo Search",
+                "De Novo Sequencing",
                 "DeNovoGUI",
                 new Properties().getVersion(),
                 true);
@@ -986,7 +979,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             @Override
             public String getDescription() {
-                return "DeNovoGUI search parameters";
+                return "DeNovoGUI sequencing parameters";
             }
         };
         fc.setFileFilter(filter);
@@ -999,7 +992,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadModifications(searchParameters);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the search parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
             }
             parametersFile = file;
             searchParameters.setParametersFile(parametersFile);
@@ -1313,6 +1306,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 waitingHandler.appendReport("Loading the spectra.", true, true);
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
+                waitingHandler.appendReportEndLine();
                 deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, exeTitle, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
@@ -1326,11 +1320,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             if (!waitingHandler.isRunCanceled()) {
                 waitingHandler.appendReportEndLine();
-                waitingHandler.appendReport("The de novo search is complete.", true, true);
+                waitingHandler.appendReport("The de novo sequencing is complete.", true, true);
                 waitingHandler.setRunFinished();
-            }
 
-            if (!waitingDialog.isRunCanceled()) {
                 try {
                     displayResults();
                 } catch (Exception e) {
@@ -1660,7 +1652,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         if (searchParameters == null) {
             configurationFileLbl.setForeground(Color.RED);
-            configurationFileLbl.setToolTipText("Please check the search settings");
+            configurationFileLbl.setToolTipText("Please check the settings");
         } else {
             // @TODO: do we need to check more??
         }

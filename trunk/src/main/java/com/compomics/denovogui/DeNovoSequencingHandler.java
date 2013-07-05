@@ -3,19 +3,9 @@ package com.compomics.denovogui;
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
-import com.compomics.denovogui.io.TextExporter;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
-import com.compomics.util.db.ObjectsCache;
-import com.compomics.util.experiment.MsExperiment;
-import com.compomics.util.experiment.ProteomicAnalysis;
-import com.compomics.util.experiment.SampleAnalysisSet;
-import com.compomics.util.experiment.biology.Sample;
-import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.experiment.identification.identifications.Ms2Identification;
-import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedReader;
@@ -23,11 +13,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -80,7 +68,7 @@ public class DeNovoSequencingHandler {
      */
     private ExecutorService threadExecutor = null;
     /**
-     * The spectrum factory
+     * The spectrum factory.
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
 
@@ -102,6 +90,8 @@ public class DeNovoSequencingHandler {
      * @param outputFolder the output folder
      * @param exeTitle the name of the executable
      * @param waitingHandler the waiting handler
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
 
@@ -127,10 +117,12 @@ public class DeNovoSequencingHandler {
         }
 
         // Get the number of available threads
-        waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in " + spectrumFactory.getMgfFileNames().size() + " files using " + nThreads + " threads.", true, true);
+        waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
+                + spectrumFactory.getMgfFileNames().size() + " files using " + nThreads + " threads.", true, true);
+        waitingHandler.appendReportEndLine();
 
         for (File spectrumFile : spectrumFiles) {
-            startSequencing(spectrumFile, searchParameters, outputFolder, exeTitle, waitingHandler, spectrumFiles.size() > 2);
+            startSequencing(spectrumFile, searchParameters, outputFolder, exeTitle, waitingHandler, spectrumFiles.size() > 1);
         }
 
         if (!waitingHandler.isRunCanceled()) {
@@ -161,7 +153,6 @@ public class DeNovoSequencingHandler {
         Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
         try {
             int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
-
             int remaining = nSpectra % nThreads;
             int chunkSize = nSpectra / nThreads;
             String report = "Processing " + spectrumFile.getName() + " (" + nSpectra + " spectra, " + chunkSize;
@@ -201,6 +192,7 @@ public class DeNovoSequencingHandler {
 
         waitingHandler.appendReportEndLine();
         waitingHandler.appendReport("Starting de novo sequencing of " + spectrumFile.getName(), true, true);
+        waitingHandler.appendReportEndLine();
 
         // Execute the jobs from the queue.
         Iterator<PepnovoJob> iterator = jobs.iterator();
@@ -223,13 +215,15 @@ public class DeNovoSequencingHandler {
             }
         }
 
+        waitingHandler.appendReportEndLine();
         waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
+        waitingHandler.appendReportEndLine();
         waitingHandler.setSecondaryProgressDialogIndeterminate(true);
 
         FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
+
         // Delete the mgf file chunks.
         FileProcessor.deleteChunkMgfFiles(chunkFiles);
-
     }
 
     /**

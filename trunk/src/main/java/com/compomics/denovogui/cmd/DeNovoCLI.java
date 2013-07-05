@@ -101,7 +101,7 @@ public class DeNovoCLI implements Callable {
                 pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
             }
             if (pepNovoFolder == null) {
-                waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Search canceled.", false, true);
+                waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
             
@@ -119,7 +119,7 @@ public class DeNovoCLI implements Callable {
             }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
-            if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracy() > 5) { // @TODO: split precursor tolerance into to parameters to make this simpler?
+            if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracy() > 5) { // @TODO: split precursor tolerance into two parameters to make this simpler?
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }
