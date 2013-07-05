@@ -106,13 +106,16 @@ public class DeNovoCLI implements Callable {
             }
             
             // OS check
-            String osName = System.getProperty("os.name");
+            String osName = System.getProperty("os.name").toLowerCase();
             String exeTitle = "PepNovo.exe";
-            if (osName.startsWith("windows")) {
-                exeTitle = "PepNovo.exe";
-            }
-            else if (osName.startsWith("linux")) {
-                exeTitle = "PepNovo_bin";                
+            if (osName.contains("mac os")) {
+                exeTitle = "PepNovo_Mac";
+            } else if (osName.contains("windows")) {
+                exeTitle = "PepNovo_Windows.exe";
+            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                exeTitle = "PepNovo_Linux";
+            } else {
+                // unsupported OS version
             }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
