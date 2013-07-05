@@ -17,9 +17,9 @@ import java.util.ArrayList;
 public class PepnovoJob extends Job {
 
     /**
-     * Name of the PepNovo+ executable.
+     * Title of the PepNovo+ executable.
      */
-    public final static String PEPNOVO_EXE = "PepNovo.exe";
+    public String exeTitle;
     /**
      * The spectrumFile file.
      */
@@ -41,13 +41,15 @@ public class PepnovoJob extends Job {
      * Constructor for the PepnovoJob.
      *
      * @param pepNovoFolder The path to the PepNovo executable.
+     * @param exeTitle Title of the PepNovo executable.
      * @param mgfFile The spectrum MGF file.
      * @param outputFolder The output folder.
      * @param searchParameters The search parameters.
      * @param waitingHandler the waiting handler
      */
-    public PepnovoJob(File pepNovoFolder, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
+    public PepnovoJob(File pepNovoFolder, String exeTitle, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
         this.pepNovoFolder = pepNovoFolder;
+        this.exeTitle = exeTitle;
         this.spectrumFile = mgfFile;
         this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
@@ -61,13 +63,13 @@ public class PepnovoJob extends Job {
     private void initJob() {
 
         // full path to executable
-        procCommands.add(pepNovoFolder.getAbsolutePath() + "/" + PEPNOVO_EXE);
+        procCommands.add(pepNovoFolder.getAbsolutePath() + File.separator + exeTitle);
         procCommands.trimToSize();
 
         // Link to the MGF file
         procCommands.add("-file");
         procCommands.add(spectrumFile.getAbsolutePath());
-
+        
         // Add Model
         procCommands.add("-model");
         procCommands.add(searchParameters.getFragmentationModel());
@@ -116,7 +118,7 @@ public class PepnovoJob extends Job {
         // Add output path
         outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
         procCommands.trimToSize();
-
+       
         // Set the description - yet not used
         setDescription("PEPNOVO");
         procBuilder = new ProcessBuilder(procCommands);        

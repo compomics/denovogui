@@ -104,6 +104,16 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Search canceled.", false, true);
                 System.exit(0);
             }
+            
+            // OS check
+            String osName = System.getProperty("os.name");
+            String exeTitle = "PepNovo.exe";
+            if (osName.startsWith("windows")) {
+                exeTitle = "PepNovo.exe";
+            }
+            else if (osName.startsWith("linux")) {
+                exeTitle = "PepNovo_bin";                
+            }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracy() > 5) { // @TODO: split precursor tolerance into to parameters to make this simpler?
@@ -122,7 +132,7 @@ public class DeNovoCLI implements Callable {
             searchHandler.setNThreads(searchParametersInputBean.getNThreads());
             searchHandler.startSequencing(searchParametersInputBean.getSpectrumFiles(), 
                     searchParametersInputBean.getSearchParameters(), 
-                    searchParametersInputBean.getOutputFile(),
+                    searchParametersInputBean.getOutputFile(), exeTitle,
                     waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();

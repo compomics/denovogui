@@ -110,7 +110,7 @@ public class DeNovoSequencingHandler {
      * @param outputFolder the output folder
      * @param waitingHandler the waiting handler
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler) {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) {
 
         long startTime = System.nanoTime();
         SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
@@ -154,8 +154,8 @@ public class DeNovoSequencingHandler {
 
             waitingHandler.setSecondaryProgressDialogIndeterminate(true);
             // Distribute the chunked spectra to the different jobs.
-            for (File spectrumFile : chunkFiles) {
-                PepnovoJob job = new PepnovoJob(pepNovoFolder, spectrumFile, outputFolder, searchParameters, waitingHandler);
+            for (File spectrumFile : chunkFiles) {                
+                PepnovoJob job = new PepnovoJob(pepNovoFolder, exeTitle, spectrumFile, outputFolder, searchParameters, waitingHandler);               
                 jobs.add(job);
             }
         } catch (FileNotFoundException ex) {

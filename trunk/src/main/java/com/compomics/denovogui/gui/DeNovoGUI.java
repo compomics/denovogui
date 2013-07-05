@@ -144,6 +144,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
+    
+    /**
+     * Title of the PepNovo executable.
+     */
+    private String exeTitle = "PepNovo.exe";  
 
     /**
      * Creates a new DeNovoGUI.
@@ -159,10 +164,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         // set up the ErrorLog
         setUpLogFile();
+        String osName = System.getProperty("os.name");
 
         // add desktop shortcut?
         if (!getJarFilePath().equalsIgnoreCase(".")
-                && System.getProperty("os.name").lastIndexOf("Windows") != -1
+                && osName.lastIndexOf("Windows") != -1
                 && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
 
             // @TODO: add support for desktop icons in mac and linux??
@@ -192,8 +198,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         initComponents();
 
         // set the default PepNovo folder
-        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
+        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {            
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
+            
+            // OS check
+            if (osName.startsWith("windows")) {
+                exeTitle = "PepNovo.exe";
+            }
+            else if (osName.startsWith("linux")) {
+                exeTitle = "PepNovo_bin";                
+            }            
         }
 
         deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder);
@@ -1312,7 +1326,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 waitingHandler.appendReport("Loading the spectra.", true, true);
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, waitingHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, exeTitle, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }

@@ -1327,7 +1327,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumPanel.setBorder(null);
                     spectrumJPanel.add(spectrumPanel);
                 }
-
                 currentSpectrumKey = spectrumKey;
 
             } catch (Exception e) {
