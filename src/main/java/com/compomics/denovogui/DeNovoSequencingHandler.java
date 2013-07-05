@@ -108,6 +108,7 @@ public class DeNovoSequencingHandler {
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
+     * @param exeTitle the name of the executable
      * @param waitingHandler the waiting handler
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) {

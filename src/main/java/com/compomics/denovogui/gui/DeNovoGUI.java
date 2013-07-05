@@ -144,11 +144,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
-    
     /**
      * Title of the PepNovo executable.
      */
-    private String exeTitle = "PepNovo.exe";  
+    private String exeTitle = "PepNovo_Windows.exe";
 
     /**
      * Creates a new DeNovoGUI.
@@ -164,11 +163,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         // set up the ErrorLog
         setUpLogFile();
-        String osName = System.getProperty("os.name");
+        String osName = System.getProperty("os.name").toLowerCase();
 
         // add desktop shortcut?
         if (!getJarFilePath().equalsIgnoreCase(".")
-                && osName.lastIndexOf("Windows") != -1
+                && osName.lastIndexOf("windows") != -1
                 && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
 
             // @TODO: add support for desktop icons in mac and linux??
@@ -198,16 +197,19 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         initComponents();
 
         // set the default PepNovo folder
-        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {            
+        if (new File(getJarFilePath() + "/resources/conf/PepNovo").exists()) {
             pepNovoFolder = new File(getJarFilePath() + "/resources/conf/PepNovo");
-            
+
             // OS check
-            if (osName.startsWith("windows")) {
-                exeTitle = "PepNovo.exe";
+            if (osName.contains("mac os")) {
+                exeTitle = "PepNovo_Mac";
+            } else if (osName.contains("windows")) {
+                exeTitle = "PepNovo_Windows.exe";
+            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                exeTitle = "PepNovo_Linux";
+            } else {
+                // unsupported OS version
             }
-            else if (osName.startsWith("linux")) {
-                exeTitle = "PepNovo_bin";                
-            }            
         }
 
         deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder);
@@ -1501,7 +1503,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      *
      * @param outFile the PepNovo output file
      * @param spectrumFile the spectrum file
-     * @param openParameters the out parameters 
+     * @param openParameters the out parameters
      */
     public void displayResults(File outFile, File spectrumFile, SearchParameters openParameters) {
 
