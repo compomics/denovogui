@@ -79,11 +79,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private String lastSelectedFolder = "resources/example_dataset";
     /**
-     * The example dataset
+     * The example dataset.
      */
     private final String exampleDataset = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf";
     /**
-     * The example dataset
+     * The example dataset.
      */
     private final String exampleSearchParams = "resources/example_dataset/denovoGUI_example.parameters";
     /**
@@ -628,11 +628,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
-        fileMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuActionPerformed(evt);
-            }
-        });
 
         openMenuItem.setText("Open Results...");
         openMenuItem.setToolTipText("Open existing de novo results");
@@ -1135,10 +1130,20 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseExited
 
+    /**
+     * Open the results.
+     * 
+     * @param evt 
+     */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
 
+    /**
+     * Load the example dataset.
+     * 
+     * @param evt 
+     */
     private void loadExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadExampleMenuItemActionPerformed
         new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
@@ -1194,13 +1199,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
 
             validateInput(false);
-
         }
     }//GEN-LAST:event_loadExampleMenuItemActionPerformed
-
-    private void fileMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuActionPerformed
-        // oooops sorry wrong click... Don't know how to remove this now...
-    }//GEN-LAST:event_fileMenuActionPerformed
 
     /**
      * The main method.

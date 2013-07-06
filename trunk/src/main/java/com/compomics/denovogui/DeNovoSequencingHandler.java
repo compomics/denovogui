@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -72,11 +70,11 @@ public class DeNovoSequencingHandler {
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
     /**
-     * The job queue
+     * The job queue.
      */
     private Deque<PepnovoJob> jobs;
     /**
-     * The out folder
+     * The out folder.
      */
     private File outputFolder;
 
@@ -127,8 +125,16 @@ public class DeNovoSequencingHandler {
         }
 
         // Get the number of available threads
+        String fileEnding = "";
+        if (spectrumFactory.getMgfFileNames().size() > 1) {
+            fileEnding = "s";
+        }
+        String spectrumEnding = "";
+        if (nThreads > 1) {
+            spectrumEnding = "s";
+        }
         waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
-                + spectrumFactory.getMgfFileNames().size() + " files using " + nThreads + " threads.", true, true);
+                + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + spectrumEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
 
         for (File spectrumFile : spectrumFiles) {
@@ -196,10 +202,14 @@ public class DeNovoSequencingHandler {
                 jobs.add(job);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             return;
         } catch (IOException ex) {
-            Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            return;
+        }
+
+        if (waitingHandler.isRunCanceled()) {
             return;
         }
 
@@ -224,8 +234,12 @@ public class DeNovoSequencingHandler {
         } catch (InterruptedException ex) {
             if (!waitingHandler.isRunCanceled()) {
                 threadExecutor.shutdownNow();
-                Logger.getLogger(DeNovoSequencingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
+        }
+
+        if (waitingHandler.isRunCanceled()) {
+            return;
         }
 
         waitingHandler.appendReportEndLine();
@@ -246,22 +260,13 @@ public class DeNovoSequencingHandler {
      */
     public void cancelSequencing() throws IOException {
         if (jobs != null) {
+            // cancel the jobs and delete temp .out files
             for (PepnovoJob job : jobs) {
                 job.cancel();
             }
         }
         if (threadExecutor != null) {
             threadExecutor.shutdownNow();
-            // delete temp .out files
-            for (File tempOutFile : FileProcessor.getOutFiles(outputFolder, chunkFiles)) {
-                if (tempOutFile.exists()) {
-                    try {
-                        tempOutFile.delete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             // Delete the mgf file chunks.
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
         }
