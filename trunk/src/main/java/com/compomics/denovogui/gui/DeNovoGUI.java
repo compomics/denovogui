@@ -79,6 +79,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private String lastSelectedFolder = "resources/example_dataset";
     /**
+     * The example dataset
+     */
+    private final String exampleDataset = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf";
+    /**
+     * The example dataset
+     */
+    private final String exampleSearchParams = "resources/example_dataset/denovoGUI_example.parameters";
+    /**
+     * /**
      * The selected output folder for the de novo search.
      */
     private File outputFolder;
@@ -333,6 +342,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        loadExampleMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
@@ -617,6 +628,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
+        fileMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileMenuActionPerformed(evt);
+            }
+        });
 
         openMenuItem.setText("Open Results...");
         openMenuItem.setToolTipText("Open existing de novo results");
@@ -626,6 +642,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         });
         fileMenu.add(openMenuItem);
+        fileMenu.add(jSeparator4);
+
+        loadExampleMenuItem.setText("Load Example");
+        loadExampleMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadExampleMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(loadExampleMenuItem);
         fileMenu.add(jSeparator3);
 
         exitMenuItem.setMnemonic('x');
@@ -990,19 +1015,21 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             try {
                 searchParameters = SearchParameters.getIdentificationParameters(file);
                 loadModifications(searchParameters);
+                parametersFile = file;
+                searchParameters.setParametersFile(parametersFile);
+                settingsFileJTextField.setText(parametersFile.getName());
+
+                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+                boolean valid = settingsDialog.validateParametersInput(false);
+
+                if (!valid) {
+                    settingsDialog.validateParametersInput(true);
+                    settingsDialog.setVisible(true);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
-            }
-            parametersFile = file;
-            searchParameters.setParametersFile(parametersFile);
-            settingsFileJTextField.setText(parametersFile.getName());
-
-            SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
-            boolean valid = settingsDialog.validateParametersInput(false);
-
-            if (!valid) {
-                settingsDialog.validateParametersInput(true);
+                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
                 settingsDialog.setVisible(true);
             }
         }
@@ -1112,6 +1139,69 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
 
+    private void loadExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadExampleMenuItemActionPerformed
+        new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "About DeNovoGUI Example Dataset", 700, 10);
+        // TODO: Setup default start location here!
+        File startLocation = new File(lastSelectedFolder);
+        if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
+            File temp = new File(outputFolderTextField.getText());
+            if (temp.isDirectory()) {
+                startLocation = temp;
+            } else {
+                startLocation = temp.getParentFile();
+            }
+        }
+        JFileChooser fc = new JFileChooser(startLocation);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        fc.setDialogTitle("Please select an output folder");
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File tempOutputFolder = fc.getSelectedFile();
+            outputFolderTextField.setText(tempOutputFolder.getAbsolutePath());
+            lastSelectedFolder = tempOutputFolder.getAbsolutePath();
+            setOutputFolder(tempOutputFolder);
+            // Set default example dataset
+            spectrumFilesTextField.setText("Example dataset selected");
+            ArrayList<File> exampleFile = new ArrayList<File>();
+            exampleFile.add(new File(getJarFilePath(), exampleDataset));
+            setSpectrumFiles(exampleFile);
+            // Set default search parameters
+            try {
+                File exampleParametersFile = new File(getJarFilePath(), exampleSearchParams);
+                searchParameters = SearchParameters.getIdentificationParameters(exampleParametersFile);
+                loadModifications(searchParameters);
+                parametersFile = exampleParametersFile;
+                searchParameters.setParametersFile(exampleParametersFile);
+                settingsFileJTextField.setText(parametersFile.getName());
+
+                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+                boolean valid = settingsDialog.validateParametersInput(false);
+
+                if (!valid) {
+                    settingsDialog.validateParametersInput(true);
+                    settingsDialog.setVisible(true);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error occured while reading " + parametersFile + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+                settingsDialog.setVisible(true);
+            }
+
+            validateInput(false);
+
+        }
+    }//GEN-LAST:event_loadExampleMenuItemActionPerformed
+
+    private void fileMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuActionPerformed
+        // oooops sorry wrong click... Don't know how to remove this now...
+    }//GEN-LAST:event_fileMenuActionPerformed
+
     /**
      * The main method.
      *
@@ -1200,7 +1290,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JButton loadConfigurationsButton;
+    private javax.swing.JMenuItem loadExampleMenuItem;
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem modsMenuItem;
