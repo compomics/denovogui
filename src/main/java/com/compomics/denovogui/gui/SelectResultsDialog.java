@@ -1,45 +1,45 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.denovogui.util.ExtensionFileFilter;
+import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
 import java.io.File;
-import javax.swing.JFileChooser;
 
 /**
+ * Dialog for selecting DeNovoGUI results to display.
  *
- * @author mva037
+ * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class SelectResultsDialog extends javax.swing.JDialog {
 
     /**
-     * Indicates whether the user pressed the cancel button
+     * Indicates whether the user pressed the cancel button.
      */
     private boolean canceled = false;
     /**
-     * The output file selected
+     * The output file selected.
      */
     private File outFile = null;
     /**
-     * The mgf file selected
+     * The mgf file selected.
      */
     private File mgfFile = null;
     /**
-     * The search parameters
+     * The search parameters.
      */
     private SearchParameters searchParameters = null;
     /**
-     * The last selected folder
+     * The last selected folder.
      */
     private String lastSelectedFolder = null;
 
     /**
-     * Creates new form SelectResult
+     * Creates a new SelectResultsDialog.
+     *
+     * @param parent the parent
+     * @param lastSelectedFolder the last selected folder
      */
     public SelectResultsDialog(java.awt.Frame parent, String lastSelectedFolder) {
         super(parent, true);
@@ -103,22 +103,28 @@ public class SelectResultsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        backgroundPanel = new javax.swing.JPanel();
+        outputPanel = new javax.swing.JPanel();
         browseOutButton = new javax.swing.JButton();
         outTxt = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        resultsLabel = new javax.swing.JLabel();
+        spectraLabel = new javax.swing.JLabel();
+        settingsLabel = new javax.swing.JLabel();
         browseMgfButton = new javax.swing.JButton();
         browseParametersButton = new javax.swing.JButton();
         mgfTxt = new javax.swing.JTextField();
         paramtersTxt = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        okButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Open Results");
+        setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Select DenovoGUI Output"));
+        backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
+
+        outputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Select DenovoGUI Output"));
+        outputPanel.setOpaque(false);
 
         browseOutButton.setText("Browse");
         browseOutButton.addActionListener(new java.awt.event.ActionListener() {
@@ -129,11 +135,11 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
         outTxt.setEditable(false);
 
-        jLabel1.setText("Pepnovo Result:");
+        resultsLabel.setText("PepNovo Result");
 
-        jLabel2.setText("Spectrua:");
+        spectraLabel.setText("Spectra");
 
-        jLabel3.setText("Parameters:");
+        settingsLabel.setText("Settings");
 
         browseMgfButton.setText("Browse");
         browseMgfButton.addActionListener(new java.awt.event.ActionListener() {
@@ -153,118 +159,140 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
         paramtersTxt.setEditable(false);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout outputPanelLayout = new javax.swing.GroupLayout(outputPanel);
+        outputPanel.setLayout(outputPanelLayout);
+        outputPanelLayout.setHorizontalGroup(
+            outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(outputPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(outputPanelLayout.createSequentialGroup()
+                        .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(outputPanelLayout.createSequentialGroup()
+                                .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(outTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, outputPanelLayout.createSequentialGroup()
+                                .addComponent(settingsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(paramtersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(6, 6, 6)
+                        .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(browseOutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(browseParametersButton, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(outputPanelLayout.createSequentialGroup()
+                        .addComponent(spectraLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(mgfTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(outTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(paramtersTxt)
-                            .addComponent(mgfTxt)))
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(browseOutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(browseParametersButton, javax.swing.GroupLayout.Alignment.TRAILING))
-                    .addComponent(browseMgfButton, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(browseMgfButton)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+
+        outputPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {browseMgfButton, browseOutButton, browseParametersButton});
+
+        outputPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {resultsLabel, settingsLabel, spectraLabel});
+
+        outputPanelLayout.setVerticalGroup(
+            outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(outputPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(browseOutButton)
                     .addComponent(outTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(resultsLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(spectraLabel)
                     .addComponent(browseMgfButton)
                     .addComponent(mgfTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(settingsLabel)
                     .addComponent(browseParametersButton)
                     .addComponent(paramtersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton1.setText("Cancel");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                okButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("OK");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                cancelButtonActionPerformed(evt);
             }
         });
+
+        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
+        backgroundPanel.setLayout(backgroundPanelLayout);
+        backgroundPanelLayout.setHorizontalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(outputPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        backgroundPanelLayout.setVerticalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(okButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Opens a file chooser to select the out files.
+     *
+     * @param evt
+     */
     private void browseOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseOutButtonActionPerformed
 
-        File startLocation = new File(lastSelectedFolder);
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new ExtensionFileFilter("out", false));
-        fc.setDialogTitle("Select output file");
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            outFile = fc.getSelectedFile();
+        File selectedFile = Util.getUserSelectedFile(this, ".out", "DeNovoGUI result file (.out)", "Select Output File", lastSelectedFolder, true);
+
+        if (selectedFile != null) {
+
+            outFile = selectedFile;
             lastSelectedFolder = outFile.getParent();
             outTxt.setText(outFile.getName());
+
             // try to find the mgf file
             File tempMgfFile = FileProcessor.getMgfFile(outFile);
             if (tempMgfFile.exists()) {
                 mgfFile = tempMgfFile;
                 mgfTxt.setText(mgfFile.getName());
             }
+
             // try to find the parameters file
-            File tempParamtersFile = new File(outFile.getParent(), DeNovoSequencingHandler.paramtersFileName);
+            File tempParamtersFile = new File(outFile.getParent(), DeNovoSequencingHandler.parametersFileName);
             if (tempParamtersFile.exists()) {
                 try {
                     searchParameters = SearchParameters.getIdentificationParameters(tempParamtersFile);
@@ -276,33 +304,33 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_browseOutButtonActionPerformed
 
+    /**
+     * Opens a file chooser to select the mgf files.
+     *
+     * @param evt
+     */
     private void browseMgfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseMgfButtonActionPerformed
 
-        File startLocation = new File(lastSelectedFolder);
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
-        fc.setDialogTitle("Select spectrum file");
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            mgfFile = fc.getSelectedFile();
+        File selectedFile = Util.getUserSelectedFile(this, ".mgf", "Spectrum files (.mgf)", "Select Spectrum File", lastSelectedFolder, true);
+
+        if (selectedFile != null) {
+            mgfFile = selectedFile;
             lastSelectedFolder = mgfFile.getParent();
             mgfTxt.setText(mgfFile.getName());
         }
     }//GEN-LAST:event_browseMgfButtonActionPerformed
 
+    /**
+     * Opens a file chooser to select the parameter file.
+     *
+     * @param evt
+     */
     private void browseParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseParametersButtonActionPerformed
 
-        File startLocation = new File(lastSelectedFolder);
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
-        fc.setDialogTitle("Select spectrum file");
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File tempParamtersFile = fc.getSelectedFile();
+        File selectedFile = Util.getUserSelectedFile(this, ".parameters", "DeNovoGUI settings (.parameters)", "Select Settings File", lastSelectedFolder, true);
+
+        if (selectedFile != null) {
+            File tempParamtersFile = selectedFile;
             try {
                 searchParameters = SearchParameters.getIdentificationParameters(tempParamtersFile);
                 lastSelectedFolder = tempParamtersFile.getParent();
@@ -313,26 +341,37 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_browseParametersButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    /**
+     * Cancel the opening and close the dialog.
+     *
+     * @param evt
+     */
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         canceled = true;
         dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    /**
+     * Close the dialog and open the results.
+     *
+     * @param evt
+     */
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_okButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton browseMgfButton;
     private javax.swing.JButton browseOutButton;
     private javax.swing.JButton browseParametersButton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JTextField mgfTxt;
+    private javax.swing.JButton okButton;
     private javax.swing.JTextField outTxt;
+    private javax.swing.JPanel outputPanel;
     private javax.swing.JTextField paramtersTxt;
+    private javax.swing.JLabel resultsLabel;
+    private javax.swing.JLabel settingsLabel;
+    private javax.swing.JLabel spectraLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -62,7 +62,6 @@ public class DeNovoCLIParams {
         output += "-" + String.format(formatter, SearchParametersCLIParams.ENZYME.id) + SearchParametersCLIParams.ENZYME.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.FIXED_MODS.id) + SearchParametersCLIParams.FIXED_MODS.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.VARIABLE_MODS.id) + SearchParametersCLIParams.VARIABLE_MODS.description + "\n";
-        output += "-" + String.format(formatter, SearchParametersCLIParams.PEP_NOVO_LOCATION.id) + SearchParametersCLIParams.PEP_NOVO_LOCATION.description + "\n";
 
         output += "\n\nOptional advanced parameters:\n\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.HITLIST_LENGTH_DE_NOVO.id) + SearchParametersCLIParams.HITLIST_LENGTH_DE_NOVO.description + "\n";
@@ -71,6 +70,7 @@ public class DeNovoCLIParams {
         output += "-" + String.format(formatter, SearchParametersCLIParams.ESTIMATE_CHARGE.id) + SearchParametersCLIParams.ESTIMATE_CHARGE.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.FRAGMENTATION_MODEL.id) + SearchParametersCLIParams.FRAGMENTATION_MODEL.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.THREADS.id) + SearchParametersCLIParams.THREADS.description + "\n\n";
+        output += "-" + String.format(formatter, SearchParametersCLIParams.PEP_NOVO_LOCATION.id) + SearchParametersCLIParams.PEP_NOVO_LOCATION.description + "\n";
 
         return output;
     }

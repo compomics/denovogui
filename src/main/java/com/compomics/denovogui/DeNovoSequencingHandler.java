@@ -7,7 +7,7 @@ import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,9 +54,9 @@ public class DeNovoSequencingHandler {
      */
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
     /**
-     * The name of the paramters file saved by default
+     * The name of the parameters file saved by default.
      */
-    public final static String paramtersFileName = "denovoGUI.parameters";
+    public final static String parametersFileName = "denovoGUI.parameters";
     /**
      * The chunk files.
      */
@@ -77,10 +77,6 @@ public class DeNovoSequencingHandler {
      * The job queue.
      */
     private Deque<PepnovoJob> jobs;
-    /**
-     * The out folder.
-     */
-    private File outputFolder;
 
     /**
      * Constructor.
@@ -105,11 +101,9 @@ public class DeNovoSequencingHandler {
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
 
-        this.outputFolder = outputFolder;
-
         long startTime = System.nanoTime();
-        waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
-        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+        waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra());
+        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         // Write the modification file
         try {
@@ -122,7 +116,7 @@ public class DeNovoSequencingHandler {
 
         // Back-up the parameters
         try {
-            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, paramtersFileName));
+            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the sequencing parameters.", true, true);
             e.printStackTrace();
@@ -150,7 +144,6 @@ public class DeNovoSequencingHandler {
 
         if (!waitingHandler.isRunCanceled()) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
-            System.out.println("Total sequencing time: " + Util.roundDouble(elapsedTime, 2) + " sec.");
             waitingHandler.appendReport("Total sequencing time: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
             waitingHandler.setRunFinished();
         }
@@ -192,12 +185,12 @@ public class DeNovoSequencingHandler {
                 return;
             }
 
-            waitingHandler.setWaitingText("Processing " + spectrumFile.getName());
+            waitingHandler.setWaitingText("Processing " + spectrumFile.getName() + ".");
             if (secondaryProgress) {
-                waitingHandler.resetSecondaryProgressBar();
-                waitingHandler.setMaxSecondaryProgressValue(nSpectra);
+                waitingHandler.resetSecondaryProgressCounter();
+                waitingHandler.setMaxSecondaryProgressCounter(nSpectra);
             } else {
-                waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+                waitingHandler.setSecondaryProgressCounterIndeterminate(true);
             }
 
             // Distribute the chunked spectra to the different jobs.
@@ -218,7 +211,7 @@ public class DeNovoSequencingHandler {
         }
 
         waitingHandler.appendReportEndLine();
-        waitingHandler.appendReport("Starting de novo sequencing of " + spectrumFile.getName(), true, true);
+        waitingHandler.appendReport("Starting de novo sequencing of " + spectrumFile.getName() + ".", true, true);
         waitingHandler.appendReportEndLine();
 
         // Execute the jobs from the queue.
@@ -249,7 +242,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReportEndLine();
         waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
         waitingHandler.appendReportEndLine();
-        waitingHandler.setSecondaryProgressDialogIndeterminate(true);
+        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
 

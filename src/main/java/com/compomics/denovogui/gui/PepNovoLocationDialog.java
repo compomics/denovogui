@@ -28,7 +28,7 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
         this.deNovoGUI = deNovoGUI;
 
         if (deNovoGUI.getPepNovoFolder() != null) {
-            pepNovoLocationTextField.setText(deNovoGUI.getPepNovoFolder().getAbsolutePath());
+            pepNovoLocationTextField.setText(new File(deNovoGUI.getPepNovoFolder(), deNovoGUI.getPepNovoExecutable()).getAbsolutePath());
             okButton.setEnabled(deNovoGUI.checkPepNovoFolder(deNovoGUI.getPepNovoFolder()));
         }
 
@@ -58,7 +58,7 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
-        pepNovoLocationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Executable Folder"));
+        pepNovoLocationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("PepNovo Executable"));
         pepNovoLocationPanel.setOpaque(false);
 
         pepNovoLocationLabel.setText("PepNovo Location");
@@ -159,7 +159,7 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void popNovoLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popNovoLocationBrowseButtonActionPerformed
-        browsePepnovoFolder();
+        browsePepNovoExecutable();
     }//GEN-LAST:event_popNovoLocationBrowseButtonActionPerformed
 
     /**
@@ -168,7 +168,6 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        deNovoGUI.setPepNovoFolder(new File(pepNovoLocationTextField.getText()));
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -193,25 +192,25 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
     /**
      * This method is called when the Browse button for PepNovo is pressed.
      */
-    public void browsePepnovoFolder() {
+    public void browsePepNovoExecutable() {
 
         String startLocation = pepNovoLocationTextField.getText();
         JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int result = fc.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            File pepNovoFolder = fc.getSelectedFile();
+            File pepNovoExecutable = fc.getSelectedFile();
 
-            if (deNovoGUI.checkPepNovoFolder(pepNovoFolder)) {
-                deNovoGUI.setLastSelectedFolder(pepNovoFolder.getAbsolutePath());
-                deNovoGUI.setPepNovoFolder(pepNovoFolder);
-                pepNovoLocationTextField.setText(pepNovoFolder.getAbsolutePath());
+            if (deNovoGUI.checkPepNovoFolder(pepNovoExecutable.getParentFile())) {
+                deNovoGUI.setLastSelectedFolder(pepNovoExecutable.getAbsolutePath());
+                deNovoGUI.setPepNovoFolder(pepNovoExecutable.getParentFile());
+                deNovoGUI.setPepNovoExecutable(pepNovoExecutable.getName());
+                pepNovoLocationTextField.setText(pepNovoExecutable.getAbsolutePath());
             } else {
-                JOptionPane.showMessageDialog(this, "Incorrect PepNovo folder specified.\n"
+                JOptionPane.showMessageDialog(this, "Incorrect PepNovo executable selected.\n"
                         + "Please try again, or press cancel to exit.",
-                        "Incorrect PepNovo Folder", JOptionPane.WARNING_MESSAGE);
-                browsePepnovoFolder();
+                        "Incorrect PepNovo Executable", JOptionPane.WARNING_MESSAGE);
+                browsePepNovoExecutable();
             }
         }
 

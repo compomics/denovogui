@@ -1,6 +1,6 @@
 package com.compomics.denovogui.execution;
 
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -74,6 +74,9 @@ public abstract class Job implements Executable, Runnable {
         } catch (IOException ioe) {
             setStatus(JobStatus.ERROR);
             setError(ioe.getMessage());
+            waitingHandler.appendReport("Could not start PepNovo!", true, true);
+            waitingHandler.appendReportEndLine();
+            waitingHandler.setRunCanceled();
             ioe.printStackTrace();
         }
 
@@ -91,13 +94,10 @@ public abstract class Job implements Executable, Runnable {
                 writer.newLine();
 
                 if (temp.startsWith(">>")) {                    
-                    waitingHandler.increaseProgressValue();
-                    waitingHandler.increaseSecondaryProgressValue();
-                    if (waitingHandler.getPrimaryProgressBar() != null) {
-                        waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressBar().getValue() + "/" + waitingHandler.getPrimaryProgressBar().getMaximum() + ".", true, true);
-                    } else {
-                        waitingHandler.appendReport("Processed spectrum.", true, true);
-                    }
+                    waitingHandler.increasePrimaryProgressCounter();
+                    waitingHandler.increaseSecondaryProgressCounter();
+                    waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressCounter() 
+                            + "/" + waitingHandler.getMaxPrimaryProgressCounter() + ".", true, true);
                 }
             }
             writer.flush();

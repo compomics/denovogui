@@ -19,8 +19,8 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
-import com.compomics.util.gui.waiting.WaitingActionListener;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingActionListener;
+import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -96,6 +96,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private File pepNovoFolder;
     /**
+     * Title of the PepNovo executable.
+     */
+    private String pepNovoExecutable = "PepNovo_Windows.exe";
+    /**
      * Spectra files list.
      */
     private ArrayList<File> spectrumFiles = new ArrayList<File>();
@@ -131,10 +135,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
-    /**
-     * Title of the PepNovo executable.
-     */
-    private String exeTitle = "PepNovo_Windows.exe"; // @TODO: should only be set once!!!
 
     /**
      * Creates a new DeNovoGUI.
@@ -189,11 +189,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             // OS check
             if (osName.contains("mac os")) {
-                exeTitle = "PepNovo_Mac";
+                pepNovoExecutable = "PepNovo_Mac";
             } else if (osName.contains("windows")) {
-                exeTitle = "PepNovo_Windows.exe";
+                pepNovoExecutable = "PepNovo_Windows.exe";
             } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                exeTitle = "PepNovo_Linux";
+                pepNovoExecutable = "PepNovo_Linux";
             } else {
                 // unsupported OS version
             }
@@ -1399,7 +1399,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, exeTitle, waitingHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
@@ -1553,12 +1553,30 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Returns the PepNovo folder.
+     * Returns the PepNovo executable.
      *
      * @return the pepNovoFolder
      */
     public File getPepNovoFolder() {
         return pepNovoFolder;
+    }
+    
+    /**
+     * Sets the PepNovo executable.
+     *
+     * @param pepNovoExecutable PepNovo executable.
+     */
+    public void setPepNovoExecutable(String pepNovoExecutable) {
+        this.pepNovoExecutable = pepNovoExecutable;
+    }
+
+    /**
+     * Returns the PepNovo executable.
+     *
+     * @return the pepNovoExecutable
+     */
+    public String getPepNovoExecutable() {
+        return pepNovoExecutable;
     }
 
     /**
@@ -1619,14 +1637,18 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         if (deNovoFolder != null && deNovoFolder.exists() && deNovoFolder.isDirectory()) {
             String[] fileNames = deNovoFolder.list();
-            int count = 0;
+            int executableCounter = 0;
+            int modelFolderCounter = 0;
             for (int i = 0; i < fileNames.length; i++) {
                 String lFileName = fileNames[i];
-                if (lFileName.startsWith("PepNovo") && lFileName.endsWith(".exe")) {
-                    count++;
+                if (lFileName.startsWith("PepNovo")) {
+                    executableCounter++;
+                }
+                if (lFileName.equalsIgnoreCase("Models")) {
+                    modelFolderCounter++;
                 }
             }
-            if (count > 0) {
+            if (executableCounter > 0 && modelFolderCounter > 0) {
                 result = true;
             }
         }
