@@ -71,6 +71,14 @@ public class DeNovoSequencingHandler {
      * The spectrum factory.
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+    /**
+     * The job queue
+     */
+    private Deque<PepnovoJob> jobs;
+    /**
+     * The out folder
+     */
+    private File outputFolder;
 
     /**
      * Constructor.
@@ -94,6 +102,8 @@ public class DeNovoSequencingHandler {
      * @throws ClassNotFoundException
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
+
+        this.outputFolder = outputFolder;
 
         long startTime = System.nanoTime();
         waitingHandler.setMaxProgressValue(spectrumFactory.getNSpectra());
@@ -123,6 +133,9 @@ public class DeNovoSequencingHandler {
 
         for (File spectrumFile : spectrumFiles) {
             startSequencing(spectrumFile, searchParameters, outputFolder, exeTitle, waitingHandler, spectrumFiles.size() > 1);
+            if (waitingHandler.isRunCanceled()) {
+                break;
+            }
         }
 
         if (!waitingHandler.isRunCanceled()) {
@@ -150,7 +163,7 @@ public class DeNovoSequencingHandler {
         threadExecutor = Executors.newFixedThreadPool(nThreads);
 
         // Job queue.
-        Deque<PepnovoJob> jobs = new ArrayDeque<PepnovoJob>();
+        jobs = new ArrayDeque<PepnovoJob>();
         try {
             int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
             int remaining = nSpectra % nThreads;
@@ -232,8 +245,23 @@ public class DeNovoSequencingHandler {
      * @throws IOException
      */
     public void cancelSequencing() throws IOException {
+        if (jobs != null) {
+            for (PepnovoJob job : jobs) {
+                job.cancel();
+            }
+        }
         if (threadExecutor != null) {
             threadExecutor.shutdownNow();
+            // delete temp .out files
+            for (File tempOutFile : FileProcessor.getOutFiles(outputFolder, chunkFiles)) {
+                if (tempOutFile.exists()) {
+                    try {
+                        tempOutFile.delete();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             // Delete the mgf file chunks.
             FileProcessor.deleteChunkMgfFiles(chunkFiles);
         }
