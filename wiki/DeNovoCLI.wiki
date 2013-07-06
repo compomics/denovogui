@@ -47,8 +47,9 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
                         The modifications are configured in the GUI.
                         Example: -variable_mods "oxidation of m, phosphorylation of s".
 
--pep_novo_folder        The folder where PepNovo+ is installed, defaults                        
-                        to the version provided with DeNovoGUI.
+-pep_novo               The PepNovo+ executable, defaults to the OS dependent versions 
+                        included with DeNovoGUI. (Note that the executable has to 
+                        be in the same folder as PepNovo Models folder.)
 }}}
 
 
