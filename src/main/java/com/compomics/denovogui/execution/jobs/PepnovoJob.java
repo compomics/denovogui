@@ -1,6 +1,7 @@
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
+import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
@@ -116,7 +117,7 @@ public class PepnovoJob extends Job {
         }
 
         // Add output path
-        outputFile = getOutputFile(outputFolder, Util.getFileName(spectrumFile));
+        outputFile = FileProcessor.getOutFile(outputFolder, spectrumFile);
         procCommands.trimToSize();
        
         // Set the description - yet not used
@@ -129,18 +130,6 @@ public class PepnovoJob extends Job {
     }
 
     /**
-     * Returns the expected result file for a given spectrum file in a given
-     * output folder.
-     *
-     * @param folder the output folder
-     * @param spectrumFileName the spectrum file name
-     * @return the results file
-     */
-    public static File getOutputFile(File folder, String spectrumFileName) {
-        return new File(folder, spectrumFileName + ".out");
-    }
-
-    /**
      * Cancels the job by destroying the process.
      */
     @Override
@@ -148,6 +137,11 @@ public class PepnovoJob extends Job {
         if (proc != null) {
             proc.destroy();
             log.info(">> De novo sequencing has been canceled.");
+            try {
+                outputFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

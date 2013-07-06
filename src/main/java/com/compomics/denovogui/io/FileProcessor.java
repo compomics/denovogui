@@ -1,5 +1,6 @@
 package com.compomics.denovogui.io;
 
+import com.compomics.util.Util;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedReader;
@@ -203,7 +204,7 @@ public class FileProcessor {
      * @return the corresponding out file
      */
     public static File getOutFile(File outFolder, File spectrumFile) {
-        return new File(outFolder, spectrumFile.getName() + ".out");
+        return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
     }
 
     /**
