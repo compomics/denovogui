@@ -19,6 +19,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu5">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="ionsMenu">
@@ -89,6 +90,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu8">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="otherMenu">
@@ -151,6 +153,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu2">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="chargeMenu">
@@ -161,6 +164,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu3">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="deNovoMenu">
@@ -190,6 +194,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="deNovoChargeOneJRadioButtonMenuItem">
               <Properties>
+                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                  <ComponentRef name="deNovoChargeButtonGroup"/>
+                </Property>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Single Charge"/>
               </Properties>
@@ -199,6 +206,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="deNovoChargeTwoJRadioButtonMenuItem">
               <Properties>
+                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                  <ComponentRef name="deNovoChargeButtonGroup"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Double Charge"/>
               </Properties>
               <Events>
@@ -210,6 +220,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu9">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="settingsMenu">
@@ -253,6 +264,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu4">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="exportGraphicsMenu">
@@ -304,6 +316,7 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu6">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpJMenu">
@@ -324,10 +337,13 @@
         <Menu class="javax.swing.JMenu" name="splitterMenu7">
           <Properties>
             <Property name="text" type="java.lang.String" value="|"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.ButtonGroup" name="deNovoChargeButtonGroup">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">

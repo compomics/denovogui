@@ -68,7 +68,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
-import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
 import no.uib.jsparklines.extra.TrueFalseIconRenderer;
 import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
@@ -369,6 +368,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         helpJMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         splitterMenu7 = new javax.swing.JMenu();
+        deNovoChargeButtonGroup = new javax.swing.ButtonGroup();
         bcakgroundPanel = new javax.swing.JPanel();
         debovoResultsPanel = new javax.swing.JPanel();
         spectrumViewerPanel = new javax.swing.JPanel();
@@ -425,6 +425,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.setOpaque(false);
 
         splitterMenu5.setText("|");
+        splitterMenu5.setEnabled(false);
         annotationMenuBar.add(splitterMenu5);
 
         ionsMenu.setText("Ions");
@@ -489,6 +490,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(ionsMenu);
 
         splitterMenu8.setText("|");
+        splitterMenu8.setEnabled(false);
         annotationMenuBar.add(splitterMenu8);
 
         otherMenu.setText("Other");
@@ -540,12 +542,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(lossMenu);
 
         splitterMenu2.setText("|");
+        splitterMenu2.setEnabled(false);
         annotationMenuBar.add(splitterMenu2);
 
         chargeMenu.setText("Charge");
         annotationMenuBar.add(chargeMenu);
 
         splitterMenu3.setText("|");
+        splitterMenu3.setEnabled(false);
         annotationMenuBar.add(splitterMenu3);
 
         deNovoMenu.setText("De Novo");
@@ -569,6 +573,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoMenu.add(rewindIonsDeNovoCheckBoxMenuItem);
         deNovoMenu.add(jSeparator19);
 
+        deNovoChargeButtonGroup.add(deNovoChargeOneJRadioButtonMenuItem);
         deNovoChargeOneJRadioButtonMenuItem.setSelected(true);
         deNovoChargeOneJRadioButtonMenuItem.setText("Single Charge");
         deNovoChargeOneJRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -578,6 +583,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         });
         deNovoMenu.add(deNovoChargeOneJRadioButtonMenuItem);
 
+        deNovoChargeButtonGroup.add(deNovoChargeTwoJRadioButtonMenuItem);
         deNovoChargeTwoJRadioButtonMenuItem.setText("Double Charge");
         deNovoChargeTwoJRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -589,6 +595,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(deNovoMenu);
 
         splitterMenu9.setText("|");
+        splitterMenu9.setEnabled(false);
         annotationMenuBar.add(splitterMenu9);
 
         settingsMenu.setText("Settings");
@@ -625,6 +632,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(settingsMenu);
 
         splitterMenu4.setText("|");
+        splitterMenu4.setEnabled(false);
         annotationMenuBar.add(splitterMenu4);
 
         exportGraphicsMenu.setText("Export");
@@ -668,6 +676,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(exportGraphicsMenu);
 
         splitterMenu6.setText("|");
+        splitterMenu6.setEnabled(false);
         annotationMenuBar.add(splitterMenu6);
 
         helpJMenu.setText("Help");
@@ -683,6 +692,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         annotationMenuBar.add(helpJMenu);
 
         splitterMenu7.setText("|");
+        splitterMenu7.setEnabled(false);
         annotationMenuBar.add(splitterMenu7);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -1346,6 +1356,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem bugReportMenu;
     private javax.swing.JCheckBoxMenuItem cIonCheckBoxMenuItem;
     private javax.swing.JMenu chargeMenu;
+    private javax.swing.ButtonGroup deNovoChargeButtonGroup;
     private javax.swing.JRadioButtonMenuItem deNovoChargeOneJRadioButtonMenuItem;
     private javax.swing.JRadioButtonMenuItem deNovoChargeTwoJRadioButtonMenuItem;
     private javax.swing.JMenu deNovoMenu;
@@ -2081,6 +2092,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             if (idfileReader.getMaxCharge() > maxIdentificationCharge) {
                 maxIdentificationCharge = idfileReader.getMaxCharge();
             }
+
+            idfileReader.close();
         }
 
         return tempIdentification;

@@ -3,7 +3,6 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
-import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.File;
@@ -70,7 +69,7 @@ public class PepnovoJob extends Job {
         // Link to the MGF file
         procCommands.add("-file");
         procCommands.add(spectrumFile.getAbsolutePath());
-        
+
         // Add Model
         procCommands.add("-model");
         procCommands.add(searchParameters.getFragmentationModel());
@@ -119,10 +118,10 @@ public class PepnovoJob extends Job {
         // Add output path
         outputFile = FileProcessor.getOutFile(outputFolder, spectrumFile);
         procCommands.trimToSize();
-       
+
         // Set the description - yet not used
         setDescription("PEPNOVO");
-        procBuilder = new ProcessBuilder(procCommands);        
+        procBuilder = new ProcessBuilder(procCommands);
         procBuilder.directory(pepNovoFolder);
 
         // set error out and std out to same stream
@@ -138,7 +137,12 @@ public class PepnovoJob extends Job {
             proc.destroy();
             log.info(">> De novo sequencing has been canceled.");
             try {
-                outputFile.delete();
+                boolean deleted = outputFile.delete();
+
+                if (!deleted) {
+                    System.out.println("Failed to delete: " + outputFile);
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

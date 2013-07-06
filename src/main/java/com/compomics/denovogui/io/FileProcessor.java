@@ -1,19 +1,15 @@
 package com.compomics.denovogui.io;
 
 import com.compomics.util.Util;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.WaitingHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 
 /**
@@ -142,7 +138,11 @@ public class FileProcessor {
         for (File file : mgfFiles) {
             // Delete redundant chunk files.
             if (file.exists()) {
-                file.delete();
+                boolean deleted = file.delete();
+
+                if (!deleted) {
+                    System.out.println("Failed to delete: " + file);
+                }
             }
         }
     }
@@ -151,20 +151,20 @@ public class FileProcessor {
      * Merges and deletes the (split) output files.
      *
      * @param outFiles The output files to be merged.
-     * @return Merged output file.
      * @throws IOException
      */
     public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
+
         File first = outFiles.get(0);
         File mergedFile = new File(first.getParent(), first.getName().substring(0, first.getName().lastIndexOf("_")) + ".mgf.out");
         BufferedWriter bWriter = new BufferedWriter(new FileWriter(mergedFile));
+
         try {
             String line;
-            boolean isContent;
 
             for (File file : outFiles) {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                isContent = false;
+                boolean isContent = false;
                 while ((line = reader.readLine()) != null) {
                     if (line.startsWith(">>")) {
                         isContent = true;
@@ -187,7 +187,6 @@ public class FileProcessor {
                 if (file.exists()) {
                     file.delete();
                 }
-
             }
             bWriter.flush();
         } finally {
