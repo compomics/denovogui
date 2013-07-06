@@ -133,6 +133,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public final static String CACHE_DIRECTORY = "resources/matches";
     /**
+     * The example .out file
+     */
+    public final static String exampleOutFile = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf.out";
+    /**
      * De novo identification.
      */
     private Identification identification;
@@ -196,12 +200,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set the title of the frame and add the icon
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
         setUpGUI();
+        setVisible(true);
         if (outFiles != null) {
             displayResults(outFiles);
         } else {
-            // @TODO: should we do something here??
+            openNewFile();
         }
-        setVisible(true);
     }
 
     /**
@@ -410,6 +414,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
@@ -877,7 +882,20 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu.setText("File");
 
         openMenuItem.setText("Open");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(openMenuItem);
+
+        jMenuItem1.setText("Open Example");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        fileMenu.add(jMenuItem1);
         fileMenu.add(jSeparator1);
 
         exitMenuItem.setText("Close");
@@ -944,13 +962,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 963, Short.MAX_VALUE)
+            .addGap(0, 971, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 676, Short.MAX_VALUE)
+            .addGap(0, 702, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1343,6 +1361,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         exitMenuItemActionPerformed(null);
     }//GEN-LAST:event_formWindowClosing
+
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        openNewFile();
+    }//GEN-LAST:event_openMenuItemActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        openExpampleFile();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1381,6 +1408,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
@@ -1421,12 +1449,117 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     // End of variables declaration//GEN-END:variables
 
     /**
+     * shows a dialog allowing the selection of a new result file and displays
+     * the results
+     */
+    private void openNewFile() {
+        final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder());
+        if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFile() != null && selectResultsDialog.getOutFile() != null && selectResultsDialog.getSearchParameters() != null) {
+            deNovoGUI.setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
+            searchParameters = selectResultsDialog.getSearchParameters();
+            openNewFile(selectResultsDialog.getOutFile(), selectResultsDialog.getMgfFile());
+        }
+    }
+
+    /**
+     * Opens the example file
+     */
+    private void openExpampleFile() {
+        new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
+                "About DeNovoGUI Example Dataset", 700, 10);
+        File outFile = new File(deNovoGUI.getJarFilePath(), exampleOutFile);
+        if (!outFile.exists()) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + outFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        File mgfFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleDataset);
+        if (!mgfFile.exists()) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + mgfFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        File paramtersFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleSearchParams);
+        if (!paramtersFile.exists()) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + paramtersFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            searchParameters = SearchParameters.getIdentificationParameters(paramtersFile);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while loading the paramters.", "Parameters Error", JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+        openNewFile(outFile, mgfFile);
+    }
+
+    /**
+     * Opens a new out file.
+     *
+     * @param outFile the .out file
+     * @param spectrumFile the corresponding mgf file
+     */
+    private void openNewFile(File outFile, File spectrumFile) {
+        final File finalOutFile = outFile;
+        final File finalMgfFile = spectrumFile;
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Exporting Matches. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+        new Thread("importThread") {
+            public void run() {
+                try {
+                    spectrumFactory.addSpectra(finalMgfFile, progressDialog);
+                    String[] filesArray = {finalMgfFile.getName()};
+                    spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
+                    progressDialog.setRunFinished();
+
+                } catch (Exception e) {
+                    progressDialog.setRunFinished();
+                    JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while loading the spectra.", "Mgf File Error", JOptionPane.WARNING_MESSAGE);
+                    e.printStackTrace();
+                    return;
+                }
+                progressDialog.setRunFinished();
+                if (!progressDialog.isRunCanceled()) {
+                    ArrayList<File> outFiles = new ArrayList<File>();
+                    outFiles.add(finalOutFile);
+                    try {
+                        displayResults(outFiles);
+
+                    } catch (Exception e) {
+                        progressDialog.setRunFinished();
+                        JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while importing the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+    }
+
+    /**
      * Displays new results.
      */
     private void displayResults() {
         TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification);
         querySpectraTable.setModel(tableModel);
-        querySpectraTable.setRowSelectionInterval(0, 0);
+        if (querySpectraTable.getRowCount() > 0) {
+            querySpectraTable.setRowSelectionInterval(0, 0);
+        }
         updateAssumptionsTable();
     }
 
@@ -1502,30 +1635,32 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         try {
             assumptions = new ArrayList<PeptideAssumption>();
-            String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
+            if (querySpectraTable.getRowCount() > 0) {
+                String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
-            if (identification.matchExists(psmKey)) {
-                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-                HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
-                if (assumptionsMap != null) {
-                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                    Collections.sort(scores, Collections.reverseOrder());
-                    for (Double score : scores) {
-                        assumptions.addAll(assumptionsMap.get(score));
+                if (identification.matchExists(psmKey)) {
+                    SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+                    HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                    if (assumptionsMap != null) {
+                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                        Collections.sort(scores, Collections.reverseOrder());
+                        for (Double score : scores) {
+                            assumptions.addAll(assumptionsMap.get(score));
+                        }
                     }
                 }
+                TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile());
+                deNovoPeptidesTable.setModel(tableModel);
+
+                ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
+                setTableProperties();
+
+                if (deNovoPeptidesTable.getRowCount() > 0) {
+                    deNovoPeptidesTable.setRowSelectionInterval(0, 0);
+                }
+
+                updateSpectrum();
             }
-            TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile());
-            deNovoPeptidesTable.setModel(tableModel);
-
-            ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
-            setTableProperties();
-
-            if (deNovoPeptidesTable.getRowCount() > 0) {
-                deNovoPeptidesTable.setRowSelectionInterval(0, 0);
-            }
-
-            updateSpectrum();
 
         } catch (Exception e) {
             deNovoGUI.catchException(e);
@@ -1641,10 +1776,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 try {
                     // Import the PepNovo results.            
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
-                    displayResults();
-                    progressDialog.setRunFinished();
+                    if (identification != null) {
+                        displayResults();
+                    }
                 } catch (Exception e) {
-                    progressDialog.setRunFinished();
                     deNovoGUI.catchException(e);
                 } finally {
                     progressDialog.setRunFinished();
@@ -2057,7 +2192,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         String dbFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
         ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
-        tempIdentification.establishConnection(dbFolder, true, objectsCache);
+        try {
+            tempIdentification.establishConnection(dbFolder, true, objectsCache);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. Please make sure that no other instance of DenovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+            return null;
+        }
 
         for (File outFile : outFiles) {
 
