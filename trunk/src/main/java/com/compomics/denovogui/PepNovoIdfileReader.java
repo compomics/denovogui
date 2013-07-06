@@ -16,7 +16,7 @@ import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.personalization.ExperimentObject;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -150,7 +150,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         fileName = Util.getFileName(identificationFile);
 
         if (waitingHandler != null) {
-            waitingHandler.setMaxSecondaryProgressValue(100);
+            waitingHandler.setMaxSecondaryProgressCounter(100);
         }
 
         long progressUnit = bufferedRandomAccessFile.length() / 100;
@@ -186,7 +186,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                     if (waitingHandler.isRunCanceled()) {
                         break;
                     }
-                    waitingHandler.setSecondaryProgressValue((int) (currentIndex / progressUnit));
+                    waitingHandler.setSecondaryProgressCounter((int) (currentIndex / progressUnit));
                 }
             }
         }
@@ -202,7 +202,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         HashSet<SpectrumMatch> spectrumMatches = new HashSet<SpectrumMatch>();
 
         if (waitingHandler != null) {
-            waitingHandler.setMaxSecondaryProgressValue(index.size());
+            waitingHandler.setMaxSecondaryProgressCounter(index.size());
         }
         
         for (String title : index.keySet()) {
@@ -233,7 +233,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 if (waitingHandler.isRunCanceled()) {
                     break;
                 }
-                waitingHandler.increaseSecondaryProgressValue();
+                waitingHandler.increaseSecondaryProgressCounter();
             }
         }
 

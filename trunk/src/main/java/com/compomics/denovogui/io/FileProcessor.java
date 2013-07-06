@@ -1,7 +1,7 @@
 package com.compomics.denovogui.io;
 
 import com.compomics.util.Util;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +22,7 @@ public class FileProcessor {
     /**
      * Writes the chunk/merged output files.
      *
-     * @param files the files to chunk
+     * @param file the file to chunk
      * @param chunkSize the chunk size
      * @param remaining no. of remaining spectra (not fitting in file number
      * division)
@@ -46,9 +46,9 @@ public class FileProcessor {
 
         long progressStep = br.length() / 100;
         if (waitingHandler != null) {
-            waitingHandler.setSecondaryProgressDialogIndeterminate(false);
-            waitingHandler.setMaxSecondaryProgressValue(100);
-            waitingHandler.setSecondaryProgressValue(0);
+            waitingHandler.setSecondaryProgressCounterIndeterminate(false);
+            waitingHandler.setMaxSecondaryProgressCounter(100);
+            waitingHandler.setSecondaryProgressCounter(0);
         }
         long progress = 0;
         boolean streamClosed = false;
@@ -110,7 +110,7 @@ public class FileProcessor {
                     progress += readIndex;
                     if (waitingHandler != null) {
                         if (progress > progressStep) {
-                            waitingHandler.increaseSecondaryProgressValue();
+                            waitingHandler.increaseSecondaryProgressCounter();
                             progress = 0;
                         }
                         if (waitingHandler.isRunCanceled()) {
@@ -207,7 +207,7 @@ public class FileProcessor {
     }
 
     /**
-     * Returns the mfg file corresponding to the given out file
+     * Returns the mfg file corresponding to the given out file.
      *
      * @param outFile the out file
      * @return the corresponding mfg file
@@ -220,6 +220,7 @@ public class FileProcessor {
         String outName = fileName.substring(0, fileName.lastIndexOf("."));
         return new File(outFile.getParent(), outName);
     }
+
     /**
      * Returns a list of out files expected from a list of spectrum files.
      *

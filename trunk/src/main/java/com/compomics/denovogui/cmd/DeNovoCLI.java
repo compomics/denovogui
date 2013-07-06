@@ -94,28 +94,42 @@ public class DeNovoCLI implements Callable {
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
 
-            File pepNovoFolder = searchParametersInputBean.getPepNovoLocation();
+            File pepNovoExecutable = searchParametersInputBean.getPepNovoExecutable();
+            File pepNovoFolder = null;
+            String executableTitle = null;
 
-            // use the default PepNovo folder if not set by user
-            if (pepNovoFolder == null && new File(getJarFilePath() + "/resources/PepNovo").exists()) {
+            if (pepNovoExecutable != null) {
+                executableTitle = pepNovoExecutable.getName();
+                pepNovoFolder = pepNovoExecutable.getParentFile();
+            } else if (new File(getJarFilePath() + "/resources/PepNovo").exists()) {
+
+                // use the default PepNovo folder if not set by user
                 pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
+
+                // OS check
+                String osName = System.getProperty("os.name").toLowerCase();
+
+                if (osName.contains("mac os")) {
+                    executableTitle = "PepNovo_Mac";
+                } else if (osName.contains("windows")) {
+                    executableTitle = "PepNovo_Windows.exe";
+                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                    executableTitle = "PepNovo_Linux";
+                } else {
+                    // unsupported OS version
+                }
             }
+
+            // check if the PepNovo folder is set
             if (pepNovoFolder == null) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-            
-            // OS check
-            String osName = System.getProperty("os.name").toLowerCase();
-            String exeTitle = "PepNovo.exe";
-            if (osName.contains("mac os")) {
-                exeTitle = "PepNovo_Mac";
-            } else if (osName.contains("windows")) {
-                exeTitle = "PepNovo_Windows.exe";
-            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                exeTitle = "PepNovo_Linux";
-            } else {
-                // unsupported OS version
+
+            // check of the PepNovo executable is set
+            if (executableTitle == null) {
+                waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
+                System.exit(0);
             }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
@@ -123,6 +137,12 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }
+
+            // starting the DeNovoCLI
+            waitingHandlerCLIImpl.appendReportEndLine();
+            waitingHandlerCLIImpl.appendReport("Starting DeNovoCLI.", true, true);
+            waitingHandlerCLIImpl.appendReportEndLine();
+
             // Load the spectra into the factory
             SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             waitingHandlerCLIImpl.appendReport("Loading the spectra.", true, true);
@@ -131,11 +151,12 @@ public class DeNovoCLI implements Callable {
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
+            // start the sequencing
             DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder);
             searchHandler.setNThreads(searchParametersInputBean.getNThreads());
-            searchHandler.startSequencing(searchParametersInputBean.getSpectrumFiles(), 
-                    searchParametersInputBean.getSearchParameters(), 
-                    searchParametersInputBean.getOutputFile(), exeTitle,
+            searchHandler.startSequencing(searchParametersInputBean.getSpectrumFiles(),
+                    searchParametersInputBean.getSearchParameters(),
+                    searchParametersInputBean.getOutputFile(), executableTitle,
                     waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();

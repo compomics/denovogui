@@ -4,7 +4,7 @@ import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
 

@@ -3,7 +3,7 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class TrainingModelJob extends Job {
     /**
      * Name of the PepNovo+ executable.
      */
-    public final static String PEPNOVO_EXE = "PepNovo.exe";
+    public final static String PEPNOVO_EXE = "PepNovo_Windows.exe"; // @TODO: remove Windows hardcoding!
     /**
      * The file contains the paths to good training files.
      */

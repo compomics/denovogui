@@ -12,7 +12,7 @@ import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -260,8 +260,8 @@ public class TextExporter {
                 if (waitingHandler != null) {
                     waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...)");
                     // reset the progress bar
-                    waitingHandler.setSecondaryProgressValue(0);
-                    waitingHandler.setMaxSecondaryProgressValue(identification.getSpectrumIdentificationSize());
+                    waitingHandler.setSecondaryProgressCounter(0);
+                    waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
                 }
 
                 for (String mgfFile : identification.getSpectrumFiles()) {
@@ -312,7 +312,7 @@ public class TextExporter {
                                 b.newLine(); //This should not happen. Should.
                             }
                             if (waitingHandler != null) {
-                                waitingHandler.increaseSecondaryProgressValue();
+                                waitingHandler.increaseSecondaryProgressCounter();
                                 if (waitingHandler.isRunCanceled()) {
                                     return;
                                 }

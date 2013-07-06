@@ -37,7 +37,7 @@ import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
 import com.compomics.util.gui.export_graphics.ExportGraphicsDialogParent;
 import com.compomics.util.gui.renderers.AlignedListCellRenderer;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
-import com.compomics.util.gui.waiting.WaitingHandler;
+import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.preferences.AnnotationPreferences;
 import java.awt.Color;
@@ -133,7 +133,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public final static String CACHE_DIRECTORY = "resources/matches";
     /**
-     * The example .out file
+     * The example .out file.
      */
     public final static String exampleOutFile = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf.out";
     /**
@@ -414,7 +414,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        openExampleMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
@@ -742,7 +743,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -795,7 +796,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     .addComponent(spectrumFileLabel)
                     .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -830,14 +831,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 911, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
                 .addContainerGap())
         );
         deNovoPeptidesPanelLayout.setVerticalGroup(
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -881,21 +882,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
-        openMenuItem.setText("Open");
+        openMenuItem.setText("Open...");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openMenuItemActionPerformed(evt);
             }
         });
         fileMenu.add(openMenuItem);
+        fileMenu.add(jSeparator2);
 
-        jMenuItem1.setText("Open Example");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        openExampleMenuItem.setText("Open Example...");
+        openExampleMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                openExampleMenuItemActionPerformed(evt);
             }
         });
-        fileMenu.add(jMenuItem1);
+        fileMenu.add(openExampleMenuItem);
         fileMenu.add(jSeparator1);
 
         exitMenuItem.setText("Close");
@@ -1362,14 +1364,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exitMenuItemActionPerformed(null);
     }//GEN-LAST:event_formWindowClosing
 
+    /**
+     * Open a new file.
+     *
+     * @param evt
+     */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         openNewFile();
     }//GEN-LAST:event_openMenuItemActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        openExpampleFile();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
+    /**
+     * Open the example dataset.
+     *
+     * @param evt
+     */
+    private void openExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openExampleMenuItemActionPerformed
+        openExampleDataset();
+    }//GEN-LAST:event_openExampleMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1408,18 +1419,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator19;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JMenu lossMenu;
     private javax.swing.JMenu lossSplitter;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem openExampleMenuItem;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenu otherMenu;
     private javax.swing.JCheckBoxMenuItem precursorCheckMenu;
@@ -1449,8 +1461,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     // End of variables declaration//GEN-END:variables
 
     /**
-     * shows a dialog allowing the selection of a new result file and displays
-     * the results
+     * Shows a dialog allowing the selection of a new result file and displays
+     * the results.
      */
     private void openNewFile() {
         final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder());
@@ -1462,9 +1474,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }
 
     /**
-     * Opens the example file
+     * Opens the example file.
      */
-    private void openExpampleFile() {
+    private void openExampleDataset() {
         new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
@@ -1507,7 +1519,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                 true);
-        progressDialog.setIndeterminate(true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
         progressDialog.setTitle("Exporting Matches. Please Wait...");
 
         new Thread(new Runnable() {
@@ -1575,7 +1587,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                 true);
-        progressDialog.setIndeterminate(true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
         progressDialog.setTitle("Exporting Matches. Please Wait...");
 
         new Thread(new Runnable() {
@@ -1757,7 +1769,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                 true);
-        progressDialog.setIndeterminate(true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
         progressDialog.setTitle("Loading Results. Please Wait...");
 
         new Thread(new Runnable() {
@@ -1774,7 +1786,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             @Override
             public void run() {
                 try {
-                    // Import the PepNovo results.            
+                    // import the PepNovo results.            
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
                     if (identification != null) {
                         displayResults();
@@ -2252,7 +2264,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                     true);
             progressDialog.setTitle("Closing. Please Wait...");
-            progressDialog.setIndeterminate(true);
+            progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
             new Thread(new Runnable() {
                 public void run() {
