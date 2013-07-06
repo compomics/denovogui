@@ -54,6 +54,10 @@ public class DeNovoSequencingHandler {
      */
     public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
     /**
+     * The name of the paramters file saved by default
+     */
+    public final static String paramtersFileName = "denovoGUI.parameters";
+    /**
      * The chunk files.
      */
     private ArrayList<File> chunkFiles;
@@ -118,7 +122,7 @@ public class DeNovoSequencingHandler {
 
         // Back-up the parameters
         try {
-            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, "denovoGUI.parameters"));
+            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, paramtersFileName));
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the sequencing parameters.", true, true);
             e.printStackTrace();

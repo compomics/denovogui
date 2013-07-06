@@ -81,11 +81,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The example dataset.
      */
-    private final String exampleDataset = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf";
+    public final static String exampleDataset = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf";
     /**
      * The example dataset.
      */
-    private final String exampleSearchParams = "resources/example_dataset/denovoGUI_example.parameters";
+    public final static String exampleSearchParams = "resources/example_dataset/denovoGUI_example.parameters";
     /**
      * /**
      * The selected output folder for the de novo search.

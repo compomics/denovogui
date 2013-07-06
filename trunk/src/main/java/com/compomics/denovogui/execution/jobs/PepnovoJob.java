@@ -140,6 +140,7 @@ public class PepnovoJob extends Job {
                 boolean deleted = outputFile.delete();
 
                 if (!deleted) {
+                    waitingHandler.appendReport("Failed to delete: " + outputFile, true, true);
                     System.out.println("Failed to delete: " + outputFile);
                 }
 

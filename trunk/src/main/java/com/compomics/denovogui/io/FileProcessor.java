@@ -207,6 +207,20 @@ public class FileProcessor {
     }
 
     /**
+     * Returns the mfg file corresponding to the given out file
+     *
+     * @param outFile the out file
+     * @return the corresponding mfg file
+     */
+    public static File getMgfFile(File outFile) {
+        String fileName = Util.getFileName(outFile);
+        if (!fileName.endsWith(".out")) {
+            throw new IllegalArgumentException("Output file " + fileName + " does not have the '.out' extension.");
+        }
+        String outName = fileName.substring(0, fileName.lastIndexOf("."));
+        return new File(outFile.getParent(), outName);
+    }
+    /**
      * Returns a list of out files expected from a list of spectrum files.
      *
      * @param outFolder the out folder
