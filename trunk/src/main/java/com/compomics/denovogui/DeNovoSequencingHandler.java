@@ -247,15 +247,16 @@ public class DeNovoSequencingHandler {
         FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
 
         // Delete the mgf file chunks.
-        FileProcessor.deleteChunkMgfFiles(chunkFiles);
+        FileProcessor.deleteChunkMgfFiles(chunkFiles, waitingHandler);
     }
 
     /**
      * Cancels the sequencing process.
      *
+     * @param waitingHandler the waiting handler
      * @throws IOException
      */
-    public void cancelSequencing() throws IOException {
+    public void cancelSequencing(WaitingHandler waitingHandler) throws IOException {
         if (jobs != null) {
             // cancel the jobs and delete temp .out files
             for (PepnovoJob job : jobs) {
@@ -265,7 +266,7 @@ public class DeNovoSequencingHandler {
         if (threadExecutor != null) {
             threadExecutor.shutdownNow();
             // Delete the mgf file chunks.
-            FileProcessor.deleteChunkMgfFiles(chunkFiles);
+            FileProcessor.deleteChunkMgfFiles(chunkFiles, waitingHandler);
         }
     }
 

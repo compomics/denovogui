@@ -131,9 +131,10 @@ public class FileProcessor {
      * Deletes the MGF file chunks.
      *
      * @param mgfFiles The MGF file chunks.
+     * @param waitingHandler the waiting handler
      * @throws IOException
      */
-    public static void deleteChunkMgfFiles(List<File> mgfFiles) throws IOException {
+    public static void deleteChunkMgfFiles(List<File> mgfFiles, WaitingHandler waitingHandler) throws IOException {
 
         for (File file : mgfFiles) {
             // Delete redundant chunk files.
@@ -141,6 +142,7 @@ public class FileProcessor {
                 boolean deleted = file.delete();
 
                 if (!deleted) {
+                    waitingHandler.appendReport("Failed to delete: " + file, true, true);
                     System.out.println("Failed to delete: " + file);
                 }
             }
