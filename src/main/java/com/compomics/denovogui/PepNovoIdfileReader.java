@@ -1,6 +1,5 @@
 package com.compomics.denovogui;
 
-import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
 import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.biology.AminoAcid;
@@ -24,7 +23,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 
 /**
@@ -150,6 +148,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         fileName = Util.getFileName(identificationFile);
 
         if (waitingHandler != null) {
+            waitingHandler.resetSecondaryProgressCounter();
             waitingHandler.setMaxSecondaryProgressCounter(100);
         }
 
@@ -202,6 +201,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         HashSet<SpectrumMatch> spectrumMatches = new HashSet<SpectrumMatch>();
 
         if (waitingHandler != null) {
+            waitingHandler.resetSecondaryProgressCounter();
             waitingHandler.setMaxSecondaryProgressCounter(index.size());
         }
         

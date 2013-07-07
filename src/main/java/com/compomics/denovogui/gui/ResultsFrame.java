@@ -2207,17 +2207,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         try {
             tempIdentification.establishConnection(dbFolder, true, objectsCache);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. Please make sure that no other instance of DenovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. "
+                    + "Please make sure that no other instance of DenovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             return null;
         }
 
-        for (File outFile : outFiles) {
+        for (int i = 0; i < outFiles.size(); i++) {
+
+            File outFile = outFiles.get(i);
 
             // initiate the parser
+            progressDialog.setTitle("Loading Results. Loading File. Please Wait... (" + (i+1) + "/" + outFiles.size() + ")");
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
 
             // get spectrum matches
+            progressDialog.setTitle("Loading Results. Loading Matches. Please Wait... (" + (i+1) + "/" + outFiles.size() + ")");
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
 
             // put the matches in the identification object
@@ -2259,47 +2264,46 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         if (identification != null) {
 
-            progressDialog = new ProgressDialogX(this,
-                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                    true);
-            progressDialog.setTitle("Closing. Please Wait...");
-            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+//            progressDialog = new ProgressDialogX(this,
+//                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+//                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+//                    true);
+//            progressDialog.setTitle("Closing. Please Wait...");
+//            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+//
+//            new Thread(new Runnable() {
+//                public void run() {
+//                    try {
+//                        progressDialog.setVisible(true);
+//                    } catch (IndexOutOfBoundsException e) {
+//                        // ignore
+//                    }
+//                }
+//            }, "ProgressDialog").start();
+//
+//            SwingUtilities.invokeLater(new Runnable() {
+//                @Override
+//                public void run() {
 
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        progressDialog.setVisible(true);
-                    } catch (IndexOutOfBoundsException e) {
-                        // ignore
+            try {
+                identification.close();
+                File matchFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY);
+                File[] tempFiles = matchFolder.listFiles();
+
+                if (tempFiles != null) {
+                    for (File currentFile : tempFiles) {
+                        Util.deleteDir(currentFile);
                     }
                 }
-            }, "ProgressDialog").start();
-
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-
-                    try {
-                        identification.close();
-                        File matchFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY);
-                        File[] tempFiles = matchFolder.listFiles();
-
-                        if (tempFiles != null) {
-                            for (File currentFile : tempFiles) {
-                                Util.deleteDir(currentFile);
-                            }
-                        }
-                        progressDialog.setRunFinished();
-                    } catch (Exception e) {
-                        progressDialog.setRunFinished();
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(ResultsFrame.this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
-                    } finally {
-                        progressDialog.setRunFinished();
-                    }
-                }
-            });
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(ResultsFrame.this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
+            }
+//                    finally {
+//                        progressDialog.setRunFinished();
+//                    }
+//                }
+//            });
         }
     }
 }
