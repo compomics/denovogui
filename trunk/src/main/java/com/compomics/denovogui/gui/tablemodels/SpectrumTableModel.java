@@ -4,6 +4,7 @@ import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -25,6 +26,10 @@ public class SpectrumTableModel extends DefaultTableModel {
      * The name of the spectrum file.
      */
     String spectrumFile = null;
+    /**
+     * The ordered spectrum keys
+     */
+    private ArrayList<String> orderedSpectrumKeys = null;
 
     /**
      * Constructor.
@@ -41,6 +46,7 @@ public class SpectrumTableModel extends DefaultTableModel {
     public SpectrumTableModel(String spectrumFile, Identification identification) {
         this.spectrumFile = spectrumFile;
         this.identification = identification;
+        this.orderedSpectrumKeys = orderedSpectrumKeys;
     }
 
     @Override
