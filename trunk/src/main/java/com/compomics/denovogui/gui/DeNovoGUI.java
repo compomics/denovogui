@@ -1346,7 +1346,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         }
         if (deNovoSequencingHandler != null) {
             try {
-                deNovoSequencingHandler.cancelSequencing(waitingDialog);
+                deNovoSequencingHandler.cancelSequencing(outputFolder, waitingDialog);
             } catch (Exception e) {
                 catchException(e);
             }

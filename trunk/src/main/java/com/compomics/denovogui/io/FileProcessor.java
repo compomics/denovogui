@@ -128,19 +128,17 @@ public class FileProcessor {
     }
 
     /**
-     * Deletes the MGF file chunks.
+     * Deletes the chunk files.
      *
      * @param mgfFiles The MGF file chunks.
      * @param waitingHandler the waiting handler
      * @throws IOException
      */
-    public static void deleteChunkMgfFiles(List<File> mgfFiles, WaitingHandler waitingHandler) throws IOException {
+    public static void deleteChunkFiles(List<File> files, WaitingHandler waitingHandler) throws IOException {
 
-        for (File file : mgfFiles) {
-            // Delete redundant chunk files.
+        for (File file : files) {            
             if (file.exists()) {
-                boolean deleted = file.delete();
-
+                boolean deleted = file.delete();                
                 if (!deleted) {
                     waitingHandler.appendReport("Failed to delete: " + file, true, true);
                     System.out.println("Failed to delete: " + file);
@@ -155,8 +153,8 @@ public class FileProcessor {
      * @param outFiles The output files to be merged.
      * @throws IOException
      */
-    public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
-
+    public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {        
+        
         File first = outFiles.get(0);
         File mergedFile = new File(first.getParent(), first.getName().substring(0, first.getName().lastIndexOf("_")) + ".mgf.out");
         BufferedWriter bWriter = new BufferedWriter(new FileWriter(mergedFile));

@@ -236,18 +236,19 @@ public class DeNovoSequencingHandler {
         }
 
         if (waitingHandler.isRunCanceled()) {
+            System.out.println("cancelled!");
             return;
         }
 
         waitingHandler.appendReportEndLine();
         waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
         waitingHandler.appendReportEndLine();
-        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
-
+        waitingHandler.setSecondaryProgressCounterIndeterminate(true);        
+        
         FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
 
         // Delete the mgf file chunks.
-        FileProcessor.deleteChunkMgfFiles(chunkFiles, waitingHandler);
+        FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
     }
 
     /**
@@ -256,7 +257,7 @@ public class DeNovoSequencingHandler {
      * @param waitingHandler the waiting handler
      * @throws IOException
      */
-    public void cancelSequencing(WaitingHandler waitingHandler) throws IOException {
+    public void cancelSequencing(File outputFolder, WaitingHandler waitingHandler) throws IOException {
         if (jobs != null) {
             // cancel the jobs and delete temp .out files
             for (PepnovoJob job : jobs) {
@@ -264,9 +265,21 @@ public class DeNovoSequencingHandler {
             }
         }
         if (threadExecutor != null) {
-            threadExecutor.shutdownNow();
+            threadExecutor.shutdown();
+            try {
+                threadExecutor.awaitTermination(12, TimeUnit.HOURS);
+            } catch (InterruptedException ex) {
+                if (waitingHandler.isRunCanceled()) {
+                    threadExecutor.shutdownNow();
+                    ex.printStackTrace();
+                }
+            }            
+            
+            // Delete the output files.
+            FileProcessor.deleteChunkFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles), waitingHandler);
+            
             // Delete the mgf file chunks.
-            FileProcessor.deleteChunkMgfFiles(chunkFiles, waitingHandler);
+            FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
         }
     }
 
