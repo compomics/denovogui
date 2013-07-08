@@ -136,17 +136,6 @@ public class PepnovoJob extends Job {
         if (proc != null) {
             proc.destroy();
             log.info(">> De novo sequencing has been canceled.");
-            try {
-                boolean deleted = outputFile.delete();
-
-                if (!deleted) {
-                    waitingHandler.appendReport("Failed to delete: " + outputFile, true, true);
-                    System.out.println("Failed to delete: " + outputFile);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
