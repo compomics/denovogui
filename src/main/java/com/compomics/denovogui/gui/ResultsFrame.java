@@ -274,8 +274,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void setTableProperties() {
 
         double maxMz = Math.max(spectrumFactory.getMaxMz(), maxIdentificationMz);
-        //double maxCharge = Math.max(spectrumFactory.getMaxCharge(), maxIdentificationCharge); // @TODO: implement spectrumFactory.getMaxCharge()?
-        double maxCharge = maxIdentificationCharge;
+        double maxCharge = Math.max(maxIdentificationCharge, spectrumFactory.getMaxCharge());
 
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
@@ -964,13 +963,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 971, Short.MAX_VALUE)
+            .addGap(0, 979, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 702, Short.MAX_VALUE)
+            .addGap(0, 728, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1520,7 +1519,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                 true);
         progressDialog.setPrimaryProgressCounterIndeterminate(true);
-        progressDialog.setTitle("Exporting Matches. Please Wait...");
+        progressDialog.setTitle("Loading Spectra. Please Wait...");
 
         new Thread(new Runnable() {
             public void run() {
