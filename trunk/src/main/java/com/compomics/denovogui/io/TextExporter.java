@@ -300,8 +300,8 @@ public class TextExporter {
                                 b.write(peptide.getSequence() + separator);
                                 b.write(getPeptideModificationsAsString(peptide) + separator);
                                 b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true) + separator);
+                                b.write(peptideAssumptionDetails.getRankScore()+ separator);
                                 b.write(peptideAssumption.getScore() + separator);
-                                b.write(peptideAssumptionDetails.getPepNovoScore() + separator);
                                 b.write(peptideAssumptionDetails.getnTermGap() + separator);
                                 b.write(peptideAssumptionDetails.getcTermGap() + separator);
                                 b.write(peptideAssumption.getTheoreticMz() + separator);

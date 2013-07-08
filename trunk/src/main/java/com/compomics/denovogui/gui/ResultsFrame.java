@@ -183,6 +183,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The maximal charge identified.
      */
     private double maxIdentificationCharge = 0;
+    /**
+     * The ordered spectrum keys
+     */
+    private ArrayList<String> orderedSpectrumTitles = null;
 
     /**
      * Creates a new ResultsPanel.
@@ -1565,12 +1569,90 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Displays new results.
      */
     private void displayResults() {
-        TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification);
-        querySpectraTable.setModel(tableModel);
-        if (querySpectraTable.getRowCount() > 0) {
-            querySpectraTable.setRowSelectionInterval(0, 0);
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
+        progressDialog.setTitle("Sorting spectrum table. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+        new Thread("importThread") {
+            public void run() {
+                orderedSpectrumTitles = null;
+                try {
+                    orderedSpectrumTitles = orderTitlesByScore(progressDialog);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while sorting the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
+                    e.printStackTrace();
+                }
+                progressDialog.setPrimaryProgressCounterIndeterminate(true);
+                progressDialog.setTitle("Updating display. Please Wait...");
+                TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
+                querySpectraTable.setModel(tableModel);
+                if (querySpectraTable.getRowCount() > 0) {
+                    querySpectraTable.setRowSelectionInterval(0, 0);
+                }
+                updateAssumptionsTable();
+                progressDialog.setRunFinished();
+            }
+        }.start();
+    }
+
+    /**
+     * Returns a list of the spectrum titles of the selected mgf file ordered by
+     * max pepnovo score.
+     *
+     * @return a list of the spectrum titles of the selected mgf file ordered by
+     * max pepnovo score
+     * @throws SQLException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private ArrayList<String> orderTitlesByScore(ProgressDialogX progressDialog) throws SQLException, IOException, ClassNotFoundException {
+        String spectrumFile = getSelectedSpectrumFile();
+        progressDialog.setPrimaryProgressCounterIndeterminate(false);
+        progressDialog.resetPrimaryProgressCounter();
+        progressDialog.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra(spectrumFile));
+        HashMap<Double, ArrayList<String>> titlesMap = new HashMap<Double, ArrayList<String>>();
+        ArrayList<String> noId = new ArrayList<String>();
+        for (String spectrumTitle : spectrumFactory.getSpectrumTitles(spectrumFile)) {
+            String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+            if (identification.matchExists(spectrumKey)) {
+                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                double maxScore = 0;
+                for (PeptideAssumption peptideAssumption : spectrumMatch.getAllAssumptions()) {
+                    if (peptideAssumption.getScore() > maxScore) {
+                        maxScore = peptideAssumption.getScore();
+                    }
+                }
+                if (!titlesMap.containsKey(maxScore)) {
+                    titlesMap.put(maxScore, new ArrayList<String>());
+                }
+                titlesMap.get(maxScore).add(spectrumTitle);
+            } else {
+                noId.add(spectrumTitle);
+            }
+            progressDialog.increasePrimaryProgressCounter();
         }
-        updateAssumptionsTable();
+        ArrayList<Double> scores = new ArrayList<Double>(titlesMap.keySet());
+        Collections.sort(scores, Collections.reverseOrder());
+        ArrayList<String> orderedTitles = new ArrayList<String>();
+        for (double score : scores) {
+            orderedTitles.addAll(titlesMap.get(score));
+        }
+        orderedTitles.addAll(noId);
+        return orderedTitles;
     }
 
     /**
@@ -1635,7 +1717,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     public String getSelectedSpectrumTitle() {
         int selectedRow = querySpectraTable.getSelectedRow();
         int modelRow = querySpectraTable.convertRowIndexToModel(selectedRow);
-        return spectrumFactory.getSpectrumTitles(getSelectedSpectrumFile()).get(modelRow);
+        if (orderedSpectrumTitles != null) {
+            return orderedSpectrumTitles.get(modelRow);
+        } else {
+            return spectrumFactory.getSpectrumTitles(getSelectedSpectrumFile()).get(modelRow);
+        }
     }
 
     /**
@@ -1786,12 +1872,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 try {
                     // import the PepNovo results.            
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
+                    progressDialog.setRunFinished();
                     if (identification != null) {
                         displayResults();
                     }
                 } catch (Exception e) {
                     deNovoGUI.catchException(e);
-                } finally {
                     progressDialog.setRunFinished();
                 }
             }
@@ -2216,12 +2302,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             File outFile = outFiles.get(i);
 
             // initiate the parser
-            progressDialog.setTitle("Loading Results. Loading File. Please Wait... (" + (i+1) + "/" + outFiles.size() + ")");
+            progressDialog.setTitle("Loading Results. Loading File. Please Wait... (" + (i + 1) + "/" + outFiles.size() + ")");
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
 
             // get spectrum matches
-            progressDialog.setTitle("Loading Results. Loading Matches. Please Wait... (" + (i+1) + "/" + outFiles.size() + ")");
+            progressDialog.setTitle("Loading Results. Loading Matches. Please Wait... (" + (i + 1) + "/" + outFiles.size() + ")");
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+            progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
             // put the matches in the identification object
             tempIdentification.addSpectrumMatch(spectrumMatches);
