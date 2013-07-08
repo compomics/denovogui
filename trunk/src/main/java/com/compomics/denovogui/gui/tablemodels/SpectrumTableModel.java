@@ -30,7 +30,7 @@ public class SpectrumTableModel extends DefaultTableModel {
      */
     String spectrumFile = null;
     /**
-     * The ordered spectrum keys
+     * The ordered spectrum keys.
      */
     private ArrayList<String> orderedSpectrumTitles = null;
 
