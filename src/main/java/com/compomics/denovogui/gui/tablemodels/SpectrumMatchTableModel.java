@@ -60,7 +60,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
             case 1:
                 return "Sequence";
             case 2:
-                return "RankScore";
+                return "Rank Score";
             case 3:
                 return "Score";
             case 4:

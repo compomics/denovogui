@@ -236,7 +236,6 @@ public class DeNovoSequencingHandler {
         }
 
         if (waitingHandler.isRunCanceled()) {
-            System.out.println("cancelled!");
             return;
         }
 

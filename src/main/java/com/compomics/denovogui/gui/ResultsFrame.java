@@ -148,14 +148,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private int labelWidth = 50;
     /**
-     * The maximal precursor charge found in the mgf file(s).
-     */
-    private int maxMgfCharge = 0;
-    /**
-     * The maximal precursor m/z in the mgf file(s).
-     */
-    private double maxMgfMz = 0;
-    /**
      * The minimal rank score.
      */
     private double minRankScore = Double.MAX_VALUE;
@@ -184,7 +176,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private double maxIdentificationCharge = 0;
     /**
-     * The ordered spectrum keys
+     * The ordered spectrum keys.
      */
     private ArrayList<String> orderedSpectrumTitles = null;
 
