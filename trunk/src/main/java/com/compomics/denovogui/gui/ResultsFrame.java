@@ -1694,7 +1694,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 // add the data to the spectrum panel
                 Precursor precursor = currentSpectrum.getPrecursor();
                 if (deNovoPeptidesTable.getSelectedRow() != -1) {
-                    PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.getSelectedRow());
+                    PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
 
                     SpectrumPanel spectrumPanel = new SpectrumPanel(
                             currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
@@ -2241,8 +2241,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             if (idfileReader.getMaxNGap() > maxNGap) {
                 maxNGap = idfileReader.getMaxNGap();
             }
-            if (idfileReader.getMaxCGap() > maxNGap) {
-                maxNGap = idfileReader.getMaxCGap();
+            if (idfileReader.getMaxCGap() > maxCGap) {
+                maxCGap = idfileReader.getMaxCGap();
             }
             if (idfileReader.getMaxMz() > maxIdentificationMz) {
                 maxIdentificationMz = idfileReader.getMaxMz();
