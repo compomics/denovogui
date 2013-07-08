@@ -292,8 +292,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
 
-        deNovoPeptidesTable.getColumn("RankScore").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("RankScore").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoPeptidesTable.getColumn("Rank Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
+        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Rank Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoPeptidesTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
