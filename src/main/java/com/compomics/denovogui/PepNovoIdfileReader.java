@@ -201,6 +201,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         HashSet<SpectrumMatch> spectrumMatches = new HashSet<SpectrumMatch>();
 
         if (waitingHandler != null) {
+            waitingHandler.setSecondaryProgressCounterIndeterminate(false);
             waitingHandler.resetSecondaryProgressCounter();
             waitingHandler.setMaxSecondaryProgressCounter(index.size());
         }
@@ -347,7 +348,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         }
 
         Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
-        PeptideAssumption result = new PeptideAssumption(peptide, rank, Advocate.PEPNOVO, new Charge(Charge.PLUS, charge), rankScore, fileName);
+        PeptideAssumption result = new PeptideAssumption(peptide, rank, Advocate.PEPNOVO, new Charge(Charge.PLUS, charge), pepNovoScore, fileName);
         double theoreticMz = result.getTheoreticMz();
         if (theoreticMz < minMz) {
             minMz = theoreticMz;
@@ -356,7 +357,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             maxMz = theoreticMz;
         }
         PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
-        peptideAssumptionDetails.setPepNovoScore(pepNovoScore);
+        peptideAssumptionDetails.setRankScore(rankScore);
         peptideAssumptionDetails.setcTermGap(cGap);
         peptideAssumptionDetails.setnTermGap(nGap);
         result.addUrParam(peptideAssumptionDetails);

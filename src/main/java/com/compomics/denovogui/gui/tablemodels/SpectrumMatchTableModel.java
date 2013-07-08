@@ -86,12 +86,12 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getScore();
-            case 3:
-                peptideAssumption = peptideAssumptions.get(row);
                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                return peptideAssumptionDetails.getPepNovoScore();
+                return peptideAssumptionDetails.getRankScore();
+            case 3:
+                peptideAssumption = peptideAssumptions.get(row);
+                return peptideAssumption.getScore();
             case 4:
                 peptideAssumption = peptideAssumptions.get(row);
                 peptideAssumptionDetails = new PeptideAssumptionDetails();
