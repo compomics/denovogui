@@ -64,7 +64,6 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -261,7 +260,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add("Peptide Sequences");
         deNovoPeptidesTableToolTips.add("Rank Score");
-        deNovoPeptidesTableToolTips.add("Score");
+        deNovoPeptidesTableToolTips.add("PepNovo Score");
         deNovoPeptidesTableToolTips.add("N-Gap");
         deNovoPeptidesTableToolTips.add("C-Gap");
         deNovoPeptidesTableToolTips.add("m/z");
@@ -278,10 +277,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
-        querySpectraTable.getColumn("m/z").setMaxWidth(100);
-        querySpectraTable.getColumn("m/z").setMinWidth(100);
-        querySpectraTable.getColumn("Charge").setMaxWidth(100);
-        querySpectraTable.getColumn("Charge").setMinWidth(100);
+        //querySpectraTable.getColumn("m/z").setMaxWidth(100);
+        //querySpectraTable.getColumn("m/z").setMinWidth(100);
+        //querySpectraTable.getColumn("Charge").setMaxWidth(100);
+        //querySpectraTable.getColumn("Charge").setMinWidth(100);
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
@@ -734,7 +733,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
                     .addComponent(spectrumJToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -742,7 +741,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -780,7 +779,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             .addGroup(querySpectraPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(querySpectraTableScrollPane)
+                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addComponent(spectrumFileLabel)
                         .addGap(18, 18, 18)
@@ -837,7 +836,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
