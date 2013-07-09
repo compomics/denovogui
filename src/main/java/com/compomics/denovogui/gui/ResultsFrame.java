@@ -293,20 +293,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.getColumn("Int").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMaxIntensity(), sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).showNumberAndChart(true, labelWidth + 20);
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).setLogScale(true);
-
-        if (spectrumFactory.getMaxRT() != -1) {
-            querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMinRT(),
+        querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMinRT(),
                     spectrumFactory.getMaxRT(), spectrumFactory.getMaxRT() / 50, sparklineColor, sparklineColor));
-        } else {
-            // @TODO: not sure why this is needed. not required for PeptideShaker...
-            querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, 0.0,
-                    100.0, 1.0, sparklineColor, sparklineColor));
-        }
-
         ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showNumberAndChart(true, labelWidth + 5);
         ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showReferenceLine(true, 0.02, java.awt.Color.BLACK);
-
-
         //querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMaxPeakCount(), sparklineColor));
         querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, 1000.0, sparklineColor)); // @TODO: implement spectrumFactory.getMaxPeakCount()
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("#Peaks").getCellRenderer()).showNumberAndChart(true, labelWidth);
@@ -1558,7 +1548,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     String[] filesArray = {finalMgfFile.getName()};
                     spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
                     progressDialog.setRunFinished();
-
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
                     JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while loading the spectra.", "Mgf File Error", JOptionPane.WARNING_MESSAGE);
