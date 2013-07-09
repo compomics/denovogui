@@ -470,7 +470,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="979" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="1000" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Component id="bcakgroundPanel" alignment="0" max="32767" attributes="0"/>
           </Group>
@@ -561,7 +561,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="spectrumJPanel" alignment="0" pref="919" max="32767" attributes="0"/>
+                              <Component id="spectrumJPanel" alignment="0" pref="948" max="32767" attributes="0"/>
                               <Component id="spectrumJToolBar" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -572,7 +572,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="spectrumJPanel" pref="199" max="32767" attributes="0"/>
+                          <Component id="spectrumJPanel" pref="207" max="32767" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                           <Component id="spectrumJToolBar" min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
@@ -628,7 +628,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="querySpectraTableScrollPane" alignment="0" pref="919" max="32767" attributes="0"/>
+                              <Component id="querySpectraTableScrollPane" alignment="0" pref="948" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="spectrumFileLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -648,7 +648,7 @@
                               <Component id="spectrumFileComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                          <Component id="querySpectraTableScrollPane" pref="146" max="32767" attributes="0"/>
+                          <Component id="querySpectraTableScrollPane" pref="154" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -724,7 +724,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="deNovoPeptidesTableScrollPane" pref="919" max="32767" attributes="0"/>
+                          <Component id="deNovoPeptidesTableScrollPane" pref="948" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -733,7 +733,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="deNovoPeptidesTableScrollPane" pref="146" max="32767" attributes="0"/>
+                          <Component id="deNovoPeptidesTableScrollPane" pref="156" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>

@@ -64,11 +64,13 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import no.uib.jsparklines.extra.TrueFalseIconRenderer;
 import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
+import no.uib.jsparklines.renderers.JSparklinesIntervalChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
@@ -250,17 +252,21 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTableToolTips.add("Spectrum Title");
         querySpectraTableToolTips.add("Precusor m/z");
         querySpectraTableToolTips.add("Precursor Charge");
-        querySpectraTableToolTips.add("Identified");
+        querySpectraTableToolTips.add("Precursor Intensity");
+        querySpectraTableToolTips.add("Retention Time");
+        querySpectraTableToolTips.add("Number of Peaks");
+        querySpectraTableToolTips.add("Max De Novo Score");
+        querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
         deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add("Peptide Sequences");
-        deNovoPeptidesTableToolTips.add("Rank Score");
+        deNovoPeptidesTableToolTips.add("Precursor m/z");
+        deNovoPeptidesTableToolTips.add("Precursor Charge");
+        deNovoPeptidesTableToolTips.add("N-terminal Gap");
+        deNovoPeptidesTableToolTips.add("C-terminal Gap");
+        deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
-        deNovoPeptidesTableToolTips.add("N-Gap");
-        deNovoPeptidesTableToolTips.add("C-Gap");
-        deNovoPeptidesTableToolTips.add("m/z");
-        deNovoPeptidesTableToolTips.add("Charge");
     }
 
     /**
@@ -269,25 +275,44 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void setTableProperties() {
 
         double maxMz = Math.max(spectrumFactory.getMaxMz(), maxIdentificationMz);
-        double maxCharge = Math.max(maxIdentificationCharge, spectrumFactory.getMaxCharge());
+        double maxCharge = Math.max(spectrumFactory.getMaxCharge(), maxIdentificationCharge);
 
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
-        //querySpectraTable.getColumn("m/z").setMaxWidth(100);
-        //querySpectraTable.getColumn("m/z").setMinWidth(100);
-        //querySpectraTable.getColumn("Charge").setMaxWidth(100);
-        //querySpectraTable.getColumn("Charge").setMinWidth(100);
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
         querySpectraTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
                 new ImageIcon(this.getClass().getResource("/icons/accept.png")),
                 new ImageIcon(this.getClass().getResource("/icons/Error_3.png")),
-                "Identified", "Not Identified"));
+                "De Novo Solution", "No De Novo Solution"));
         querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
         querySpectraTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMz, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Int").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMaxIntensity(), sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).showNumberAndChart(true, labelWidth + 20);
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).setLogScale(true);
+
+        if (spectrumFactory.getMaxRT() != -1) {
+            querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMinRT(),
+                    spectrumFactory.getMaxRT(), spectrumFactory.getMaxRT() / 50, sparklineColor, sparklineColor));
+        } else {
+            // @TODO: not sure why this is needed. not required for PeptideShaker...
+            querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, 0.0,
+                    100.0, 1.0, sparklineColor, sparklineColor));
+        }
+
+        ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showNumberAndChart(true, labelWidth + 5);
+        ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showReferenceLine(true, 0.02, java.awt.Color.BLACK);
+
+
+        //querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMaxPeakCount(), sparklineColor));
+        querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, 1000.0, sparklineColor)); // @TODO: implement spectrumFactory.getMaxPeakCount()
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("#Peaks").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
+
 
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
@@ -729,7 +754,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
+                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
                     .addComponent(spectrumJToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -737,7 +762,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -775,7 +800,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             .addGroup(querySpectraPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
+                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addComponent(spectrumFileLabel)
                         .addGap(18, 18, 18)
@@ -790,7 +815,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     .addComponent(spectrumFileLabel)
                     .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -825,14 +850,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
                 .addContainerGap())
         );
         deNovoPeptidesPanelLayout.setVerticalGroup(
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -958,7 +983,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 979, Short.MAX_VALUE)
+            .addGap(0, 1000, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1546,7 +1571,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     outFiles.add(finalOutFile);
                     try {
                         displayResults(outFiles);
-
                     } catch (Exception e) {
                         progressDialog.setRunFinished();
                         JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while importing the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
@@ -1567,7 +1591,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
                 true);
         progressDialog.setPrimaryProgressCounterIndeterminate(true);
-        progressDialog.setTitle("Sorting spectrum table. Please Wait...");
+        progressDialog.setTitle("Sorting Spectrum Table. Please Wait...");
 
         new Thread(new Runnable() {
             public void run() {
@@ -1589,12 +1613,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     e.printStackTrace();
                 }
                 progressDialog.setPrimaryProgressCounterIndeterminate(true);
-                progressDialog.setTitle("Updating display. Please Wait...");
+                progressDialog.setTitle("Updating Display. Please Wait...");
                 TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
                 querySpectraTable.setModel(tableModel);
                 if (querySpectraTable.getRowCount() > 0) {
                     querySpectraTable.setRowSelectionInterval(0, 0);
                 }
+                ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
+                        + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
+                        + querySpectraTable.getRowCount() + ")");
+                querySpectraPanel.repaint();
+
                 updateAssumptionsTable();
                 progressDialog.setRunFinished();
             }
@@ -1603,21 +1632,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Returns a list of the spectrum titles of the selected mgf file ordered by
-     * max pepnovo score.
+     * max PepNovo score.
      *
      * @return a list of the spectrum titles of the selected mgf file ordered by
-     * max pepnovo score
+     * max PepMovo score
      * @throws SQLException
      * @throws IOException
      * @throws ClassNotFoundException
      */
     private ArrayList<String> orderTitlesByScore(ProgressDialogX progressDialog) throws SQLException, IOException, ClassNotFoundException {
+
         String spectrumFile = getSelectedSpectrumFile();
         progressDialog.setPrimaryProgressCounterIndeterminate(false);
         progressDialog.resetPrimaryProgressCounter();
         progressDialog.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra(spectrumFile));
         HashMap<Double, ArrayList<String>> titlesMap = new HashMap<Double, ArrayList<String>>();
         ArrayList<String> noId = new ArrayList<String>();
+
         for (String spectrumTitle : spectrumFactory.getSpectrumTitles(spectrumFile)) {
             String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
             if (identification.matchExists(spectrumKey)) {
@@ -1637,12 +1668,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
             progressDialog.increasePrimaryProgressCounter();
         }
+
         ArrayList<Double> scores = new ArrayList<Double>(titlesMap.keySet());
         Collections.sort(scores, Collections.reverseOrder());
         ArrayList<String> orderedTitles = new ArrayList<String>();
+
         for (double score : scores) {
             orderedTitles.addAll(titlesMap.get(score));
         }
+
         orderedTitles.addAll(noId);
         return orderedTitles;
     }
@@ -1653,6 +1687,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param file the destination file
      */
     public void exportIdentification(File file) {
+
         final File finalFile = file;
 
         progressDialog = new ProgressDialogX(this,
@@ -1747,6 +1782,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     deNovoPeptidesTable.setRowSelectionInterval(0, 0);
                 }
 
+                ((TitledBorder) deNovoPeptidesPanel.getBorder()).setTitle("De Novo Peptides (" + deNovoPeptidesTable.getRowCount() + ")");
+                deNovoPeptidesPanel.repaint();
+
                 updateSpectrum();
             }
 
@@ -1762,6 +1800,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         spectrumJPanel.removeAll();
         String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
+
+        ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle("Spectrum Viewer");
+        spectrumViewerPanel.repaint();
 
         if (spectrumFactory.spectrumLoaded(spectrumKey)) {
             try {
@@ -1803,7 +1844,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             PeptideFragmentIon.Y_ION,
                             annotationPreferences.getDeNovoCharge(),
                             annotationPreferences.showForwardIonDeNovoTags(),
-                            annotationPreferences.showRewindIonDeNovoTags());
+                            annotationPreferences.showRewindIonDeNovoTags(),
+                            0.75, 1.0);
 
                     // show all or just the annotated peaks
                     spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
@@ -1811,6 +1853,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                     spectrumJPanel.add(spectrumPanel);
                     updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
+
+                    String modifiedSequence = currentPeptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true);
+                    ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
+                            "Spectrum Viewer (" + modifiedSequence
+                            + "   " + peptideAssumption.getIdentificationCharge().toString() + "   "
+                            + Util.roundDouble(currentSpectrum.getPrecursor().getMz(), 4) + " m/z)");
+                    spectrumViewerPanel.repaint();
                 } else {
                     // Show spectrum without identification.
                     SpectrumPanel spectrumPanel = new SpectrumPanel(
@@ -1862,7 +1911,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             @Override
             public void run() {
                 try {
-                    // import the PepNovo results.            
+                    // import the PepNovo results
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
                     progressDialog.setRunFinished();
                     if (identification != null) {
