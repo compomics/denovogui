@@ -68,7 +68,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 9;
     }
 
     @Override
@@ -79,17 +79,19 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 1:
                 return "Title";
             case 2:
-                return "RT";
-            case 3:
                 return "m/z";
-            case 4:
+            case 3:
                 return "Charge";
+            case 4:
+                return "Int";
             case 5:
-                return "  ";
+                return "RT";
             case 6:
-                return "# Peaks";
+                return "#Peaks";
             case 7:
-                return "Max score";
+                return "Score";
+            case 8:
+                return "  ";
             default:
                 return "";
         }
@@ -107,21 +109,12 @@ public class SpectrumTableModel extends DefaultTableModel {
                 try {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    return precursor.getRt();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return "Error";
-                }
-            case 3:
-                try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
-                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
                     return precursor.getMz();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error";
+                    return null;
                 }
-            case 4:
+            case 3:
                 try {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
@@ -135,12 +128,26 @@ public class SpectrumTableModel extends DefaultTableModel {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error";
+                    return null;
+                }
+            case 4:
+                try {
+                    spectrumTitle = orderedSpectrumTitles.get(row);
+                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
+                    return precursor.getIntensity();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
                 }
             case 5:
-                spectrumTitle = orderedSpectrumTitles.get(row);
-                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                return identification.matchExists(spectrumKey);
+                try {
+                    spectrumTitle = orderedSpectrumTitles.get(row);
+                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
+                    return precursor.getRt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             case 6:
                 try {
                     spectrumTitle = orderedSpectrumTitles.get(row);
@@ -148,12 +155,12 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return spectrum.getPeakList().size();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error";
+                    return null;
                 }
             case 7:
                 try {
                     spectrumTitle = orderedSpectrumTitles.get(row);
-                    spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                         double maxScore = 0;
@@ -167,10 +174,14 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return 0;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error";
+                    return null;
                 }
+            case 8:
+                spectrumTitle = orderedSpectrumTitles.get(row);
+                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                return identification.matchExists(spectrumKey);
             default:
-                return "";
+                return null;
         }
     }
 

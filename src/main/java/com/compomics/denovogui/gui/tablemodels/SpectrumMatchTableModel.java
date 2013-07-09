@@ -60,17 +60,17 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
             case 1:
                 return "Sequence";
             case 2:
-                return "Rank Score";
+                return "m/z";
             case 3:
-                return "Score";
+                return "Charge";
             case 4:
                 return "N-Gap";
             case 5:
                 return "C-Gap";
             case 6:
-                return "m/z";
+                return "Rank Score";
             case 7:
-                return "Charge";
+                return "Score";
             default:
                 return "";
         }
@@ -86,15 +86,13 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);
-                PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
-                peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                return peptideAssumptionDetails.getRankScore();
+                return peptideAssumption.getTheoreticMz();
             case 3:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getScore();
+                return peptideAssumption.getIdentificationCharge().value;
             case 4:
                 peptideAssumption = peptideAssumptions.get(row);
-                peptideAssumptionDetails = new PeptideAssumptionDetails();
+                PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
                 return peptideAssumptionDetails.getnTermGap();
             case 5:
@@ -104,10 +102,12 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return peptideAssumptionDetails.getcTermGap();
             case 6:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getTheoreticMz();
+                peptideAssumptionDetails = new PeptideAssumptionDetails();
+                peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
+                return peptideAssumptionDetails.getRankScore();
             case 7:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getIdentificationCharge().value;
+                return peptideAssumption.getScore();
             default:
                 return "";
         }
