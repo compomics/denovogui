@@ -294,11 +294,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).showNumberAndChart(true, labelWidth + 20);
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Int").getCellRenderer()).setLogScale(true);
         querySpectraTable.getColumn("RT").setCellRenderer(new JSparklinesIntervalChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMinRT(),
-                    spectrumFactory.getMaxRT(), spectrumFactory.getMaxRT() / 50, sparklineColor, sparklineColor));
+                spectrumFactory.getMaxRT(), spectrumFactory.getMaxRT() / 50, sparklineColor, sparklineColor));
         ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showNumberAndChart(true, labelWidth + 5);
         ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showReferenceLine(true, 0.02, java.awt.Color.BLACK);
-        //querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, spectrumFactory.getMaxPeakCount(), sparklineColor));
-        querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, 1000.0, sparklineColor)); // @TODO: implement spectrumFactory.getMaxPeakCount()
+        querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) spectrumFactory.getMaxPeakCount(), sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("#Peaks").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
@@ -374,9 +373,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportGraphicsMenu = new javax.swing.JMenu();
         exportSpectrumGraphicsJMenuItem = new javax.swing.JMenuItem();
         exportSpectrumValuesJMenuItem = new javax.swing.JMenuItem();
-        exportAssumptionsMenu = new javax.swing.JMenu();
-        exportSingleAssumptionsJMenuItem = new javax.swing.JMenuItem();
-        exportAllAssumptionsJMenuItem = new javax.swing.JMenuItem();
         splitterMenu6 = new javax.swing.JMenu();
         helpJMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
@@ -667,26 +663,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         });
         exportGraphicsMenu.add(exportSpectrumValuesJMenuItem);
-
-        exportAssumptionsMenu.setText("Assumptions");
-
-        exportSingleAssumptionsJMenuItem.setText("Single");
-        exportSingleAssumptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportSingleAssumptionsJMenuItemActionPerformed(evt);
-            }
-        });
-        exportAssumptionsMenu.add(exportSingleAssumptionsJMenuItem);
-
-        exportAllAssumptionsJMenuItem.setText("All");
-        exportAllAssumptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportAllAssumptionsJMenuItemActionPerformed(evt);
-            }
-        });
-        exportAssumptionsMenu.add(exportAllAssumptionsJMenuItem);
-
-        exportGraphicsMenu.add(exportAssumptionsMenu);
 
         annotationMenuBar.add(exportGraphicsMenu);
 
@@ -1235,9 +1211,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         if (spectrumAsMgf != null) {
 
-            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getOutputFolder().getAbsolutePath(), "Save As...", false);
+            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder(), "Save As...", false);
 
             if (selectedFile != null) {
+
+                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+
                 try {
                     FileWriter w = new FileWriter(selectedFile);
                     BufferedWriter bw = new BufferedWriter(w);
@@ -1255,48 +1234,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         }
     }//GEN-LAST:event_exportSpectrumValuesJMenuItemActionPerformed
-
-    /**
-     * Export assumptions for a single spectrum.
-     *
-     * @param evt
-     */
-    private void exportSingleAssumptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSingleAssumptionsJMenuItemActionPerformed
-        File selectedFile = Util.getUserSelectedFile(this, ".txt", "(Comma-Separated Values) *.txt", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
-
-        if (selectedFile != null) {
-            try {
-                deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
-                TextExporter.exportSingleAssumptions(getSelectedSpectrumFile(), getSelectedSpectrumTitle(), selectedFile, identification);
-                JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                deNovoGUI.catchException(ex);
-                JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                        + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_exportSingleAssumptionsJMenuItemActionPerformed
-
-    /**
-     * Export assumptions for all spectra.
-     *
-     * @param evt
-     */
-    private void exportAllAssumptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportAllAssumptionsJMenuItemActionPerformed
-        File selectedFile = Util.getUserSelectedFile(this, ".txt", "(Comma-Separated Values) *.txt", "Save As...", deNovoGUI.getLastSelectedFolder(), false);
-
-        if (selectedFile != null) {
-            try {
-                deNovoGUI.setLastSelectedFolder(selectedFile.getParent());
-                TextExporter.exportAssumptions(selectedFile, identification);
-                JOptionPane.showMessageDialog(this, "Assumptions saved to " + selectedFile.getPath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                deNovoGUI.catchException(ex);
-                JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                        + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_exportAllAssumptionsJMenuItemActionPerformed
 
     /**
      * Open the help dialog.
@@ -1360,6 +1297,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void exportMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportMatchesMenuItemActionPerformed
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
+            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
             exportIdentification(selectedFile);
         }
     }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
@@ -1412,12 +1350,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenuItem exportAllAssumptionsJMenuItem;
-    private javax.swing.JMenu exportAssumptionsMenu;
     private javax.swing.JMenu exportGraphicsMenu;
     private javax.swing.JMenuItem exportMatchesMenuItem;
     private javax.swing.JMenu exportMenu;
-    private javax.swing.JMenuItem exportSingleAssumptionsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumGraphicsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumValuesJMenuItem;
     private javax.swing.JMenu fileMenu;
@@ -2332,11 +2267,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             File outFile = outFiles.get(i);
 
             // initiate the parser
-            progressDialog.setTitle("Loading Results. Loading File. Please Wait... (" + (i + 1) + "/" + outFiles.size() + ")");
+            String loadingText = "Loading Results. Loading File. Please Wait...";
+            if (outFiles.size() > 1) {
+                loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
+            }
+            progressDialog.setTitle(loadingText);
             PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
 
             // get spectrum matches
-            progressDialog.setTitle("Loading Results. Loading Matches. Please Wait... (" + (i + 1) + "/" + outFiles.size() + ")");
+            loadingText = "Loading Results. Loading Matches. Please Wait...";
+            if (outFiles.size() > 1) {
+                loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
+            }
+            progressDialog.setTitle(loadingText);
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
             progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
