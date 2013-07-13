@@ -215,6 +215,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         );
 
         okButton.setText("OK");
+        okButton.setEnabled(false);
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -301,6 +302,8 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                     e.printStackTrace();
                 }
             }
+
+            validateInput();
         }
     }//GEN-LAST:event_browseOutButtonActionPerformed
 
@@ -317,6 +320,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
             mgfFile = selectedFile;
             lastSelectedFolder = mgfFile.getParent();
             mgfTxt.setText(mgfFile.getName());
+            validateInput();
         }
     }//GEN-LAST:event_browseMgfButtonActionPerformed
 
@@ -338,6 +342,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            validateInput();
         }
     }//GEN-LAST:event_browseParametersButtonActionPerformed
 
@@ -374,4 +379,17 @@ public class SelectResultsDialog extends javax.swing.JDialog {
     private javax.swing.JLabel settingsLabel;
     private javax.swing.JLabel spectraLabel;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Validate the input and enable of disable the OK button.
+     */
+    private void validateInput() {
+        if (outTxt.getText().length() > 0
+                && mgfTxt.getText().length() > 0
+                && paramtersTxt.getText().length() > 0) {
+            okButton.setEnabled(true);
+        } else {
+            okButton.setEnabled(false);
+        }
+    }
 }
