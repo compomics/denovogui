@@ -193,8 +193,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set the title of the frame and add the icon
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
         setUpGUI();
-        setVisible(true);
         if (outFiles != null) {
+            setVisible(true);
             displayResults(outFiles);
         } else {
             openNewFile();
@@ -944,6 +944,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         closeConnectionsAndEmptyTempFolder();
+        deNovoGUI.setVisible(true);
         dispose();
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
@@ -1366,7 +1367,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFile() != null && selectResultsDialog.getOutFile() != null && selectResultsDialog.getSearchParameters() != null) {
             deNovoGUI.setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
             searchParameters = selectResultsDialog.getSearchParameters();
+            setVisible(true);
+            deNovoGUI.setVisible(false);
             openNewFile(selectResultsDialog.getOutFile(), selectResultsDialog.getMgfFile());
+        } else {
+            dispose();
         }
     }
 

@@ -916,6 +916,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private void clearSpectraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectraButtonActionPerformed
         setSpectrumFiles(new ArrayList<File>());
+        spectrumFactory.clearFactory();
+        try {
+        spectrumFactory.closeFiles();
+        } catch (IOException e) {
+            e.printStackTrace();
+            catchException(e);
+        }
         spectrumFilesTextField.setText(getSpectrumFiles().size() + " file(s) selected");
         validateInput(false);
     }//GEN-LAST:event_clearSpectraButtonActionPerformed
@@ -1161,6 +1168,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
             searchParameters = SearchParameters.getIdentificationParameters(new File(getJarFilePath(), exampleSearchParams));
 
+            setVisible(false);
             new ResultsFrame(this, outFiles, searchParameters);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -1415,6 +1423,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public void displayResults() throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
         ArrayList<File> outFiles = FileProcessor.getOutFiles(outputFolder, spectrumFiles);
+        setVisible(false);
         new ResultsFrame(this, outFiles, searchParameters);
     }
 
