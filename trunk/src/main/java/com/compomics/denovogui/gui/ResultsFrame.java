@@ -414,10 +414,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         };
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        openExampleMenuItem = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportMatchesMenuItem = new javax.swing.JMenuItem();
@@ -863,24 +859,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
-        openMenuItem.setText("Open...");
-        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openMenuItemActionPerformed(evt);
-            }
-        });
-        fileMenu.add(openMenuItem);
-        fileMenu.add(jSeparator2);
-
-        openExampleMenuItem.setText("Load Example");
-        openExampleMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openExampleMenuItemActionPerformed(evt);
-            }
-        });
-        fileMenu.add(openExampleMenuItem);
-        fileMenu.add(jSeparator1);
-
         exitMenuItem.setText("Close");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1307,23 +1285,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exitMenuItemActionPerformed(null);
     }//GEN-LAST:event_formWindowClosing
 
-    /**
-     * Open a new file.
-     *
-     * @param evt
-     */
-    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-        openNewFile();
-    }//GEN-LAST:event_openMenuItemActionPerformed
-
-    /**
-     * Open the example dataset.
-     *
-     * @param evt
-     */
-    private void openExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openExampleMenuItemActionPerformed
-        openExampleDataset();
-    }//GEN-LAST:event_openExampleMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1359,20 +1320,16 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator19;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JMenu lossMenu;
     private javax.swing.JMenu lossSplitter;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openExampleMenuItem;
-    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenu otherMenu;
     private javax.swing.JCheckBoxMenuItem precursorCheckMenu;
     private javax.swing.JPanel querySpectraPanel;
@@ -1399,7 +1356,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JCheckBoxMenuItem yIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem zIonCheckBoxMenuItem;
     // End of variables declaration//GEN-END:variables
-
+   
     /**
      * Shows a dialog allowing the selection of a new result file and displays
      * the results.
@@ -1411,36 +1368,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             searchParameters = selectResultsDialog.getSearchParameters();
             openNewFile(selectResultsDialog.getOutFile(), selectResultsDialog.getMgfFile());
         }
-    }
-
-    /**
-     * Opens the example file.
-     */
-    private void openExampleDataset() {
-        
-        File outFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleOutFile);
-        if (!outFile.exists()) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + outFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        File mgfFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleMgf);
-        if (!mgfFile.exists()) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + mgfFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        File paramtersFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleSearchParams);
-        if (!paramtersFile.exists()) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + paramtersFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        try {
-            searchParameters = SearchParameters.getIdentificationParameters(paramtersFile);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while loading the paramters.", "Parameters Error", JOptionPane.WARNING_MESSAGE);
-            e.printStackTrace();
-            return;
-        }
-        openNewFile(outFile, mgfFile);
     }
 
     /**
