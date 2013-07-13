@@ -45,6 +45,7 @@ import java.awt.Component;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,6 +66,8 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -185,7 +188,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param outFiles the out files
      * @param searchParameters the search parameters
      */
-    public ResultsFrame(DeNovoGUI deNovoGUI,ArrayList<File> outFiles, SearchParameters searchParameters) {
+    public ResultsFrame(DeNovoGUI deNovoGUI, ArrayList<File> outFiles, SearchParameters searchParameters) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
@@ -319,6 +322,27 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.repaint();
         deNovoPeptidesTable.revalidate();
         deNovoPeptidesTable.repaint();
+
+        // make sure that the user is made aware that the tool is doing something during sorting of the query table
+        querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
+            @Override
+            public void sorterChanged(RowSorterEvent e) {
+
+                if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+
+                    // change the icon to a "waiting version"
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")));
+                } else if (e.getType() == RowSorterEvent.Type.SORTED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+                    // change the icon to the normal version
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+                }
+            }
+        });
     }
 
     /**
@@ -1285,7 +1309,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         exitMenuItemActionPerformed(null);
     }//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1357,7 +1380,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JCheckBoxMenuItem yIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem zIonCheckBoxMenuItem;
     // End of variables declaration//GEN-END:variables
-   
+
     /**
      * Shows a dialog allowing the selection of a new result file and displays
      * the results.
@@ -1475,6 +1498,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 updateAssumptionsTable();
                 progressDialog.setRunFinished();
+
+                // change the icon to the normal version (should not be needed, but added as an extra safty)
+                setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
             }
         }.start();
     }
