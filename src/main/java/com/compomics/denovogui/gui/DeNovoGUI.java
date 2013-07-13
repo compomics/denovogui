@@ -1152,7 +1152,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         try {
             spectrumFiles = new ArrayList<File>();
-            spectrumFiles.add(new File(getJarFilePath(), exampleMgf));
+            File tempSpectrumFile = new File(getJarFilePath(), exampleMgf);
+            spectrumFiles.add(tempSpectrumFile);
+            spectrumFactory.addSpectra(tempSpectrumFile);
 
             ArrayList<File> outFiles = new ArrayList<File>();
             outFiles.add(new File(getJarFilePath(), exampleOutFile));
