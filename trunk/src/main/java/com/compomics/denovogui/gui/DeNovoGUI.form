@@ -12,7 +12,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="openMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Open Results..."/>
+                <Property name="text" type="java.lang.String" value="Open..."/>
                 <Property name="toolTipText" type="java.lang.String" value="Open existing de novo results"/>
               </Properties>
               <Events>
@@ -174,8 +174,8 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="searchEnginesPanel" alignment="0" max="32767" attributes="0"/>
-                              <Component id="inputFilesPanel1" alignment="0" max="32767" attributes="0"/>
+                              <Component id="searchEnginesPanel" max="32767" attributes="0"/>
+                              <Component id="inputFilesPanel1" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -184,7 +184,7 @@
                           <Component id="aboutButton" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                           <Component id="deNovoGuiWebPageJLabel" max="32767" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
                           <Component id="startButton" min="-2" pref="162" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                       </Group>
@@ -231,7 +231,7 @@
                       <Component id="pepNovoButton" min="-2" pref="101" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="44" max="32767" attributes="0"/>
+                      <EmptySpace pref="61" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -353,11 +353,11 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="clearSpectraButton" linkSize="2" alignment="0" pref="70" max="32767" attributes="0"/>
                           <Component id="loadConfigurationsButton" linkSize="2" alignment="0" pref="70" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
