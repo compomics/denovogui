@@ -77,15 +77,19 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The last folder opened by the user. Defaults to user.home.
      */
-    private String lastSelectedFolder = "resources/example_dataset";
+    private String lastSelectedFolder = "example_dataset";
     /**
-     * The example dataset.
+     * The example mgf file.
      */
-    public final static String exampleDataset = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf";
+    public final static String exampleMgf = "resources/reference_dataset/Arabidopsis_P1_Top5CID_01.mgf";
     /**
-     * The example dataset.
+     * The example out file.
      */
-    public final static String exampleSearchParams = "resources/example_dataset/denovoGUI_example.parameters";
+    public final static String exampleOutFile = "resources/reference_dataset/Arabidopsis_P1_Top5CID_01.mgf.out";
+    /**
+     * The example search parameters.
+     */
+    public final static String exampleSearchParams = "resources/reference_dataset/denovoGUI_example.parameters";
     /**
      * /**
      * The selected output folder for the de novo search.
@@ -421,7 +425,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -525,7 +529,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(addSpectraButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(clearSpectraButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
                     .addComponent(loadConfigurationsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
                 .addContainerGap())
@@ -607,7 +611,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                         .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
                         .addComponent(deNovoGuiWebPageJLabel)
-                        .addGap(18, 18, 18)
+                        .addGap(80, 80, 80)
                         .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(21, 21, 21))))
         );
@@ -629,7 +633,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
-        openMenuItem.setText("Open Results...");
+        openMenuItem.setText("Open...");
         openMenuItem.setToolTipText("Open existing de novo results");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -956,7 +960,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
             setSpectrumFiles(tempSpectrumFiles);
             //filename = spectraFiles.get(0).getName();
-            // @TODO: re-add back the progress bar..?
+            // @TODO: re-add the progress bar..?
         }
 
         validateInput(false);
@@ -1132,8 +1136,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
      * Open the results.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         new ResultsFrame(this, null, searchParameters);
@@ -1141,64 +1145,27 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
      * Load the example dataset.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void loadExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadExampleMenuItemActionPerformed
-        new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
-                "About DeNovoGUI Example Dataset", 700, 10);
-        // TODO: Setup default start location here!
-        File startLocation = new File(lastSelectedFolder);
-        if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
-            File temp = new File(outputFolderTextField.getText());
-            if (temp.isDirectory()) {
-                startLocation = temp;
-            } else {
-                startLocation = temp.getParentFile();
-            }
-        }
-        JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setMultiSelectionEnabled(false);
-        fc.setDialogTitle("Please select an output folder");
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File tempOutputFolder = fc.getSelectedFile();
-            outputFolderTextField.setText(tempOutputFolder.getAbsolutePath());
-            lastSelectedFolder = tempOutputFolder.getAbsolutePath();
-            setOutputFolder(tempOutputFolder);
-            // Set default example dataset
-            spectrumFilesTextField.setText("Example dataset selected");
-            ArrayList<File> exampleFile = new ArrayList<File>();
-            exampleFile.add(new File(getJarFilePath(), exampleDataset));
-            setSpectrumFiles(exampleFile);
-            // Set default search parameters
-            try {
-                File exampleParametersFile = new File(getJarFilePath(), exampleSearchParams);
-                searchParameters = SearchParameters.getIdentificationParameters(exampleParametersFile);
-                loadModifications(searchParameters);
-                parametersFile = exampleParametersFile;
-                searchParameters.setParametersFile(exampleParametersFile);
-                settingsFileJTextField.setText(parametersFile.getName());
 
-                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
-                boolean valid = settingsDialog.validateParametersInput(false);
+        try {
+            spectrumFiles = new ArrayList<File>();
+            spectrumFiles.add(new File(getJarFilePath(), exampleMgf));
 
-                if (!valid) {
-                    settingsDialog.validateParametersInput(true);
-                    settingsDialog.setVisible(true);
-                }
+            ArrayList<File> outFiles = new ArrayList<File>();
+            outFiles.add(new File(getJarFilePath(), exampleOutFile));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error occured while reading " + parametersFile + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
-                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
-                settingsDialog.setVisible(true);
-            }
+            searchParameters = SearchParameters.getIdentificationParameters(new File(getJarFilePath(), exampleSearchParams));
 
-            validateInput(false);
+            new ResultsFrame(this, outFiles, searchParameters);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            catchException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            catchException(e);
         }
     }//GEN-LAST:event_loadExampleMenuItemActionPerformed
 
@@ -1560,7 +1527,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     public File getPepNovoFolder() {
         return pepNovoFolder;
     }
-    
+
     /**
      * Sets the PepNovo executable.
      *

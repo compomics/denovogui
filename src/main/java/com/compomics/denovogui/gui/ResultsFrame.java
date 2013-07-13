@@ -134,10 +134,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public final static String CACHE_DIRECTORY = "resources/matches";
     /**
-     * The example .out file.
-     */
-    public final static String exampleOutFile = "resources/example_dataset/Arabidopsis_P1_Top5CID_01.mgf.out";
-    /**
      * De novo identification.
      */
     private Identification identification;
@@ -189,7 +185,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param outFiles the out files
      * @param searchParameters the search parameters
      */
-    public ResultsFrame(DeNovoGUI deNovoGUI, ArrayList<File> outFiles, SearchParameters searchParameters) {
+    public ResultsFrame(DeNovoGUI deNovoGUI,ArrayList<File> outFiles, SearchParameters searchParameters) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
@@ -876,7 +872,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu.add(openMenuItem);
         fileMenu.add(jSeparator2);
 
-        openExampleMenuItem.setText("Open Example...");
+        openExampleMenuItem.setText("Load Example");
         openExampleMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openExampleMenuItemActionPerformed(evt);
@@ -1421,16 +1417,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Opens the example file.
      */
     private void openExampleDataset() {
-        new HelpDialog(this, getClass().getResource("/html/ExampleDataset.html"),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
-                "About DeNovoGUI Example Dataset", 700, 10);
-        File outFile = new File(deNovoGUI.getJarFilePath(), exampleOutFile);
+        
+        File outFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleOutFile);
         if (!outFile.exists()) {
             JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + outFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        File mgfFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleDataset);
+        File mgfFile = new File(deNovoGUI.getJarFilePath(), DeNovoGUI.exampleMgf);
         if (!mgfFile.exists()) {
             JOptionPane.showMessageDialog(ResultsFrame.this, "Example file " + mgfFile.getName() + " could not be found.", "File Error", JOptionPane.WARNING_MESSAGE);
             return;

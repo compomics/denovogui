@@ -130,13 +130,13 @@ public class FileProcessor {
     /**
      * Deletes the chunk files.
      *
-     * @param mgfFiles The MGF file chunks.
+     * @param mgfFiles the mgf file chunks.
      * @param waitingHandler the waiting handler
      * @throws IOException
      */
-    public static void deleteChunkFiles(List<File> files, WaitingHandler waitingHandler) throws IOException {
+    public static void deleteChunkFiles(List<File> mgfFiles, WaitingHandler waitingHandler) throws IOException {
 
-        for (File file : files) {            
+        for (File file : mgfFiles) {            
             if (file.exists()) {
                 boolean deleted = file.delete();                
                 if (!deleted) {
@@ -207,10 +207,10 @@ public class FileProcessor {
     }
 
     /**
-     * Returns the mfg file corresponding to the given out file.
+     * Returns the mgf file corresponding to the given out file.
      *
      * @param outFile the out file
-     * @return the corresponding mfg file
+     * @return the corresponding mgf file
      */
     public static File getMgfFile(File outFile) {
         String fileName = Util.getFileName(outFile);

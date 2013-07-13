@@ -213,6 +213,7 @@
                                     <directory>./</directory>
                                     <includes>
                                         <include>resources/</include>
+                                        <include>example_dataset/</include>
                                         <include>README.txt</include>
                                     </includes>
                                 </resource>
@@ -320,7 +321,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.14.15</version>
+            <version>3.14.16</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>

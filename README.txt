@@ -4,7 +4,7 @@
     DeNovoGUI
    ===========
 
-   To start DeNovoGUIsimply double click the jar file.
+   To start DeNovoGUI simply double click the jar file.
 
    From the command line use 'java -jar DeNovoGUI-X.Y.Z.jar'. 
    (Replace X.Y.Z with the DeNovoGUI version number.)
