@@ -150,7 +150,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     public DeNovoGUI(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder) {
 
         // check for new version
-        CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
+        //CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
 
         // set up the ErrorLog
         setUpLogFile();
