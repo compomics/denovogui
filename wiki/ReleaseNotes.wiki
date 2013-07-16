@@ -3,4 +3,8 @@
 
 ----
 
-(not yet in use)
+*Changes in DeNovoGUI 1.0.0 (July 16. 2013):*
+
+ * The first public release of DeNovoGUI.
+
+----
