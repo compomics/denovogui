@@ -5,7 +5,6 @@ import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CommandLineUtils;
-import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.ToolFactory;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.biology.EnzymeFactory;

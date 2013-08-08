@@ -350,15 +350,15 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         fragmentMassToleranceLabel.setText("Fragment Mass Tolerance");
 
-        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 2.0d, 0.1d));
+        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
 
         precursorMassToleranceLabel.setText("Precursor Mass Tolerance");
 
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 2.0d, 0.01d));
+        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.01d));
 
         numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
 
-        numberOfSolutionsSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 1, 20, 1));
+        numberOfSolutionsSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 1, 2000, 1));
 
         spectrumChargeCheckBox.setText("Use Spectrum Charge (No Correction)");
         spectrumChargeCheckBox.setIconTextGap(15);
@@ -445,7 +445,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addComponent(spectrumChargeCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(spectrumPrecursorCheckBox)
-                        .addGap(3, 3, 3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(filterLowQualityCheckBox)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -627,7 +627,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addComponent(addFixedModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeFixedModification)
-                        .addContainerGap(27, Short.MAX_VALUE))
+                        .addContainerGap(26, Short.MAX_VALUE))
                     .addComponent(fixedModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -718,7 +718,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                         .addComponent(addVariableModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeVariableModification)
-                        .addContainerGap(39, Short.MAX_VALUE))
+                        .addContainerGap(37, Short.MAX_VALUE))
                     .addComponent(variableModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -803,7 +803,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(modificationsPanel1Layout.createSequentialGroup()
                 .addGroup(modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(modificationTypesSplitPane)
+                    .addComponent(modificationTypesSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                     .addComponent(availableModsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -852,7 +852,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -902,7 +902,6 @@ public class SettingsDialog extends javax.swing.JDialog {
                 dispose(); // no changes
             }
         }
-
     }//GEN-LAST:event_okButtonActionPerformed
 
     /**

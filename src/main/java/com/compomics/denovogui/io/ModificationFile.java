@@ -4,7 +4,6 @@ import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.preferences.ModificationProfile;
-import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +27,7 @@ public class ModificationFile {
      */
     private static final String name = "PepNovo_PTMs.txt";
     /**
-     * Comma / semi-colon separated format.
+     * Tab separated format.
      */
     private static final String SEP = "\t";
     /**
@@ -57,9 +56,9 @@ public class ModificationFile {
      */
     private static HashMap<String, String> invertedModIdMap;
     /**
-     * The PTM type color map.
+     * Maximum mass offset value.
      */
-    private static HashMap<Integer, Color> ptmTypeColorMap;
+    private static double maxMassOffsetValue = -50; // @TODO: why -50???
 
     /**
      * This method writes the modifications to a file.
@@ -101,19 +100,21 @@ public class ModificationFile {
      * @throws IOException
      */
     private static void writePtmLine(BufferedWriter writer, String mod, String variable) throws IOException {
+
         // Get the PTMFactory
         PTMFactory ptmFactory = PTMFactory.getInstance();
         PTM ptm = ptmFactory.getPTM(mod);
-        String connector = "";
-        if (ptm.getMass() > 0) {
-            connector = "+";
-        }
-        // Mass offset maximum -50 Da
 
-        // Write a line for each residue
-        for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
+        if (ptm.getMass() > maxMassOffsetValue) {
 
-            if (ptm.getMass() > -50) {
+            String connector = "";
+            if (ptm.getMass() > 0) {
+                connector = "+";
+            }
+
+            // Write a line for each residue
+            if (ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+
                 if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                         || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
                     writer.append("N_TERM" + SEP);
@@ -122,6 +123,8 @@ public class ModificationFile {
                     writer.append("N_TERM" + SPACE);
                     writer.append("^" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
                     modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
+                    writer.append(ptm.getName().toUpperCase());
+                    writer.newLine();
                 } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
                         || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
                     writer.append("C_TERM" + SEP);
@@ -130,16 +133,41 @@ public class ModificationFile {
                     writer.append("C_TERM" + SPACE);
                     writer.append("$" + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
                     modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
-                } else {
-                    writer.append(residue.singleLetterCode + SEP);
-                    writer.append(Double.toString(ptm.getMass()) + SPACE);
-                    writer.append(variable + SPACE);
-                    writer.append(ALL_LOCATIONS + SPACE);
-                    writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                    modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                    writer.append(ptm.getName().toUpperCase());
+                    writer.newLine();
                 }
-                writer.append(ptm.getName().toUpperCase());
-                writer.newLine();
+            } else {
+
+                for (AminoAcid residue : ptm.getPattern().getAminoAcidsAtTarget()) {
+
+                    if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
+                            || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
+                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(Double.toString(ptm.getMass()) + SPACE);
+                        writer.append(variable + SPACE);
+                        writer.append("+1" + SPACE);
+                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                    } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
+                            || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
+                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(Double.toString(ptm.getMass()) + SPACE);
+                        writer.append(variable + SPACE);
+                        writer.append("-1" + SPACE);
+                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                    } else {
+                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(Double.toString(ptm.getMass()) + SPACE);
+                        writer.append(variable + SPACE);
+                        writer.append(ALL_LOCATIONS + SPACE);
+                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                    }
+
+                    writer.append(ptm.getName().toUpperCase());
+                    writer.newLine();
+                }
             }
         }
     }
@@ -148,13 +176,14 @@ public class ModificationFile {
      * Fill the modification ID map.
      */
     private static void fillModIdMap() {
+
         modIdMap = new HashMap<String, String>();
         PTMFactory ptmFactory = PTMFactory.getInstance();
         List<String> mods = new ArrayList<String>();
         mods.addAll(ptmFactory.getDefaultModifications());
         mods.addAll(ptmFactory.getUserModifications());
         // Connector string: plus for positive modifications, minus for negative ones
-        String connector = "";
+        String connector;
 
         // Write the modifications
         for (String mod : mods) {
@@ -165,15 +194,23 @@ public class ModificationFile {
                 connector = "";
             }
 
-            // Write a line for each residue
-            for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
-                if (ptm.getMass() > -50) {
+            if (ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+                if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
+                        || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
+                    modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
+                } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
+                        || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
+                    modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
+                }
+
+            } else {
+                for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
                     if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                        modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
+                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
                     } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                        modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
+                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
                     } else {
                         modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
                     }
@@ -224,39 +261,7 @@ public class ModificationFile {
     }
 
     /**
-     * Returns the color for a specific modification.
-     *
-     * @param ptm
-     * @return the color
-     */
-    private static Color getColorForModification(PTM ptm) {
-        return getColorTypeMap().get(ptm.getType());
-    }
-
-    /**
-     * Returns the color type map.
-     *
-     * @return the color type map.
-     */
-    public static HashMap<Integer, Color> getColorTypeMap() {
-        if (ptmTypeColorMap == null) {
-            ptmTypeColorMap = new HashMap<Integer, Color>();
-            ptmTypeColorMap.put(PTM.MODMAX, Color.lightGray);
-            ptmTypeColorMap.put(PTM.MODAA, new Color(110, 196, 97));
-            ptmTypeColorMap.put(PTM.MODC, Color.CYAN);
-            ptmTypeColorMap.put(PTM.MODCAA, Color.MAGENTA);
-            ptmTypeColorMap.put(PTM.MODCP, Color.RED);
-            ptmTypeColorMap.put(PTM.MODCPAA, Color.ORANGE);
-            ptmTypeColorMap.put(PTM.MODN, Color.YELLOW);
-            ptmTypeColorMap.put(PTM.MODNAA, Color.PINK);
-            ptmTypeColorMap.put(PTM.MODNP, Color.BLUE);
-            ptmTypeColorMap.put(PTM.MODNPAA, Color.GRAY);
-        }
-        return ptmTypeColorMap;
-    }
-
-    /**
-     * Returns the list of modification in a pep novo format for search
+     * Returns the list of modification in the PepNovo format for search.
      *
      * @param modifications the list of modifications to export
      * @return the list of modification in a pep novo format

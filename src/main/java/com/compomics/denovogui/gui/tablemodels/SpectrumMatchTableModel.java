@@ -83,7 +83,21 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return row + 1;
             case 1:
                 PeptideAssumption peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
+
+                String taggedSequence = peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
+
+                PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
+                peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
+
+                if (peptideAssumptionDetails.getNTermGap() > 0) {
+                    taggedSequence = taggedSequence.replaceAll("NH3-", "...");
+                }
+
+                if (peptideAssumptionDetails.getCTermGap() > 0) {
+                    taggedSequence = taggedSequence.replaceAll("-COOH", "...");
+                }
+
+                return taggedSequence;
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);
                 return peptideAssumption.getTheoreticMz();
@@ -92,14 +106,14 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return peptideAssumption.getIdentificationCharge().value;
             case 4:
                 peptideAssumption = peptideAssumptions.get(row);
-                PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
+                peptideAssumptionDetails = new PeptideAssumptionDetails();
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                return peptideAssumptionDetails.getnTermGap();
+                return peptideAssumptionDetails.getNTermGap();
             case 5:
                 peptideAssumption = peptideAssumptions.get(row);
                 peptideAssumptionDetails = new PeptideAssumptionDetails();
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                return peptideAssumptionDetails.getcTermGap();
+                return peptideAssumptionDetails.getCTermGap();
             case 6:
                 peptideAssumption = peptideAssumptions.get(row);
                 peptideAssumptionDetails = new PeptideAssumptionDetails();

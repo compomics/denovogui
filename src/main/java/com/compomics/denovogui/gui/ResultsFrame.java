@@ -6,9 +6,11 @@ import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
+import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
 import com.compomics.util.experiment.biology.NeutralLoss;
@@ -16,6 +18,7 @@ import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.Sample;
+import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
@@ -265,6 +268,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
+
+        // set the title
+        this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
     }
 
     /**
@@ -440,6 +446,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportMatchesMenuItem = new javax.swing.JMenuItem();
+        viewMenu = new javax.swing.JMenu();
+        fixedPtmsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMainMenuItem = new javax.swing.JMenuItem();
         jSeparator17 = new javax.swing.JPopupMenu.Separator();
@@ -905,6 +913,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         menuBar.add(exportMenu);
 
+        viewMenu.setMnemonic('V');
+        viewMenu.setText("View");
+
+        fixedPtmsCheckBoxMenuItem.setText("Fixed Modifications");
+        fixedPtmsCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fixedPtmsCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(fixedPtmsCheckBoxMenuItem);
+
+        menuBar.add(viewMenu);
+
         helpMenu.setMnemonic('H');
         helpMenu.setText("Help");
 
@@ -1308,6 +1329,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         exitMenuItemActionPerformed(null);
     }//GEN-LAST:event_formWindowClosing
+
+    /**
+     * Hide/show the fixed PTMs in the peptides and spectrum annotation.
+     *
+     * @param evt
+     */
+    private void fixedPtmsCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixedPtmsCheckBoxMenuItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fixedPtmsCheckBoxMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1336,6 +1366,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem exportSpectrumGraphicsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumValuesJMenuItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JCheckBoxMenuItem fixedPtmsCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem forwardIonsDeNovoCheckBoxMenuItem;
     private javax.swing.JMenu helpJMenu;
     private javax.swing.JMenuItem helpMainMenuItem;
@@ -1375,6 +1406,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenu splitterMenu7;
     private javax.swing.JMenu splitterMenu8;
     private javax.swing.JMenu splitterMenu9;
+    private javax.swing.JMenu viewMenu;
     private javax.swing.JCheckBoxMenuItem xIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem yIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem zIonCheckBoxMenuItem;
@@ -1696,12 +1728,28 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     Peptide currentPeptide = peptideAssumption.getPeptide();
 
                     // add the annotations
-                    SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
                     annotationPreferences.setCurrentSettings(
                             currentPeptide, peptideAssumption.getIdentificationCharge().value,
                             !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
 
                     annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy());
+
+                    SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
+
+                    // get the terminal gaps
+                    PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
+                    peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
+
+                    double nTermGap = peptideAssumptionDetails.getNTermGap();
+                    double cTermGap = peptideAssumptionDetails.getCTermGap();
+                    if (nTermGap > 0) {
+                        //nTermGap -= 1.0079; // @TODO: should there be anything here??
+                    }
+                    if (cTermGap > 0) {
+                        double temp = Atom.O.mass + Atom.H.mass + ElementaryIon.proton.getTheoreticMass() * 2; // @TODO: figure out why this is the correct number...
+                        cTermGap -= temp;
+                    }
+                    spectrumAnnotator.setTerminalMassShifts(nTermGap, cTermGap);
 
                     ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
                             annotationPreferences.getNeutralLosses(),
@@ -1709,7 +1757,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             peptideAssumption.getIdentificationCharge().value,
                             currentSpectrum, currentPeptide,
                             currentSpectrum.getIntensityLimit(0.0), //annotationPreferences.getAnnotationIntensityLimit() // @TODO: set from the GUI
-                            annotationPreferences.getFragmentIonAccuracy(), false);
+                            annotationPreferences.getFragmentIonAccuracy(),
+                            false);
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
                     // add de novo sequencing
