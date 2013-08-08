@@ -111,8 +111,8 @@ public class TextExporter {
                                 b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true) + separator);
                                 b.write(peptideAssumptionDetails.getRankScore()+ separator);
                                 b.write(peptideAssumption.getScore() + separator);
-                                b.write(peptideAssumptionDetails.getnTermGap() + separator);
-                                b.write(peptideAssumptionDetails.getcTermGap() + separator);
+                                b.write(peptideAssumptionDetails.getNTermGap() + separator);
+                                b.write(peptideAssumptionDetails.getCTermGap() + separator);
                                 b.write(peptideAssumption.getTheoreticMz() + separator);
                                 b.write(peptideAssumption.getIdentificationCharge().value + separator);
                                 b.newLine();

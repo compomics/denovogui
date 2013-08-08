@@ -205,7 +205,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             waitingHandler.resetSecondaryProgressCounter();
             waitingHandler.setMaxSecondaryProgressCounter(index.size());
         }
-        
+
         for (String title : index.keySet()) {
 
             String decodedTitle = URLDecoder.decode(title, "utf-8");
@@ -312,39 +312,56 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         String pepNovoSequence = lineComponents[7];
         String sequence = "";
         ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
-        String modification = "", lastAA = "";
-        int naa = 0;
+        String modificationMass = "", currentAA = "";
+        int currentPtmLocation = 0;
+
+        boolean nTermPtm = false;
+        boolean cTermPtm = false;
+
         for (int i = 0; i < pepNovoSequence.length(); i++) {
             String aa = pepNovoSequence.charAt(i) + "";
-            if (aa.equals("+") || aa.equals("-")) {
-                if (!modification.equals("")) {
-                    String ptm = getPTM(modification, lastAA);
-                    ModificationMatch modMatch = new ModificationMatch(ptm, true, naa);
-                    modificationMatches.add(modMatch);
-                    modification = "";
+
+            if (aa.equals("^") || aa.equals("$")) {
+
+                if (aa.equals("^")) {
+                    nTermPtm = true;
+                } else {
+                    cTermPtm = true;
                 }
-                modification += aa;
+
             } else {
-                try {
-                    new Integer(aa);
-                    modification += aa;
-                } catch (Exception e) {
-                    if (!modification.equals("")) {
-                        String ptm = getPTM(modification, lastAA);
-                        ModificationMatch modMatch = new ModificationMatch(ptm, true, naa);
-                        modMatch.setConfident(true);
-                        modificationMatches.add(modMatch);
-                        modification = "";
+
+                if (aa.equals("+") || aa.equals("-")) {
+                    modificationMass += aa;
+                } else {
+                    try {
+                        new Integer(aa);
+                        modificationMass += aa;
+                    } catch (Exception e) {
+                        if (!modificationMass.equals("")) {
+                            String ptm = getPTM(modificationMass, currentAA, nTermPtm, cTermPtm);
+                            ModificationMatch modMatch = new ModificationMatch(ptm, true, currentPtmLocation); // @TODO: what about fixed ptms??
+                            modMatch.setConfident(true);
+                            modificationMatches.add(modMatch);
+                            modificationMass = "";
+                            nTermPtm = false;
+                        }
+                        AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
+                        if (aminoAcid == null) {
+                            throw new IllegalArgumentException("Attempting to parse " + aa + " as amino acid in " + pepNovoSequence + ".");
+                        }
+                        sequence += aa;
+                        currentAA = aa;
+                        currentPtmLocation++;
                     }
-                    AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
-                    if (aminoAcid == null) {
-                        throw new IllegalArgumentException("Attempting to parse " + aa + " as amino acid in " + pepNovoSequence + ".");
-                    }
-                    sequence += aa;
-                    lastAA = aa;
-                    naa++;
                 }
             }
+        }
+
+        if (!modificationMass.equals("")) {
+            String ptm = getPTM(modificationMass, currentAA, nTermPtm, cTermPtm);
+            ModificationMatch modMatch = new ModificationMatch(ptm, true, currentPtmLocation);// @TODO: what about fixed ptms??
+            modificationMatches.add(modMatch);
         }
 
         Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
@@ -358,8 +375,8 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         }
         PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
         peptideAssumptionDetails.setRankScore(rankScore);
-        peptideAssumptionDetails.setcTermGap(cGap);
-        peptideAssumptionDetails.setnTermGap(nGap);
+        peptideAssumptionDetails.setCTermGap(cGap);
+        peptideAssumptionDetails.setNTermGap(nGap);
         result.addUrParam(peptideAssumptionDetails);
 
         return result;
@@ -370,9 +387,14 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      *
      * @param pepNovoModification the PepNovo modification
      * @param aa the amino acid
+     * @param nTerm is an term PTM
+     * @param cTerm is a c term PTM
      * @return the PTM as a string
      */
-    public String getPTM(String pepNovoModification, String aa) {
+    public String getPTM(String pepNovoModification, String aa, boolean nTerm, boolean cTerm) {
+
+        // @TODO: perhaps this should rather use ModificationFile.getInvertedModIdMap()??
+
         double mass = 0;
         try {
             mass = new Double(pepNovoModification);
@@ -380,7 +402,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             throw new IllegalArgumentException("An error occurred while parsing the modification " + pepNovoModification + ".");
         }
         ArrayList<PTM> candidates = new ArrayList<PTM>();
-        for (String mod : searchParameters.getModificationProfile().getAllNotFixedModifications()) {
+        for (String mod : searchParameters.getModificationProfile().getAllNotFixedModifications()) { // @TODO: what about fixed ptms??
             PTM ptm = ptmFactory.getPTM(mod);
             if (Math.abs(mass - ptm.getMass()) <= searchParameters.getFragmentIonAccuracy()) {
                 candidates.add(ptm);
@@ -391,7 +413,24 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         }
         ArrayList<PTM> notAACandidates = new ArrayList<PTM>();
         for (PTM ptm : candidates) {
-            if (ptm.getType() == PTM.MODAA) {
+
+            boolean possiblePtm = false;
+
+            if (nTerm) {
+                if (ptm.getType() == PTM.MODAA || ptm.getType() == PTM.MODN || ptm.getType() == PTM.MODNAA || ptm.getType() == PTM.MODNP || ptm.getType() == PTM.MODNPAA) {
+                    possiblePtm = true;
+                }
+            } else if (cTerm) {
+                if (ptm.getType() == PTM.MODAA || ptm.getType() == PTM.MODC || ptm.getType() == PTM.MODCAA || ptm.getType() == PTM.MODCP || ptm.getType() == PTM.MODCPAA) {
+                    possiblePtm = true;
+                }
+            } else {
+                if (ptm.getType() == PTM.MODAA) {
+                    possiblePtm = true;
+                }
+            }
+
+            if (possiblePtm) {
                 // just a basic mapping here since we have very little information notably in terms of termini
                 for (AminoAcid aminoAcid : ptm.getPattern().getStandardSearchPattern().getAminoAcidsAtTarget()) {
                     if (aminoAcid.singleLetterCode.equals(aa)) {
