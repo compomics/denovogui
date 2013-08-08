@@ -18,6 +18,7 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
+import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
@@ -138,6 +139,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
+    /**
+     * The progress dialog.
+     */
+    private ProgressDialogX progressDialog;
 
     /**
      * Creates a new DeNovoGUI.
@@ -917,7 +922,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         setSpectrumFiles(new ArrayList<File>());
         spectrumFactory.clearFactory();
         try {
-        spectrumFactory.closeFiles();
+            spectrumFactory.closeFiles();
         } catch (IOException e) {
             e.printStackTrace();
             catchException(e);
@@ -1156,26 +1161,52 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private void loadExampleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadExampleMenuItemActionPerformed
 
-        try {
-            spectrumFiles = new ArrayList<File>();
-            File tempSpectrumFile = new File(getJarFilePath(), exampleMgf);
-            spectrumFiles.add(tempSpectrumFile);
-            spectrumFactory.addSpectra(tempSpectrumFile);
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
+        progressDialog.setTitle("Loading Example. Please Wait...");
 
-            ArrayList<File> outFiles = new ArrayList<File>();
-            outFiles.add(new File(getJarFilePath(), exampleOutFile));
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
 
-            searchParameters = SearchParameters.getIdentificationParameters(new File(getJarFilePath(), exampleSearchParams));
+        new Thread("LoadExampleThread") {
+            @Override
+            public void run() {
 
-            setVisible(false);
-            new ResultsFrame(this, outFiles, searchParameters);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            catchException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            catchException(e);
-        }
+                try {
+                    spectrumFiles = new ArrayList<File>();
+                    File tempSpectrumFile = new File(getJarFilePath(), exampleMgf);
+                    spectrumFiles.add(tempSpectrumFile);
+                    spectrumFactory.addSpectra(tempSpectrumFile, progressDialog);
+
+                    ArrayList<File> outFiles = new ArrayList<File>();
+                    outFiles.add(new File(getJarFilePath(), exampleOutFile));
+
+                    searchParameters = SearchParameters.getIdentificationParameters(new File(getJarFilePath(), exampleSearchParams));
+
+                    progressDialog.setRunFinished();
+                    setVisible(false);
+                    new ResultsFrame(DeNovoGUI.this, outFiles, searchParameters);
+                } catch (ClassNotFoundException e) {
+                    progressDialog.setRunFinished();
+                    e.printStackTrace();
+                    catchException(e);
+                } catch (IOException e) {
+                    progressDialog.setRunFinished();
+                    e.printStackTrace();
+                    catchException(e);
+                }
+            }
+        }.start();
     }//GEN-LAST:event_loadExampleMenuItemActionPerformed
 
     /**
@@ -1437,8 +1468,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private void loadSpectra(List<File> mgfFiles) throws FileNotFoundException, IOException, ClassNotFoundException {
         // Add spectrum files to the spectrum factory
         for (File spectrumFile : mgfFiles) {
-            //@TODO: add progress bar
-            spectrumFactory.addSpectra(spectrumFile);
+            spectrumFactory.addSpectra(spectrumFile); //@TODO: add progress bar?
         }
     }
 

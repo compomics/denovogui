@@ -262,7 +262,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
     }
 
     /**
-     * Returns a Peptide Assumption from a pep novo result line. the rank score
+     * Returns a Peptide Assumption from a PepNovo result line. The rank score
      * is taken as reference score. All additional parameters are attached as
      * PeptideAssumptionDetails.
      *
@@ -318,6 +318,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         boolean nTermPtm = false;
         boolean cTermPtm = false;
 
+        // find and add the variable ptms
         for (int i = 0; i < pepNovoSequence.length(); i++) {
             String aa = pepNovoSequence.charAt(i) + "";
 
@@ -360,8 +361,27 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
 
         if (!modificationMass.equals("")) {
             String ptm = getPTM(modificationMass, currentAA, nTermPtm, cTermPtm);
-            ModificationMatch modMatch = new ModificationMatch(ptm, true, currentPtmLocation);// @TODO: what about fixed ptms??
+            ModificationMatch modMatch = new ModificationMatch(ptm, true, currentPtmLocation);
             modificationMatches.add(modMatch);
+        }
+
+        // find and add the fixed ptms
+        char[] aminoAcidSequence = sequence.toCharArray();
+
+        for (int i = 0; i < aminoAcidSequence.length; i++) {
+            
+            String tempAA = String.valueOf(aminoAcidSequence[i]);
+            
+            for (String fixedPtm : searchParameters.getModificationProfile().getFixedModifications()) {
+                PTM ptm = ptmFactory.getPTM(fixedPtm);
+                for (AminoAcid residue : ptm.getPattern().getAminoAcidsAtTarget()) {
+                    if (residue.singleLetterCode.equalsIgnoreCase(tempAA)) {
+                        ModificationMatch modMatch = new ModificationMatch(fixedPtm, false, (i+1));
+                        modMatch.setConfident(true);
+                        modificationMatches.add(modMatch);
+                    }
+                }
+            }
         }
 
         Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
@@ -402,7 +422,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             throw new IllegalArgumentException("An error occurred while parsing the modification " + pepNovoModification + ".");
         }
         ArrayList<PTM> candidates = new ArrayList<PTM>();
-        for (String mod : searchParameters.getModificationProfile().getAllNotFixedModifications()) { // @TODO: what about fixed ptms??
+        for (String mod : searchParameters.getModificationProfile().getAllNotFixedModifications()) {
             PTM ptm = ptmFactory.getPTM(mod);
             if (Math.abs(mass - ptm.getMass()) <= searchParameters.getFragmentIonAccuracy()) {
                 candidates.add(ptm);

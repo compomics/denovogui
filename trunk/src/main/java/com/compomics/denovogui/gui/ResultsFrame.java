@@ -194,9 +194,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
-        this.setExtendedState(MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setExtendedState(MAXIMIZED_BOTH);
         // set the title of the frame and add the icon
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
         setUpGUI();
         if (outFiles != null) {
             setVisible(true);
@@ -1260,10 +1261,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
-        new HelpDialog(deNovoGUI, getClass().getResource("/html/SpectrumPanel.html"),
+        new HelpDialog(this, getClass().getResource("/html/SpectrumPanel.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-                "Spectrum - Help", 500, 0);
+                "Spectrum - Help");
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
     /**
@@ -1284,7 +1285,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         new HelpDialog(this, getClass().getResource("/html/DeNovoGUI.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
-                "DeNovoGUI - Help", 700, 10);
+                "DeNovoGUI - Help");
     }//GEN-LAST:event_helpMainMenuItemActionPerformed
 
     /**
@@ -1305,7 +1306,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         new HelpDialog(this, getClass().getResource("/html/AboutDeNovoGUI.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.pgn")),
-                "About DeNovoGUI", 700, 10);
+                "About DeNovoGUI");
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     /**
@@ -1336,7 +1337,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void fixedPtmsCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixedPtmsCheckBoxMenuItemActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = deNovoPeptidesTable.getSelectedRow();
+        ((SpectrumMatchTableModel) deNovoPeptidesTable.getModel()).setExcludeAllFixedPtms(!fixedPtmsCheckBoxMenuItem.isSelected());
+        ((SpectrumMatchTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
+        if (selectedRow != -1) {
+            deNovoPeptidesTable.setRowSelectionInterval(selectedRow, selectedRow);
+            updateSpectrum();
+        }
     }//GEN-LAST:event_fixedPtmsCheckBoxMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
@@ -1678,7 +1685,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         }
                     }
                 }
-                TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile());
+
+                TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
                 deNovoPeptidesTable.setModel(tableModel);
 
                 ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
@@ -1768,7 +1776,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             annotationPreferences.getDeNovoCharge(),
                             annotationPreferences.showForwardIonDeNovoTags(),
                             annotationPreferences.showRewindIonDeNovoTags(),
-                            0.75, 1.0);
+                            0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected());
 
                     // show all or just the annotated peaks
                     spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
@@ -2184,7 +2192,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             String modName = modMatch.getTheoreticPtm();
             PTM ptm = ptmFactory.getPTM(modName);
 
-            if ((ptm.getType() == PTM.MODAA && modMatch.isVariable())) {
+            if ((ptm.getType() == PTM.MODAA && modMatch.isVariable()) || (!modMatch.isVariable()) && fixedPtmsCheckBoxMenuItem.isSelected()) {
 
                 int modSite = modMatch.getModificationSite();
 
