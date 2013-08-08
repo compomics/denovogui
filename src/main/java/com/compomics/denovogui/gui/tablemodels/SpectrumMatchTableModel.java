@@ -21,6 +21,10 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
      * The modification profile of the search.
      */
     private ModificationProfile modificationProfile = null;
+    /**
+     * If true, the fixed PTMs are indicated in the peptide sequences.
+     */
+    private boolean excludeAllFixedPtms = true;
 
     /**
      * Constructor.
@@ -33,10 +37,23 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
      *
      * @param peptideAssumptions the peptide assumptions
      * @param modificationProfile the modification profile
+     * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
+     * table
      */
-    public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions, ModificationProfile modificationProfile) {
+    public SpectrumMatchTableModel(ArrayList<PeptideAssumption> peptideAssumptions, ModificationProfile modificationProfile, boolean excludeAllFixedPtms) {
         this.peptideAssumptions = peptideAssumptions;
         this.modificationProfile = modificationProfile;
+        this.excludeAllFixedPtms = excludeAllFixedPtms;
+    }
+
+    /**
+     * Set if the fixed PTMs are to be indicated in the table or not.
+     *
+     * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
+     * table
+     */
+    public void setExcludeAllFixedPtms(boolean excludeAllFixedPtms) {
+        this.excludeAllFixedPtms = excludeAllFixedPtms;
     }
 
     @Override
@@ -84,7 +101,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
             case 1:
                 PeptideAssumption peptideAssumption = peptideAssumptions.get(row);
 
-                String taggedSequence = peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true);
+                String taggedSequence = peptideAssumption.getPeptide().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms);
 
                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
