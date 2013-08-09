@@ -1,6 +1,7 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.denovo.PeptideAssumptionDetails;
+import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.preferences.ModificationProfile;
 import java.util.ArrayList;
@@ -117,7 +118,10 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return taggedSequence;
             case 2:
                 peptideAssumption = peptideAssumptions.get(row);
-                return peptideAssumption.getTheoreticMz();
+                peptideAssumptionDetails = new PeptideAssumptionDetails();
+                peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
+                int charge = peptideAssumption.getIdentificationCharge().value;
+                return (peptideAssumptionDetails.getMH() + ElementaryIon.proton.getTheoreticMass() * (charge - 1)) / charge;
             case 3:
                 peptideAssumption = peptideAssumptions.get(row);
                 return peptideAssumption.getIdentificationCharge().value;
