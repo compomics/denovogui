@@ -302,6 +302,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         if (cGap > maxCGap) {
             maxCGap = cGap;
         }
+        Double mH = new Double(lineComponents[5]);
         Integer charge = new Integer(lineComponents[6]);
         if (charge < minCharge) {
             minCharge = charge;
@@ -397,6 +398,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
         peptideAssumptionDetails.setRankScore(rankScore);
         peptideAssumptionDetails.setCTermGap(cGap);
         peptideAssumptionDetails.setNTermGap(nGap);
+        peptideAssumptionDetails.setMH(mH);
         result.addUrParam(peptideAssumptionDetails);
 
         return result;
