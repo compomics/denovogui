@@ -20,6 +20,7 @@ import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
+import com.compomics.util.experiment.biology.ions.ReporterIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.PeptideAssumption;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -67,6 +69,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
@@ -182,6 +185,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The ordered spectrum keys.
      */
     private ArrayList<String> orderedSpectrumTitles = null;
+    /**
+     * The Find panel.
+     */
+    private FindPanel findPanel;
+    /**
+     * The actually identified modifications.
+     */
+    private ArrayList<String> identifiedModifications = null;
 
     /**
      * Creates a new ResultsPanel.
@@ -211,6 +222,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Set up the GUI.
      */
     private void setUpGUI() {
+
+        // add the find panel
+        findPanel = new FindPanel(this);
+        findPanel.setEnabled(false);
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(findPanel);
 
         spectrumFileComboBox.setRenderer(new AlignedListCellRenderer(SwingConstants.CENTER));
 
@@ -349,6 +366,24 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 }
             }
         });
+    }
+
+    /**
+     * Returns a reference to the main DeNovoGUI frame.
+     *
+     * @return a reference to the main DeNovoGUI frame.
+     */
+    public DeNovoGUI getDeNovoGUI() {
+        return deNovoGUI;
+    }
+
+    /**
+     * Returns the de novo identifications.
+     *
+     * @return the de novo identifications
+     */
+    public Identification getPepNovoIdentifications() {
+        return identification;
     }
 
     /**
@@ -999,7 +1034,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void querySpectraTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_querySpectraTableMouseReleased
-        updateAssumptionsTable();
+        updateAssumptionsTable(0);
     }//GEN-LAST:event_querySpectraTableMouseReleased
 
     /**
@@ -1008,7 +1043,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void querySpectraTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_querySpectraTableKeyReleased
-        updateAssumptionsTable();
+        updateAssumptionsTable(0);
     }//GEN-LAST:event_querySpectraTableKeyReleased
 
     /**
@@ -1273,7 +1308,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void spectrumFileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumFileComboBoxActionPerformed
-        displayResults();
+        displayResults(0, 0);
     }//GEN-LAST:event_spectrumFileComboBoxActionPerformed
 
     /**
@@ -1493,8 +1528,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Displays new results.
+     *
+     * @param peptideRowSelection the peptide row to select
+     * @param psmRowSelection the PSM row to select
      */
-    private void displayResults() {
+    private void displayResults(final int peptideRowSelection, final int psmRowSelection) {
 
         progressDialog = new ProgressDialogX(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1513,7 +1551,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         }, "ProgressDialog").start();
 
-        new Thread("importThread") {
+        new Thread("DisplayThread") {
             public void run() {
                 orderedSpectrumTitles = null;
                 try {
@@ -1526,8 +1564,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 progressDialog.setTitle("Updating Display. Please Wait...");
                 TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
                 querySpectraTable.setModel(tableModel);
+
                 if (querySpectraTable.getRowCount() > 0) {
-                    querySpectraTable.setRowSelectionInterval(0, 0);
+                    if (peptideRowSelection != -1 && peptideRowSelection < querySpectraTable.getRowCount()) {
+                        querySpectraTable.setRowSelectionInterval(peptideRowSelection, peptideRowSelection);
+                    } else {
+                        querySpectraTable.setRowSelectionInterval(0, 0);
+                    }
                 }
 
                 if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
@@ -1541,8 +1584,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 querySpectraPanel.repaint();
 
-                updateAssumptionsTable();
+                updateAssumptionsTable(psmRowSelection);
                 progressDialog.setRunFinished();
+                findPanel.setEnabled(true);
 
                 // change the icon to the normal version (should not be needed, but added as an extra safty)
                 setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
@@ -1679,8 +1723,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Updates the assumption table based on the selected line.
+     *
+     * @param selectedPsmRow the selected PSM row
      */
-    public void updateAssumptionsTable() {
+    public void updateAssumptionsTable(int selectedPsmRow) {
 
         try {
             assumptions = new ArrayList<PeptideAssumption>();
@@ -1706,7 +1752,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 setTableProperties();
 
                 if (deNovoPeptidesTable.getRowCount() > 0) {
-                    deNovoPeptidesTable.setRowSelectionInterval(0, 0);
+                    if (selectedPsmRow != -1 && selectedPsmRow < deNovoPeptidesTable.getRowCount()) {
+                        deNovoPeptidesTable.setRowSelectionInterval(selectedPsmRow, selectedPsmRow);
+                        deNovoPeptidesTable.scrollRectToVisible(deNovoPeptidesTable.getCellRect(selectedPsmRow, 0, false));
+                    } else {
+                        deNovoPeptidesTable.setRowSelectionInterval(0, 0);
+                    }
                 }
 
                 ((TitledBorder) deNovoPeptidesPanel.getBorder()).setTitle("De Novo Peptides (" + deNovoPeptidesTable.getRowCount() + ")");
@@ -1859,7 +1910,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
                     progressDialog.setRunFinished();
                     if (identification != null) {
-                        displayResults();
+                        displayResults(0, 0);
                     }
                 } catch (Exception e) {
                     deNovoGUI.catchException(e);
@@ -2079,7 +2130,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         annotationPreferences.clearNeutralLosses();
 
-        for (NeutralLoss neutralLoss : lossMenus.keySet()) {
+        for (NeutralLoss neutralLoss : lossMenus.keySet()) { // @TODO: are neutral losses shown??
             if (lossMenus.get(neutralLoss).isSelected()) {
                 annotationPreferences.addNeutralLoss(neutralLoss);
             }
@@ -2119,18 +2170,18 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public ArrayList<Integer> getReporterIons() {
 
-        ArrayList<String> modifications = new ArrayList<String>(); //getFoundModifications(); // @TODO: re-add ptms
+        ArrayList<String> modifications = getFoundModifications();
         ArrayList<Integer> reporterIonsSubtypes = new ArrayList<Integer>();
 
-//        for (String mod : modifications) {
-//            PTM ptm = ptmFactory.getPTM(mod);
-//            for (ReporterIon reporterIon : ptm.getReporterIons()) {
-//                int subType = reporterIon.getSubType();
-//                if (!reporterIonsSubtypes.contains(subType)) {
-//                    reporterIonsSubtypes.add(subType);
-//                }
-//            }
-//        }
+        for (String mod : modifications) {
+            PTM ptm = ptmFactory.getPTM(mod);
+            for (ReporterIon reporterIon : ptm.getReporterIons()) {
+                int subType = reporterIon.getSubType();
+                if (!reporterIonsSubtypes.contains(subType)) {
+                    reporterIonsSubtypes.add(subType);
+                }
+            }
+        }
 
         return reporterIonsSubtypes;
     }
@@ -2342,6 +2393,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         if (identification != null) {
 
+            // @TODO: the progress dialog setup below should work but results in thread issues...
+
 //            progressDialog = new ProgressDialogX(this,
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
@@ -2383,5 +2436,57 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 //                }
 //            });
         }
+    }
+
+    /**
+     * Set the currently selected PSM.
+     *
+     * @param spectrumFileName the spectrum file name
+     * @param spectrumTitle the spectrum title
+     * @param psmRow the row number of the PSM
+     */
+    public void setSelectedPsm(final String spectrumFileName, final String spectrumTitle, final int psmRow) {
+
+        if (!((String) spectrumFileComboBox.getSelectedItem()).equalsIgnoreCase(spectrumFileName)) {
+            spectrumFileComboBox.setSelectedItem(spectrumFileName);
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                int spectrumRowIndex = querySpectraTable.convertRowIndexToView(orderedSpectrumTitles.indexOf(spectrumTitle));
+                querySpectraTable.setRowSelectionInterval(spectrumRowIndex, spectrumRowIndex);
+                querySpectraTable.scrollRectToVisible(querySpectraTable.getCellRect(spectrumRowIndex, 0, false));
+                updateAssumptionsTable(deNovoPeptidesTable.convertRowIndexToView(psmRow));
+            }
+        });
+    }
+
+    /**
+     * Returns the modifications found in this project.
+     *
+     * @return the modifications found in this project
+     */
+    public ArrayList<String> getFoundModifications() {
+        if (identifiedModifications == null) {
+            identifiedModifications = new ArrayList<String>();
+
+            if (identification != null) {
+                for (String peptideKey : identification.getPeptideIdentification()) {
+
+                    boolean modified = false;
+
+                    for (String modificationName : Peptide.getModificationFamily(peptideKey)) {
+                        if (!identifiedModifications.contains(modificationName)) {
+                            identifiedModifications.add(modificationName);
+                            modified = true;
+                        }
+                    }
+                    if (!modified && !identifiedModifications.contains("no modification")) {
+                        identifiedModifications.add("no modification");
+                    }
+                }
+            }
+        }
+        return identifiedModifications;
     }
 }
