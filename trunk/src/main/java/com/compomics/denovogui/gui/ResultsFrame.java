@@ -1529,9 +1529,16 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 if (querySpectraTable.getRowCount() > 0) {
                     querySpectraTable.setRowSelectionInterval(0, 0);
                 }
-                ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
-                        + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
-                        + querySpectraTable.getRowCount() + ")");
+
+                if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
+                    ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra (?/"
+                            + querySpectraTable.getRowCount() + ")");
+                } else {
+                    ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
+                            + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
+                            + querySpectraTable.getRowCount() + ")");
+                }
+
                 querySpectraPanel.repaint();
 
                 updateAssumptionsTable();
@@ -1539,6 +1546,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 // change the icon to the normal version (should not be needed, but added as an extra safty)
                 setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+
+                // the spectrum file and the results file do not match...
+                if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
+                    JOptionPane.showMessageDialog(ResultsFrame.this, "No identifications for the selected spectrum file."
+                            + "\nPlease check that you loaded the correct files.", "File Errors", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }.start();
     }
