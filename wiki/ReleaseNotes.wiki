@@ -3,6 +3,29 @@
 
 ----
 
+*Changes in DeNovoGUI 1.1.0 (August ??. 2013):*
+
+ * NEW FEATURE: Added a first version of a peptide sequence search feature in the results frame. (beta)
+
+ * FEATURE IMPROVEMENT: Improved the way the N and C terminal gaps are shown in sequence column in the de novo matches table.
+ * FEATURE IMPROVEMENT: Added the version number to the results frame title bar.
+ * FEATURE IMPROVEMENT: Made sure that the results frame is shown in the middle of the screen if minimized.
+ * FEATURE IMPROVEMENT: Added better error handling when re-loading de novo results and the wrong mgf file is selected.
+ * FEATURE IMPROVEMENT: Fixed some issues with the size of the help dialogs.
+ * FEATURE IMPROVEMENT: Added a progress dialog if the reference dataset has to be re-indexed.
+ * FEATURE IMPROVEMENT: Fixed PTMs can now be shown in the GUI (both for the table and the spectrum).
+
+ * BUG FIX: Terminal PTMs are now handled correctly.
+ * BUG FIX: Fixed PTMs are now handled correctly.
+ * BUG FIX: Added support for the N and C terminal gaps in the spectrum annotation.
+ * BUG FIX: Set the correct max values for the spinners in the Settings dialog.
+ * BUG FIX: The Settings dialog now resizes correctly.
+ * BUG FIX: Fixed bugs in the peptide m/z values in the peptide table.
+
+ * Updated utilities to version 3.14.21.
+
+----
+
 *Changes in DeNovoGUI 1.0.0 (July 16. 2013):*
 
  * The first public release of DeNovoGUI.
