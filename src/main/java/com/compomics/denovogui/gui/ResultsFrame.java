@@ -286,6 +286,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
+        
+        // Add default neutral losses to display
+        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O);
+        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
@@ -2130,7 +2134,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         annotationPreferences.clearNeutralLosses();
 
-        for (NeutralLoss neutralLoss : lossMenus.keySet()) { // @TODO: are neutral losses shown??
+        for (NeutralLoss neutralLoss : lossMenus.keySet()) {
             if (lossMenus.get(neutralLoss).isSelected()) {
                 annotationPreferences.addNeutralLoss(neutralLoss);
             }
