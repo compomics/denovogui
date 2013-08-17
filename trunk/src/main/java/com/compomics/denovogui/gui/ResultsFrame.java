@@ -240,6 +240,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
         spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
 
+        // Add default neutral losses to display
+        //IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O); // @TODO: uncomment to add neutral losses. but results in rather messy spectra without a lower annotation intensity threshold...
+        //IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
+        annotationPreferences.setNeutralLossesSequenceDependant(true);
+
         spectrumAnnotationMenuPanel.add(annotationMenuBar);
         updateAnnotationPreferences();
 
@@ -286,10 +291,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
-        
-        // Add default neutral losses to display
-        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O);
-        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
@@ -604,6 +605,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         lossMenu.setText("Loss");
         lossMenu.add(jSeparator7);
 
+        adaptCheckBoxMenuItem.setSelected(true);
         adaptCheckBoxMenuItem.setText("Adapt");
         adaptCheckBoxMenuItem.setToolTipText("Adapt losses to sequence and modifications");
         adaptCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -629,7 +631,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoMenu.setText("De Novo");
 
         forwardIonsDeNovoCheckBoxMenuItem.setSelected(true);
-        forwardIonsDeNovoCheckBoxMenuItem.setText("f-ions");
+        forwardIonsDeNovoCheckBoxMenuItem.setText("b-ions");
         forwardIonsDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 forwardIonsDeNovoCheckBoxMenuItemActionPerformed(evt);
@@ -638,7 +640,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoMenu.add(forwardIonsDeNovoCheckBoxMenuItem);
 
         rewindIonsDeNovoCheckBoxMenuItem.setSelected(true);
-        rewindIonsDeNovoCheckBoxMenuItem.setText("r-ions");
+        rewindIonsDeNovoCheckBoxMenuItem.setText("y-ions");
         rewindIonsDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rewindIonsDeNovoCheckBoxMenuItemActionPerformed(evt);
@@ -791,7 +793,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -844,7 +846,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     .addComponent(spectrumFileLabel)
                     .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -879,14 +881,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE)
                 .addContainerGap())
         );
         deNovoPeptidesPanelLayout.setVerticalGroup(
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1007,13 +1009,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
+            .addGap(0, 1008, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 728, Short.MAX_VALUE)
+            .addGap(0, 754, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1837,9 +1839,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             false);
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
+                    if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
+                        if (annotationPreferences.useAutomaticAnnotation()) {
+                            annotationPreferences.setNeutralLossesSequenceDependant(true);
+                        }
+                    }
+
                     // add de novo sequencing
                     spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
-                            PeptideFragmentIon.B_ION, // @TODO: choose the reverse fragment ion type from the annotation menu bar?
+                            PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
                             PeptideFragmentIon.Y_ION,
                             annotationPreferences.getDeNovoCharge(),
                             annotationPreferences.showForwardIonDeNovoTags(),
