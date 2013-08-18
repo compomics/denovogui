@@ -18,6 +18,7 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
+import com.compomics.util.gui.searchsettings.SearchSettingsDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
@@ -249,7 +250,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
         }
 
-        loadModificationUse(deNovoSequencingHandler.loadModificationsUse());
+        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
+        File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
+        modificationUse = SearchSettingsDialog.loadModificationsUse(modUseFile);
 
         // set the default enzyme to trypsin
         if (searchParameters.getEnzyme() == null) {
@@ -367,9 +370,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         jSeparator16 = new javax.swing.JPopupMenu.Separator();
         aboutMenuItem = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("DeNovoGUI");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
@@ -757,6 +765,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         dispose();
+        saveModificationUsage();
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
@@ -814,7 +823,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             searchParameters = new SearchParameters();
         }
 
-        saveConfigurationFile(); // save the ptms usage
+        saveModificationUsage(); // save the ptms usage
 
         waitingDialog = new WaitingDialog(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1208,6 +1217,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         }.start();
     }//GEN-LAST:event_loadExampleMenuItemActionPerformed
+
+    /**
+     * Close the tool.
+     *
+     * @param evt
+     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        exitMenuItemActionPerformed(null);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * The main method.
@@ -1805,19 +1823,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Returns a line with the most used modifications.
-     *
-     * @return a line containing the most used modifications
-     */
-    public String getModificationUseAsString() {
-        String result = "";
-        for (String name : modificationUse) {
-            result += name + MODIFICATION_SEPARATOR;
-        }
-        return result;
-    }
-
-    /**
      * Returns a list with the most used modifications.
      *
      * @return a list with the most used modifications
@@ -1836,42 +1841,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Loads the use of modifications from a line.
-     *
-     * @param aLine modification use line from the configuration file
-     */
-    private void loadModificationUse(String aLine) {
-        ArrayList<String> modificationUses = new ArrayList<String>();
-
-        // Split the different modifications.
-        int start;
-
-        while ((start = aLine.indexOf(MODIFICATION_SEPARATOR)) >= 0) {
-            String name = aLine.substring(0, start);
-            aLine = aLine.substring(start + 2);
-            if (!name.trim().equals("")) {
-                modificationUses.add(name);
-            }
-        }
-
-        for (String name : modificationUses) {
-            start = name.indexOf("_");
-            String modificationName = name;
-
-            if (start != -1) {
-                modificationName = name.substring(0, start); // old format, remove usage statistics
-            }
-
-            if (ptmFactory.containsPTM(modificationName)) {
-                modificationUse.add(modificationName);
-            }
-        }
-    }
-
-    /**
      * This method saves PTM usage in the conf folder.
      */
-    private void saveConfigurationFile() {
+    private void saveModificationUsage() {
 
         File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
 
@@ -1883,13 +1855,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(output));
                 bw.write("Modification use:" + System.getProperty("line.separator"));
-                bw.write(getModificationUseAsString() + System.getProperty("line.separator"));
+                bw.write(SearchSettingsDialog.getModificationUseAsString(modificationUse) + System.getProperty("line.separator"));
                 bw.flush();
                 bw.close();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 JOptionPane.showMessageDialog(this, new String[]{"Unable to write file: '" + ioe.getMessage() + "'!",
-                    "Could not save PTM usage."}, "File Location Error", JOptionPane.WARNING_MESSAGE);
+                    "Could not save PTM usage."}, "File Error", JOptionPane.WARNING_MESSAGE);
             }
         }
     }

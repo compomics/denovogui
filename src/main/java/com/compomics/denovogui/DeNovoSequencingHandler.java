@@ -283,40 +283,6 @@ public class DeNovoSequencingHandler {
     }
 
     /**
-     * Returns a string with the modifications used.
-     *
-     * @return String with the X!Tandem location, as specified in the file, or
-     * 'null' if the file could not be found, or is empty.
-     */
-    public String loadModificationsUse() {
-        String result = "";
-
-        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
-        if (folder.exists()) {
-            File input = new File(folder, DENOVOGUI_COMFIGURATION_FILE);
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(input));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    // Skip empty lines and comment ('#') lines.
-                    line = line.trim();
-                    if (line.equals("") || line.startsWith("#")) {
-                        // skip lines
-                    } else if (line.equals("Modification use:")) {
-                        result = br.readLine().trim();
-                    }
-                }
-                br.close();
-            } catch (IOException ioe) {
-                ioe.printStackTrace(); // @TODO: this exception should be thrown to the GUI!
-                JOptionPane.showMessageDialog(null, "An error occured when trying to load the modifications preferences.",
-                        "Configuration import Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        return result;
-    }
-
-    /**
      * Returns the path to the jar file.
      *
      * @return the path to the jar file
