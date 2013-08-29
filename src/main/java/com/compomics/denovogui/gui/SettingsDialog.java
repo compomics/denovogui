@@ -154,7 +154,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         if (searchParameters.getEnzyme() == null || searchParameters.getEnzyme().getName().equalsIgnoreCase("Trypsin")) {
             enzymeComboBox.setSelectedItem("TRYPSIN");
-        } else if (searchParameters.getEnzyme().getName().equalsIgnoreCase("No enzyme")) {
+        } else if (searchParameters.getEnzyme().getName().equalsIgnoreCase("No Enzyme")) {
             enzymeComboBox.setSelectedItem("NON_SPECIFIC");
         } else {
             // enzyme not supported...
@@ -1422,7 +1422,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         if (enzymeComboBox.getSelectedIndex() == 0) {
             enzyme = enzymeFactory.getEnzyme("Trypsin");
         } else {
-            enzyme = enzymeFactory.getEnzyme("No enzyme");
+            enzyme = enzymeFactory.getEnzyme("No Enzyme"); // @TODO: what does NON_SPECIFIC mean in PepNovo..?
         }
         tempSearchParameters.setEnzyme(enzyme);
 
