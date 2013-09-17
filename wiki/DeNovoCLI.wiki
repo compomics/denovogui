@@ -32,7 +32,7 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
 -search_params	        Serialized com.compomics.util.experiment.identification.SearchParameters 
                         object created by SearchGUI.
 
--prec_tol		Precursor ion mass tolerance [0.0-5.0], default is '5' (ppm).
+-prec_tol		Precursor ion mass tolerance [0.0-5.0], default is '5' (Da).
 
 -frag_tol		Fragment ion mass tolerance in Da [0.0-0.75], default is '0.5' (Da).
 
