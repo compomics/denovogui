@@ -108,7 +108,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
 
                 if (peptideAssumptionDetails.getNTermGap() > 0) {
-                    taggedSequence = taggedSequence.replaceAll("NH3-", "...");
+                    taggedSequence = taggedSequence.replaceAll("NH2-", "...");
                 }
 
                 if (peptideAssumptionDetails.getCTermGap() > 0) {
