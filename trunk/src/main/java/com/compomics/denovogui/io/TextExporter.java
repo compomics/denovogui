@@ -77,12 +77,14 @@ public class TextExporter {
                     for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
                         if (identification.matchExists(spectrumKey)) {
 
+                            String spectrumDetails = "";
+
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
                             SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                            b.write(mgfFile + separator + spectrumTitle + separator);
+                            spectrumDetails += mgfFile + separator + spectrumTitle + separator;
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            b.write(precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator);
+                            spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
                             HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
@@ -93,23 +95,18 @@ public class TextExporter {
                                     assumptions.addAll(assumptionsMap.get(score));
                                 }
                             }
+
                             int rank = 0;
                             for (PeptideAssumption peptideAssumption : assumptions) {
                                 Peptide peptide = peptideAssumption.getPeptide();
                                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-
-                                String padding = "";
-
-                                if (rank > 0) {
-                                    padding = leftPaddding;
-                                }
-
-                                b.write(padding + ++rank + separator);
+                                b.write(spectrumDetails);
+                                b.write(++rank + separator);
                                 b.write(peptide.getSequence() + separator);
                                 b.write(getPeptideModificationsAsString(peptide) + separator);
                                 b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true) + separator);
-                                b.write(peptideAssumptionDetails.getRankScore()+ separator);
+                                b.write(peptideAssumptionDetails.getRankScore() + separator);
                                 b.write(peptideAssumption.getScore() + separator);
                                 b.write(peptideAssumptionDetails.getNTermGap() + separator);
                                 b.write(peptideAssumptionDetails.getCTermGap() + separator);

@@ -1838,6 +1838,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             annotationPreferences.getFragmentIonAccuracy(),
                             false);
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                    spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
 
                     if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
                         if (annotationPreferences.useAutomaticAnnotation()) {
@@ -1873,6 +1874,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
                             precursor.getMz(), "",
                             "", 40, false, false, false, 2, false);
+                    spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
                     spectrumPanel.setBorder(null);
                     spectrumJPanel.add(spectrumPanel);
                 }
