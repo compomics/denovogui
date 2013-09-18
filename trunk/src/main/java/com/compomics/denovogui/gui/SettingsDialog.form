@@ -51,7 +51,9 @@
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                          <Component id="openDialogHelpJButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="okButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
@@ -73,10 +75,11 @@
                   <Component id="deNovoSettingsPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="modificationsPanel1" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="okButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="openDialogHelpJButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="okButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="cancelButton" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
@@ -120,24 +123,24 @@
                           </Group>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="fragmentMassToleranceSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="numberOfSolutionsSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="precursorMassToleranceSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="enzymeComboBox" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="numberOfThreadsSpinner" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="fragmentMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="numberOfSolutionsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="precursorMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="enzymeComboBox" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                          <Component id="numberOfThreadsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="modelLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                              <Component id="modelComboBox" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="modelComboBox" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
                           <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
                           <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="53" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -201,6 +204,7 @@
                     <StringItem index="0" value="CID_IT_TRYP"/>
                   </StringArray>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="modelLabel">
@@ -216,11 +220,12 @@
                     <StringItem index="1" value="NON_SPECIFIC"/>
                   </StringArray>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance"/>
+                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
@@ -232,7 +237,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance"/>
+                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance (Da)"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
@@ -412,7 +417,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="modificationTypesSplitPane" alignment="0" pref="229" max="32767" attributes="0"/>
+                          <Component id="modificationTypesSplitPane" alignment="0" max="32767" attributes="0"/>
                           <Component id="availableModsPanel" alignment="0" min="-2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -663,14 +668,22 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="modificationsListCombo" alignment="0" pref="340" max="32767" attributes="1"/>
-                      <Component id="modificationsJScrollPane" alignment="0" max="32767" attributes="0"/>
+                      <Component id="modificationsJScrollPane" pref="340" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="modificationsListCombo" max="32767" attributes="1"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="openModificationSettingsJButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="modificationsListCombo" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="2" attributes="0">
+                              <Component id="modificationsListCombo" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="openModificationSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="modificationsJScrollPane" max="32767" attributes="0"/>
                       </Group>
@@ -725,10 +738,49 @@
                     </Component>
                   </SubComponents>
                 </Container>
+                <Component class="javax.swing.JButton" name="openModificationSettingsJButton">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/icons/edit_gray.png"/>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="Edit Modifications"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="null"/>
+                    </Property>
+                    <Property name="borderPainted" type="boolean" value="false"/>
+                    <Property name="contentAreaFilled" type="boolean" value="false"/>
+                    <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/icons/edit.png"/>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="openModificationSettingsJButtonMouseEntered"/>
+                    <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="openModificationSettingsJButtonMouseExited"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openModificationSettingsJButtonActionPerformed"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
         </Container>
+        <Component class="javax.swing.JButton" name="openDialogHelpJButton">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/help.GIF"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Help"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
+            <Property name="borderPainted" type="boolean" value="false"/>
+            <Property name="contentAreaFilled" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="openDialogHelpJButtonMouseEntered"/>
+            <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="openDialogHelpJButtonMouseExited"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openDialogHelpJButtonActionPerformed"/>
+          </Events>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

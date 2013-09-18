@@ -4,8 +4,12 @@ import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.gui.error_handlers.HelpDialog;
+import com.compomics.util.gui.ptm.ModificationsDialog;
+import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +34,7 @@ import org.jfree.chart.plot.PlotOrientation;
  *
  * @author Harald Barsnes
  */
-public class SettingsDialog extends javax.swing.JDialog {
+public class SettingsDialog extends javax.swing.JDialog implements PtmDialogParent {
 
     /**
      * A references to the main DeNovoGUI.
@@ -127,19 +131,12 @@ public class SettingsDialog extends javax.swing.JDialog {
         modificationTableToolTips.add("Modification Mass");
         modificationTableToolTips.add("Default Modification");
 
-        loadModificationsInGUI();
+        updateModificationList();
 
         // make sure that the scroll panes are see-through
         modificationsJScrollPane.getViewport().setOpaque(false);
 
         modificationsTable.getTableHeader().setReorderingAllowed(false);
-    }
-
-    /**
-     * Loads the modifications.
-     */
-    private void loadModificationsInGUI() {
-        updateModificationList();
     }
 
     /**
@@ -164,7 +161,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         modelComboBox.setSelectedItem("CID_IT_TRYP"); // @TODO: support other models??
 
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
-        precursorMassToleranceSpinner.setValue(searchParameters.getPrecursorAccuracy()); // @TODO: type? Da or ppm?
+        precursorMassToleranceSpinner.setValue(searchParameters.getPrecursorAccuracy());
+        searchParameters.setPrecursorAccuracyType(SearchParameters.PrecursorAccuracyType.DA);
 
         numberOfSolutionsSpinner.setValue(searchParameters.getHitListLength());
 
@@ -330,6 +328,8 @@ public class SettingsDialog extends javax.swing.JDialog {
                 };
             }
         };
+        openModificationSettingsJButton = new javax.swing.JButton();
+        openDialogHelpJButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Search Settings");
@@ -343,16 +343,18 @@ public class SettingsDialog extends javax.swing.JDialog {
         enzymeLabel.setText("Enzyme");
 
         modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
+        modelComboBox.setEnabled(false);
 
         modelLabel.setText("Model");
 
         enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
+        enzymeComboBox.setEnabled(false);
 
-        fragmentMassToleranceLabel.setText("Fragment Mass Tolerance");
+        fragmentMassToleranceLabel.setText("Fragment Mass Tolerance (Da)");
 
         fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
 
-        precursorMassToleranceLabel.setText("Precursor Mass Tolerance");
+        precursorMassToleranceLabel.setText("Precursor Mass Tolerance (Da)");
 
         precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.01d));
 
@@ -411,8 +413,11 @@ public class SettingsDialog extends javax.swing.JDialog {
                     .addComponent(spectrumChargeCheckBox)
                     .addComponent(spectrumPrecursorCheckBox)
                     .addComponent(filterLowQualityCheckBox))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
+
+        deNovoSettingsPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {enzymeComboBox, fragmentMassToleranceSpinner, modelComboBox, numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
+
         deNovoSettingsPanelLayout.setVerticalGroup(
             deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
@@ -773,17 +778,43 @@ public class SettingsDialog extends javax.swing.JDialog {
         });
         modificationsJScrollPane.setViewportView(modificationsTable);
 
+        openModificationSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
+        openModificationSettingsJButton.setToolTipText("Edit Modifications");
+        openModificationSettingsJButton.setBorder(null);
+        openModificationSettingsJButton.setBorderPainted(false);
+        openModificationSettingsJButton.setContentAreaFilled(false);
+        openModificationSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        openModificationSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                openModificationSettingsJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                openModificationSettingsJButtonMouseExited(evt);
+            }
+        });
+        openModificationSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openModificationSettingsJButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout availableModsPanelLayout = new javax.swing.GroupLayout(availableModsPanel);
         availableModsPanel.setLayout(availableModsPanelLayout);
         availableModsPanelLayout.setHorizontalGroup(
             availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(modificationsListCombo, 0, 340, Short.MAX_VALUE)
-            .addComponent(modificationsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(modificationsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
+            .addGroup(availableModsPanelLayout.createSequentialGroup()
+                .addComponent(modificationsListCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(openModificationSettingsJButton)
+                .addContainerGap())
         );
         availableModsPanelLayout.setVerticalGroup(
             availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(availableModsPanelLayout.createSequentialGroup()
-                .addComponent(modificationsListCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(modificationsListCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(openModificationSettingsJButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modificationsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -803,10 +834,29 @@ public class SettingsDialog extends javax.swing.JDialog {
             modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(modificationsPanel1Layout.createSequentialGroup()
                 .addGroup(modificationsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(modificationTypesSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
+                    .addComponent(modificationTypesSplitPane)
                     .addComponent(availableModsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        openDialogHelpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/help.GIF"))); // NOI18N
+        openDialogHelpJButton.setToolTipText("Help");
+        openDialogHelpJButton.setBorder(null);
+        openDialogHelpJButton.setBorderPainted(false);
+        openDialogHelpJButton.setContentAreaFilled(false);
+        openDialogHelpJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                openDialogHelpJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                openDialogHelpJButtonMouseExited(evt);
+            }
+        });
+        openDialogHelpJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openDialogHelpJButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
         backgroundPanel.setLayout(backgroundPanelLayout);
@@ -816,7 +866,9 @@ public class SettingsDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
+                        .addComponent(openDialogHelpJButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
@@ -838,9 +890,10 @@ public class SettingsDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(okButton))
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(openDialogHelpJButton)
+                    .addComponent(okButton)
+                    .addComponent(cancelButton))
                 .addContainerGap())
         );
 
@@ -1362,6 +1415,66 @@ public class SettingsDialog extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_modificationsTableMouseMoved
+
+    /**
+     * Open the modifications pop up menu.
+     *
+     * @param evt
+     */
+    private void openModificationSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonActionPerformed
+        new ModificationsDialog(deNovoGUI, this, true);
+    }//GEN-LAST:event_openModificationSettingsJButtonActionPerformed
+
+    /**
+     * Change the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void openModificationSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonMouseEntered
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_openModificationSettingsJButtonMouseEntered
+
+    /**
+     * Change the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void openModificationSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonMouseExited
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_openModificationSettingsJButtonMouseExited
+
+    /**
+     * Change the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void openDialogHelpJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openDialogHelpJButtonMouseEntered
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_openDialogHelpJButtonMouseEntered
+
+    /**
+     * Change the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void openDialogHelpJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openDialogHelpJButtonMouseExited
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_openDialogHelpJButtonMouseExited
+
+    /**
+     * Open the help dialog.
+     * 
+     * @param evt 
+     */
+    private void openDialogHelpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDialogHelpJButtonActionPerformed
+        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        new HelpDialog(this, getClass().getResource("/helpFiles/Modifications.html"),
+            Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+            Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+            "Search Settings Help", 500, 10);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_openDialogHelpJButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
@@ -1394,6 +1507,8 @@ public class SettingsDialog extends javax.swing.JDialog {
     private javax.swing.JLabel numberOfThreadsLabel;
     private javax.swing.JSpinner numberOfThreadsSpinner;
     private javax.swing.JButton okButton;
+    private javax.swing.JButton openDialogHelpJButton;
+    private javax.swing.JButton openModificationSettingsJButton;
     private javax.swing.JLabel precursorMassToleranceLabel;
     private javax.swing.JSpinner precursorMassToleranceSpinner;
     private javax.swing.JButton removeFixedModification;
@@ -1659,5 +1774,10 @@ public class SettingsDialog extends javax.swing.JDialog {
         addVariableModification.setEnabled(modificationsTable.getSelectedRow() != -1);
         removeFixedModification.setEnabled(fixedModsTable.getSelectedRow() != -1);
         addFixedModification.setEnabled(modificationsTable.getSelectedRow() != -1);
+    }
+
+    @Override
+    public void updateModifications() {
+        updateModificationList();
     }
 }
