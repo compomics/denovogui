@@ -332,7 +332,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         openDialogHelpJButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Search Settings");
+        setTitle("De Novo Settings");
         setMinimumSize(new java.awt.Dimension(800, 600));
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
@@ -1468,7 +1468,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      */
     private void openDialogHelpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDialogHelpJButtonActionPerformed
         setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        new HelpDialog(this, getClass().getResource("/helpFiles/Modifications.html"),
+        new HelpDialog(this, getClass().getResource("/html/DeNovoSettings.html"),
             Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
             Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
             "Search Settings Help", 500, 10);

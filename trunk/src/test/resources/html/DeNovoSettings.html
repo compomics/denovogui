@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<HTML>
+    <HEAD>
+        <TITLE></TITLE>
+    </HEAD>
+    <BODY>
+        <a name="#top"/>
+        <H2>De Novo Settings</H2>
+
+        <p align="justify">
+        <H3>Enzyme</H3>
+        Currently, only TRYPSIN as default is supported.
+        <br><br>
+
+        <H3>Fragment Mass Tolerance</H3>
+        The fragment mass tolerance can be set between 0 and 0.75 Da.
+        <br><br>
+
+        <H3>Precursor Mass Tolerance</H3>
+        The precursor mass tolerance can be set between 0 and 5.0 Da.
+        <br><br>
+
+        <H3>No. Solutions</H3>
+        This parameter presents the number of possible peptide suggestions for each spectrum (1-20).
+        The default setting is 20 solutions.
+        <br><br>
+
+        <H3>No. Threads/Cores</H3>
+        The number of threads is given by the number of available CPU cores by default.
+        This parameter is important to speed up the de novo sequencing.
+        <br><br>
+
+        <H3>Model</H3>
+        The currently only available default model is CID_IT_TRYP. Please contact the developers of PepNovo+
+        for other model support.
+        <br><br>
+
+        <H3>Use Spectrum Charge</H3>
+        When activated, the given spectrum charge is used and no correction for the spectrum charge is executed.
+        This setting is disabled by default.
+        <br><br>
+
+        <H3>Use Spectrum Precursor m/z</H3>
+        When activated, the given spectrum precursor m/z is used and no correction for the spectrum precursor m/z is executed.
+        This setting is disabled by default.
+        <br><br>
+
+        <H3>Filter Low Quality Spectra</H3>
+        This options filters our low quality spectra and speeds up the de novo sequencing process.
+        This setting is enabled by default.
+        <br><br>
+
+    </p>
+    <H3>Modifications</H3>
+
+    <p align="justify">
+        There are two types of modifications, fixed and variable. Fixed modifications will 
+        be added to every residue that can be modified by the given modification, while the variable modifications 
+        are sometimes added and sometimes not. Which type to choose depends on your experimental setup.
+        <br><br>
+        You can add multiple modifications of each type, but remember that the more variable modifications you 
+        add the more complex the search becomes which increases the risk of false positives.
+        <br><br>
+        Initially only the most used modifications are shown. To show all modifications simply select 'All 
+        Modifications' in the drop down menu above the list of modifications. Here you can also see more 
+        details about each modification.
+    </p>
+
+    <br><br>
+</BODY>
+</HTML>
