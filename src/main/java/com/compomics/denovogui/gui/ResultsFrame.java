@@ -7,6 +7,7 @@ import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
 import com.compomics.util.denovo.PeptideAssumptionDetails;
+import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
@@ -291,6 +292,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
+        deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
@@ -332,6 +334,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
+        deNovoPeptidesTable.getColumn("  ").setMaxWidth(30);
+        deNovoPeptidesTable.getColumn("  ").setMinWidth(30);
 
         deNovoPeptidesTable.getColumn("Rank Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Rank Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
@@ -345,6 +349,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
+        deNovoPeptidesTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
+                new ImageIcon(this.getClass().getResource("/icons/blast.png")),
+                null,
+                "Click to BLAST peptide sequence", null));
 
         querySpectraTable.revalidate();
         querySpectraTable.repaint();
@@ -1058,6 +1066,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void deNovoPeptidesTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseReleased
+
+        int row = deNovoPeptidesTable.rowAtPoint(evt.getPoint());
+        int column = deNovoPeptidesTable.columnAtPoint(evt.getPoint());
+
+        // check of the user clicked the blast columns
+        if (evt.getButton() == 1 && row != -1 && column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) {
+            PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
+            this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+            BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
+                    + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + peptideAssumption.getPeptide().getSequence());
+            this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }
+
         updateSpectrum();
     }//GEN-LAST:event_deNovoPeptidesTableMouseReleased
 
@@ -1099,6 +1120,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 } else {
                     deNovoPeptidesTable.setToolTipText(null);
                 }
+            }
+            if (column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) { // the BLAST column
+                this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
                 deNovoPeptidesTable.setToolTipText(null);
@@ -1863,6 +1887,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
 
                     String modifiedSequence = currentPeptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true);
+
+                    // replace the terminals if there are terminal gaps
+                    if (peptideAssumptionDetails.getNTermGap() > 0) {
+                        modifiedSequence = modifiedSequence.replaceAll("NH2-", "...");
+                    }
+                    if (peptideAssumptionDetails.getCTermGap() > 0) {
+                        modifiedSequence = modifiedSequence.replaceAll("-COOH", "...");
+                    }
+
                     ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
                             "Spectrum Viewer (" + modifiedSequence
                             + "   " + peptideAssumption.getIdentificationCharge().toString() + "   "
