@@ -67,7 +67,7 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 9;
     }
 
     @Override
@@ -89,6 +89,8 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
                 return "Rank Score";
             case 7:
                 return "Score";
+            case 8:
+                return "  ";
             default:
                 return "";
         }
@@ -143,6 +145,8 @@ public class SpectrumMatchTableModel extends DefaultTableModel {
             case 7:
                 peptideAssumption = peptideAssumptions.get(row);
                 return peptideAssumption.getScore();
+            case 8:
+                return true;
             default:
                 return "";
         }
