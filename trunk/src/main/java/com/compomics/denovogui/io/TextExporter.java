@@ -148,17 +148,22 @@ public class TextExporter {
      * @param searchParameters the search parameters used for the search
      * @param waitingHandler waiting handler displaying progress to the user and
      * allowing to cancel the process.
-     *
+     * @param scoreThreshold De novo score threshold
+     * 
      * @throws IOException
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws MzMLUnmarshallerException
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters,
-            WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
+            WaitingHandler waitingHandler, String scoreThreshold) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
 
-        FileWriter f = new FileWriter(destinationFile);
-
+        FileWriter f = new FileWriter(destinationFile);  
+        double threshold = 0;
+        if(!scoreThreshold.equals("")) {
+            threshold = Double.valueOf(scoreThreshold);
+        } 
+        
         try {
 
             BufferedWriter b = new BufferedWriter(f);
@@ -199,12 +204,14 @@ public class TextExporter {
                                 Peptide peptide = peptideAssumption.getPeptide();
                                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-                                b.write(spectrumDetails);
-                                b.write(peptideAssumptionDetails.getRankScore() + separator2);
-                                b.write(peptideAssumption.getScore() + "");
-                                b.newLine();
-                                b.write(peptide.getSequence());
-                                b.newLine();
+                                if (peptideAssumption.getScore() > threshold){
+                                    b.write(spectrumDetails);
+                                    b.write(peptideAssumptionDetails.getRankScore() + separator2);
+                                    b.write(peptideAssumption.getScore()+ "");                                
+                                    b.newLine();
+                                    b.write(peptide.getSequence());
+                                    b.newLine();
+                                }
                             }
                             if (assumptions.isEmpty()) {
                                 b.newLine(); //This should not happen. Should.
@@ -216,7 +223,6 @@ public class TextExporter {
                                 }
                             }
                         }
-                        b.newLine();
                     }
                 }
             } finally {
