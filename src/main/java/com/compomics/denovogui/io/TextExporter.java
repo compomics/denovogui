@@ -33,6 +33,11 @@ public class TextExporter {
      * Separator used for the export.
      */
     private static final String separator = "\t";
+    
+    /**
+     * Separator used for the export.
+     */
+    private static final String separator2 = ";";
 
     /**
      * Exports the identification results to a given file.
@@ -52,8 +57,6 @@ public class TextExporter {
     public static void exportPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
 
         FileWriter f = new FileWriter(destinationFile);
-        String leftPaddding = separator + separator + separator + separator;
-
         try {
 
             BufferedWriter b = new BufferedWriter(f);
@@ -136,7 +139,95 @@ public class TextExporter {
             f.close();
         }
     }
+    
+      /**
+     * Exports the BLAST-compatible identification results to a given file.
+     *
+     * @param destinationFile the destination file
+     * @param identification the identification object containing identification
+     * details
+     * @param searchParameters the search parameters used for the search
+     * @param waitingHandler waiting handler displaying progress to the user and
+     * allowing to cancel the process.
+     *
+     * @throws IOException
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     * @throws MzMLUnmarshallerException
+     */
+    public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
 
+        FileWriter f = new FileWriter(destinationFile);
+        try {
+
+            BufferedWriter b = new BufferedWriter(f);
+
+            try {
+
+
+                if (waitingHandler != null) {
+                    waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...)");
+                    // reset the progress bar
+                    waitingHandler.setSecondaryProgressCounter(0);
+                    waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
+                }
+
+                for (String mgfFile : identification.getSpectrumFiles()) {
+                    for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
+                        if (identification.matchExists(spectrumKey)) {
+
+                            String spectrumDetails = ">";
+
+                            String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
+                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                            spectrumDetails += mgfFile + separator2 + spectrumTitle + separator2;
+
+                            Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
+                            spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
+
+                            ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
+                            HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                            if (assumptionsMap != null) {
+                                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                                Collections.sort(scores, Collections.reverseOrder());
+                                for (Double score : scores) {
+                                    assumptions.addAll(assumptionsMap.get(score));
+                                }
+                            }
+                            
+                            for (PeptideAssumption peptideAssumption : assumptions) {
+                                Peptide peptide = peptideAssumption.getPeptide();
+                                PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
+                                peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
+                                b.write(spectrumDetails);
+                                b.write(peptideAssumptionDetails.getRankScore() + separator2);
+                                b.write(peptideAssumption.getScore()+ "");                                
+                                b.newLine();
+                                b.write(peptide.getSequence());
+                                b.newLine();
+                            }
+                            if (assumptions.isEmpty()) {
+                                b.newLine(); //This should not happen. Should.
+                            }
+                            if (waitingHandler != null) {
+                                waitingHandler.increaseSecondaryProgressCounter();
+                                if (waitingHandler.isRunCanceled()) {
+                                    return;
+                                }
+                            }
+                        }
+                        b.newLine();
+                    }
+                }
+
+            } finally {
+                b.close();
+            }
+        } finally {
+            f.close();
+        }
+    }
+    
     /**
      * Returns the peptide modifications as a string.
      *
