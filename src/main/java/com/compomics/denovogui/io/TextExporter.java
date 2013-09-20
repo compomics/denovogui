@@ -33,7 +33,6 @@ public class TextExporter {
      * Separator used for the export.
      */
     private static final String separator = "\t";
-    
     /**
      * Separator used for the export.
      */
@@ -139,8 +138,8 @@ public class TextExporter {
             f.close();
         }
     }
-    
-      /**
+
+    /**
      * Exports the BLAST-compatible identification results to a given file.
      *
      * @param destinationFile the destination file
@@ -155,15 +154,16 @@ public class TextExporter {
      * @throws ClassNotFoundException
      * @throws MzMLUnmarshallerException
      */
-    public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
+    public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters,
+            WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
 
         FileWriter f = new FileWriter(destinationFile);
+
         try {
 
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-
 
                 if (waitingHandler != null) {
                     waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...)");
@@ -194,14 +194,14 @@ public class TextExporter {
                                     assumptions.addAll(assumptionsMap.get(score));
                                 }
                             }
-                            
+
                             for (PeptideAssumption peptideAssumption : assumptions) {
                                 Peptide peptide = peptideAssumption.getPeptide();
                                 PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
                                 peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
                                 b.write(spectrumDetails);
                                 b.write(peptideAssumptionDetails.getRankScore() + separator2);
-                                b.write(peptideAssumption.getScore()+ "");                                
+                                b.write(peptideAssumption.getScore() + "");
                                 b.newLine();
                                 b.write(peptide.getSequence());
                                 b.newLine();
@@ -219,7 +219,6 @@ public class TextExporter {
                         b.newLine();
                     }
                 }
-
             } finally {
                 b.close();
             }
@@ -227,7 +226,7 @@ public class TextExporter {
             f.close();
         }
     }
-    
+
     /**
      * Returns the peptide modifications as a string.
      *

@@ -1420,6 +1420,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
     }//GEN-LAST:event_fixedPtmsCheckBoxMenuItemActionPerformed
 
+    /**
+     * Export the matches in a BLAST supported format.
+     * 
+     * @param evt 
+     */
     private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
