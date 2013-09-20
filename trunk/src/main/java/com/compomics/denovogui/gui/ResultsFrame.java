@@ -495,6 +495,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exitMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportMatchesMenuItem = new javax.swing.JMenuItem();
+        exportBlastMatchesMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         fixedPtmsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -961,6 +962,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         });
         exportMenu.add(exportMatchesMenuItem);
 
+        exportBlastMatchesMenuItem.setText("Export BLAST Matches");
+        exportBlastMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportBlastMatchesMenuItemActionPerformed(evt);
+            }
+        });
+        exportMenu.add(exportBlastMatchesMenuItem);
+
         menuBar.add(exportMenu);
 
         viewMenu.setMnemonic('V');
@@ -1023,7 +1032,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 754, Short.MAX_VALUE)
+            .addGap(0, 766, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1383,7 +1392,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile);
+            exportIdentification(selectedFile, false);
         }
     }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
 
@@ -1410,6 +1419,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             updateSpectrum();
         }
     }//GEN-LAST:event_fixedPtmsCheckBoxMenuItemActionPerformed
+
+    private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
+        File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+        if (selectedFile != null) {
+            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+            exportIdentification(selectedFile, true);
+        }
+    }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1432,6 +1450,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem exportBlastMatchesMenuItem;
     private javax.swing.JMenu exportGraphicsMenu;
     private javax.swing.JMenuItem exportMatchesMenuItem;
     private javax.swing.JMenu exportMenu;
@@ -1685,8 +1704,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Exports the identification results in a text file.
      *
      * @param file the destination file
+     * @param blast BLAST-compatible export flag
      */
-    public void exportIdentification(File file) {
+    public void exportIdentification(File file, final boolean blast) {
 
         final File finalFile = file;
 
@@ -1710,7 +1730,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         new Thread("exportThread") {
             public void run() {
                 try {
-                    TextExporter.exportPSMs(finalFile, identification, searchParameters, progressDialog);
+                    if (blast) {
+                        TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog);
+                    } else {
+                        TextExporter.exportPSMs(finalFile, identification, searchParameters, progressDialog);
+                    }
 
                     boolean cancelled = progressDialog.isRunCanceled();
                     progressDialog.setRunFinished();
