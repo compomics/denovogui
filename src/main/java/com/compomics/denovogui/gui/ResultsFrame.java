@@ -1392,7 +1392,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, false);
+            exportIdentification(selectedFile, false, null);
         }
     }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
 
@@ -1426,10 +1426,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt 
      */
     private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
+        String threshold = JOptionPane.showInputDialog(this, "Please enter de novo score threshold (X > Score):");
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, true);
+            exportIdentification(selectedFile, true, threshold);
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
 
@@ -1710,8 +1711,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      *
      * @param file the destination file
      * @param blast BLAST-compatible export flag
+     * @param scoreThreshold Score threshold for BLAST-compatible export
      */
-    public void exportIdentification(File file, final boolean blast) {
+    public void exportIdentification(File file, final boolean blast, final String scoreThreshold) {
 
         final File finalFile = file;
 
@@ -1736,7 +1738,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             public void run() {
                 try {
                     if (blast) {
-                        TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog);
+                        TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold);
                     } else {
                         TextExporter.exportPSMs(finalFile, identification, searchParameters, progressDialog);
                     }
