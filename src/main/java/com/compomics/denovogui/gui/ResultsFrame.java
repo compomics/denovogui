@@ -802,7 +802,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -855,7 +855,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     .addComponent(spectrumFileLabel)
                     .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -897,7 +897,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -954,7 +954,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.setMnemonic('E');
         exportMenu.setText("Export");
 
+        exportMatchesMenuItem.setMnemonic('M');
         exportMatchesMenuItem.setText("Export Matches");
+        exportMatchesMenuItem.setToolTipText("Export the matches as text");
         exportMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportMatchesMenuItemActionPerformed(evt);
@@ -962,7 +964,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         });
         exportMenu.add(exportMatchesMenuItem);
 
-        exportBlastMatchesMenuItem.setText("Export BLAST Matches");
+        exportBlastMatchesMenuItem.setMnemonic('B');
+        exportBlastMatchesMenuItem.setText("Export BLAST");
+        exportBlastMatchesMenuItem.setToolTipText("Export the matches in a BLAST format");
         exportBlastMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportBlastMatchesMenuItemActionPerformed(evt);
@@ -975,6 +979,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         viewMenu.setMnemonic('V');
         viewMenu.setText("View");
 
+        fixedPtmsCheckBoxMenuItem.setMnemonic('F');
         fixedPtmsCheckBoxMenuItem.setText("Fixed Modifications");
         fixedPtmsCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1422,18 +1427,35 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Export the matches in a BLAST supported format.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
-        String threshold = JOptionPane.showInputDialog(this, "Please enter de novo score threshold (X > Score):");
-        File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
-        if (selectedFile != null) {
-            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, true, threshold);
+
+        boolean export = true;
+        String threshold = JOptionPane.showInputDialog(this, "Please enter the de novo score threshold:");
+
+        if (threshold == null) {
+            export = false;
+        }
+
+        if (export) {
+            try {
+                new Double(threshold);
+            } catch (NumberFormatException e) {
+                export = false;
+                JOptionPane.showMessageDialog(this, "The score threshold has to be a number!", "Export Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        if (export) {
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+            if (selectedFile != null) {
+                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                exportIdentification(selectedFile, true, threshold);
+            }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
