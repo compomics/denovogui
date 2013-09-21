@@ -348,7 +348,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="exportMatchesMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="77"/>
                 <Property name="text" type="java.lang.String" value="Export Matches"/>
+                <Property name="toolTipText" type="java.lang.String" value="Export the matches as text"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportMatchesMenuItemActionPerformed"/>
@@ -356,7 +358,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportBlastMatchesMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Export BLAST Matches"/>
+                <Property name="mnemonic" type="int" value="66"/>
+                <Property name="text" type="java.lang.String" value="Export BLAST"/>
+                <Property name="toolTipText" type="java.lang.String" value="Export the matches in a BLAST format"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportBlastMatchesMenuItemActionPerformed"/>
@@ -372,6 +376,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="fixedPtmsCheckBoxMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="70"/>
                 <Property name="text" type="java.lang.String" value="Fixed Modifications"/>
               </Properties>
               <Events>
