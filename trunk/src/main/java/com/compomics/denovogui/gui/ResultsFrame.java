@@ -206,6 +206,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
+        annotationPreferences.setAnnotationLevel(0.0); // annotate all peaks by default
+        annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy()); // set the default fragment ion accuracy
         setLocationRelativeTo(null);
         setExtendedState(MAXIMIZED_BOTH);
         // set the title of the frame and add the icon
@@ -493,6 +495,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        annotationsMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportMatchesMenuItem = new javax.swing.JMenuItem();
         exportBlastMatchesMenuItem = new javax.swing.JMenuItem();
@@ -951,7 +955,21 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         menuBar.add(fileMenu);
 
-        exportMenu.setMnemonic('E');
+        editMenu.setMnemonic('E');
+        editMenu.setText("Edit");
+
+        annotationsMenuItem.setMnemonic('S');
+        annotationsMenuItem.setText("Spectrum Annotation");
+        annotationsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                annotationsMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(annotationsMenuItem);
+
+        menuBar.add(editMenu);
+
+        exportMenu.setMnemonic('X');
         exportMenu.setText("Export");
 
         exportMatchesMenuItem.setMnemonic('M');
@@ -1456,6 +1474,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
+
+    /**
+     * Open the spectrum annotation preferences dialog.
+     *
+     * @param evt
+     */
+    private void annotationsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annotationsMenuItemActionPerformed
+        new AnnotationPreferencesDialog(this);
+    }//GEN-LAST:event_annotationsMenuItemActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1463,6 +1490,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JCheckBoxMenuItem allCheckBoxMenuItem;
     private javax.swing.JMenuItem annotationColorsJMenuItem;
     private javax.swing.JMenuBar annotationMenuBar;
+    private javax.swing.JMenuItem annotationsMenuItem;
     private javax.swing.JCheckBoxMenuItem automaticAnnotationCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem bIonCheckBoxMenuItem;
     private javax.swing.JPanel bcakgroundPanel;
@@ -1477,6 +1505,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JTable deNovoPeptidesTable;
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
+    private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportBlastMatchesMenuItem;
     private javax.swing.JMenu exportGraphicsMenu;
@@ -1887,8 +1916,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             currentPeptide, peptideAssumption.getIdentificationCharge().value,
                             !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
 
-                    annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy());
-
                     SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
 
                     // get the terminal gaps
@@ -1911,7 +1938,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             annotationPreferences.getValidatedCharges(),
                             peptideAssumption.getIdentificationCharge().value,
                             currentSpectrum, currentPeptide,
-                            currentSpectrum.getIntensityLimit(0.0), //annotationPreferences.getAnnotationIntensityLimit() // @TODO: set from the GUI
+                            currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
                             annotationPreferences.getFragmentIonAccuracy(),
                             false);
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
@@ -2588,5 +2615,30 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         }
         return identifiedModifications;
+    }
+
+    /**
+     * Get the annotation preferences.
+     *
+     * @return the annotation preferences
+     */
+    public AnnotationPreferences getAnnotationPreferences() {
+        return annotationPreferences;
+    }
+
+    /**
+     * Set the annotation preferences.
+     *
+     * @param annotationPreferences
+     */
+    public void setAnnotationPreferences(AnnotationPreferences annotationPreferences) {
+        this.annotationPreferences = annotationPreferences;
+    }
+
+    /**
+     * Update the spectrum annotations.
+     */
+    public void updateSpectrumAnnotations() {
+        updateSpectrum();
     }
 }
