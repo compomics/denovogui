@@ -366,7 +366,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportMatchesMenuItem">
               <Properties>
                 <Property name="mnemonic" type="int" value="77"/>
-                <Property name="text" type="java.lang.String" value="Export Matches"/>
+                <Property name="text" type="java.lang.String" value="Matches"/>
                 <Property name="toolTipText" type="java.lang.String" value="Export the matches as text"/>
               </Properties>
               <Events>
@@ -376,7 +376,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportBlastMatchesMenuItem">
               <Properties>
                 <Property name="mnemonic" type="int" value="66"/>
-                <Property name="text" type="java.lang.String" value="Export BLAST"/>
+                <Property name="text" type="java.lang.String" value="BLAST"/>
                 <Property name="toolTipText" type="java.lang.String" value="Export the matches in a BLAST format"/>
               </Properties>
               <Events>

@@ -273,12 +273,12 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        enzymeLabel = new javax.swing.JLabel();
+        enzymeComboBox = new javax.swing.JComboBox();
+        modelLabel = new javax.swing.JLabel();
+        modelComboBox = new javax.swing.JComboBox();
         backgroundPanel = new javax.swing.JPanel();
         deNovoSettingsPanel = new javax.swing.JPanel();
-        enzymeLabel = new javax.swing.JLabel();
-        modelComboBox = new javax.swing.JComboBox();
-        modelLabel = new javax.swing.JLabel();
-        enzymeComboBox = new javax.swing.JComboBox();
         fragmentMassToleranceLabel = new javax.swing.JLabel();
         fragmentMassToleranceSpinner = new javax.swing.JSpinner();
         precursorMassToleranceLabel = new javax.swing.JLabel();
@@ -331,6 +331,16 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         openModificationSettingsJButton = new javax.swing.JButton();
         openDialogHelpJButton = new javax.swing.JButton();
 
+        enzymeLabel.setText("Enzyme");
+
+        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
+        enzymeComboBox.setEnabled(false);
+
+        modelLabel.setText("Model");
+
+        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
+        modelComboBox.setEnabled(false);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("De Novo Settings");
         setMinimumSize(new java.awt.Dimension(800, 600));
@@ -340,23 +350,13 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         deNovoSettingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Settings"));
         deNovoSettingsPanel.setOpaque(false);
 
-        enzymeLabel.setText("Enzyme");
-
-        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
-        modelComboBox.setEnabled(false);
-
-        modelLabel.setText("Model");
-
-        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
-        enzymeComboBox.setEnabled(false);
-
         fragmentMassToleranceLabel.setText("Fragment Mass Tolerance (Da)");
 
         fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
 
         precursorMassToleranceLabel.setText("Precursor Mass Tolerance (Da)");
 
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.01d));
+        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.1d));
 
         numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
 
@@ -389,8 +389,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
                             .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(precursorMassToleranceLabel)
-                                .addComponent(fragmentMassToleranceLabel)
-                                .addComponent(enzymeLabel))
+                                .addComponent(fragmentMassToleranceLabel))
                             .addGap(18, 18, 18))
                         .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
                             .addComponent(numberOfSolutionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -402,56 +401,39 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                     .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(81, 81, 81)
                 .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(modelLabel)
-                        .addGap(31, 31, 31)
-                        .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(spectrumChargeCheckBox)
                     .addComponent(spectrumPrecursorCheckBox)
                     .addComponent(filterLowQualityCheckBox))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
 
-        deNovoSettingsPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {enzymeComboBox, fragmentMassToleranceSpinner, modelComboBox, numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
+        deNovoSettingsPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {fragmentMassToleranceSpinner, numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
 
         deNovoSettingsPanelLayout.setVerticalGroup(
             deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(enzymeLabel)
-                    .addComponent(modelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modelLabel)
-                    .addComponent(enzymeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(fragmentMassToleranceLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(precursorMassToleranceLabel))
-                        .addGap(5, 5, 5)
-                        .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(numberOfSolutionsLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(numberOfThreadsLabel)))
-                    .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(spectrumChargeCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spectrumPrecursorCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filterLowQualityCheckBox)))
+                    .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fragmentMassToleranceLabel)
+                    .addComponent(spectrumChargeCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(precursorMassToleranceLabel)
+                    .addComponent(spectrumPrecursorCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numberOfSolutionsLabel)
+                    .addComponent(filterLowQualityCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numberOfThreadsLabel))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
