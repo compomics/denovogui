@@ -973,7 +973,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.setText("Export");
 
         exportMatchesMenuItem.setMnemonic('M');
-        exportMatchesMenuItem.setText("Export Matches");
+        exportMatchesMenuItem.setText("Matches");
         exportMatchesMenuItem.setToolTipText("Export the matches as text");
         exportMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -983,7 +983,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.add(exportMatchesMenuItem);
 
         exportBlastMatchesMenuItem.setMnemonic('B');
-        exportBlastMatchesMenuItem.setText("Export BLAST");
+        exportBlastMatchesMenuItem.setText("BLAST");
         exportBlastMatchesMenuItem.setToolTipText("Export the matches in a BLAST format");
         exportBlastMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

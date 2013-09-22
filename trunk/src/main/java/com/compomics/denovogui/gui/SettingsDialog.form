@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.JLabel" name="enzymeLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Enzyme"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="enzymeComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="TRYPSIN"/>
+            <StringItem index="1" value="NON_SPECIFIC"/>
+          </StringArray>
+        </Property>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="modelLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Model"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="modelComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="1">
+            <StringItem index="0" value="CID_IT_TRYP"/>
+          </StringArray>
+        </Property>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="De Novo Settings"/>
@@ -71,9 +104,9 @@
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="configurationFilePanelSettings" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="deNovoSettingsPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="modificationsPanel1" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
@@ -81,7 +114,7 @@
                       <Component id="okButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cancelButton" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -108,7 +141,6 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="enzymeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                               </Group>
@@ -126,21 +158,15 @@
                           <Component id="fragmentMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           <Component id="numberOfSolutionsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           <Component id="precursorMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="enzymeComboBox" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           <Component id="numberOfThreadsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="modelLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                              <Component id="modelComboBox" linkSize="3" min="-2" pref="210" max="-2" attributes="0"/>
-                          </Group>
                           <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
                           <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
                           <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="53" max="32767" attributes="0"/>
+                      <EmptySpace pref="73" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -149,42 +175,26 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="enzymeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="modelComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="modelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="enzymeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumChargeCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                              <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spectrumPrecursorCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="filterLowQualityCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -192,37 +202,6 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="enzymeLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Enzyme"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JComboBox" name="modelComboBox">
-              <Properties>
-                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="1">
-                    <StringItem index="0" value="CID_IT_TRYP"/>
-                  </StringArray>
-                </Property>
-                <Property name="enabled" type="boolean" value="false"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="modelLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Model"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JComboBox" name="enzymeComboBox">
-              <Properties>
-                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="TRYPSIN"/>
-                    <StringItem index="1" value="NON_SPECIFIC"/>
-                  </StringArray>
-                </Property>
-                <Property name="enabled" type="boolean" value="false"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
@@ -243,7 +222,7 @@
             <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+                  <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                 </Property>
               </Properties>
             </Component>
