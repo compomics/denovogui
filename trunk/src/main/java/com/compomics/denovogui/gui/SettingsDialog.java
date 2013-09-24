@@ -161,10 +161,10 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         modelComboBox.setSelectedItem("CID_IT_TRYP"); // @TODO: support other models??
 
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
-        precursorMassToleranceSpinner.setValue(searchParameters.getPrecursorAccuracy());
-        searchParameters.setPrecursorAccuracyType(SearchParameters.PrecursorAccuracyType.DA);
+        precursorMassToleranceSpinner.setValue(searchParameters.getPrecursorAccuracyDalton());
+        //searchParameters.setPrecursorAccuracyType(SearchParameters.PrecursorAccuracyType.DA);
 
-        numberOfSolutionsSpinner.setValue(searchParameters.getHitListLength());
+        numberOfSolutionsSpinner.setValue(searchParameters.getHitListLengthDeNovo());
 
         spectrumChargeCheckBox.setSelected(!searchParameters.isEstimateCharge());
         spectrumPrecursorCheckBox.setSelected(!searchParameters.isCorrectPrecursorMass());
@@ -1529,7 +1529,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();
         tempSearchParameters.setFragmentIonAccuracy(fragmentIonTolerance);
         double precursorIonTolerance = (Double) precursorMassToleranceSpinner.getValue();
-        tempSearchParameters.setPrecursorAccuracy(precursorIonTolerance);
+        tempSearchParameters.setPrecursorAccuracyDalton(precursorIonTolerance);
         int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
         tempSearchParameters.setHitListLength(maxHitListLength);
         boolean estimateCharge = !spectrumChargeCheckBox.isSelected();

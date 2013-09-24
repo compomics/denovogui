@@ -242,8 +242,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
-            searchParameters.setHitListLength(20); // @TODO: should not be hardcoded here, but default is 25, and de novo max is 20...
-            searchParameters.setPrecursorAccuracy(1.0); // @TODO: should not be hardcoded here, but default is 10, and de novo max is 5...
             setDefaultParameters(); // label the configs as default
         } else {
             loadModifications(searchParameters);
