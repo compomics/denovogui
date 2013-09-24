@@ -91,7 +91,7 @@ public class PepnovoJob extends Job {
 
         // Precursor tolerance
         procCommands.add("-pm_tolerance");
-        procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracy()));
+        procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
 
         // Use spectrum charge: no by default
         if (!searchParameters.isEstimateCharge()) {

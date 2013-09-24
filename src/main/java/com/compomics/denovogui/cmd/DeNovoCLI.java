@@ -133,7 +133,7 @@ public class DeNovoCLI implements Callable {
             }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
-            if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracy() > 5) { // @TODO: split precursor tolerance into two parameters to make this simpler?
+            if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }

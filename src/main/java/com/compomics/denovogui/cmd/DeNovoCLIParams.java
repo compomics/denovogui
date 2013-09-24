@@ -22,7 +22,7 @@ public class DeNovoCLIParams {
         aOptions.addOption(SearchParametersCLIParams.SPECTRUM_FILES.id, true, SearchParametersCLIParams.SPECTRUM_FILES.description);
         aOptions.addOption(SearchParametersCLIParams.OUTPUT_FOLDER.id, true, SearchParametersCLIParams.OUTPUT_FOLDER.description);
         aOptions.addOption(SearchParametersCLIParams.SEARCH_PARAMETERS.id, true, SearchParametersCLIParams.SEARCH_PARAMETERS.description);
-        aOptions.addOption(SearchParametersCLIParams.PREC_TOL.id, true, SearchParametersCLIParams.PREC_TOL.description);
+        aOptions.addOption(SearchParametersCLIParams.PREC_TOL_DA.id, true, SearchParametersCLIParams.PREC_TOL_DA.description);
         aOptions.addOption(SearchParametersCLIParams.FRAG_TOL.id, true, SearchParametersCLIParams.FRAG_TOL.description);
         aOptions.addOption(SearchParametersCLIParams.ENZYME.id, true, SearchParametersCLIParams.ENZYME.description);
         aOptions.addOption(SearchParametersCLIParams.FIXED_MODS.id, true, SearchParametersCLIParams.FIXED_MODS.description);
@@ -57,7 +57,7 @@ public class DeNovoCLIParams {
 
         output += "\n\nOptional common parameters:\n\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.SEARCH_PARAMETERS.id) + SearchParametersCLIParams.SEARCH_PARAMETERS.description + "\n";
-        output += "-" + String.format(formatter, SearchParametersCLIParams.PREC_TOL.id) + SearchParametersCLIParams.PREC_TOL.description + "\n";
+        output += "-" + String.format(formatter, SearchParametersCLIParams.PREC_TOL_DA.id) + SearchParametersCLIParams.PREC_TOL_DA.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.FRAG_TOL.id) + SearchParametersCLIParams.FRAG_TOL.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.ENZYME.id) + SearchParametersCLIParams.ENZYME.description + "\n";
         output += "-" + String.format(formatter, SearchParametersCLIParams.FIXED_MODS.id) + SearchParametersCLIParams.FIXED_MODS.description + "\n";

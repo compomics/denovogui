@@ -8,11 +8,6 @@
         <a name="#top"/>
         <H2>De Novo Settings</H2>
 
-        <p align="justify">
-        <H3>Enzyme</H3>
-        Currently, only TRYPSIN as default is supported.
-        <br><br>
-
         <H3>Fragment Mass Tolerance</H3>
         The fragment mass tolerance can be set between 0 and 0.75 Da.
         <br><br>
@@ -28,12 +23,7 @@
 
         <H3>No. Threads/Cores</H3>
         The number of threads is given by the number of available CPU cores by default.
-        This parameter is important to speed up the de novo sequencing.
-        <br><br>
-
-        <H3>Model</H3>
-        The currently only available default model is CID_IT_TRYP. Please contact the developers of PepNovo+
-        for other model support.
+        This parameter is important to speed up the <i>de novo</i> sequencing.
         <br><br>
 
         <H3>Use Spectrum Charge</H3>
@@ -51,10 +41,8 @@
         This setting is enabled by default.
         <br><br>
 
-    </p>
-    <H3>Modifications</H3>
+        <H3>Modifications</H3>
 
-    <p align="justify">
         There are two types of modifications, fixed and variable. Fixed modifications will 
         be added to every residue that can be modified by the given modification, while the variable modifications 
         are sometimes added and sometimes not. Which type to choose depends on your experimental setup.
@@ -65,8 +53,15 @@
         Initially only the most used modifications are shown. To show all modifications simply select 'All 
         Modifications' in the drop down menu above the list of modifications. Here you can also see more 
         details about each modification.
-    </p>
+        <br><br>
 
-    <br><br>
+        <H3>De Novo Model</H3>
+        <a href="http://proteomics.ucsd.edu/Software/PepNovo.html">PepNovo+</a> has been trained using a dataset based on 
+        tryptic peptides using CID fragmentation, but should also work reasonably well for other data types. While it is 
+        possible to train PepNovo+ using other dataset the procedure is rather complicated. If you want to support other 
+        data types we therefore recommend contacting the <a href="http://proteomics.ucsd.edu/Software/PepNovo.html">PepNovo+ developers</a>.
+        <br>
+    </p>
+    <br>
 </BODY>
 </HTML>
