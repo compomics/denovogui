@@ -9,5 +9,6 @@ Without this configuration present, some functionality in the IDE may be limited
     <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
         <word>mgf</word>
         <word>novo</word>
+        <word>PepNovo</word>
     </spellchecker-wordlist>
 </project-shared-configuration>
