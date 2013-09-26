@@ -115,6 +115,10 @@ public class ModificationFile {
             // Write a line for each residue
             if (ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
 
+                if (variable.equalsIgnoreCase(FIXED_PTM)) {
+                    variable = VARIABLE_PTM; // PepNovo+ does not support fixed PTMs at the terminals...
+                }
+
                 if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                         || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
                     writer.append("N_TERM" + SEP);
@@ -176,6 +180,8 @@ public class ModificationFile {
      * Fill the modification ID map.
      */
     private static void fillModIdMap() {
+        
+        // @TODO: is this method really needed anymore?
 
         modIdMap = new HashMap<String, String>();
         PTMFactory ptmFactory = PTMFactory.getInstance();
@@ -226,18 +232,6 @@ public class ModificationFile {
      */
     private static String getHeader() {
         return "#AA  offset      type    locations  symbol  PTM name";
-    }
-
-    /**
-     * Returns the modification name to ID map.
-     *
-     * @return The modification name to ID map
-     */
-    public static Map<String, String> getModIdMap() {
-        if (modIdMap == null) {
-            fillModIdMap();
-        }
-        return modIdMap;
     }
 
     /**
