@@ -5,7 +5,22 @@
 
 *Changes in DeNovoGUI 1.2.0 (September ??. 2013):*
 
-(coming soon...)
+ * NEW FEATURE: Added a "one-click BLAST" option to the De Novo Peptides table.
+ * NEW FEATURE: Added BLAST compatible matches export.
+ * NEW FEATURE: Added a spectrum annotation dialog to the results dialog where the user can select the annotation accuracy and level.
+ * NEW FEATURE: Added an edit modifications edit option to the settings dialog.
+
+ * FEATURE IMPROVEMENT: Added the spectrum details in front of every PSM in the default export.
+ * FEATURE IMPROVEMENT: Updated the help text regarding the terminal mass gaps and how they affect the peak annotation.
+ * FEATURE IMPROVEMENT: Hid the enzyme and model settings from the settings dialog.
+ * FEATURE IMPROVEMENT: Added a new default precursor tolerance of 0.5 Dalton.
+ * FEATURE IMPROVEMENT: Fixed terminal PTMs are now treated as variable PTMs.
+
+ * BUG FIX: Reporter ions are now displayed in the spectrum annotation.
+ * BUG FIX: The same fragment ion accuracy is now used in the manual and automatic de novo sequencing and peak annotation.
+ * BUG FIX: Removed the spectrum help details referring to the plots that are not used.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.15.6. 
 
 ----
 
@@ -28,7 +43,7 @@
  * BUG FIX: The Settings dialog now resizes correctly.
  * BUG FIX: Fixed bugs in the peptide m/z values in the peptide table.
 
- * Updated utilities to version 3.14.21.
+ * LIBRARY UPDATE: Updated utilities to version 3.14.21.
 
 ----
 
