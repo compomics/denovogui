@@ -3,7 +3,13 @@
 
 ----
 
-*Changes in DeNovoGUI 1.1.0 (August ??. 2013):*
+*Changes in DeNovoGUI 1.2.0 (September ??. 2013):*
+
+(coming soon...)
+
+----
+
+*Changes in DeNovoGUI 1.1.0 (August 11. 2013):*
 
  * NEW FEATURE: Added a first version of a peptide sequence search feature in the results frame. (beta)
 
