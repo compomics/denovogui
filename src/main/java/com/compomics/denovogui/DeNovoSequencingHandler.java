@@ -110,16 +110,20 @@ public class DeNovoSequencingHandler {
             File folder = new File(pepNovoFolder, "Models");
             ModificationFile.writeFile(folder, searchParameters.getModificationProfile());
         } catch (Exception e) {
-            waitingHandler.appendReport("An error occurred while writing the modification file.", true, true);
+            waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
             e.printStackTrace();
+            waitingHandler.setRunCanceled();
+            return;
         }
 
         // Back-up the parameters
         try {
             SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
         } catch (Exception e) {
-            waitingHandler.appendReport("An error occurred while writing the sequencing parameters.", true, true);
+            waitingHandler.appendReport("An error occurred while writing the sequencing parameters: " + e.getMessage(), true, true);
             e.printStackTrace();
+            waitingHandler.setRunCanceled();
+            return;
         }
 
         // Get the number of available threads

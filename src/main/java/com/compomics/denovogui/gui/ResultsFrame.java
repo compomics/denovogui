@@ -1152,8 +1152,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 } else {
                     deNovoPeptidesTable.setToolTipText(null);
                 }
-            }
-            if (column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) { // the BLAST column
+            } else if (column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) { // the BLAST column
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -2432,7 +2431,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         // @TODO: let the user reference his project
 
-        String projectReference = "DenovoGUI";
+        String projectReference = "DeNovoGUI";
         String sampleReference = "sample reference";
         int replicateNumber = 0;
         String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
@@ -2594,27 +2593,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @return the modifications found in this project
      */
     public ArrayList<String> getFoundModifications() {
-        if (identifiedModifications == null) {
-            identifiedModifications = new ArrayList<String>();
-
-            if (identification != null) {
-                for (String peptideKey : identification.getPeptideIdentification()) {
-
-                    boolean modified = false;
-
-                    for (String modificationName : Peptide.getModificationFamily(peptideKey)) {
-                        if (!identifiedModifications.contains(modificationName)) {
-                            identifiedModifications.add(modificationName);
-                            modified = true;
-                        }
-                    }
-                    if (!modified && !identifiedModifications.contains("no modification")) {
-                        identifiedModifications.add("no modification");
-                    }
-                }
-            }
-        }
-        return identifiedModifications;
+        return searchParameters.getModificationProfile().getAllModifications();
     }
 
     /**

@@ -1023,6 +1023,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      * @param evt
      */
     private void addFixedModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFixedModificationActionPerformed
+
+        // @TODO: check if fixed terminal ptms are added and provide a warning that these will be considered variable?
+
         int nSelected = fixedModsTable.getRowCount();
         int nNew = modificationsTable.getSelectedRows().length;
         String[] fixedModifications = new String[nSelected + nNew];
@@ -1057,6 +1060,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         for (String fixedMod : fixedModifications) {
             ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationProfile().getColor(fixedMod), fixedMod, ptmFactory.getPTM(fixedMod).getMass()});
         }
+
         ((DefaultTableModel) fixedModsTable.getModel()).fireTableDataChanged();
         fixedModsTable.repaint();
 
@@ -1445,18 +1449,17 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Open the help dialog.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void openDialogHelpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDialogHelpJButtonActionPerformed
         setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
         new HelpDialog(this, getClass().getResource("/html/DeNovoSettings.html"),
-            Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-            Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-            "Search Settings Help", 500, 10);
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
+                "Search Settings Help", 500, 10);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_openDialogHelpJButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
