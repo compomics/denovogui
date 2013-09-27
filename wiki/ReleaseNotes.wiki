@@ -3,7 +3,7 @@
 
 ----
 
-*Changes in DeNovoGUI 1.2.0 (September ??. 2013):*
+*Changes in DeNovoGUI 1.2.0 (September 27. 2013):*
 
  * NEW FEATURE: Added a "one-click BLAST" option to the De Novo Peptides table.
  * NEW FEATURE: Added BLAST compatible matches export.
