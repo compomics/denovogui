@@ -25,6 +25,7 @@ import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -826,7 +828,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         waitingDialog = new WaitingDialog(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
-                //null, // @TODO: add tips?
+                getTips(),
                 "De Novo Sequencing",
                 "DeNovoGUI",
                 new Properties().getVersion(),
@@ -1862,5 +1864,34 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                     "Could not save PTM usage."}, "File Error", JOptionPane.WARNING_MESSAGE);
             }
         }
+    }
+
+    /**
+     * Returns the tips of the day.
+     *
+     * @return the tips of the day in an ArrayList
+     */
+    public ArrayList<String> getTips() {
+
+        ArrayList<String> tips;
+
+        try {
+            InputStream stream = getClass().getResource("/tips.txt").openStream();
+            InputStreamReader streamReader = new InputStreamReader(stream);
+            BufferedReader b = new BufferedReader(streamReader);
+            tips = new ArrayList<String>();
+            String line;
+
+            while ((line = b.readLine()) != null) {
+                tips.add(line);
+            }
+
+            b.close();
+        } catch (Exception e) {
+            catchException(e);
+            tips = new ArrayList<String>();
+        }
+
+        return tips;
     }
 }

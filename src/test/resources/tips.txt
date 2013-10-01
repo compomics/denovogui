@@ -1,0 +1,13 @@
+You can contribute to <i>DeNovoGUI</i>!<br><br>Use our <a href="http://groups.google.com/group/peptide-shaker">mailing list</a> to explain your special needs and exchange new ideas!
+Post-Translational Modifications (PTMs) are color coded in <b>DeNovoGUI</b>.<br><br>You can change the colors via <i>Settings</i> on the <i>Edit</i> menu.
+Not getting the result you wanted?<br><br>When setting up the <i>de novo</i> sequencing, be sure that the <i>De Novo Settings</i> are correct!
+Doing protein identification?<br><br>Try <a href="http://peptide-shaker.googlecode.com">PeptideShaker</a>!
+How did you generate your mgf file?<br><br>Processing of the raw data can have dramatic impact on the final result.<br><br>We recommend the use of <a href="http://proteowizard.sourceforge.net">ProteoWizard</a>.
+Need more help?<br><br>Look for the question marks.<br><br>We will also be happy to answer your questions on our <a href="http://groups.google.com/group/peptide-shaker">mailing list</a>.
+Too many/too few peak annotations?<br><br>Change the minimum peak intensity threshold or change the m/z accuracy via the <i>Spectrum Annotation</i> option in the <i>Edit</i> menu.
+Export results to Excel?<br><br>See the export options on the <i>Export</i> menu in the Results window.
+Find our tools useful?<br><br>Then please cite them in your papers!<br><br><b>DeNovoGUI</b>: <a href="http://denovogui.googlecode.com">http://denovogui.googlecode.com</a>.
+Need high quality graphics for you manuscript?<br><br>Export the spectrum in either high resolution or as vector graphics.<br><br>See the export option under the spectrum.
+Surprisingly large spectrum files?<br><br>Be sure that the data is in centroided mode and not in profile mode!<br><br>More information on peak-picking available in our <a href="http://compomics.com/bioinformatics-for-proteomics/identification/">free tutorials</a>.
+Teaching bioinformatics?<br><br>Check out our <a href="http://compomics.com/bioinformatics-for-proteomics/">free tutorials</a>!
+Want to learn more?<br><br>Check out our <a href="http://compomics.com/bioinformatics-for-proteomics/">free tutorials</a>!
