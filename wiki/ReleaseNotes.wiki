@@ -7,7 +7,7 @@
 
  * BUG FIX: Fixed a bug in the reporter ion masses shown in the Modification Details dialog.
 
- * LIBRARY UPDATE: Updated utilities to version 3.15.18. 
+ * LIBRARY UPDATE: Updated utilities to version 3.15.20. 
 
 ----
 
