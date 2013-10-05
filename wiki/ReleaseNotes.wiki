@@ -3,7 +3,7 @@
 
 ----
 
-*Changes in DeNovoGUI 1.2.1 (October 4. 2013):*
+*Changes in DeNovoGUI 1.2.1 (October 5. 2013):*
 
  * BUG FIX: Fixed a bug in the reporter ion masses shown in the Modification Details dialog.
 
