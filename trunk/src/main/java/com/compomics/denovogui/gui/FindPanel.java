@@ -1,6 +1,8 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
+import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.advocates.SearchEngine;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
@@ -263,7 +265,7 @@ public class FindPanel extends javax.swing.JPanel {
                                         if (resultsFrame.getPepNovoIdentifications().matchExists(psmKey)) {
 
                                             SpectrumMatch spectrumMatch = resultsFrame.getPepNovoIdentifications().getSpectrumMatch(psmKey);
-                                            HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
 
                                             if (assumptionsMap != null) {
                                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
@@ -272,8 +274,9 @@ public class FindPanel extends javax.swing.JPanel {
                                                 int rowCounter = 0;
 
                                                 for (Double score : scores) {
-                                                    for (PeptideAssumption assumption : assumptionsMap.get(score)) {
-                                                        String peptideSequence = assumption.getPeptide().getSequence().toLowerCase();
+                                                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                                        TagAssumption tagAssumption = (TagAssumption) assumption;
+                                                        String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
                                                         if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
                                                             possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
                                                         }

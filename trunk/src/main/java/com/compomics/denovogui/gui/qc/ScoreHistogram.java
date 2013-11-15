@@ -3,6 +3,7 @@ package com.compomics.denovogui.gui.qc;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import java.io.IOException;
@@ -44,8 +45,8 @@ public class ScoreHistogram extends Chart {
             for (String spectrumTitle : identification.getSpectrumIdentification(spectrumFile)) {
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                PeptideAssumption peptideAssumption = spectrumMatch.getFirstHit(Advocate.PEPNOVO);
-                scores.add(peptideAssumption.getScore());
+                SpectrumIdentificationAssumption assumption = spectrumMatch.getFirstHit(Advocate.PEPNOVO);
+                scores.add(assumption.getScore());
             }
         }
 

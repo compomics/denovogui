@@ -2,20 +2,24 @@ package com.compomics.denovogui;
 
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
-import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.experiment.biology.AminoAcid;
+import com.compomics.util.experiment.biology.AminoAcidPattern;
+import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.personalization.ExperimentObject;
+import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -272,7 +276,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      * @param rank the rank of the assumption
      * @return the corresponding assumption
      */
-    private PeptideAssumption getAssumptionFromLine(String line, int rank) {
+    private TagAssumption getAssumptionFromLine(String line, int rank) {
 
         String[] lineComponents = line.trim().split("\t");
 
@@ -298,6 +302,12 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             maxNGap = nGap;
         }
         Double cGap = new Double(lineComponents[4]);
+        double correction = Atom.C.mass + Atom.O.mass;
+        if (cGap > 0 && cGap < correction) {
+            throw  new IllegalArgumentException("Incompatible c-term gap " + cGap);
+        } else if (cGap > 0) {
+               cGap = cGap - correction;
+        }
         if (cGap < minCGap) {
             minCGap = cGap;
         }
@@ -414,24 +424,22 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
                 }
             }
         }
-
-        Peptide peptide = new Peptide(sequence, new ArrayList<String>(), modificationMatches);
-        PeptideAssumption result = new PeptideAssumption(peptide, rank, Advocate.PEPNOVO, new Charge(Charge.PLUS, charge), pepNovoScore, fileName);
-        double theoreticMz = result.getTheoreticMz();
-        if (theoreticMz < minMz) {
-            minMz = theoreticMz;
+        AminoAcidPattern aminoAcidPattern = new AminoAcidPattern(sequence);
+        Tag tag = new Tag(nGap, aminoAcidPattern, cGap);
+        TagAssumption tagAssumption = new TagAssumption(Advocate.PEPNOVO, rank, tag, new Charge(Charge.PLUS, charge), pepNovoScore);
+        double mz = tagAssumption.getTag().getMass();
+        if (mz < minMz) {
+            minMz = mz;
         }
-        if (theoreticMz > maxMz) {
-            maxMz = theoreticMz;
+        if (mz > maxMz) {
+            maxMz = mz;
         }
-        PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
-        peptideAssumptionDetails.setRankScore(rankScore);
-        peptideAssumptionDetails.setCTermGap(cGap);
-        peptideAssumptionDetails.setNTermGap(nGap);
-        peptideAssumptionDetails.setMH(mH);
-        result.addUrParam(peptideAssumptionDetails);
+        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+        pepnovoAssumptionDetails.setRankScore(rankScore);
+        pepnovoAssumptionDetails.setMH(mH);
+        tagAssumption.addUrParam(pepnovoAssumptionDetails);
 
-        return result;
+        return tagAssumption;
     }
 
     /**

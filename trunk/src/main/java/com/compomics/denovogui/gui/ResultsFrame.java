@@ -1,16 +1,16 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.PepNovoIdfileReader;
-import com.compomics.denovogui.gui.tablemodels.SpectrumMatchTableModel;
+import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
-import com.compomics.util.denovo.PeptideAssumptionDetails;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
+import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
@@ -22,20 +22,27 @@ import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.biology.ions.ReporterIon;
+import com.compomics.util.experiment.biology.ions.TagFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
+import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
+import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.advocates.SearchEngine;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
+import com.compomics.util.experiment.identification.tags.Tag;
+import com.compomics.util.experiment.identification.tags.TagComponent;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
@@ -99,9 +106,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
     /**
-     * The current peptide assumptions.
+     * The current tag assumptions.
      */
-    private ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
+    private ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
     /**
      * The annotation preferences.
      */
@@ -287,7 +294,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
         deNovoPeptidesTableToolTips.add(null);
-        deNovoPeptidesTableToolTips.add("Peptide Sequences");
+        deNovoPeptidesTableToolTips.add("Tag Sequences");
         deNovoPeptidesTableToolTips.add("Precursor m/z");
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
@@ -333,7 +340,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
-
         deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
         deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
         deNovoPeptidesTable.getColumn("  ").setMaxWidth(30);
@@ -354,7 +360,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
                 new ImageIcon(this.getClass().getResource("/icons/blast.png")),
                 null,
-                "Click to BLAST peptide sequence", null));
+                "Click to BLAST tag sequence", null));
 
         querySpectraTable.revalidate();
         querySpectraTable.repaint();
@@ -866,7 +872,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Peptides"));
         deNovoPeptidesPanel.setOpaque(false);
 
-        deNovoPeptidesTable.setModel(new SpectrumMatchTableModel());
+        deNovoPeptidesTable.setModel(new TagSpectrumMatchTableModel());
         deNovoPeptidesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         deNovoPeptidesTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -1104,10 +1110,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         // check of the user clicked the blast columns
         if (evt.getButton() == 1 && row != -1 && column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) {
-            PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
+            TagAssumption tagAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
             BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
-                    + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + peptideAssumption.getPeptide().getSequence());
+                    + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + tagAssumption.getTag().getLongestAminoAcidSequence());
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         }
 
@@ -1142,8 +1148,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 if (sequence.indexOf("<span") != -1) {
                     try {
-                        PeptideAssumption peptideAssumption = assumptions.get(row);
-                        String tooltip = getPeptideModificationTooltipAsHtml(peptideAssumption.getPeptide());
+                        TagAssumption tagAssumption = assumptions.get(row);
+                        String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
                         deNovoPeptidesTable.setToolTipText(tooltip);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1345,7 +1351,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 } catch (IOException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
-                            + "See resources/PeptideShaker.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
+                            + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         }
@@ -1434,8 +1440,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void fixedPtmsCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixedPtmsCheckBoxMenuItemActionPerformed
         int selectedRow = deNovoPeptidesTable.getSelectedRow();
-        ((SpectrumMatchTableModel) deNovoPeptidesTable.getModel()).setExcludeAllFixedPtms(!fixedPtmsCheckBoxMenuItem.isSelected());
-        ((SpectrumMatchTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
+        ((TagSpectrumMatchTableModel) deNovoPeptidesTable.getModel()).setExcludeAllFixedPtms(!fixedPtmsCheckBoxMenuItem.isSelected());
+        ((TagSpectrumMatchTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
         if (selectedRow != -1) {
             deNovoPeptidesTable.setRowSelectionInterval(selectedRow, selectedRow);
             updateSpectrum();
@@ -1729,9 +1735,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             if (identification.matchExists(spectrumKey)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                 double maxScore = 0;
-                for (PeptideAssumption peptideAssumption : spectrumMatch.getAllAssumptions()) {
-                    if (peptideAssumption.getScore() > maxScore) {
-                        maxScore = peptideAssumption.getScore();
+                for (SpectrumIdentificationAssumption assumption : spectrumMatch.getAllAssumptions()) {
+                    if (assumption.getScore() > maxScore) {
+                        maxScore = assumption.getScore();
                     }
                 }
                 if (!titlesMap.containsKey(maxScore)) {
@@ -1840,23 +1846,26 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     public void updateAssumptionsTable(int selectedPsmRow) {
 
         try {
-            assumptions = new ArrayList<PeptideAssumption>();
+            assumptions = new ArrayList<TagAssumption>();
             if (querySpectraTable.getRowCount() > 0) {
                 String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
                 if (identification.matchExists(psmKey)) {
                     SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-                    HashMap<Double, ArrayList<PeptideAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
                     if (assumptionsMap != null) {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores, Collections.reverseOrder());
                         for (Double score : scores) {
-                            assumptions.addAll(assumptionsMap.get(score));
+                            for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                assumptions.add(tagAssumption);
+                            }
                         }
                     }
                 }
 
-                TableModel tableModel = new SpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
+                TableModel tableModel = new TagSpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
                 deNovoPeptidesTable.setModel(tableModel);
 
                 ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
@@ -1900,43 +1909,24 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 // add the data to the spectrum panel
                 Precursor precursor = currentSpectrum.getPrecursor();
                 if (deNovoPeptidesTable.getSelectedRow() != -1) {
-                    PeptideAssumption peptideAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
+                    TagAssumption tagAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
 
                     SpectrumPanel spectrumPanel = new SpectrumPanel(
                             currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
-                            precursor.getMz(), peptideAssumption.getIdentificationCharge().toString(),
+                            precursor.getMz(), tagAssumption.getIdentificationCharge().toString(),
                             "", 40, false, false, false, 2, false);
                     spectrumPanel.setBorder(null);
 
-                    Peptide currentPeptide = peptideAssumption.getPeptide();
-
                     // add the annotations
-                    annotationPreferences.setCurrentSettings(
-                            currentPeptide, peptideAssumption.getIdentificationCharge().value,
-                            !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
+                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
 
-                    SpectrumAnnotator spectrumAnnotator = new SpectrumAnnotator();
-
-                    // get the terminal gaps
-                    PeptideAssumptionDetails peptideAssumptionDetails = new PeptideAssumptionDetails();
-                    peptideAssumptionDetails = (PeptideAssumptionDetails) peptideAssumption.getUrParam(peptideAssumptionDetails);
-
-                    double nTermGap = peptideAssumptionDetails.getNTermGap();
-                    double cTermGap = peptideAssumptionDetails.getCTermGap();
-                    if (nTermGap > 0) {
-                        //nTermGap -= 1.0079; // @TODO: should there be anything here??
-                    }
-                    if (cTermGap > 0) {
-                        double temp = Atom.O.mass + Atom.H.mass + ElementaryIon.proton.getTheoreticMass() * 2; // @TODO: figure out why this is the correct number...
-                        cTermGap -= temp;
-                    }
-                    spectrumAnnotator.setTerminalMassShifts(nTermGap, cTermGap);
+                    TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
 
                     ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
                             annotationPreferences.getNeutralLosses(),
                             annotationPreferences.getValidatedCharges(),
-                            peptideAssumption.getIdentificationCharge().value,
-                            currentSpectrum, currentPeptide,
+                            tagAssumption.getIdentificationCharge().value,
+                            currentSpectrum, tagAssumption.getTag(),
                             currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
                             annotationPreferences.getFragmentIonAccuracy(),
                             false);
@@ -1950,9 +1940,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     }
 
                     // add de novo sequencing
-                    spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
-                            PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                            PeptideFragmentIon.Y_ION,
+                    spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                            TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                            TagFragmentIon.Y_ION,
                             annotationPreferences.getDeNovoCharge(),
                             annotationPreferences.showForwardIonDeNovoTags(),
                             annotationPreferences.showRewindIonDeNovoTags(),
@@ -1963,21 +1953,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());
 
                     spectrumJPanel.add(spectrumPanel);
-                    updateAnnotationMenus(peptideAssumption.getIdentificationCharge().value, currentPeptide);
+                    Tag tag = tagAssumption.getTag();
+                    updateAnnotationMenus(tagAssumption.getIdentificationCharge().value, tag);
 
-                    String modifiedSequence = currentPeptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true);
-
-                    // replace the terminals if there are terminal gaps
-                    if (peptideAssumptionDetails.getNTermGap() > 0) {
-                        modifiedSequence = modifiedSequence.replaceAll("NH2-", "...");
-                    }
-                    if (peptideAssumptionDetails.getCTermGap() > 0) {
-                        modifiedSequence = modifiedSequence.replaceAll("-COOH", "...");
-                    }
+                    String modifiedSequence = tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true, false);
 
                     ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
                             "Spectrum Viewer (" + modifiedSequence
-                            + "   " + peptideAssumption.getIdentificationCharge().toString() + "   "
+                            + "   " + tagAssumption.getIdentificationCharge().toString() + "   "
                             + Util.roundDouble(currentSpectrum.getPrecursor().getMz(), 4) + " m/z)");
                     spectrumViewerPanel.repaint();
                 } else {
@@ -2049,10 +2032,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     /**
      * Update the annotation menu bar with the current annotation preferences.
      *
-     * @param precursorCharge
-     * @param peptide
+     * @param precursorCharge the identified precursor charge
+     * @param tag the tag currently annotated
      */
-    public void updateAnnotationMenus(int precursorCharge, Peptide peptide) {
+    public void updateAnnotationMenus(int precursorCharge, Tag tag) {
 
         aIonCheckBoxMenuItem.setSelected(false);
         bIonCheckBoxMenuItem.setSelected(false);
@@ -2115,10 +2098,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
 
         // add the sequence specific neutral losses
-        for (ModificationMatch modMatch : peptide.getModificationMatches()) {
-            PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
-            for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
-                neutralLosses.put(neutralLoss.name, neutralLoss);
+        for (TagComponent tagComponent : tag.getContent()) {
+            if (tagComponent instanceof AminoAcidPattern) {
+                AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                for (int i = 1; i <= aminoAcidPattern.length(); i++) {
+                    for (ModificationMatch modMatch : aminoAcidPattern.getModificationsAt(i)) {
+                        PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
+                        for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
+                            neutralLosses.put(neutralLoss.name, neutralLoss);
+                        }
+                    }
+                }
             }
         }
 
@@ -2225,22 +2215,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         annotationPreferences.clearIonTypes();
         if (aIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.A_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.A_ION);
         }
         if (bIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.B_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.B_ION);
         }
         if (cIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.C_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.C_ION);
         }
         if (xIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.X_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.X_ION);
         }
         if (yIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.Y_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Y_ION);
         }
         if (zIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.Z_ION);
+            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Z_ION);
         }
         if (precursorCheckMenu.isSelected()) {
             annotationPreferences.addIonType(Ion.IonType.PRECURSOR_ION);
@@ -2365,38 +2355,28 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }
 
     /**
-     * Returns a String with the HTML tooltip for the peptide indicating the
+     * Returns a String with the HTML tooltip for the tag indicating the
      * modification details.
      *
-     * @param peptide
-     * @return a String with the HTML tooltip for the peptide
+     * @param tag the tag
+     * @return a String with the HTML tooltip for the tag
      */
-    public String getPeptideModificationTooltipAsHtml(Peptide peptide) {
-
-        // @TODO: should be merged with the same method on PeptideShaker - DisplayFeaturesGenerator -  and moved to utilities
+    public String getTagModificationTooltipAsHtml(Tag tag) {
 
         String tooltip = "<html>";
-        ArrayList<String> alreadyAnnotated = new ArrayList<String>();
 
-        for (ModificationMatch modMatch : peptide.getModificationMatches()) {
-            String modName = modMatch.getTheoreticPtm();
-            PTM ptm = ptmFactory.getPTM(modName);
-
-            if ((ptm.getType() == PTM.MODAA && modMatch.isVariable()) || (!modMatch.isVariable()) && fixedPtmsCheckBoxMenuItem.isSelected()) {
-
-                int modSite = modMatch.getModificationSite();
-
-                if (modSite > 0) {
-                    char affectedResidue = peptide.getSequence().charAt(modSite - 1);
-                    Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
-
-                    if (!alreadyAnnotated.contains(modName + "_" + affectedResidue)) {
+        for (TagComponent tagComponent : tag.getContent()) {
+            if (tagComponent instanceof AminoAcidPattern) {
+                AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                for (int site = 1; site <= aminoAcidPattern.length(); site++) {
+                    for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
+                        String affectedResidue = aminoAcidPattern.asSequence(site - 1);
+                        String modName = modificationMatch.getTheoreticPtm();
+                        Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
                         tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                 + affectedResidue
                                 + "</span>"
                                 + ": " + modName + "<br>";
-
-                        alreadyAnnotated.add(modName + "_" + affectedResidue);
                     }
                 }
             }
@@ -2430,7 +2410,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         // @TODO: let the user reference his project
-
         String projectReference = "DeNovoGUI";
         String sampleReference = "sample reference";
         int replicateNumber = 0;
@@ -2520,7 +2499,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (identification != null) {
 
             // @TODO: the progress dialog setup below should work but results in thread issues...
-
 //            progressDialog = new ProgressDialogX(this,
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
 //                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
@@ -2541,7 +2519,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 //            SwingUtilities.invokeLater(new Runnable() {
 //                @Override
 //                public void run() {
-
             try {
                 identification.close();
                 File matchFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY);
