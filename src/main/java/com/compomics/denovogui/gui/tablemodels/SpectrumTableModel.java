@@ -2,6 +2,8 @@ package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
+import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
+import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
@@ -164,9 +166,9 @@ public class SpectrumTableModel extends DefaultTableModel {
                     if (identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                         double maxScore = 0;
-                        for (PeptideAssumption peptideAssumption : spectrumMatch.getAllAssumptions()) {
-                            if (peptideAssumption.getScore() > maxScore) {
-                                maxScore = peptideAssumption.getScore();
+                        for (SpectrumIdentificationAssumption assumption : spectrumMatch.getAllAssumptions()) {
+                            if (assumption.getScore() > maxScore) {
+                                maxScore = assumption.getScore();
                             }
                         }
                         return maxScore;
