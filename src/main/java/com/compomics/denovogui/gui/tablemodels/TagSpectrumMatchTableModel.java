@@ -108,10 +108,7 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
                 return taggedSequence;
             case 2:
                 tagAssumption = tagAssumptions.get(row);
-                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                int charge = tagAssumption.getIdentificationCharge().value;
-                return (pepnovoAssumptionDetails.getMH() + ElementaryIon.proton.getTheoreticMass() * (charge - 1)) / charge;
+                return tagAssumption.getTheoreticMz(false, false);
             case 3:
                 tagAssumption = tagAssumptions.get(row);
                 return tagAssumption.getIdentificationCharge().value;
@@ -123,7 +120,7 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
                 return tagAssumption.getTag().getCTerminalGap();
             case 6:
                 tagAssumption = tagAssumptions.get(row);
-                pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                 pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                 return pepnovoAssumptionDetails.getRankScore();
             case 7:
