@@ -7,9 +7,8 @@ import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.biology.ions.ElementaryIon;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
@@ -302,11 +301,11 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             maxNGap = nGap;
         }
         Double cGap = new Double(lineComponents[4]);
-        double correction = Atom.C.mass + Atom.O.mass;
+        double correction = Atom.O.mass + Atom.H.mass + 2*ElementaryIon.proton.getTheoreticMass();
         if (cGap > 0 && cGap < correction) {
             throw  new IllegalArgumentException("Incompatible c-term gap " + cGap);
         } else if (cGap > 0) {
-               cGap = cGap - correction;
+               cGap -= correction;
         }
         if (cGap < minCGap) {
             minCGap = cGap;
@@ -425,9 +424,12 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             }
         }
         AminoAcidPattern aminoAcidPattern = new AminoAcidPattern(sequence);
+        for (ModificationMatch modificationMatch : modificationMatches) {
+            aminoAcidPattern.addModificationMatch(modificationMatch.getModificationSite(), modificationMatch);
+        }
         Tag tag = new Tag(nGap, aminoAcidPattern, cGap);
         TagAssumption tagAssumption = new TagAssumption(Advocate.PEPNOVO, rank, tag, new Charge(Charge.PLUS, charge), pepNovoScore);
-        double mz = tagAssumption.getTag().getMass();
+        double mz = tagAssumption.getTheoreticMz();
         if (mz < minMz) {
             minMz = mz;
         }
