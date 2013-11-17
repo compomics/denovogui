@@ -1,9 +1,7 @@
 package com.compomics.denovogui.io;
 
 import com.compomics.util.experiment.biology.AminoAcidPattern;
-import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
@@ -248,7 +246,7 @@ public class TextExporter {
     /**
      * Returns the peptide modifications as a string.
      *
-     * @param peptide the peptide
+     * @param tag the tag
      * @return the peptide modifications as a string
      */
     public static String getPeptideModificationsAsString(Tag tag) {

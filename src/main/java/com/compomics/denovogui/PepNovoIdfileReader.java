@@ -301,11 +301,11 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             maxNGap = nGap;
         }
         Double cGap = new Double(lineComponents[4]);
-        double correction = Atom.O.mass + Atom.H.mass + 2*ElementaryIon.proton.getTheoreticMass();
+        double correction = Atom.O.mass + Atom.H.mass + 2 * ElementaryIon.proton.getTheoreticMass();
         if (cGap > 0 && cGap < correction) {
-            throw  new IllegalArgumentException("Incompatible c-term gap " + cGap);
+            throw new IllegalArgumentException("Incompatible c-term gap " + cGap);
         } else if (cGap > 0) {
-               cGap -= correction;
+            cGap -= correction;
         }
         if (cGap < minCGap) {
             minCGap = cGap;
