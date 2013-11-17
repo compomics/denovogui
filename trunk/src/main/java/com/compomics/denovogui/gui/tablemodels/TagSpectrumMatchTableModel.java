@@ -1,7 +1,6 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.experiment.biology.ions.ElementaryIon;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.preferences.ModificationProfile;

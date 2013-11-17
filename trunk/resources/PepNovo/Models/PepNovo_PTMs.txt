@@ -1,2 +1,3 @@
 #AA  offset      type    locations  symbol  PTM name
+C	57.021464 FIXED ALL C+57 CARBAMIDOMETHYL C
 M	15.994915 OPTIONAL ALL M+16 OXIDATION OF M
