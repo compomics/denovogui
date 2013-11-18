@@ -57,7 +57,7 @@ public class TextExporter {
      * @throws ClassNotFoundException
      * @throws MzMLUnmarshallerException
      */
-    public static void exportPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
+    public static void exportPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         try {
@@ -164,7 +164,7 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters,
-            WaitingHandler waitingHandler, String scoreThreshold) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException {
+            WaitingHandler waitingHandler, String scoreThreshold) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         double threshold = 0;
