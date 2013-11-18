@@ -1721,7 +1721,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private ArrayList<String> orderTitlesByScore(ProgressDialogX progressDialog) throws SQLException, IOException, ClassNotFoundException {
+    private ArrayList<String> orderTitlesByScore(ProgressDialogX progressDialog) throws SQLException, IOException, ClassNotFoundException, InterruptedException {
 
         String spectrumFile = getSelectedSpectrumFile();
         progressDialog.setPrimaryProgressCounterIndeterminate(false);
