@@ -205,6 +205,7 @@
             <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
+                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
@@ -212,11 +213,13 @@
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                   <SpinnerModel initial="0.5" maximum="0.75" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                 </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance (Da)"/>
+                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
@@ -224,6 +227,7 @@
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                   <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                 </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="numberOfSolutionsLabel">
