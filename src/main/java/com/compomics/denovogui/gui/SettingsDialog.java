@@ -351,12 +351,16 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         deNovoSettingsPanel.setOpaque(false);
 
         fragmentMassToleranceLabel.setText("Fragment Mass Tolerance (Da)");
+        fragmentMassToleranceLabel.setToolTipText("Fragment mass tolerance - max 0.75 Da");
 
         fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
+        fragmentMassToleranceSpinner.setToolTipText("Fragment mass tolerance - max 0.75 Da");
 
         precursorMassToleranceLabel.setText("Precursor Mass Tolerance (Da)");
+        precursorMassToleranceLabel.setToolTipText("Precursor mass tolerance - max 5.0 Da");
 
         precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.1d));
+        precursorMassToleranceSpinner.setToolTipText("Precursor mass tolerance - max 5.0 Da");
 
         numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
 
