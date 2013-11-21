@@ -56,12 +56,13 @@ public class TextExporter {
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws MzMLUnmarshallerException
+     * @throws java.lang.InterruptedException
      */
     public static void exportPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
-        try {
 
+        try {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
@@ -73,9 +74,9 @@ public class TextExporter {
                 b.newLine();
 
                 if (waitingHandler != null) {
-                    waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...)");
+                    waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...");
                     // reset the progress bar
-                    waitingHandler.setSecondaryProgressCounter(0);
+                    waitingHandler.resetSecondaryProgressCounter();
                     waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
                 }
 
@@ -162,6 +163,7 @@ public class TextExporter {
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws MzMLUnmarshallerException
+     * @throws java.lang.InterruptedException
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, String scoreThreshold) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
@@ -173,15 +175,14 @@ public class TextExporter {
         }
 
         try {
-
             BufferedWriter b = new BufferedWriter(f);
 
             try {
 
                 if (waitingHandler != null) {
-                    waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...)");
+                    waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...");
                     // reset the progress bar
-                    waitingHandler.setSecondaryProgressCounter(0);
+                    waitingHandler.resetSecondaryProgressCounter();
                     waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
                 }
 
