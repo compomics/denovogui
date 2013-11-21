@@ -107,23 +107,16 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         fixedModsTable.getColumn(" ").setCellRenderer(new JSparklinesColorTableCellRenderer());
         variableModsTable.getColumn(" ").setCellRenderer(new JSparklinesColorTableCellRenderer());
-        modificationsTable.getColumn(" ").setCellRenderer(new JSparklinesColorTableCellRenderer());
 
         fixedModsTable.getColumn(" ").setMaxWidth(35);
         fixedModsTable.getColumn(" ").setMinWidth(35);
         variableModsTable.getColumn(" ").setMaxWidth(35);
         variableModsTable.getColumn(" ").setMinWidth(35);
-        modificationsTable.getColumn(" ").setMaxWidth(35);
-        modificationsTable.getColumn(" ").setMinWidth(35);
-        modificationsTable.getColumn("  ").setMaxWidth(30);
-        modificationsTable.getColumn("  ").setMinWidth(30);
 
         fixedModsTable.getColumn("Mass").setMaxWidth(100);
         fixedModsTable.getColumn("Mass").setMinWidth(100);
         variableModsTable.getColumn("Mass").setMaxWidth(100);
         variableModsTable.getColumn("Mass").setMinWidth(100);
-        modificationsTable.getColumn("Mass").setMaxWidth(100);
-        modificationsTable.getColumn("Mass").setMinWidth(100);
 
         modificationTableToolTips = new ArrayList<String>();
         modificationTableToolTips.add(null);
@@ -131,12 +124,31 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         modificationTableToolTips.add("Modification Mass");
         modificationTableToolTips.add("Default Modification");
 
+        setAllModificationTableProperties();
+
         updateModificationList();
 
         // make sure that the scroll panes are see-through
         modificationsJScrollPane.getViewport().setOpaque(false);
 
         modificationsTable.getTableHeader().setReorderingAllowed(false);
+    }
+
+    /**
+     * Set the properties of the all modification table.
+     */
+    private void setAllModificationTableProperties() {
+        modificationsTable.getColumn(" ").setCellRenderer(new JSparklinesColorTableCellRenderer());
+        modificationsTable.getColumn(" ").setMaxWidth(35);
+        modificationsTable.getColumn(" ").setMinWidth(35);
+        modificationsTable.getColumn("Mass").setMaxWidth(100);
+        modificationsTable.getColumn("Mass").setMinWidth(100);
+
+        if (modificationsListCombo.getSelectedIndex() == 1) {
+            modificationsTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
+            modificationsTable.getColumn("  ").setMaxWidth(30);
+            modificationsTable.getColumn("  ").setMinWidth(30);
+        }
     }
 
     /**
@@ -1029,7 +1041,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private void addFixedModificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFixedModificationActionPerformed
 
         // @TODO: check if fixed terminal ptms are added and provide a warning that these will be considered variable?
-
         int nSelected = fixedModsTable.getRowCount();
         int nNew = modificationsTable.getSelectedRows().length;
         String[] fixedModifications = new String[nSelected + nNew];
@@ -1343,7 +1354,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                     ((DefaultTableModel) modificationsTable.getModel()).fireTableDataChanged();
                     modificationsTable.repaint();
                 }
-            } else if (column == modificationsTable.getColumn("  ").getModelIndex() && modificationsTable.getValueAt(row, column) != null) {
+            } else if (modificationsListCombo.getSelectedIndex() == 1
+                    && column == modificationsTable.getColumn("  ").getModelIndex()
+                    && modificationsTable.getValueAt(row, column) != null) {
 
                 boolean selected = (Boolean) modificationsTable.getValueAt(row, column);
                 String ptmName = (String) modificationsTable.getValueAt(row, 1);
@@ -1578,7 +1591,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         boolean valid = true;
 
         // @TODO: do we need any sort of validation here??
-
         okButton.setEnabled(valid);
 
         return valid;
@@ -1717,8 +1729,51 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         Arrays.sort(allModificationsAsArray);
 
-        DefaultTableModel modsModel = (DefaultTableModel) modificationsTable.getModel();
-        modsModel.getDataVector().removeAllElements();
+        if (modificationsListCombo.getSelectedIndex() == 0) {
+            modificationsTable.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object[][]{},
+                    new String[]{
+                        " ", "Name", "Mass"
+                    }
+            ) {
+                Class[] types = new Class[]{
+                    java.lang.Object.class, java.lang.String.class, java.lang.Double.class
+                };
+                boolean[] canEdit = new boolean[]{
+                    false, false, false
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types[columnIndex];
+                }
+
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return canEdit[columnIndex];
+                }
+            });
+        } else {
+            modificationsTable.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object[][]{},
+                    new String[]{
+                        " ", "Name", "Mass", "  "
+                    }
+            ) {
+                Class[] types = new Class[]{
+                    java.lang.Object.class, java.lang.String.class, java.lang.Double.class, java.lang.Boolean.class
+                };
+                boolean[] canEdit = new boolean[]{
+                    false, false, false, true
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types[columnIndex];
+                }
+
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return canEdit[columnIndex];
+                }
+            });
+        }
 
         for (String mod : allModificationsAsArray) {
             ((DefaultTableModel) modificationsTable.getModel()).addRow(new Object[]{ptmFactory.getColor(mod), mod, ptmFactory.getPTM(mod).getMass(), deNovoGUI.getModificationUse().contains(mod)});
@@ -1739,7 +1794,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         }
 
-        modificationsTable.getColumn("  ").setCellRenderer(new NimbusCheckBoxRenderer());
+        setAllModificationTableProperties();
+
         modificationsTable.getColumn("Mass").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minMass, maxMass));
         ((JSparklinesBarChartTableCellRenderer) modificationsTable.getColumn("Mass").getCellRenderer()).showNumberAndChart(true, 50);
         fixedModsTable.getColumn("Mass").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minMass, maxMass));
