@@ -10,22 +10,18 @@ import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
+import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
-import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
 import com.compomics.util.experiment.biology.NeutralLoss;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.Sample;
-import com.compomics.util.experiment.biology.ions.ElementaryIon;
-import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.biology.ions.ReporterIon;
 import com.compomics.util.experiment.biology.ions.TagFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
@@ -42,7 +38,6 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
@@ -52,6 +47,7 @@ import com.compomics.util.gui.spectrum.SpectrumPanel;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.preferences.AnnotationPreferences;
+import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
 import java.awt.Component;
 import static java.awt.Frame.MAXIMIZED_BOTH;
@@ -1931,6 +1927,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             annotationPreferences.getFragmentIonAccuracy(),
                             false);
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                    spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
                     spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
 
                     if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
@@ -1970,6 +1967,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             precursor.getMz(), "",
                             "", 40, false, false, false, 2, false);
                     spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
+                    spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
                     spectrumPanel.setBorder(null);
                     spectrumJPanel.add(spectrumPanel);
                 }
@@ -2054,19 +2052,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 precursorCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.REPORTER_ION) {
                 reporterIonsCheckMenu.setSelected(true);
-            } else if (ionType == Ion.IonType.PEPTIDE_FRAGMENT_ION) {
+            } else if (ionType == Ion.IonType.TAG_FRAGMENT_ION) {
                 for (int subtype : annotationPreferences.getIonTypes().get(ionType)) {
-                    if (subtype == PeptideFragmentIon.A_ION) {
+                    if (subtype == TagFragmentIon.A_ION) {
                         aIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == PeptideFragmentIon.B_ION) {
+                    } else if (subtype == TagFragmentIon.B_ION) {
                         bIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == PeptideFragmentIon.C_ION) {
+                    } else if (subtype == TagFragmentIon.C_ION) {
                         cIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == PeptideFragmentIon.X_ION) {
+                    } else if (subtype == TagFragmentIon.X_ION) {
                         xIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == PeptideFragmentIon.Y_ION) {
+                    } else if (subtype == TagFragmentIon.Y_ION) {
                         yIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == PeptideFragmentIon.Z_ION) {
+                    } else if (subtype == TagFragmentIon.Z_ION) {
                         zIonCheckBoxMenuItem.setSelected(true);
                     }
                 }
@@ -2596,5 +2594,76 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public void updateSpectrumAnnotations() {
         updateSpectrum();
+    }
+    
+    /**
+     * Get the current delta masses for use when annotating the spectra.
+     *
+     * @return the current delta masses
+     */
+    public HashMap<Double, String> getCurrentMassDeltas() {
+
+        HashMap<Double, String> knownMassDeltas = new HashMap<Double, String>();
+
+        // add the monoisotopic amino acids masses
+        knownMassDeltas.put(AminoAcid.A.monoisotopicMass, "A");
+        knownMassDeltas.put(AminoAcid.R.monoisotopicMass, "R");
+        knownMassDeltas.put(AminoAcid.N.monoisotopicMass, "N");
+        knownMassDeltas.put(AminoAcid.D.monoisotopicMass, "D");
+        knownMassDeltas.put(AminoAcid.C.monoisotopicMass, "C");
+        knownMassDeltas.put(AminoAcid.Q.monoisotopicMass, "Q");
+        knownMassDeltas.put(AminoAcid.E.monoisotopicMass, "E");
+        knownMassDeltas.put(AminoAcid.G.monoisotopicMass, "G");
+        knownMassDeltas.put(AminoAcid.H.monoisotopicMass, "H");
+        knownMassDeltas.put(AminoAcid.I.monoisotopicMass, "I/L");
+        knownMassDeltas.put(AminoAcid.K.monoisotopicMass, "K");
+        knownMassDeltas.put(AminoAcid.M.monoisotopicMass, "M");
+        knownMassDeltas.put(AminoAcid.F.monoisotopicMass, "F");
+        knownMassDeltas.put(AminoAcid.P.monoisotopicMass, "P");
+        knownMassDeltas.put(AminoAcid.S.monoisotopicMass, "S");
+        knownMassDeltas.put(AminoAcid.T.monoisotopicMass, "T");
+        knownMassDeltas.put(AminoAcid.W.monoisotopicMass, "W");
+        knownMassDeltas.put(AminoAcid.Y.monoisotopicMass, "Y");
+        knownMassDeltas.put(AminoAcid.V.monoisotopicMass, "V");
+        knownMassDeltas.put(AminoAcid.U.monoisotopicMass, "U");
+        knownMassDeltas.put(AminoAcid.O.monoisotopicMass, "O");
+
+        // add default neutral losses
+//        knownMassDeltas.put(NeutralLoss.H2O.mass, "H2O");
+//        knownMassDeltas.put(NeutralLoss.NH3.mass, "NH3");
+//        knownMassDeltas.put(NeutralLoss.CH4OS.mass, "CH4OS");
+//        knownMassDeltas.put(NeutralLoss.H3PO4.mass, "H3PO4");
+//        knownMassDeltas.put(NeutralLoss.HPO3.mass, "HPO3");
+//        knownMassDeltas.put(4d, "18O"); // @TODO: should this be added to neutral losses??
+//        knownMassDeltas.put(44d, "PEG"); // @TODO: should this be added to neutral losses??
+        // add the modifications
+        ModificationProfile modificationProfile = searchParameters.getModificationProfile();
+        ArrayList<String> modificationList = modificationProfile.getAllModifications();
+        Collections.sort(modificationList);
+
+        // iterate the modifications list and add the non-terminal modifications
+        for (String modification : modificationList) {
+            PTM ptm = ptmFactory.getPTM(modification);
+
+            if (ptm != null) {
+
+                String shortName = ptmFactory.getShortName(modification);
+                AminoAcidPattern ptmPattern = ptm.getPattern();
+                double mass = ptm.getMass();
+
+                if (ptm.getType() == PTM.MODAA) {
+                    for (AminoAcid aa : ptmPattern.getAminoAcidsAtTarget()) {
+                        if (!knownMassDeltas.containsValue((String) aa.singleLetterCode + "<" + shortName + ">")) {
+                            knownMassDeltas.put(mass + aa.monoisotopicMass,
+                                    (String) aa.singleLetterCode + "<" + shortName + ">");
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Error: PTM not found: " + modification);
+            }
+        }
+
+        return knownMassDeltas;
     }
 }
