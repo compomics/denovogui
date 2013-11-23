@@ -982,36 +982,39 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File myFile) {
-
-                return myFile.getName().toLowerCase().endsWith(".properties")
-                        || myFile.getName().toLowerCase().endsWith(".parameters")
-                        || myFile.isDirectory();
+                return myFile.getName().toLowerCase().endsWith(".parameters") || myFile.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "DeNovoGUI sequencing parameters";
+                return "DeNovoGUI settings file (.parameters)";
             }
         };
         fc.setFileFilter(filter);
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+            String fileName = file.getName();
             deNovoGUI.setLastSelectedFolder(file.getAbsolutePath());
-            try {
-                searchParameters = SearchParameters.getIdentificationParameters(file);
-                deNovoGUI.loadModifications(searchParameters);
-                insertData();
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+
+            if (fileName.endsWith(".parameters")) {
+                try {
+                    searchParameters = SearchParameters.getIdentificationParameters(file);
+                    deNovoGUI.loadModifications(searchParameters);
+                    insertData();
+                    parametersFile = file;
+                    settingsFileJTextField.setText(parametersFile.getAbsolutePath());
+                    searchParameters = getSearchParametersFromGUI();
+                    searchParameters.setParametersFile(parametersFile);
+                    deNovoGUI.setSearchParameters(searchParameters);
+                    validateParametersInput(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a valid search settings file (.paramaters).", "File Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            parametersFile = file;
-            settingsFileJTextField.setText(parametersFile.getAbsolutePath());
-            searchParameters = getSearchParametersFromGUI();
-            searchParameters.setParametersFile(parametersFile);
-            deNovoGUI.setSearchParameters(searchParameters);
-            validateParametersInput(true);
         }
     }//GEN-LAST:event_browseConfigurationButton2ActionPerformed
 
@@ -1637,14 +1640,12 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File myFile) {
-
-                        return myFile.getName().toLowerCase().endsWith(".parameters")
-                                || myFile.isDirectory();
+                        return myFile.getName().toLowerCase().endsWith(".parameters") || myFile.isDirectory();
                     }
 
                     @Override
                     public String getDescription() {
-                        return "DeNovoGUI sequencing parameters";
+                        return "DeNovoGUI settings file (.parameters)";
                     }
                 };
                 fc.setFileFilter(filter);
