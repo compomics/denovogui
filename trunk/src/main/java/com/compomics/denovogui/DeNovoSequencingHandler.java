@@ -255,6 +255,7 @@ public class DeNovoSequencingHandler {
     /**
      * Cancels the sequencing process.
      *
+     * @param outputFolder the output folder
      * @param waitingHandler the waiting handler
      * @throws IOException
      */

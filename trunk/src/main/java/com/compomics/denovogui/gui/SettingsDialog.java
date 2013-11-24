@@ -1612,7 +1612,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 deNovoGUI.setSearchParameters(searchParameters);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, new String[]{"An error occurred while witing: " + parametersFile.getName(), e.getMessage()}, "Error Saving File", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, new String[]{"An error occurred while writing: " + parametersFile.getName(), e.getMessage()}, "Error Saving File", JOptionPane.WARNING_MESSAGE);
             }
         }
     }

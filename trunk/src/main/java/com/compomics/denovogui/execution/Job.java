@@ -10,10 +10,13 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 /**
- * <b>Job</b> <p> Abstract class of a job to be executed. Implements the
- * interface Executable which provides the specification of a Job. </p>
+ * <b>Job</b>
+ * <p>
+ * Abstract class of a job to be executed. Implements the interface Executable
+ * which provides the specification of a Job. </p>
  *
  * @author Thilo Muth
+ * @author Harald Barsnes
  */
 public abstract class Job implements Executable, Runnable {
 
@@ -87,19 +90,31 @@ public abstract class Job implements Executable, Runnable {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
+            // set the progress dialog update count
+            int totalSpectrumCount = waitingHandler.getMaxPrimaryProgressCounter();
+            int spectrumCount = 100;
+            if (totalSpectrumCount <= 100) {
+                spectrumCount = 10;
+            }
+
             // Get input from scanner and send to stdout
             while (scan.hasNext() && !waitingHandler.isRunCanceled()) {
                 String temp = scan.next();
                 writer.write(temp);
                 writer.newLine();
 
-                if (temp.startsWith(">>")) {                    
+                if (temp.startsWith(">>")) {
+                    int progressCounter = waitingHandler.getPrimaryProgressCounter();
+                    if (progressCounter % spectrumCount == 0) {
+                        waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
+                                + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
+                                + " of " + totalSpectrumCount + ".", true, true);
+                    }
                     waitingHandler.increasePrimaryProgressCounter();
                     waitingHandler.increaseSecondaryProgressCounter();
-                    waitingHandler.appendReport("Processed spectrum " + waitingHandler.getPrimaryProgressCounter() 
-                            + "/" + waitingHandler.getMaxPrimaryProgressCounter() + ".", true, true);
                 }
             }
+
             writer.flush();
             writer.close();
         } catch (IOException ex) {

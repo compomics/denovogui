@@ -141,7 +141,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * The exception handler.
      */
-    private ExceptionHandler exceptionHandler = new ExceptionHandler(this);
+    private ExceptionHandler exceptionHandler = new ExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
     /**
      * The progress dialog.
      */
@@ -1714,13 +1714,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                     } else {
                         message += " and ";
                     }
-                    message += toCheck.get(i);
                 }
+                message += toCheck.get(i);
             }
             message += ".\nPlease verify the definition of the PTM(s) in the modifications editor.";
-            javax.swing.JOptionPane.showMessageDialog(null,
-                    message,
-                    "PTM definition obsolete", JOptionPane.OK_OPTION);
+            javax.swing.JOptionPane.showMessageDialog(null, message, "PTM Definition Obsolete", JOptionPane.OK_OPTION);
         }
     }
 
