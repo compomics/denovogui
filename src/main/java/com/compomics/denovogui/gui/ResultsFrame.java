@@ -193,10 +193,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The Find panel.
      */
     private FindPanel findPanel;
-    /**
-     * The actually identified modifications.
-     */
-    private ArrayList<String> identifiedModifications = null;
 
     /**
      * Creates a new ResultsPanel.
@@ -1958,7 +1954,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
                             "Spectrum Viewer (" + modifiedSequence
                             + "   " + tagAssumption.getIdentificationCharge().toString() + "   "
-                            + Util.roundDouble(currentSpectrum.getPrecursor().getMz(), 4) + " m/z)");
+                            + Util.roundDouble(tagAssumption.getTheoreticMz(true, true), 2) + " m/z)");
                     spectrumViewerPanel.repaint();
                 } else {
                     // Show spectrum without identification.
@@ -2130,11 +2126,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         }
                     }
                 } else {
-                    if (finalSelectedLosses.contains(names.get(i))) {
-                        selected = true;
-                    } else {
-                        selected = false;
-                    }
+                    selected = finalSelectedLosses.contains(names.get(i));
                 }
 
                 JCheckBoxMenuItem lossMenuItem = new JCheckBoxMenuItem(names.get(i));
@@ -2154,11 +2146,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ArrayList<String> selectedCharges = new ArrayList<String>();
 
         for (JCheckBoxMenuItem chargeMenuItem : chargeMenus.values()) {
-
             if (chargeMenuItem.isSelected()) {
                 selectedCharges.add(chargeMenuItem.getText());
             }
-
             chargeMenu.remove(chargeMenuItem);
         }
 
