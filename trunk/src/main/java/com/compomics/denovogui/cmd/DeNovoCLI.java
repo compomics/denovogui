@@ -180,7 +180,7 @@ public class DeNovoCLI implements Callable {
                 + System.getProperty("line.separator")
                 + "For further help see http://denovogui.googlecode.com and http://code.google.com/p/denovogui/wiki/DeNovoCLI." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
-                + "Or contact the developers at https://groups.google.com/group/peptide-shaker." + System.getProperty("line.separator")
+                + "Or contact the developers at http://groups.google.com/group/denovogui." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "----------------------"
                 + System.getProperty("line.separator")
