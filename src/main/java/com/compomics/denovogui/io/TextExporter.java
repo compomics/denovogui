@@ -5,7 +5,7 @@ import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
-import com.compomics.util.experiment.identification.advocates.SearchEngine;
+import com.compomics.util.experiment.identification.advocates.SpectrumIdentificationAlgorithm;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.tags.Tag;
@@ -94,7 +94,7 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());
@@ -200,7 +200,7 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SearchEngine.PEPNOVO);
+                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());

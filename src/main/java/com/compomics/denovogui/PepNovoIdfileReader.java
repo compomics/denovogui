@@ -1,6 +1,5 @@
 package com.compomics.denovogui;
 
-import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
@@ -452,7 +451,13 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      */
     public String getPTM(String pepNovoModification) {
 
-        Map<String, String> invertedPtmMap = ModificationFile.getInvertedModIdMap();
+        Map<String, String> invertedPtmMap = searchParameters.getPepNovoPtmMap();
+
+        if (invertedPtmMap == null) {
+            // @TODO: possible to rescue these?
+            throw new IllegalArgumentException("Unsupported de novo search result. Please reprocess the data.");
+        }
+
         String utilitesPtmName = invertedPtmMap.get(pepNovoModification);
 
         if (utilitesPtmName != null) {

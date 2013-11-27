@@ -234,7 +234,7 @@
                       <Component id="pepNovoButton" min="-2" pref="101" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="61" max="32767" attributes="0"/>
+                      <EmptySpace pref="53" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -265,8 +265,8 @@
             </Component>
             <Component class="javax.swing.JLabel" name="pepNovoLinkLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;De Novo Peptide Sequencing via Probabilistic Network Modeling - &lt;a href=&quot;http://proteomics.ucsd.edu/Software/PepNovo.html&quot;&gt;PepNovo web page&lt;/a&gt;&lt;/html&gt; "/>
-                <Property name="toolTipText" type="java.lang.String" value="Open the OMSSA web page"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;De Novo Peptide Sequencing via Probabilistic Network Modeling - &lt;a href=&quot;http://proteomics.ucsd.edu/Software/PepNovo.html&quot;&gt;PepNovo+ web page&lt;/a&gt;&lt;/html&gt; "/>
+                <Property name="toolTipText" type="java.lang.String" value="Open the PepNovo+ web page"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoLinkLabelMouseClicked"/>
