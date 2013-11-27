@@ -3,6 +3,23 @@
 
 ----
 
+*Changes in DeNovoGUI 1.2.3 (November 27. 2013):*
+
+ * FEATURE IMPROVEMENT: Improved the information printed to the waiting dialog during the sequencing.
+ * FEATURE IMPROVEMENT: The possible mass deltas for the manual de novo sequencing are now set in correspondence with the PTMs used for the sequencing.
+ * FEATURE IMPROVEMENT: Added tooltips with the maximum fragment ion and precursor mass tolerances to the Settings Dialog.
+ * FEATURE IMPROVEMENT: The default PTMs selection in the Search Settings Dialog is now only shown if All Modifications is selected.
+ * FEATURE IMPROVEMENT: Removed the Search Settings saving from the Settings Dialog.
+
+ * BUG FIX: The PepNovo PTM mapping is now stored in the search parameters.
+ * BUG FIX: Made sure that only valid search parameter files can be selected.
+ * BUG FIX: Fixed GUI bugs in the progress dialogs when exporting to file.
+ * BUG FIX: The exception handler now refers to DeNovoGUI web pages (and not PeptideShaker as before).
+
+ * LIBRARY UPDATE: Updated utilities to version 3.18.10. 
+
+----
+
 *Changes in DeNovoGUI 1.2.2 (October 8. 2013):*
 
  * BUG FIX: Fixed a bug where the startup log was always empty.
