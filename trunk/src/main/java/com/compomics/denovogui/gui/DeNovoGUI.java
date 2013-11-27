@@ -393,8 +393,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         });
 
-        pepNovoLinkLabel.setText("<html>De Novo Peptide Sequencing via Probabilistic Network Modeling - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo web page</a></html> ");
-        pepNovoLinkLabel.setToolTipText("Open the OMSSA web page");
+        pepNovoLinkLabel.setText("<html>De Novo Peptide Sequencing via Probabilistic Network Modeling - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo+ web page</a></html> ");
+        pepNovoLinkLabel.setToolTipText("Open the PepNovo+ web page");
         pepNovoLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 pepNovoLinkLabelMouseClicked(evt);
@@ -437,7 +437,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

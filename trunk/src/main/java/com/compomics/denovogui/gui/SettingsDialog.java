@@ -78,6 +78,10 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         insertData();
         setLocationRelativeTo(deNovoGUI);
 
+        if (searchParameters.getParametersFile() != null) {
+            setTitle("De Novo Settings - " + searchParameters.getParametersFile().getName());
+        }
+
         if (setVisible) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -157,7 +161,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private void insertData() {
 
         if (searchParameters.getParametersFile() != null) {
-            settingsFileJTextField.setText(searchParameters.getParametersFile().getAbsolutePath());
             parametersFile = searchParameters.getParametersFile();
         }
 
@@ -304,12 +307,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         numberOfThreadsSpinner = new javax.swing.JSpinner();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        configurationFilePanelSettings = new javax.swing.JPanel();
-        configurationFileLbl2 = new javax.swing.JLabel();
-        browseConfigurationButton2 = new javax.swing.JButton();
-        settingsFileJTextField = new javax.swing.JTextField();
-        saveConfiguration = new javax.swing.JButton();
-        saveConfigurationAs = new javax.swing.JButton();
         modificationsPanel1 = new javax.swing.JPanel();
         modificationTypesSplitPane = new javax.swing.JSplitPane();
         jPanel8 = new javax.swing.JPanel();
@@ -466,67 +463,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 cancelButtonActionPerformed(evt);
             }
         });
-
-        configurationFilePanelSettings.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
-        configurationFilePanelSettings.setOpaque(false);
-
-        configurationFileLbl2.setText("Settings File");
-
-        browseConfigurationButton2.setText("Load");
-        browseConfigurationButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                browseConfigurationButton2ActionPerformed(evt);
-            }
-        });
-
-        settingsFileJTextField.setEditable(false);
-
-        saveConfiguration.setText("Save");
-        saveConfiguration.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveConfigurationActionPerformed(evt);
-            }
-        });
-
-        saveConfigurationAs.setText("Save As");
-        saveConfigurationAs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveConfigurationAsActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout configurationFilePanelSettingsLayout = new javax.swing.GroupLayout(configurationFilePanelSettings);
-        configurationFilePanelSettings.setLayout(configurationFilePanelSettingsLayout);
-        configurationFilePanelSettingsLayout.setHorizontalGroup(
-            configurationFilePanelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, configurationFilePanelSettingsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(configurationFileLbl2)
-                .addGap(18, 18, 18)
-                .addComponent(settingsFileJTextField)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(browseConfigurationButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveConfiguration)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveConfigurationAs, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        configurationFilePanelSettingsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {browseConfigurationButton2, saveConfiguration, saveConfigurationAs});
-
-        configurationFilePanelSettingsLayout.setVerticalGroup(
-            configurationFilePanelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(configurationFilePanelSettingsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(configurationFilePanelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(configurationFileLbl2)
-                    .addComponent(settingsFileJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(saveConfigurationAs)
-                    .addComponent(saveConfiguration)
-                    .addComponent(browseConfigurationButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         modificationsPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifications"));
         modificationsPanel1.setOpaque(false);
@@ -870,7 +806,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
-                    .addComponent(configurationFilePanelSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(deNovoSettingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -882,8 +817,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(configurationFilePanelSettings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(deNovoSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -921,17 +854,21 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         SearchParameters tempSearchParameters = getSearchParametersFromGUI();
 
-        if (settingsFileJTextField.getText().length() == 0) {
-            tempSearchParameters.setParametersFile(null);
-            deNovoGUI.setSearchParameters(tempSearchParameters);
-            dispose();
-        } else {
-            if (!deNovoGUI.getSearchParameters().equals(tempSearchParameters)) {
+        if (!deNovoGUI.getSearchParameters().equals(tempSearchParameters)) {
 
-                int value = JOptionPane.showConfirmDialog(this, "The settings have been changed."
-                        + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+            int value = JOptionPane.showConfirmDialog(this, "The settings have changed."
+                    + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
 
-                if (value == JOptionPane.YES_OPTION) {
+            if (value == JOptionPane.YES_OPTION) {
+
+                // no params file > have the user select a file
+                if (tempSearchParameters.getParametersFile() == null) {
+                    saveAsPressed();
+                    tempSearchParameters = getSearchParametersFromGUI(); // see if the settings have changed
+                }
+
+                if (tempSearchParameters.getParametersFile() != null) {
+
                     try {
                         tempSearchParameters.setParametersFile(deNovoGUI.getSearchParameters().getParametersFile());
                         SearchParameters.saveIdentificationParameters(tempSearchParameters, deNovoGUI.getSearchParameters().getParametersFile());
@@ -946,12 +883,12 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                                 + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
                         e.printStackTrace();
                     }
-                } else if (value == JOptionPane.NO_OPTION) {
-                    dispose(); // reject the changes
                 }
-            } else {
-                dispose(); // no changes
+            } else if (value == JOptionPane.NO_OPTION) {
+                dispose(); // reject the changes
             }
+        } else {
+            dispose(); // no changes
         }
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -963,78 +900,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
-
-    /**
-     * Load search parameters from file.
-     *
-     * @param evt
-     */
-    private void browseConfigurationButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseConfigurationButton2ActionPerformed
-        // First check whether a file has already been selected.
-        // If so, start from that file's parent.
-        File startLocation = new File(deNovoGUI.getLastSelectedFolder());
-        if (settingsFileJTextField.getText() != null && new File(settingsFileJTextField.getText()).exists()) {
-            File temp = new File(settingsFileJTextField.getText());
-            startLocation = temp.getParentFile();
-        }
-        JFileChooser fc = new JFileChooser(startLocation);
-
-        FileFilter filter = new FileFilter() {
-            @Override
-            public boolean accept(File myFile) {
-                return myFile.getName().toLowerCase().endsWith(".parameters") || myFile.isDirectory();
-            }
-
-            @Override
-            public String getDescription() {
-                return "DeNovoGUI settings file (.parameters)";
-            }
-        };
-        fc.setFileFilter(filter);
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String fileName = file.getName();
-            deNovoGUI.setLastSelectedFolder(file.getAbsolutePath());
-
-            if (fileName.endsWith(".parameters")) {
-                try {
-                    searchParameters = SearchParameters.getIdentificationParameters(file);
-                    deNovoGUI.loadModifications(searchParameters);
-                    insertData();
-                    parametersFile = file;
-                    settingsFileJTextField.setText(parametersFile.getAbsolutePath());
-                    searchParameters = getSearchParametersFromGUI();
-                    searchParameters.setParametersFile(parametersFile);
-                    deNovoGUI.setSearchParameters(searchParameters);
-                    validateParametersInput(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Please select a valid search settings file (.paramaters).", "File Error", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_browseConfigurationButton2ActionPerformed
-
-    /**
-     * Save the search parameters.
-     *
-     * @param evt
-     */
-    private void saveConfigurationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfigurationActionPerformed
-        savePressed();
-    }//GEN-LAST:event_saveConfigurationActionPerformed
-
-    /**
-     * Save the search parameters.
-     *
-     * @param evt
-     */
-    private void saveConfigurationAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfigurationAsActionPerformed
-        saveAsPressed();
-    }//GEN-LAST:event_saveConfigurationAsActionPerformed
 
     /**
      * Add a fixed modification.
@@ -1485,10 +1350,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private javax.swing.JButton addVariableModification;
     private javax.swing.JPanel availableModsPanel;
     private javax.swing.JPanel backgroundPanel;
-    private javax.swing.JButton browseConfigurationButton2;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JLabel configurationFileLbl2;
-    private javax.swing.JPanel configurationFilePanelSettings;
     private javax.swing.JPanel deNovoSettingsPanel;
     private javax.swing.JComboBox enzymeComboBox;
     private javax.swing.JLabel enzymeLabel;
@@ -1518,9 +1380,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private javax.swing.JSpinner precursorMassToleranceSpinner;
     private javax.swing.JButton removeFixedModification;
     private javax.swing.JButton removeVariableModification;
-    private javax.swing.JButton saveConfiguration;
-    private javax.swing.JButton saveConfigurationAs;
-    private javax.swing.JTextField settingsFileJTextField;
     private javax.swing.JCheckBox spectrumChargeCheckBox;
     private javax.swing.JCheckBox spectrumPrecursorCheckBox;
     private javax.swing.JLabel variableModificationsLabel;
@@ -1576,8 +1435,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
         tempSearchParameters.setModificationProfile(modificationProfile);
 
-        if (settingsFileJTextField.getText().length() > 0) {
-            tempSearchParameters.setParametersFile(new File(settingsFileJTextField.getText()));
+        if (searchParameters.getParametersFile() != null) {
+            tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
         }
 
         return tempSearchParameters;
@@ -1628,9 +1487,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             // If so, start from that file's parent.
             File startLocation = new File(deNovoGUI.getLastSelectedFolder());
 
-            if (settingsFileJTextField.getText() != null && !settingsFileJTextField.getText().trim().equals("")) {
-                File temp = new File(settingsFileJTextField.getText());
-                startLocation = temp.getParentFile();
+            if (searchParameters.getParametersFile() != null) {
+                startLocation = searchParameters.getParametersFile();
             }
 
             boolean complete = false;
@@ -1677,7 +1535,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
 
             savePressed();
-            settingsFileJTextField.setText(parametersFile.getPath());
             searchParameters.setParametersFile(parametersFile);
         }
     }

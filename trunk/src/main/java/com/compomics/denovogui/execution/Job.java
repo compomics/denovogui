@@ -92,7 +92,10 @@ public abstract class Job implements Executable, Runnable {
 
             // set the progress dialog update count
             int totalSpectrumCount = waitingHandler.getMaxPrimaryProgressCounter();
-            int spectrumCount = 100;
+            int spectrumCount = 1000;
+            if (totalSpectrumCount <= 1000) {
+                spectrumCount = 100;
+            } 
             if (totalSpectrumCount <= 100) {
                 spectrumCount = 10;
             }

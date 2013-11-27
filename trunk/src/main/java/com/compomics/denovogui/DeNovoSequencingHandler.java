@@ -103,6 +103,12 @@ public class DeNovoSequencingHandler {
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra());
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
+        // store the pepnovo to utilities ptm mapping
+        searchParameters.setPepNovoPtmMap(ModificationFile.getInvertedModIdMap());
+        if (searchParameters.getParametersFile() != null) {
+            SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
+        }
+        
         // Write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
