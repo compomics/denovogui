@@ -1,9 +1,6 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.PepNovoIdfileReader;
-import static com.compomics.denovogui.gui.DeNovoGUI.exampleMgf;
-import static com.compomics.denovogui.gui.DeNovoGUI.exampleOutFile;
-import static com.compomics.denovogui.gui.DeNovoGUI.exampleSearchParams;
 import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
@@ -203,11 +200,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private FindPanel findPanel;
     /**
-     * The sequence factory retrieving information from the fasta file
+     * The sequence factory retrieving information from the FASTA file.
      */
     private SequenceFactory sequenceFactory = SequenceFactory.getInstance(30000);
     /**
-     * The object cache used for the identification
+     * The object cache used for the identification.
      */
     private ObjectsCache objectsCache = new ObjectsCache();
 
@@ -511,11 +508,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        proteinMappingMenuItem = new javax.swing.JMenuItem();
         annotationsMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
-        exportMatchesMenuItem = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        exportTagMatchesMenuItem = new javax.swing.JMenuItem();
+        exportPeptideMatchesMenuItem = new javax.swing.JMenuItem();
         exportBlastMatchesMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         fixedPtmsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -975,13 +972,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         editMenu.setMnemonic('E');
         editMenu.setText("Edit");
 
-        jMenuItem1.setText("Protein Mapping");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        proteinMappingMenuItem.setText("Protein Mapping");
+        proteinMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                proteinMappingMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(jMenuItem1);
+        editMenu.add(proteinMappingMenuItem);
 
         annotationsMenuItem.setMnemonic('S');
         annotationsMenuItem.setText("Spectrum Annotation");
@@ -997,23 +994,25 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.setMnemonic('X');
         exportMenu.setText("Export");
 
-        exportMatchesMenuItem.setMnemonic('M');
-        exportMatchesMenuItem.setText("Tag Matches");
-        exportMatchesMenuItem.setToolTipText("Export the matches as text");
-        exportMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        exportTagMatchesMenuItem.setMnemonic('T');
+        exportTagMatchesMenuItem.setText("Tag Matches");
+        exportTagMatchesMenuItem.setToolTipText("Export the tag matches as text");
+        exportTagMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportMatchesMenuItemActionPerformed(evt);
+                exportTagMatchesMenuItemActionPerformed(evt);
             }
         });
-        exportMenu.add(exportMatchesMenuItem);
+        exportMenu.add(exportTagMatchesMenuItem);
 
-        jMenuItem2.setText("Peptide Matches");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        exportPeptideMatchesMenuItem.setMnemonic('P');
+        exportPeptideMatchesMenuItem.setText("Peptide Matches");
+        exportPeptideMatchesMenuItem.setToolTipText("Export the peptide matches as text");
+        exportPeptideMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                exportPeptideMatchesMenuItemActionPerformed(evt);
             }
         });
-        exportMenu.add(jMenuItem2);
+        exportMenu.add(exportPeptideMatchesMenuItem);
 
         exportBlastMatchesMenuItem.setMnemonic('B');
         exportBlastMatchesMenuItem.setText("BLAST");
@@ -1439,17 +1438,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     /**
-     * Export the matches to file.
+     * Export the tag matches to file.
      *
      * @param evt
      */
-    private void exportMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportMatchesMenuItemActionPerformed
+    private void exportTagMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTagMatchesMenuItemActionPerformed
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
             exportIdentification(selectedFile, ExportType.tags, null);
         }
-    }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
+    }//GEN-LAST:event_exportTagMatchesMenuItemActionPerformed
 
     /**
      * Empty the matches folder and close the window.
@@ -1516,7 +1515,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         new AnnotationPreferencesDialog(this);
     }//GEN-LAST:event_annotationsMenuItemActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    /**
+     * Load the protein mappings.
+     *
+     * @param evt
+     */
+    private void proteinMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proteinMappingMenuItemActionPerformed
 
         progressDialog = new ProgressDialogX(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1540,9 +1544,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             public void run() {
 
                 try {
-
                     matchInProteins(progressDialog);
-
                 } catch (Exception e) {
                     progressDialog.setRunFinished();
                     e.printStackTrace();
@@ -1550,15 +1552,20 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 }
             }
         }.start();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_proteinMappingMenuItemActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    /**
+     * Export the peptide matches to file.
+     *
+     * @param evt
+     */
+    private void exportPeptideMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportPeptideMatchesMenuItemActionPerformed
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
             exportIdentification(selectedFile, ExportType.peptides, null);
         }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_exportPeptideMatchesMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
@@ -1586,10 +1593,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportBlastMatchesMenuItem;
     private javax.swing.JMenu exportGraphicsMenu;
-    private javax.swing.JMenuItem exportMatchesMenuItem;
     private javax.swing.JMenu exportMenu;
+    private javax.swing.JMenuItem exportPeptideMatchesMenuItem;
     private javax.swing.JMenuItem exportSpectrumGraphicsJMenuItem;
     private javax.swing.JMenuItem exportSpectrumValuesJMenuItem;
+    private javax.swing.JMenuItem exportTagMatchesMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JCheckBoxMenuItem fixedPtmsCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem forwardIonsDeNovoCheckBoxMenuItem;
@@ -1599,8 +1607,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
@@ -1613,6 +1619,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu otherMenu;
     private javax.swing.JCheckBoxMenuItem precursorCheckMenu;
+    private javax.swing.JMenuItem proteinMappingMenuItem;
     private javax.swing.JPanel querySpectraPanel;
     private javax.swing.JTable querySpectraTable;
     private javax.swing.JScrollPane querySpectraTableScrollPane;
@@ -1640,7 +1647,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Matches the tags to proteins
+     * Matches the tags to proteins.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -1961,13 +1968,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 try {
                     switch (exportType) {
                         case tags:
-                        TextExporter.exportTags(finalFile, identification, searchParameters, progressDialog);
+                            TextExporter.exportTags(finalFile, identification, searchParameters, progressDialog);
                             break;
                         case peptides:
-                        TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
+                            TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
                             break;
                         case blast:
-                        TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold);
+                            TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold);
                     }
 
                     boolean cancelled = progressDialog.isRunCanceled();

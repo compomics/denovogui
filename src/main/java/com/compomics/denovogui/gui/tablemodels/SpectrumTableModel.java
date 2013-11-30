@@ -1,9 +1,7 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
-import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
@@ -36,7 +34,7 @@ public class SpectrumTableModel extends DefaultTableModel {
      */
     private ArrayList<String> orderedSpectrumTitles = null;
     /**
-     * boolean indicating whether the content of the table should be updated
+     * Boolean indicating whether the content of the table should be updated.
      */
     private boolean update = true;
 
@@ -207,7 +205,7 @@ public class SpectrumTableModel extends DefaultTableModel {
     }
     
     /**
-     * Sets whether the table content should update
+     * Sets whether the table content should update.
      * 
      * @param update if true the content of the table will update
      */
