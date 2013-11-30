@@ -1,36 +1,39 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.io;
 
-
 /**
- * Enum of the available export types
+ * Enum of the available export types.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public enum ExportType {
 
+    /**
+     * Tags.
+     */
     tags(0, "Tag", "Export de novo tag sequences results."),
+    /**
+     * Peptides.
+     */
     peptides(1, "Peptides", "Export de novo tag sequences mapped to protein sequences."),
+    /**
+     * BLAST.
+     */
     blast(0, "Tag", "Export de novo tag sequences results blasted to protein sequences.");
     /**
-     * The id number of this export type
+     * The id number of this export type.
      */
     private int id;
     /**
-     * The name of this export type
+     * The name of this export type.
      */
     private String name;
     /**
-     * The description of this export type
+     * The description of this export type.
      */
     private String description;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param id the id number of this export type
      * @param name the name of this export type
@@ -43,7 +46,7 @@ public enum ExportType {
     }
 
     /**
-     * Returns the id number of this export type
+     * Returns the id number of this export type.
      *
      * @return the id number of this export type
      */
@@ -52,7 +55,7 @@ public enum ExportType {
     }
 
     /**
-     * Returns the name of this export type
+     * Returns the name of this export type.
      *
      * @return the name of this export type
      */
@@ -61,7 +64,7 @@ public enum ExportType {
     }
 
     /**
-     * Returns the description of this export type
+     * Returns the description of this export type.
      *
      * @return the description of this export type
      */
@@ -70,7 +73,7 @@ public enum ExportType {
     }
 
     /**
-     * Returns a list of available export types
+     * Returns a list of available export types.
      *
      * @return a list of available export types
      */
@@ -83,7 +86,7 @@ public enum ExportType {
     }
 
     /**
-     * Returns the different implemented exports as list of command line option
+     * Returns the different implemented exports as list of command line option.
      *
      * @return the different implemented exports as list of command line option
      */

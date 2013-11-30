@@ -346,12 +346,12 @@
             <Property name="text" type="java.lang.String" value="Edit"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="proteinMappingMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Protein Mapping"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proteinMappingMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="annotationsMenuItem">
@@ -371,22 +371,24 @@
             <Property name="text" type="java.lang.String" value="Export"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="exportMatchesMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="exportTagMatchesMenuItem">
               <Properties>
-                <Property name="mnemonic" type="int" value="77"/>
+                <Property name="mnemonic" type="int" value="84"/>
                 <Property name="text" type="java.lang.String" value="Tag Matches"/>
-                <Property name="toolTipText" type="java.lang.String" value="Export the matches as text"/>
+                <Property name="toolTipText" type="java.lang.String" value="Export the tag matches as text"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportMatchesMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportTagMatchesMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+            <MenuItem class="javax.swing.JMenuItem" name="exportPeptideMatchesMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="80"/>
                 <Property name="text" type="java.lang.String" value="Peptide Matches"/>
+                <Property name="toolTipText" type="java.lang.String" value="Export the peptide matches as text"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportPeptideMatchesMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportBlastMatchesMenuItem">
