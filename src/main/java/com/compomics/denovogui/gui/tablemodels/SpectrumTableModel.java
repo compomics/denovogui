@@ -30,11 +30,15 @@ public class SpectrumTableModel extends DefaultTableModel {
     /**
      * The name of the spectrum file.
      */
-    String spectrumFile = null;
+    private String spectrumFile = null;
     /**
      * The ordered spectrum keys.
      */
     private ArrayList<String> orderedSpectrumTitles = null;
+    /**
+     * boolean indicating whether the content of the table should be updated
+     */
+    private boolean update = true;
 
     /**
      * Constructor.
@@ -163,7 +167,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                 try {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (identification.matchExists(spectrumKey)) {
+                    if (update && identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                         double maxScore = 0;
                         for (SpectrumIdentificationAssumption assumption : spectrumMatch.getAllAssumptions()) {
@@ -200,5 +204,14 @@ public class SpectrumTableModel extends DefaultTableModel {
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
+    }
+    
+    /**
+     * Sets whether the table content should update
+     * 
+     * @param update if true the content of the table will update
+     */
+    public void setUpdate(boolean update) {
+        this.update = update;
     }
 }

@@ -11,6 +11,7 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
+import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -146,6 +147,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The progress dialog.
      */
     private ProgressDialogX progressDialog;
+    /**
+     * The type of matching used for peptide to protein matching.
+     */
+    public final static AminoAcidPattern.MatchingType MATCHING_TYPE = AminoAcidPattern.MatchingType.indistiguishibleAminoAcids;
 
     /**
      * Creates a new DeNovoGUI.
