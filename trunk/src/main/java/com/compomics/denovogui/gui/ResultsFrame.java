@@ -1,8 +1,12 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.PepNovoIdfileReader;
+import static com.compomics.denovogui.gui.DeNovoGUI.exampleMgf;
+import static com.compomics.denovogui.gui.DeNovoGUI.exampleOutFile;
+import static com.compomics.denovogui.gui.DeNovoGUI.exampleSearchParams;
 import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
+import com.compomics.denovogui.io.ExportType;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
 import com.compomics.util.db.ObjectsCache;
@@ -17,12 +21,15 @@ import com.compomics.util.experiment.biology.IonFactory;
 import com.compomics.util.experiment.biology.NeutralLoss;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.biology.ions.ReporterIon;
 import com.compomics.util.experiment.biology.ions.TagFragmentIon;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
+import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
@@ -31,6 +38,7 @@ import com.compomics.util.experiment.identification.identifications.Ms2Identific
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.protein_inference.proteintree.ProteinTree;
 import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.identification.tags.TagComponent;
@@ -48,6 +56,7 @@ import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.preferences.AnnotationPreferences;
 import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
 import static java.awt.Frame.MAXIMIZED_BOTH;
@@ -193,6 +202,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The Find panel.
      */
     private FindPanel findPanel;
+    /**
+     * The sequence factory retrieving information from the fasta file
+     */
+    private SequenceFactory sequenceFactory = SequenceFactory.getInstance(30000);
+    /**
+     * The object cache used for the identification
+     */
+    private ObjectsCache objectsCache = new ObjectsCache();
 
     /**
      * Creates a new ResultsPanel.
@@ -494,9 +511,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         annotationsMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportMatchesMenuItem = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         exportBlastMatchesMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         fixedPtmsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -864,7 +883,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Peptides"));
         deNovoPeptidesPanel.setOpaque(false);
 
-        deNovoPeptidesTable.setModel(new TagSpectrumMatchTableModel());
+        deNovoPeptidesTable.setModel(new com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel());
         deNovoPeptidesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         deNovoPeptidesTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -956,6 +975,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         editMenu.setMnemonic('E');
         editMenu.setText("Edit");
 
+        jMenuItem1.setText("Protein Mapping");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        editMenu.add(jMenuItem1);
+
         annotationsMenuItem.setMnemonic('S');
         annotationsMenuItem.setText("Spectrum Annotation");
         annotationsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -971,7 +998,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.setText("Export");
 
         exportMatchesMenuItem.setMnemonic('M');
-        exportMatchesMenuItem.setText("Matches");
+        exportMatchesMenuItem.setText("Tag Matches");
         exportMatchesMenuItem.setToolTipText("Export the matches as text");
         exportMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -979,6 +1006,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         });
         exportMenu.add(exportMatchesMenuItem);
+
+        jMenuItem2.setText("Peptide Matches");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        exportMenu.add(jMenuItem2);
 
         exportBlastMatchesMenuItem.setMnemonic('B');
         exportBlastMatchesMenuItem.setText("BLAST");
@@ -1412,7 +1447,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, false, null);
+            exportIdentification(selectedFile, ExportType.tags, null);
         }
     }//GEN-LAST:event_exportMatchesMenuItemActionPerformed
 
@@ -1467,7 +1502,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                exportIdentification(selectedFile, true, threshold);
+                exportIdentification(selectedFile, ExportType.blast, threshold);
             }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
@@ -1480,6 +1515,51 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private void annotationsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annotationsMenuItemActionPerformed
         new AnnotationPreferencesDialog(this);
     }//GEN-LAST:event_annotationsMenuItemActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
+        progressDialog.setTitle("Loading Protein Mapping. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+
+        new Thread("LoadExampleThread") {
+            @Override
+            public void run() {
+
+                try {
+
+                    matchInProteins(progressDialog);
+
+                } catch (Exception e) {
+                    progressDialog.setRunFinished();
+                    e.printStackTrace();
+                    deNovoGUI.catchException(e);
+                }
+            }
+        }.start();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+        if (selectedFile != null) {
+            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+            exportIdentification(selectedFile, ExportType.peptides, null);
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1519,6 +1599,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
@@ -1556,6 +1638,98 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JCheckBoxMenuItem yIonCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem zIonCheckBoxMenuItem;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Matches the tags to proteins
+     *
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     * @throws InterruptedException
+     * @throws SQLException
+     */
+    private void matchInProteins(WaitingHandler waitingHandler) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
+
+        //@TODO: let the user choose the matching paramteters
+        ArrayList<String> fixedModifications = new ArrayList<String>();
+        fixedModifications.add("carbamidomethyl c");
+        ArrayList<String> variableModifications = new ArrayList<String>();
+        variableModifications.add("oxidation of m");
+        String database = "D:\\databases\\uniprot-eukaryota_reviewed_21.10.13.fasta";
+
+        waitingHandler.setWaitingText("Iporting fasta file (step 1 of 2). Please Wait...");
+        File fastaFile = new File(database); //@TODO: check whether the file exists?
+        sequenceFactory.loadFastaFile(fastaFile, waitingHandler);
+
+        UtilitiesUserPreferences userPreferences = UtilitiesUserPreferences.loadUserPreferences();
+        int memoryPreference = userPreferences.getMemoryPreference();
+        long fileSize = fastaFile.length();
+        long nSequences = sequenceFactory.getNTargetSequences();
+        if (!sequenceFactory.isDefaultReversed()) {
+            nSequences = sequenceFactory.getNSequences();
+        }
+        long sequencesPerMb = 1048576 * nSequences / fileSize;
+        long availableCachSize = 3 * memoryPreference * sequencesPerMb / 4;
+        if (availableCachSize > nSequences) {
+            availableCachSize = nSequences;
+        } else {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "Warning: DeNovoGUI cannot load your FASTA file entirely into memory. This will slow down the processing. "
+                    + "Note that using large large databases also induces random hits efficiency. "
+                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to DeNovoGUI, or (iii) improve the reading speed by using an SSD disc. "
+                    + "(See also <a href=\"https://code.google.com/p/compomics-utilities/wiki/ProteinInference\">Protein Inference</a>).", "Large fasta file", JOptionPane.WARNING_MESSAGE);
+        }
+        int cacheSize = (int) availableCachSize;
+        sequenceFactory.setnCache(cacheSize);
+
+        ProteinTree proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler);
+
+        waitingHandler.setWaitingText("Mapping tags (step 2 of 2). Please Wait...");
+        waitingHandler.resetSecondaryProgressCounter();
+        waitingHandler.setSecondaryProgressCounterIndeterminate(false);
+        waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
+        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); //@TODO: remove when the objectDB is stable
+
+        for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
+            identification.loadSpectrumMatches(spectrumFile, null);
+            for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
+                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                for (double score : assumptionsMap.keySet()) {
+                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                        if (assumption instanceof TagAssumption) {
+                            TagAssumption tagAssumption = (TagAssumption) assumption;
+                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
+                            for (Peptide peptide : proteinMapping.keySet()) {
+                                peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), SpectrumIdentificationAlgorithm.DENOVOGUI, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                peptideAssumption.addUrParam(tagAssumption);
+                                spectrumMatch.addHit(SpectrumIdentificationAlgorithm.DENOVOGUI, peptideAssumption);
+                            }
+                        } else {
+                            throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
+                        }
+                    }
+                }
+                identification.updateSpectrumMatch(spectrumMatch);
+                // free memory if needed
+                if (memoryUsed() > 0.8 && !objectsCache.isEmpty()) {
+                    objectsCache.reduceMemoryConsumption(0.5, null);
+                }
+                waitingHandler.increaseSecondaryProgressCounter();
+            }
+        }
+        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
+        waitingHandler.setRunFinished();
+    }
+
+    /**
+     * Returns the share of memory being used.
+     *
+     * @return the share of memory being used
+     */
+    public double memoryUsed() {
+        return Runtime.getRuntime().totalMemory() / Runtime.getRuntime().maxMemory();
+    }
 
     /**
      * Shows a dialog allowing the selection of a new result file and displays
@@ -1758,10 +1932,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Exports the identification results in a text file.
      *
      * @param file the destination file
-     * @param blast BLAST-compatible export flag
+     * @param exportType the type of export desired
      * @param scoreThreshold Score threshold for BLAST-compatible export
      */
-    public void exportIdentification(File file, final boolean blast, final String scoreThreshold) {
+    public void exportIdentification(File file, final ExportType exportType, final String scoreThreshold) {
 
         final File finalFile = file;
 
@@ -1785,10 +1959,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         new Thread("exportThread") {
             public void run() {
                 try {
-                    if (blast) {
+                    switch (exportType) {
+                        case tags:
+                        TextExporter.exportTags(finalFile, identification, searchParameters, progressDialog);
+                            break;
+                        case peptides:
+                        TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
+                            break;
+                        case blast:
                         TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold);
-                    } else {
-                        TextExporter.exportPSMs(finalFile, identification, searchParameters, progressDialog);
                     }
 
                     boolean cancelled = progressDialog.isRunCanceled();
@@ -2415,7 +2594,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         // The cache used whenever the identification becomes too big
         String dbFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
-        ObjectsCache objectsCache = new ObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
         try {
             tempIdentification.establishConnection(dbFolder, true, objectsCache);
@@ -2585,7 +2763,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     public void updateSpectrumAnnotations() {
         updateSpectrum();
     }
-    
+
     /**
      * Get the current delta masses for use when annotating the spectra.
      *
