@@ -1664,7 +1664,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         variableModifications.add("oxidation of m");
         String database = "D:\\databases\\uniprot-eukaryota_reviewed_21.10.13.fasta";
 
-        waitingHandler.setWaitingText("Iporting fasta file (step 1 of 2). Please Wait...");
+        waitingHandler.setWaitingText("Importing FASTA file (Step 1 of 2). Please Wait...");
         File fastaFile = new File(database); //@TODO: check whether the file exists?
         sequenceFactory.loadFastaFile(fastaFile, waitingHandler);
 
@@ -1690,7 +1690,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         ProteinTree proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler);
 
-        waitingHandler.setWaitingText("Mapping tags (step 2 of 2). Please Wait...");
+        waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
         waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
