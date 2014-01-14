@@ -3,7 +3,6 @@ package com.compomics.denovogui.cmd;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.biology.*;
-import com.compomics.util.experiment.identification.SearchParametersInputBean;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
@@ -22,7 +21,7 @@ public class DeNovoCLI implements Callable {
     /**
      * The command line parameters.
      */
-    private SearchParametersInputBean searchParametersInputBean;
+    private DeNovoCLIInputBean deNovoCLIInputBean;
     /**
      * The post translational modifications factory.
      */
@@ -66,7 +65,7 @@ public class DeNovoCLI implements Callable {
             BasicParser parser = new BasicParser();
             CommandLine line = parser.parse(lOptions, args);
 
-            if (!SearchParametersInputBean.isValidStartup(line, SearchParametersInputBean.ToolType.DeNovoGUI)) {
+            if (!DeNovoCLIInputBean.isValidStartup(line)) {
                 PrintWriter lPrintWriter = new PrintWriter(System.out);
                 lPrintWriter.print("\n======================" + System.getProperty("line.separator"));
                 lPrintWriter.print("DeNovoCLI" + System.getProperty("line.separator"));
@@ -78,7 +77,7 @@ public class DeNovoCLI implements Callable {
 
                 System.exit(0);
             } else {
-                searchParametersInputBean = new SearchParametersInputBean(line);
+                deNovoCLIInputBean = new DeNovoCLIInputBean(line);
                 call();
             }
         } catch (Exception e) {
@@ -94,7 +93,7 @@ public class DeNovoCLI implements Callable {
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
 
-            File pepNovoExecutable = searchParametersInputBean.getPepNovoExecutable();
+            File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File pepNovoFolder = null;
             String executableTitle = null;
 
@@ -133,7 +132,7 @@ public class DeNovoCLI implements Callable {
             }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
-            if (searchParametersInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
+            if (deNovoCLIInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }
@@ -146,17 +145,17 @@ public class DeNovoCLI implements Callable {
             // Load the spectra into the factory
             SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             waitingHandlerCLIImpl.appendReport("Loading the spectra.", true, true);
-            for (File spectrumFile : searchParametersInputBean.getSpectrumFiles()) {
+            for (File spectrumFile : deNovoCLIInputBean.getSpectrumFiles()) {
                 spectrumFactory.addSpectra(spectrumFile);
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
             // start the sequencing
             DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder);
-            searchHandler.setNThreads(searchParametersInputBean.getNThreads());
-            searchHandler.startSequencing(searchParametersInputBean.getSpectrumFiles(),
-                    searchParametersInputBean.getSearchParameters(),
-                    searchParametersInputBean.getOutputFile(), executableTitle,
+            searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
+            searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
+                    deNovoCLIInputBean.getSearchParameters(),
+                    deNovoCLIInputBean.getOutputFile(), executableTitle,
                     waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,9 +173,8 @@ public class DeNovoCLI implements Callable {
                 + System.getProperty("line.separator")
                 + "Spectra must be provided in the Mascot Generic File (mgf) format." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
-                + "The de novo parameters can be provided as a serialized instance of the compomics utilities" + System.getProperty("line.separator")
-                + "com.compomics.util.experiment.identification.SearchParameters object or set individually" + System.getProperty("line.separator")
-                + "using the command line options." + System.getProperty("line.separator")
+                + "The identification parameters can be provided as a file as saved from the GUI or generated using the IdentificationParametersCLI." + System.getProperty("line.separator")
+                + "See http://code.google.com/p/searchgui/wiki/IdentificationParametersCLI for more details." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "For further help see http://denovogui.googlecode.com and http://code.google.com/p/denovogui/wiki/DeNovoCLI." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")

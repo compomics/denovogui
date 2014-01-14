@@ -1,6 +1,6 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.denovogui.PepNovoIdfileReader;
+import com.compomics.denovogui.io.PepNovoIdfileReader;
 import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
@@ -22,6 +22,7 @@ import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.biology.Sample;
 import com.compomics.util.experiment.biology.ions.ReporterIon;
 import com.compomics.util.experiment.biology.ions.TagFragmentIon;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.PeptideAssumption;
@@ -30,7 +31,6 @@ import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
-import com.compomics.util.experiment.identification.advocates.SpectrumIdentificationAlgorithm;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
@@ -207,6 +207,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The object cache used for the identification.
      */
     private ObjectsCache objectsCache = new ObjectsCache();
+    /**
+     * The type of matching used for peptide to protein matching.
+     */
+    public final static AminoAcidPattern.MatchingType MATCHING_TYPE = AminoAcidPattern.MatchingType.indistiguishibleAminoAcids;
 
     /**
      * Creates a new ResultsPanel.
@@ -1317,7 +1321,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (automaticAnnotationCheckBoxMenuItem.isSelected()) {
             adaptCheckBoxMenuItem.setSelected(true);
             try {
-                annotationPreferences.resetAutomaticAnnotation();
+                annotationPreferences.resetAutomaticAnnotation(MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
             } catch (Exception e) {
                 deNovoGUI.catchException(e);
             }
@@ -1700,7 +1704,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             identification.loadSpectrumMatches(spectrumFile, null);
             for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                int advocateIndex = Advocate.pepnovo.getIndex();
+                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
                 for (double score : assumptionsMap.keySet()) {
                     for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
                         if (assumption instanceof TagAssumption) {
@@ -1708,9 +1713,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
                             for (Peptide peptide : proteinMapping.keySet()) {
                                 peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), SpectrumIdentificationAlgorithm.DENOVOGUI, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
                                 peptideAssumption.addUrParam(tagAssumption);
-                                spectrumMatch.addHit(SpectrumIdentificationAlgorithm.DENOVOGUI, peptideAssumption);
+                                spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
                             }
                         } else {
                             throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
@@ -2030,7 +2035,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 if (identification.matchExists(psmKey)) {
                     SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
                     if (assumptionsMap != null) {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores, Collections.reverseOrder());
@@ -2096,7 +2101,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumPanel.setBorder(null);
 
                     // add the annotations
-                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey));
+                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
 
                     TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
 
@@ -2633,7 +2638,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
             // put the matches in the identification object
-            tempIdentification.addSpectrumMatch(spectrumMatches);
+            tempIdentification.addSpectrumMatch(spectrumMatches, true);
 
             // get gui min/max values
             if (idfileReader.getMinRankScore() < minRankScore) {

@@ -45,7 +45,7 @@ public class ScoreHistogram extends Chart {
             for (String spectrumTitle : identification.getSpectrumIdentification(spectrumFile)) {
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                SpectrumIdentificationAssumption assumption = spectrumMatch.getFirstHit(Advocate.PEPNOVO);
+                SpectrumIdentificationAssumption assumption = spectrumMatch.getFirstHit(Advocate.pepnovo.getIndex());
                 scores.add(assumption.getScore());
             }
         }

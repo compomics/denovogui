@@ -1,8 +1,8 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
-import com.compomics.util.experiment.identification.advocates.SpectrumIdentificationAlgorithm;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -264,7 +264,7 @@ public class FindPanel extends javax.swing.JPanel {
                                         if (resultsFrame.getPepNovoIdentifications().matchExists(psmKey)) {
 
                                             SpectrumMatch spectrumMatch = resultsFrame.getPepNovoIdentifications().getSpectrumMatch(psmKey);
-                                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
 
                                             if (assumptionsMap != null) {
                                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
