@@ -12,12 +12,12 @@ public enum DeNovoCLIParams {
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // IMPORTANT: Any change here must be reported in the wiki: 
-    // http://code.google.com/p/searchgui/wiki/SearchCLI.
+    // http://code.google.com/p/searchgui/wiki/DeNovoCLI.
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     SPECTRUM_FILES("spectrum_files", "Spectrum files (mgf format), comma separated list or an entire folder.", true),
     OUTPUT_FOLDER("output_folder", "The output folder.", true),
-    IDENTIFICATION_PARAMETERS("id_params", "A search parameters file. Can be generated from the GUI or using the IdentificationParametersCLI (see http://code.google.com/p/searchgui/wiki/IdentificationParametersCLI for details).", false),
+    IDENTIFICATION_PARAMETERS("id_params", "A search parameters file. Can be generated from the GUI or using the IdentificationParametersCLI (see http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI for details).", false),
     THREADS("threads", "The number of threads to use for the processing. Default is the number of cores available.", false),
     //PEPNOVO("pepnovo", "Turn the Pepnovo sequencing on or off (1: on, 0: off, default is '1').", false), // @TODO uncomment when more algorithms are available
     PEPNOVO_LOCATION("pepnovo_folder", "The PepNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false);

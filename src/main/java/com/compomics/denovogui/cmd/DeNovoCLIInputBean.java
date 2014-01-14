@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.compomics.denovogui.cmd;
 
 import com.compomics.software.CommandLineUtils;
@@ -17,12 +11,13 @@ import java.util.ArrayList;
 import org.apache.commons.cli.CommandLine;
 
 /**
- * The DeNovoCLIInputBean reads and stores command line options from a command line
+ * The DeNovoCLIInputBean reads and stores command line options from a command
+ * line.
  *
  * @author Marc
  */
 public class DeNovoCLIInputBean {
-    
+
     /**
      * The spectrum files.
      */
@@ -69,10 +64,10 @@ public class DeNovoCLIInputBean {
         // get the files needed for the search
         String filesTxt = aLine.getOptionValue(DeNovoCLIParams.SPECTRUM_FILES.id);
         spectrumFiles = getSpectrumFiles(filesTxt);
-            String arg = aLine.getOptionValue(DeNovoCLIParams.OUTPUT_FOLDER.id);
-            outputFolder = new File(arg);
-            String fileTxt = aLine.getOptionValue(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id);
-            searchParameters = SearchParameters.getIdentificationParameters(new File(fileTxt));
+        String arg = aLine.getOptionValue(DeNovoCLIParams.OUTPUT_FOLDER.id);
+        outputFolder = new File(arg);
+        String fileTxt = aLine.getOptionValue(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id);
+        searchParameters = SearchParameters.getIdentificationParameters(new File(fileTxt));
 
 // @TODO uncomment when more algorithms are available
         // see which algorithm to use
@@ -82,7 +77,6 @@ public class DeNovoCLIInputBean {
 //                pepnovoEnabled = false;
 //            }
 //        }
-
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
             String pepNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO_LOCATION.id);
@@ -94,7 +88,6 @@ public class DeNovoCLIInputBean {
             arg = aLine.getOptionValue(DeNovoCLIParams.THREADS.id);
             nThreads = new Integer(arg);
         }
-
     }
 
     /**
@@ -139,7 +132,6 @@ public class DeNovoCLIInputBean {
         return CommandLineUtils.getFiles(optionInput, extentions);
     }
 
-
     /**
      * Returns the PepNovo+ executable. Null if not set.
      *
@@ -162,9 +154,9 @@ public class DeNovoCLIInputBean {
      * Verifies the command line start parameters.
      *
      * @param aLine the command line to validate
-     * 
+     *
      * @return true if the startup was valid
-     * 
+     *
      * @throws IOException
      */
     public static boolean isValidStartup(CommandLine aLine) throws IOException {

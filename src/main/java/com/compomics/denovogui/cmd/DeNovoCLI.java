@@ -174,7 +174,7 @@ public class DeNovoCLI implements Callable {
                 + "Spectra must be provided in the Mascot Generic File (mgf) format." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "The identification parameters can be provided as a file as saved from the GUI or generated using the IdentificationParametersCLI." + System.getProperty("line.separator")
-                + "See http://code.google.com/p/searchgui/wiki/IdentificationParametersCLI for more details." + System.getProperty("line.separator")
+                + "See http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI for more details." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "For further help see http://denovogui.googlecode.com and http://code.google.com/p/denovogui/wiki/DeNovoCLI." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
