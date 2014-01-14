@@ -1,21 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.compomics.denovogui.cmd;
 
 import com.compomics.util.experiment.identification.search_parameters_cli.IdentificationParametersCLIParams;
 import org.apache.commons.cli.Options;
 
 /**
- * This class provides the parameters which can be used for the identification parameters cli in SeachGUI
+ * This class provides the parameters which can be used for the identification
+ * parameters cli in SeachGUI.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class DeNovoIdentificationParametersCLIParams {
-    
 
     /**
      * Creates the options for the command line interface based on the possible
@@ -25,29 +19,28 @@ public class DeNovoIdentificationParametersCLIParams {
      */
     public static void createOptionsCLI(Options aOptions) {
 
-            aOptions.addOption(IdentificationParametersCLIParams.OUTPUT.id, true, IdentificationParametersCLIParams.OUTPUT.description);
-            aOptions.addOption(IdentificationParametersCLIParams.MODS.id, false, IdentificationParametersCLIParams.MODS.description);
-            
-            aOptions.addOption(IdentificationParametersCLIParams.PREC_PPM.id, true, IdentificationParametersCLIParams.PREC_PPM.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PREC_TOL_DA.id, true, IdentificationParametersCLIParams.PREC_TOL_DA.description);
-            aOptions.addOption(IdentificationParametersCLIParams.FRAG_TOL.id, true, IdentificationParametersCLIParams.FRAG_TOL.description);
-            aOptions.addOption(IdentificationParametersCLIParams.ENZYME.id, true, IdentificationParametersCLIParams.ENZYME.description);
-            aOptions.addOption(IdentificationParametersCLIParams.FIXED_MODS.id, true, IdentificationParametersCLIParams.FIXED_MODS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.VARIABLE_MODS.id, true, IdentificationParametersCLIParams.VARIABLE_MODS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.MIN_CHARGE.id, true, IdentificationParametersCLIParams.MIN_CHARGE.description);
-            aOptions.addOption(IdentificationParametersCLIParams.MAX_CHARGE.id, true, IdentificationParametersCLIParams.MAX_CHARGE.description);
-            aOptions.addOption(IdentificationParametersCLIParams.MC.id, true, IdentificationParametersCLIParams.MC.description);
-            aOptions.addOption(IdentificationParametersCLIParams.FI.id, true, IdentificationParametersCLIParams.FI.description);
-            aOptions.addOption(IdentificationParametersCLIParams.RI.id, true, IdentificationParametersCLIParams.RI.description);
-            aOptions.addOption(IdentificationParametersCLIParams.DB.id, true, IdentificationParametersCLIParams.DB.description);
-        
-            aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            aOptions.addOption(IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-            
+        aOptions.addOption(IdentificationParametersCLIParams.OUTPUT.id, true, IdentificationParametersCLIParams.OUTPUT.description);
+        aOptions.addOption(IdentificationParametersCLIParams.MODS.id, false, IdentificationParametersCLIParams.MODS.description);
+
+        aOptions.addOption(IdentificationParametersCLIParams.PREC_PPM.id, true, IdentificationParametersCLIParams.PREC_PPM.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PREC_TOL_DA.id, true, IdentificationParametersCLIParams.PREC_TOL_DA.description);
+        aOptions.addOption(IdentificationParametersCLIParams.FRAG_TOL.id, true, IdentificationParametersCLIParams.FRAG_TOL.description);
+        aOptions.addOption(IdentificationParametersCLIParams.ENZYME.id, true, IdentificationParametersCLIParams.ENZYME.description);
+        aOptions.addOption(IdentificationParametersCLIParams.FIXED_MODS.id, true, IdentificationParametersCLIParams.FIXED_MODS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.VARIABLE_MODS.id, true, IdentificationParametersCLIParams.VARIABLE_MODS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.MIN_CHARGE.id, true, IdentificationParametersCLIParams.MIN_CHARGE.description);
+        aOptions.addOption(IdentificationParametersCLIParams.MAX_CHARGE.id, true, IdentificationParametersCLIParams.MAX_CHARGE.description);
+        aOptions.addOption(IdentificationParametersCLIParams.MC.id, true, IdentificationParametersCLIParams.MC.description);
+        aOptions.addOption(IdentificationParametersCLIParams.FI.id, true, IdentificationParametersCLIParams.FI.description);
+        aOptions.addOption(IdentificationParametersCLIParams.RI.id, true, IdentificationParametersCLIParams.RI.description);
+        aOptions.addOption(IdentificationParametersCLIParams.DB.id, true, IdentificationParametersCLIParams.DB.description);
+
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
     }
 
     /**
