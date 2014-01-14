@@ -2,12 +2,12 @@ package com.compomics.denovogui.io;
 
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
-import com.compomics.util.experiment.identification.advocates.SpectrumIdentificationAlgorithm;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.tags.Tag;
@@ -97,7 +97,7 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.DENOVOGUI);
+                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());
@@ -222,7 +222,7 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());
@@ -328,7 +328,7 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(SpectrumIdentificationAlgorithm.PEPNOVO);
+                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());
