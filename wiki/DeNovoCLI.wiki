@@ -1,4 +1,4 @@
-#summary How to use DeNovoGUI from the command line .
+#summary How to use DeNovoGUI from the command line.
 #labels Featured
 
 =DeNovoGUI Command Line Interface=
