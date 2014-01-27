@@ -1740,7 +1740,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @return the share of memory being used
      */
     public double memoryUsed() {
-        return Runtime.getRuntime().totalMemory() / Runtime.getRuntime().maxMemory();
+        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / Runtime.getRuntime().maxMemory();
     }
 
     /**
