@@ -348,7 +348,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="proteinMappingMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Protein Mapping"/>
+                <Property name="text" type="java.lang.String" value="Protein Mapping (Beta)"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proteinMappingMenuItemActionPerformed"/>

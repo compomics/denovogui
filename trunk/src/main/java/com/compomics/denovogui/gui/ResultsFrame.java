@@ -45,8 +45,8 @@ import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
-import com.compomics.util.gui.export_graphics.ExportGraphicsDialog;
-import com.compomics.util.gui.export_graphics.ExportGraphicsDialogParent;
+import com.compomics.util.gui.export.graphics.ExportGraphicsDialog;
+import com.compomics.util.gui.export.graphics.ExportGraphicsDialogParent;
 import com.compomics.util.gui.renderers.AlignedListCellRenderer;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import com.compomics.util.waiting.WaitingHandler;
@@ -976,7 +976,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         editMenu.setMnemonic('E');
         editMenu.setText("Edit");
 
-        proteinMappingMenuItem.setText("Protein Mapping");
+        proteinMappingMenuItem.setText("Protein Mapping (Beta)");
         proteinMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proteinMappingMenuItemActionPerformed(evt);
@@ -1526,36 +1526,43 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void proteinMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proteinMappingMenuItemActionPerformed
 
-        progressDialog = new ProgressDialogX(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                true);
-        progressDialog.setPrimaryProgressCounterIndeterminate(true);
-        progressDialog.setTitle("Loading Protein Mapping. Please Wait...");
+        final ProteinMappingDialog mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
 
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    progressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
+        if (!mappingDialog.isCanceled()) {
+
+            progressDialog = new ProgressDialogX(this,
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                    true);
+            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+            progressDialog.setTitle("Loading Protein Mapping. Please Wait...");
+
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        progressDialog.setVisible(true);
+                    } catch (IndexOutOfBoundsException e) {
+                        // ignore
+                    }
                 }
-            }
-        }, "ProgressDialog").start();
+            }, "ProgressDialog").start();
 
-        new Thread("LoadExampleThread") {
-            @Override
-            public void run() {
+            new Thread("LoadExampleThread") {
+                @Override
+                public void run() {
 
-                try {
-                    matchInProteins(progressDialog);
-                } catch (Exception e) {
-                    progressDialog.setRunFinished();
-                    e.printStackTrace();
-                    deNovoGUI.catchException(e);
+                    try {
+                        matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog);
+                    } catch (Exception e) {
+                        progressDialog.setRunFinished();
+                        e.printStackTrace();
+                        deNovoGUI.catchException(e);
+                    }
                 }
-            }
-        }.start();
+            }.start();
+
+        }
+
     }//GEN-LAST:event_proteinMappingMenuItemActionPerformed
 
     /**
@@ -1659,22 +1666,21 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @throws InterruptedException
      * @throws SQLException
      */
-    private void matchInProteins(WaitingHandler waitingHandler) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
-
-        //@TODO: let the user choose the matching paramteters
-        ArrayList<String> fixedModifications = new ArrayList<String>();
-        fixedModifications.add("carbamidomethyl c");
-        ArrayList<String> variableModifications = new ArrayList<String>();
-        variableModifications.add("oxidation of m");
-        String database = "D:\\databases\\uniprot-eukaryota_reviewed_21.10.13.fasta";
+    private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
 
         waitingHandler.setWaitingText("Importing FASTA file (Step 1 of 2). Please Wait...");
-        File fastaFile = new File(database); //@TODO: check whether the file exists?
-        sequenceFactory.loadFastaFile(fastaFile, waitingHandler);
+        waitingHandler.setSecondaryProgressCounterIndeterminate(false);
+
+        if (waitingHandler.isRunCanceled()) {
+            return;
+        }
+
+        waitingHandler.resetSecondaryProgressCounter();
+        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         UtilitiesUserPreferences userPreferences = UtilitiesUserPreferences.loadUserPreferences();
         int memoryPreference = userPreferences.getMemoryPreference();
-        long fileSize = fastaFile.length();
+        long fileSize = sequenceFactory.getCurrentFastaFile().length();
         long nSequences = sequenceFactory.getNTargetSequences();
         if (!sequenceFactory.isDefaultReversed()) {
             nSequences = sequenceFactory.getNSequences();
@@ -1684,10 +1690,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (availableCachSize > nSequences) {
             availableCachSize = nSequences;
         } else {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "Warning: DeNovoGUI cannot load your FASTA file entirely into memory. This will slow down the processing. "
-                    + "Note that using large large databases also induces random hits efficiency. "
-                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to DeNovoGUI, or (iii) improve the reading speed by using an SSD disc. "
-                    + "(See also <a href=\"https://code.google.com/p/compomics-utilities/wiki/ProteinInference\">Protein Inference</a>).", "Large fasta file", JOptionPane.WARNING_MESSAGE);
+            waitingHandler.appendReport("Warning: DenovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
+                    + "Note that using large large databases also increases the number of false positives. "
+                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to PeptideShaker, or (iii) improve the reading speed by using an SSD disc. "
+                    + "(See also <a href=\"https://code.google.com/p/compomics-utilities/wiki/ProteinInference\">Protein Inference</a>).", true, true);
+
         }
         int cacheSize = (int) availableCachSize;
         sequenceFactory.setnCache(cacheSize);
@@ -1706,8 +1713,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                 int advocateIndex = Advocate.pepnovo.getIndex();
                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
-                for (double score : assumptionsMap.keySet()) {
-                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                for (double score : scores) {
+                    ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                    for (SpectrumIdentificationAssumption assumption : assumptions) {
                         if (assumption instanceof TagAssumption) {
                             TagAssumption tagAssumption = (TagAssumption) assumption;
                             HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
@@ -1740,7 +1749,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @return the share of memory being used
      */
     public double memoryUsed() {
-        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / Runtime.getRuntime().maxMemory();
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long givenMemory = Runtime.getRuntime().maxMemory();
+        double ratio = usedMemory / givenMemory;
+        return ratio;
     }
 
     /**
@@ -2489,6 +2501,24 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     @Override
     public String getDefaultExportFolder() {
         return deNovoGUI.getLastSelectedFolder();
+    }
+
+    /**
+     * Returns the last selected folder.
+     *
+     * @return the last selected folder
+     */
+    public String getLastSelectedFolder() {
+        return deNovoGUI.getLastSelectedFolder();
+    }
+
+    /**
+     * Sets the last selected folder.
+     *
+     * @param lastSelectedFolder the last selected folder
+     */
+    public void setLastSelectedFolder(String lastSelectedFolder) {
+        deNovoGUI.setLastSelectedFolder(lastSelectedFolder);
     }
 
     @Override

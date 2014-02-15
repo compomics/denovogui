@@ -1,5 +1,6 @@
 package com.compomics.denovogui.io;
 
+import com.compomics.denovogui.util.Properties;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
@@ -300,7 +301,7 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
             maxNGap = nGap;
         }
         Double cGap = new Double(lineComponents[4]);
-        double correction = Atom.O.mass + Atom.H.mass + 2 * ElementaryIon.proton.getTheoreticMass();
+        double correction = Atom.O.getMonoisotopicMass() + Atom.H.getMonoisotopicMass() + 2 * ElementaryIon.proton.getTheoreticMass();
         if (cGap > 0 && cGap < correction) {
             throw new IllegalArgumentException("Incompatible c-term gap " + cGap);
         } else if (cGap > 0) {
@@ -573,5 +574,10 @@ public class PepNovoIdfileReader extends ExperimentObject implements IdfileReade
      */
     public double getMaxMz() {
         return maxMz;
+    }
+
+    @Override
+    public String getSoftwareVersion() {
+        return new Properties().getVersion();
     }
 }
