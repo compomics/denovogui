@@ -302,6 +302,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Protein Mapping Settings");
 
         jPanel1.setBackground(new java.awt.Color(230, 230, 230));
 

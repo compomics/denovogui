@@ -346,14 +346,6 @@
             <Property name="text" type="java.lang.String" value="Edit"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="proteinMappingMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Protein Mapping (Beta)"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proteinMappingMenuItemActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="annotationsMenuItem">
               <Properties>
                 <Property name="mnemonic" type="int" value="83"/>
@@ -384,7 +376,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportPeptideMatchesMenuItem">
               <Properties>
                 <Property name="mnemonic" type="int" value="80"/>
-                <Property name="text" type="java.lang.String" value="Peptide Matches"/>
+                <Property name="text" type="java.lang.String" value="Peptide Matches (Beta)"/>
                 <Property name="toolTipText" type="java.lang.String" value="Export the peptide matches as text"/>
               </Properties>
               <Events>
