@@ -103,17 +103,19 @@ public class TextExporter {
                                 Collections.sort(scores, Collections.reverseOrder());
                                 for (Double score : scores) {
                                     for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
-                                        assumptions.add(peptideAssumption);
+                                        if (assumption instanceof PeptideAssumption) {
+                                            PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                            assumptions.add(peptideAssumption);
+                                        }
                                     }
                                 }
                             }
 
                             for (PeptideAssumption peptideAssumption : assumptions) {
-                                
+
                                 b.write(spectrumDetails);
                                 b.write(peptideAssumption.getRank() + separator);
-                                
+
                                 Peptide peptide = peptideAssumption.getPeptide();
                                 String proteinText = "";
                                 ArrayList<String> proteins = peptide.getParentProteinsNoRemapping();
@@ -125,11 +127,11 @@ public class TextExporter {
                                     proteinText += accession;
                                 }
                                 b.write(proteinText + separator);
-                                
+
                                 b.write(peptide.getSequence() + separator);
                                 b.write(getPeptideModificationsAsString(peptide) + separator);
                                 b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
-                                
+
                                 TagAssumption tagAssumption = new TagAssumption();
                                 tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
                                 Tag tag = tagAssumption.getTag();
@@ -147,9 +149,6 @@ public class TextExporter {
                                 b.write(tagAssumption.getIdentificationCharge().value + separator);
                                 b.newLine();
                             }
-                            if (assumptions.isEmpty()) {
-                                b.newLine(); //This should not happen. Should.
-                            }
                             if (waitingHandler != null) {
                                 waitingHandler.increaseSecondaryProgressCounter();
                                 if (waitingHandler.isRunCanceled()) {
@@ -157,8 +156,6 @@ public class TextExporter {
                                 }
                             }
                         }
-
-                        b.newLine();
                     }
                 }
 
@@ -449,7 +446,7 @@ public class TextExporter {
                 throw new IllegalArgumentException("Modification summary not implemented for TagComponent " + tagComponent.getClass() + ".");
             }
         }
-        
+
         StringBuilder result = new StringBuilder();
         boolean first = true, first2;
         ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
