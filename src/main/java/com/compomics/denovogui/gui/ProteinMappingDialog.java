@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.denovogui.gui;
 
 import com.compomics.util.experiment.biology.PTMFactory;
@@ -13,7 +8,6 @@ import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.gui.searchsettings.SearchSettingsDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -31,14 +25,14 @@ import no.uib.jsparklines.renderers.JSparklinesColorTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
 
 /**
- * This dialog allows the user to tune the tag to protein mapping
+ * This dialog allows the user to tune the tag to protein mapping.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDialogParent {
 
     /**
-     * The protein sequence factory
+     * The protein sequence factory.
      */
     private SequenceFactory sequenceFactory = SequenceFactory.getInstance();
     /**
@@ -46,7 +40,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
     /**
-     * The parent result frame
+     * The parent result frame.
      */
     private ResultsFrame resultsFrame;
     /**
@@ -54,20 +48,20 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
      */
     private ArrayList<String> modificationTableToolTips;
     /**
-     * The fixed modifications selected
+     * The fixed modifications selected.
      */
     private ArrayList<String> fixedModifications = new ArrayList<String>();
     /**
-     * The variable modifications selected
+     * The variable modifications selected.
      */
     private ArrayList<String> variableModifications = new ArrayList<String>();
     /**
-     * Indicates whether the user clicked the cancel button
+     * Indicates whether the user clicked the cancel button.
      */
     private boolean cancel = false;
 
     /**
-     * Creates new form ProteinMappingDialog
+     * Creates a new ProteinMappingDialog.
      *
      * @param resultFrame the denovoGUI result frame
      * @param modificationProfile the modification profile used for the
@@ -91,7 +85,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
     }
 
     /**
-     * Creates new form ProteinMappingDialog
+     * Creates a new ProteinMappingDialog.
      *
      * @param resultFrame the denovoGUI result frame
      */
@@ -100,7 +94,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
     }
 
     /**
-     * Sets up the gui
+     * Sets up the GUI.
      */
     private void setUpGUI() {
 
@@ -211,7 +205,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
     }
 
     /**
-     * indicates whether the user clicked on cancel.
+     * Indicates whether the user clicked on cancel.
      *
      * @return a boolean indicating whether the user clicked on cancel
      */
@@ -277,7 +271,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        backgroundPanel = new javax.swing.JPanel();
         dataBasePanelSettings = new javax.swing.JPanel();
         databaseSettingsLbl = new javax.swing.JLabel();
         databaseSettingsTxt = new javax.swing.JTextField();
@@ -303,8 +297,9 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Protein Mapping Settings");
+        setMinimumSize(new java.awt.Dimension(500, 300));
 
-        jPanel1.setBackground(new java.awt.Color(230, 230, 230));
+        backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
         dataBasePanelSettings.setBorder(javax.swing.BorderFactory.createTitledBorder("Database"));
         dataBasePanelSettings.setOpaque(false);
@@ -444,31 +439,31 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
+        backgroundPanel.setLayout(backgroundPanelLayout);
+        backgroundPanelLayout.setHorizontalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(dataBasePanelSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(mappingModificationsJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        backgroundPanelLayout.setVerticalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(dataBasePanelSettings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mappingModificationsJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
                 .addContainerGap())
@@ -478,16 +473,21 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Open the SequenceDbDetailsDialog.
+     *
+     * @param evt
+     */
     private void editDatabaseSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDatabaseSettingsActionPerformed
 
         // clear the factory
@@ -518,23 +518,49 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
 
     }//GEN-LAST:event_editDatabaseSettingsActionPerformed
 
+    /**
+     * Set the cursor to a hand cursor.
+     *
+     * @param evt
+     */
     private void openModificationSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonMouseEntered
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }//GEN-LAST:event_openModificationSettingsJButtonMouseEntered
 
+    /**
+     * Set the cursor to the default cursor.
+     *
+     * @param evt
+     */
     private void openModificationSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonMouseExited
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_openModificationSettingsJButtonMouseExited
 
+    /**
+     * Open the ModificationsDialog.
+     *
+     * @param evt
+     */
     private void openModificationSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonActionPerformed
         new ModificationsDialog(resultsFrame, this, true);
     }//GEN-LAST:event_openModificationSettingsJButtonActionPerformed
 
+    /**
+     * Set the cursor to the default cursor.
+     *
+     * @param evt
+     */
     private void modificationsTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modificationsTableMouseExited
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_modificationsTableMouseExited
 
+    /**
+     * Edit the modifications.
+     *
+     * @param evt
+     */
     private void modificationsTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modificationsTableMouseReleased
+
         int row = modificationsTable.rowAtPoint(evt.getPoint());
         int column = modificationsTable.columnAtPoint(evt.getPoint());
 
@@ -608,6 +634,11 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
         }
     }//GEN-LAST:event_modificationsTableMouseReleased
 
+    /**
+     * Set the cursor for the modification table.
+     *
+     * @param evt
+     */
     private void modificationsTableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modificationsTableMouseMoved
         int row = modificationsTable.rowAtPoint(evt.getPoint());
         int column = modificationsTable.columnAtPoint(evt.getPoint());
@@ -621,30 +652,38 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
         }
     }//GEN-LAST:event_modificationsTableMouseMoved
 
+    /**
+     * Close the dialog without saving.
+     *
+     * @param evt
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         cancel = true;
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
+    /**
+     * Close the dialog with saving.
+     *
+     * @param evt
+     */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         if (validateInput(true)) {
             dispose();
         }
     }//GEN-LAST:event_okButtonActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel dataBasePanelSettings;
     private javax.swing.JLabel databaseSettingsLbl;
     private javax.swing.JTextField databaseSettingsTxt;
     private javax.swing.JButton editDatabaseSettings;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel mappingModificationsJPanel;
     private javax.swing.JScrollPane modificationsJScrollPane;
     private javax.swing.JTable modificationsTable;
     private javax.swing.JButton okButton;
     private javax.swing.JButton openModificationSettingsJButton;
     // End of variables declaration//GEN-END:variables
-
 }
