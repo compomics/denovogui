@@ -70,8 +70,8 @@ public class TextExporter {
             try {
 
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
-                        + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Variable Modifications" + separator + "Modified Sequence"
-                        + separator + "Tag" + separator + "Modified tag sequence" + separator
+                        + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
+                        + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
                         + "RankScore" + separator + "Score" + separator + "N-Gap" + separator + "C-Gap" + separator
                         + "Theoretic m/z" + separator + "Identification Charge");
                 b.newLine();

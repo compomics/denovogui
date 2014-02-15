@@ -512,7 +512,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        proteinMappingMenuItem = new javax.swing.JMenuItem();
         annotationsMenuItem = new javax.swing.JMenuItem();
         exportMenu = new javax.swing.JMenu();
         exportTagMatchesMenuItem = new javax.swing.JMenuItem();
@@ -976,14 +975,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         editMenu.setMnemonic('E');
         editMenu.setText("Edit");
 
-        proteinMappingMenuItem.setText("Protein Mapping (Beta)");
-        proteinMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proteinMappingMenuItemActionPerformed(evt);
-            }
-        });
-        editMenu.add(proteinMappingMenuItem);
-
         annotationsMenuItem.setMnemonic('S');
         annotationsMenuItem.setText("Spectrum Annotation");
         annotationsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1009,7 +1000,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportMenu.add(exportTagMatchesMenuItem);
 
         exportPeptideMatchesMenuItem.setMnemonic('P');
-        exportPeptideMatchesMenuItem.setText("Peptide Matches");
+        exportPeptideMatchesMenuItem.setText("Peptide Matches (Beta)");
         exportPeptideMatchesMenuItem.setToolTipText("Export the peptide matches as text");
         exportPeptideMatchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1520,15 +1511,27 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }//GEN-LAST:event_annotationsMenuItemActionPerformed
 
     /**
-     * Load the protein mappings.
+     * Export the peptide matches to file.
      *
      * @param evt
      */
-    private void proteinMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proteinMappingMenuItemActionPerformed
+    private void exportPeptideMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportPeptideMatchesMenuItemActionPerformed
 
-        final ProteinMappingDialog mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
-
-        if (!mappingDialog.isCanceled()) {
+        final File selectedFile = Util.getUserSelectedFile(ResultsFrame.this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+        if (selectedFile != null) {
+            final boolean needMapping = sequenceFactory.getCurrentFastaFile() == null
+                    || JOptionPane.showConfirmDialog(ResultsFrame.this,
+                            "A protein mapping was already found, use the previous results?", "Mapping Already Exists",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION;
+            final ProteinMappingDialog mappingDialog;
+            if (needMapping) {
+                mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
+                if (mappingDialog.isCanceled() || sequenceFactory.getCurrentFastaFile() == null) {
+                    return;
+                }
+            } else {
+                mappingDialog = null;
+            }
 
             progressDialog = new ProgressDialogX(this,
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1552,29 +1555,25 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 public void run() {
 
                     try {
-                        matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog);
+                        if (needMapping) {
+                            matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog);
+                        }
+                        if (!progressDialog.isRunCanceled()) {
+                            progressDialog.setTitle("Exporting Matches. Please Wait...");
+                            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                            TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog);
+                            if (!progressDialog.isRunCanceled()) {
+                                JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
                     } catch (Exception e) {
-                        progressDialog.setRunFinished();
                         e.printStackTrace();
                         deNovoGUI.catchException(e);
+                    } finally {
+                        progressDialog.setRunFinished();
                     }
                 }
             }.start();
-
-        }
-
-    }//GEN-LAST:event_proteinMappingMenuItemActionPerformed
-
-    /**
-     * Export the peptide matches to file.
-     *
-     * @param evt
-     */
-    private void exportPeptideMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportPeptideMatchesMenuItemActionPerformed
-        File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
-        if (selectedFile != null) {
-            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, ExportType.peptides, null);
         }
     }//GEN-LAST:event_exportPeptideMatchesMenuItemActionPerformed
 
@@ -1630,7 +1629,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu otherMenu;
     private javax.swing.JCheckBoxMenuItem precursorCheckMenu;
-    private javax.swing.JMenuItem proteinMappingMenuItem;
     private javax.swing.JPanel querySpectraPanel;
     private javax.swing.JTable querySpectraTable;
     private javax.swing.JScrollPane querySpectraTableScrollPane;
