@@ -43,6 +43,7 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.gui.JOptionEditorPane;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export.graphics.ExportGraphicsDialog;
@@ -1697,7 +1698,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         int cacheSize = (int) availableCachSize;
         sequenceFactory.setnCache(cacheSize);
 
-        ProteinTree proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler);
+        ProteinTree proteinTree;
+        try {
+            proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler);
+        } catch (SQLException e) {
+            waitingHandler.appendReport("Database" + sequenceFactory.getCurrentFastaFile().getName() + "could not be accessed, make sure that the file is not used by another program.", true, true);
+            e.printStackTrace();
+            waitingHandler.setRunCanceled();
+            return;
+        }
 
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();

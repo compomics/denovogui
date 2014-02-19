@@ -2840,7 +2840,7 @@
         <MSModSpec_type>
             <MSModType value="modaa">0</MSModType>
         </MSModSpec_type>
-        <MSModSpec_name>TMT duplex on K</MSModSpec_name>
+        <MSModSpec_name>TMT duplex on K (old)</MSModSpec_name>
         <MSModSpec_monomass>225.155833</MSModSpec_monomass>
         <MSModSpec_averagemass>225.2921</MSModSpec_averagemass>
         <MSModSpec_n15mass>0</MSModSpec_n15mass>
@@ -2856,7 +2856,7 @@
         <MSModSpec_type>
             <MSModType value="modnp">5</MSModType>
         </MSModSpec_type>
-        <MSModSpec_name>TMT duplex on n-term peptide</MSModSpec_name>
+        <MSModSpec_name>TMT duplex on n-term peptide (old)</MSModSpec_name>
         <MSModSpec_monomass>225.155833</MSModSpec_monomass>
         <MSModSpec_averagemass>225.2921</MSModSpec_averagemass>
         <MSModSpec_n15mass>0</MSModSpec_n15mass>
@@ -2872,7 +2872,7 @@
         <MSModSpec_type>
             <MSModType value="modaa">0</MSModType>
         </MSModSpec_type>
-        <MSModSpec_name>TMT 6-plex on K</MSModSpec_name>
+        <MSModSpec_name>TMT 6-plex on K (old)</MSModSpec_name>
         <MSModSpec_monomass>229.162932</MSModSpec_monomass>
         <MSModSpec_averagemass>229.2634</MSModSpec_averagemass>
         <MSModSpec_n15mass>0</MSModSpec_n15mass>
@@ -2888,7 +2888,7 @@
         <MSModSpec_type>
             <MSModType value="modnp">5</MSModType>
         </MSModSpec_type>
-        <MSModSpec_name>TMT 6-plex on n-term peptide</MSModSpec_name>
+        <MSModSpec_name>TMT 6-plex on n-term peptide (old)</MSModSpec_name>
         <MSModSpec_monomass>229.162932</MSModSpec_monomass>
         <MSModSpec_averagemass>229.2634</MSModSpec_averagemass>
         <MSModSpec_n15mass>0</MSModSpec_n15mass>
