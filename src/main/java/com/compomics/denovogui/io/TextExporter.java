@@ -73,7 +73,7 @@ public class TextExporter {
                         + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
                         + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
                         + "RankScore" + separator + "Score" + separator + "N-Gap" + separator + "C-Gap" + separator
-                        + "Theoretic m/z" + separator + "Identification Charge");
+                        + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)" + separator + "Tag Mass Error (ppm)" + separator + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)");
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -147,6 +147,14 @@ public class TextExporter {
                                 b.write(tag.getCTerminalGap() + separator);
                                 b.write(tag.getMass() + separator);
                                 b.write(tagAssumption.getIdentificationCharge().value + separator);
+                                double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false);
+                                b.write(massDeviation + separator);
+                                massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true);
+                                b.write(massDeviation + separator);
+                                massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false);
+                                b.write(massDeviation + separator);
+                                massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true);
+                                b.write(massDeviation + "");
                                 b.newLine();
                             }
                             if (waitingHandler != null) {
