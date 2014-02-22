@@ -274,12 +274,14 @@ public class FindPanel extends javax.swing.JPanel {
 
                                                 for (Double score : scores) {
                                                     for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                                        String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
-                                                        if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
-                                                            possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
+                                                        if (assumption instanceof TagAssumption) {
+                                                            TagAssumption tagAssumption = (TagAssumption) assumption;
+                                                            String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
+                                                            if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
+                                                                possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
+                                                            }
+                                                            rowCounter++;
                                                         }
-                                                        rowCounter++;
                                                     }
                                                 }
                                             }

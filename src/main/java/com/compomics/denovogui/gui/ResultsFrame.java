@@ -1711,9 +1711,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
-        waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
+        int total = identification.getSpectrumIdentificationSize();
+        waitingHandler.setMaxSecondaryProgressCounter(total);
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); //@TODO: remove when the objectDB is stable
 
+        int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
             identification.loadSpectrumMatches(spectrumFile, null);
             for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
@@ -1744,6 +1746,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     objectsCache.reduceMemoryConsumption(0.5, null);
                 }
                 waitingHandler.increaseSecondaryProgressCounter();
+        waitingHandler.setWaitingText("Mapping Tags (" + ++progress + "/" + total + ", Step 2 of 2). Please Wait...");
             }
         }
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
@@ -2060,8 +2063,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         Collections.sort(scores, Collections.reverseOrder());
                         for (Double score : scores) {
                             for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                TagAssumption tagAssumption = (TagAssumption) assumption;
-                                assumptions.add(tagAssumption);
+                                if (assumption instanceof TagAssumption) {
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    assumptions.add(tagAssumption);
+                                }
                             }
                         }
                     }
