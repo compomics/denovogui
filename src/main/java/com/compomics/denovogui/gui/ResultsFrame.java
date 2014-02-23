@@ -1746,7 +1746,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     objectsCache.reduceMemoryConsumption(0.5, null);
                 }
                 waitingHandler.increaseSecondaryProgressCounter();
-        waitingHandler.setWaitingText("Mapping Tags (" + ++progress + "/" + total + ", Step 2 of 2). Please Wait...");
+        waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, spectrum " + ++progress + " of " + total + "). Please Wait...");
             }
         }
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
