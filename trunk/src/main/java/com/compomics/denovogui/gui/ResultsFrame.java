@@ -1728,7 +1728,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     for (SpectrumIdentificationAssumption assumption : assumptions) {
                         if (assumption instanceof TagAssumption) {
                             TagAssumption tagAssumption = (TagAssumption) assumption;
-                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
+                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
                             for (Peptide peptide : proteinMapping.keySet()) {
                                 peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
                                 PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
