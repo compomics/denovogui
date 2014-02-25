@@ -103,10 +103,18 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The selected PepNovo folder.
      */
     private File pepNovoFolder;
+       /**
+     * The selected DirecTag folder.
+     */
+    private File direcTagFolder;
     /**
      * Title of the PepNovo executable.
      */
     private String pepNovoExecutable = "PepNovo_Windows.exe";
+    /**
+     * Title of the DirecTag executable.
+     */
+    private String direcTagExecutable = "DirecTag_Windows.exe";
     /**
      * Spectra files list.
      */
@@ -214,8 +222,21 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 // unsupported OS version
             }
         }
+        
+        // Set the default PepNovo folder
+        if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
+            direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag");
 
-        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder);
+            // OS check
+            if (osName.contains("windows")) {
+                direcTagExecutable = "DirecTag_Windows.exe";
+            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                direcTagExecutable = "DirecTag_Linux";
+            } else {
+                // unsupported OS version
+            }
+        }
+        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
 
         setUpGUI();
 
@@ -1429,7 +1450,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, waitingHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
@@ -1601,12 +1622,48 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }
 
     /**
-     * Returns the PepNovo executable.
+     * Returns the PepNovo folder.
      *
      * @return the pepNovoExecutable
      */
     public String getPepNovoExecutable() {
         return pepNovoExecutable;
+    }
+    
+        /**
+     * Sets the DirecTag folder.
+     *
+     * @param direcTagFolder DirecTag folder.
+     */
+    public void setDirecTagFolder(File direcTagFolder) {
+        this.direcTagFolder = direcTagFolder;
+    }
+
+    /**
+     * Returns the PepNovo folder.
+     *
+     * @return the direcTagFolder
+     */
+    public File getDirecTagFolder() {
+        return direcTagFolder;
+    }
+
+    /**
+     * Sets the DirecTag executable.
+     *
+     * @param direcTagExecutable DirecTag executable.
+     */
+    public void setDirecTagExecutable(String direcTagExecutable) {
+        this.direcTagExecutable = direcTagExecutable;
+    }
+
+    /**
+     * Returns the DirecTag executable.
+     *
+     * @return the direcTagExecutable
+     */
+    public String getDirecTagExecutable() {
+        return direcTagExecutable;
     }
 
     /**

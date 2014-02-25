@@ -205,6 +205,8 @@ public class FileProcessor {
     public static File getOutFile(File outFolder, File spectrumFile) {
         return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
     }
+    
+    
 
     /**
      * Returns the mgf file corresponding to the given out file.

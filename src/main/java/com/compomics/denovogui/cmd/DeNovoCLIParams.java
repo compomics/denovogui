@@ -20,7 +20,8 @@ public enum DeNovoCLIParams {
     IDENTIFICATION_PARAMETERS("id_params", "A search parameters file. Can be generated from the GUI or using the IdentificationParametersCLI (see http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI for details).", false),
     THREADS("threads", "The number of threads to use for the processing. Default is the number of cores available.", false),
     //PEPNOVO("pepnovo", "Turn the Pepnovo sequencing on or off (1: on, 0: off, default is '1').", false), // @TODO uncomment when more algorithms are available
-    PEPNOVO_LOCATION("pepnovo_folder", "The PepNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false);
+    PEPNOVO_LOCATION("pepnovo_folder", "The PepNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
+    DIRECTAG_LOCATION("directag_folder", "The DirecTag executable, defaults to the OS dependent versions included with DeNovoGUI.", false);;
 
     
     /**
@@ -85,6 +86,7 @@ public enum DeNovoCLIParams {
 
         output += "\n\nOptional advanced parameters:\n\n";
         output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + PEPNOVO_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + DIRECTAG_LOCATION.description + "\n";
         output += "-" + String.format(formatter, THREADS.id) + THREADS.description + "\n";
 
         return output;
