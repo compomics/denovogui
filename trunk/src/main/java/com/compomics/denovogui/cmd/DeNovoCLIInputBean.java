@@ -39,13 +39,21 @@ public class DeNovoCLIInputBean {
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
     /**
-     * If true, pepnovo is enabled.
+     * If true, PepNovo+ is enabled.
      */
     private boolean pepnovoEnabled = true;
     /**
+     * If true, DirecTag is enabled.
+     */
+    private boolean direcTagEnabled = true;
+    /**
      * The PepNovo executable. Full path.
      */
-    private File pepnovoLocation = null;
+    private File pepNovoExecutable = null;
+    /**
+     * The DirecTag executable. Full path.
+     */
+    private File direcTagExecutable = null;
     /**
      * Number of threads to use. Defaults to the number of cores available.
      */
@@ -76,11 +84,11 @@ public class DeNovoCLIInputBean {
 //            if (xtandemOption.trim().equals("0")) {
 //                pepnovoEnabled = false;
 //            }
-//        }
+//     }
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
             String pepNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO_LOCATION.id);
-            this.pepnovoLocation = new File(pepNovoExecutable);
+            this.pepNovoExecutable = new File(pepNovoExecutable);
         }
 
         // get the number of threads
@@ -138,7 +146,16 @@ public class DeNovoCLIInputBean {
      * @return the PepNovo+ executable
      */
     public File getPepNovoExecutable() {
-        return pepnovoLocation;
+        return pepNovoExecutable;
+    }
+    
+    /**
+     * Returns the DirecTag executable. Null if not set.
+     *
+     * @return the DirecTag executable
+     */
+    public File getDirecTagExecutable() {
+        return pepNovoExecutable;
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.compomics.denovogui;
 
+import com.compomics.denovogui.execution.Job;
+import com.compomics.denovogui.execution.jobs.DirectagJob;
 import com.compomics.denovogui.execution.jobs.PepnovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
@@ -35,6 +37,12 @@ public class DeNovoSequencingHandler {
      * The PepNovo folder.
      */
     private File pepNovoFolder;
+    
+    /**
+     * The DirecTag folder.
+     */
+    private File direcTagFolder;
+    
     /**
      * Default PTM selection.
      */
@@ -74,15 +82,17 @@ public class DeNovoSequencingHandler {
     /**
      * The job queue.
      */
-    private Deque<PepnovoJob> jobs;
+    private Deque<Job> jobs;
 
     /**
      * Constructor.
      *
-     * @param pepNovoFolder the pep novo folder
+     * @param pepNovoFolder the PepNovo+ folder.
+     * @param directTagFolder the DirecTag folder.
      */
-    public DeNovoSequencingHandler(File pepNovoFolder) {
+    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder) {
         this.pepNovoFolder = pepNovoFolder;
+        this.direcTagFolder = direcTagFolder;
     }
 
     /**
@@ -92,12 +102,13 @@ public class DeNovoSequencingHandler {
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
-     * @param exeTitle the name of the executable
+     * @param pepNovoExeTitle the name of the PepNovo+ executable
+     * @param direcTagExeTitle the name of the DirecTag executable
      * @param waitingHandler the waiting handler
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
 
         long startTime = System.nanoTime();
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra());
@@ -144,7 +155,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReportEndLine();
 
         for (File spectrumFile : spectrumFiles) {
-            startSequencing(spectrumFile, searchParameters, outputFolder, exeTitle, waitingHandler, spectrumFiles.size() > 1);
+            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, waitingHandler, spectrumFiles.size() > 1);
             if (waitingHandler.isRunCanceled()) {
                 break;
             }
@@ -163,18 +174,19 @@ public class DeNovoSequencingHandler {
      * @param spectrumFile the spectrum file to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
-     * @param exeTitle the name of the executable
+     * @param pepNovoExeTitle the name of the PepNovo+ executable
+     * @param direcTagExeTitle the name of the DirecTag executable
      * @param waitingHandler the waiting handler
      * @param secondaryProgress if true the progress on the given file will be
      * displayed
      */
-    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String exeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
+    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
         // Start a fixed thread pool
         threadExecutor = Executors.newFixedThreadPool(nThreads);
 
         // Job queue.
-        jobs = new ArrayDeque<PepnovoJob>();
+        jobs = new ArrayDeque<Job>();
         try {
             int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
             int remaining = nSpectra % nThreads;
@@ -201,11 +213,16 @@ public class DeNovoSequencingHandler {
                 waitingHandler.setSecondaryProgressCounterIndeterminate(true);
             }
 
-            // Distribute the chunked spectra to the different jobs.
+            // Distribute the chunked spectra to the different PepNovo+ jobs.
             for (File chunkFile : chunkFiles) {
-                PepnovoJob job = new PepnovoJob(pepNovoFolder, exeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                PepnovoJob job = new PepnovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
                 jobs.add(job);
             }
+            
+            // Add the DirecTag job only once - multithreading is done in the application itself!
+            DirectagJob job2 = new DirectagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
+            jobs.add(job2);
+            
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
             return;
@@ -223,9 +240,9 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReportEndLine();
 
         // Execute the jobs from the queue.
-        Iterator<PepnovoJob> iterator = jobs.iterator();
+        Iterator<Job> iterator = jobs.iterator();
         while (iterator.hasNext()) {
-            PepnovoJob job = iterator.next();
+            Job job = iterator.next();
             threadExecutor.execute(job);
             if (waitingHandler.isRunCanceled()) {
                 return;
@@ -268,7 +285,7 @@ public class DeNovoSequencingHandler {
     public void cancelSequencing(File outputFolder, WaitingHandler waitingHandler) throws IOException {
         if (jobs != null) {
             // cancel the jobs and delete temp .out files
-            for (PepnovoJob job : jobs) {
+            for (Job job : jobs) {
                 job.cancel();
             }
         }

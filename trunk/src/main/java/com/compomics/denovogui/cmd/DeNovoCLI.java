@@ -94,8 +94,11 @@ public class DeNovoCLI implements Callable {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
 
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
+            File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
             File pepNovoFolder = null;
+            File direcTagFolder = null;
             String executableTitle = null;
+            String executableTitle2 = null;
 
             if (pepNovoExecutable != null) {
                 executableTitle = pepNovoExecutable.getName();
@@ -118,6 +121,28 @@ public class DeNovoCLI implements Callable {
                     // unsupported OS version
                 }
             }
+            
+             if (direcTagExecutable != null) {
+                executableTitle2 = direcTagExecutable.getName();
+                direcTagFolder = direcTagExecutable.getParentFile();
+            } else if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
+
+                // use the default DirecTag folder if not set by user
+                pepNovoFolder = new File(getJarFilePath() + "/resources/DirecTag");
+
+                // OS check
+                String osName = System.getProperty("os.name").toLowerCase();
+
+//                if (osName.contains("mac os")) {
+//                    executableTitle = "PepNovo_Mac";
+                if (osName.contains("windows")) {
+                    executableTitle2 = "DirecTag_Windows.exe";
+                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                    executableTitle2 = "DirecTag_Linux";
+                } else {
+                    // unsupported OS version
+                }
+            }
 
             // check if the PepNovo folder is set
             if (pepNovoFolder == null) {
@@ -128,6 +153,18 @@ public class DeNovoCLI implements Callable {
             // check of the PepNovo executable is set
             if (executableTitle == null) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+            
+            // check if the DirecTag folder is set
+            if (direcTagFolder == null) {
+                waitingHandlerCLIImpl.appendReport("\nDirecTag location not set! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+
+            // check of the DirecTag executable is set
+            if (executableTitle2 == null) {
+                waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
 
@@ -151,12 +188,11 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
             // start the sequencing
-            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), executableTitle,
-                    waitingHandlerCLIImpl);
+                    deNovoCLIInputBean.getOutputFile(), executableTitle, executableTitle2, waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();
         }
