@@ -1,8 +1,6 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.software.CommandLineUtils;
-import com.compomics.util.experiment.biology.EnzymeFactory;
-import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +12,8 @@ import org.apache.commons.cli.CommandLine;
  * The DeNovoCLIInputBean reads and stores command line options from a command
  * line.
  *
- * @author Marc
+ * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class DeNovoCLIInputBean {
 
@@ -31,17 +30,9 @@ public class DeNovoCLIInputBean {
      */
     private SearchParameters searchParameters;
     /**
-     * The compomics PTM factory.
-     */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
-    /**
-     * The enzyme factory.
-     */
-    private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
-    /**
      * If true, PepNovo+ is enabled.
      */
-    private boolean pepnovoEnabled = true;
+    private boolean pepNovoEnabled = true;
     /**
      * If true, DirecTag is enabled.
      */
@@ -77,18 +68,28 @@ public class DeNovoCLIInputBean {
         String fileTxt = aLine.getOptionValue(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id);
         searchParameters = SearchParameters.getIdentificationParameters(new File(fileTxt));
 
-// @TODO uncomment when more algorithms are available
-        // see which algorithm to use
-//        if (aLine.hasOption(DeNovoCLIParams.PEPNOVO.id)) {
-//            String xtandemOption = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO.id);
-//            if (xtandemOption.trim().equals("0")) {
-//                pepnovoEnabled = false;
-//            }
-//     }
+        // see which algorithms to use
+        if (aLine.hasOption(DeNovoCLIParams.PEPNOVO.id)) {
+            String pepNovoOption = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO.id);
+            if (pepNovoOption.trim().equals("0")) {
+                pepNovoEnabled = false;
+            }
+        }
+        if (aLine.hasOption(DeNovoCLIParams.DIRECT_TAG.id)) {
+            String direcTagOption = aLine.getOptionValue(DeNovoCLIParams.DIRECT_TAG.id);
+            if (direcTagOption.trim().equals("0")) {
+                direcTagEnabled = false;
+            }
+        }
+
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
-            String pepNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO_LOCATION.id);
-            this.pepNovoExecutable = new File(pepNovoExecutable);
+            String tempPepNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO_LOCATION.id);
+            this.pepNovoExecutable = new File(tempPepNovoExecutable);
+        }
+        if (aLine.hasOption(DeNovoCLIParams.DIRECTAG_LOCATION.id)) {
+            String tempDirecTagExecutable = aLine.getOptionValue(DeNovoCLIParams.DIRECTAG_LOCATION.id);
+            this.direcTagExecutable = new File(tempDirecTagExecutable);
         }
 
         // get the number of threads
@@ -148,14 +149,32 @@ public class DeNovoCLIInputBean {
     public File getPepNovoExecutable() {
         return pepNovoExecutable;
     }
-    
+
     /**
      * Returns the DirecTag executable. Null if not set.
      *
      * @return the DirecTag executable
      */
     public File getDirecTagExecutable() {
-        return pepNovoExecutable;
+        return direcTagExecutable;
+    }
+    
+    /**
+     * Returns if PepNovo+ is to be run or not.
+     * 
+     * @return if PepNovo+ is to be run or not
+     */
+    public boolean enablePepNovo() {
+        return pepNovoEnabled;
+    }
+    
+    /**
+     * Returns if DirecTag is to be run or not.
+     * 
+     * @return if DirecTag is to be run or not
+     */
+    public boolean enableDirecTag() {
+        return direcTagEnabled;
     }
 
     /**

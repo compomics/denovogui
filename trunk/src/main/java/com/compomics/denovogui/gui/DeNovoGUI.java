@@ -2,7 +2,6 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
-import com.compomics.denovogui.util.ExtensionFileFilter;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CommandLineUtils;
 import com.compomics.software.ToolFactory;
@@ -429,7 +428,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         });
 
         pepNovoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pepnovo.png"))); // NOI18N
-        pepNovoButton.setToolTipText("Open the PepNovo+ web page");
+        pepNovoButton.setToolTipText("Enable PepNovo+");
         pepNovoButton.setBorder(null);
         pepNovoButton.setBorderPainted(false);
         pepNovoButton.setContentAreaFilled(false);
@@ -448,7 +447,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         });
 
         direcTagButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/directag.png"))); // NOI18N
-        direcTagButton.setToolTipText("Open the DirecTag web page");
+        direcTagButton.setToolTipText("Enable DirecTag");
         direcTagButton.setBorder(null);
         direcTagButton.setBorderPainted(false);
         direcTagButton.setContentAreaFilled(false);
@@ -769,7 +768,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         editMenu.add(modsMenuItem);
         editMenu.add(jSeparator1);
 
-        pepNovoMenuItem.setText("PepNovo");
+        pepNovoMenuItem.setText("Locations");
         pepNovoMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pepNovoMenuItemActionPerformed(evt);
@@ -880,7 +879,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param evt
      */
     private void pepNovoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoMenuItemActionPerformed
-        new PepNovoLocationDialog(this, true);
+        new LocationDialog(this, true);
     }//GEN-LAST:event_pepNovoMenuItemActionPerformed
 
     /**
@@ -934,7 +933,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param evt
      */
     private void pepNovoLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoLinkLabelMouseClicked
-        pepNovoButtonActionPerformed(null);
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://proteomics.ucsd.edu/Software/PepNovo/");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_pepNovoLinkLabelMouseClicked
 
     /**
@@ -974,14 +975,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }//GEN-LAST:event_pepNovoButtonMouseExited
 
     /**
-     * Open the PepNovo web page.
+     * Select PepNovo+.
      *
      * @param evt
      */
     private void pepNovoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoButtonActionPerformed
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        BareBonesBrowserLaunch.openURL("http://proteomics.ucsd.edu/Software/PepNovo/");
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        pepNovoRadioButton.setSelected(true);
     }//GEN-LAST:event_pepNovoButtonActionPerformed
 
     /**
@@ -1018,7 +1017,20 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             startLocation = temp.getParentFile();
         }
         JFileChooser fc = new JFileChooser(startLocation);
-        fc.setFileFilter(new ExtensionFileFilter("mgf", false));
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
+
+                return myFile.getName().toLowerCase().endsWith(".mgf")
+                        || myFile.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Peak list (.mgf)";
+            }
+        };
+        fc.setFileFilter(filter);
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fc.setMultiSelectionEnabled(true);
         int result = fc.showOpenDialog(this);
@@ -1308,14 +1320,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }//GEN-LAST:event_direcTagButtonMouseExited
 
     /**
-     * Open the DirecTag web page.
+     * Select DirecTag.
      * 
      * @param evt 
      */
     private void direcTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagButtonActionPerformed
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        BareBonesBrowserLaunch.openURL("http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag");
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        directTagRadioButton.setSelected(true);
     }//GEN-LAST:event_direcTagButtonActionPerformed
 
     /**
@@ -1324,7 +1334,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param evt 
      */
     private void direcTagLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagLinkLabelMouseClicked
-        direcTagButtonActionPerformed(null);
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_direcTagLinkLabelMouseClicked
 
     /**
@@ -1840,6 +1852,33 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 }
             }
             if (executableCounter > 0 && modelFolderCounter > 0) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+    
+    /**
+     * This method checks for the folder being the DirecTag folder.
+     *
+     * @param deNovoFolder the folder to check
+     * @return boolean to show whether the DirecTag folder is correct
+     */
+    public boolean checkDirecTagFolder(File deNovoFolder) {
+
+        boolean result = false;
+
+        if (deNovoFolder != null && deNovoFolder.exists() && deNovoFolder.isDirectory()) {
+            String[] fileNames = deNovoFolder.list();
+            int executableCounter = 0;
+            for (int i = 0; i < fileNames.length; i++) {
+                String lFileName = fileNames[i];
+                if (lFileName.startsWith("DirecTag_Windows")) {
+                    executableCounter++;
+                }
+            }
+            if (executableCounter > 0) {
                 result = true;
             }
         }
