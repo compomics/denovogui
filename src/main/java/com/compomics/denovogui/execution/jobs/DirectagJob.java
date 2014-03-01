@@ -6,9 +6,10 @@ import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 
-
 /**
- * <b>DirectagJob</b> <p> This job class runs DirecTag for tag-based denovo sequencing</p>
+ * <b>DirectagJob</b>
+ * <p>
+ * This job class runs DirecTag for tag-based denovo sequencing</p>
  *
  * @author Thilo Muth
  */
@@ -34,7 +35,7 @@ public class DirectagJob extends Job {
      * The output path.
      */
     private File outputFolder;
-    
+
     /**
      * The number of threads.
      */
@@ -58,7 +59,7 @@ public class DirectagJob extends Job {
         this.nThreads = nThreads;
         this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
-        
+
         this.waitingHandler = waitingHandler;
         initJob();
     }
@@ -76,53 +77,63 @@ public class DirectagJob extends Job {
         procCommands.add(spectrumFile.getAbsolutePath());
 
         // Number of cores.
-        procCommands.add("-cpus");        
+        procCommands.add("-cpus");
         procCommands.add(Integer.toString(nThreads));
-        
+
         // TODO: Fixed modifications should be parameterized.
         /**
-         * If a residue (or multiple residues) should always be treated as having a modification on their natural mass, 
-         * set this parameter to inform the tagging engine which residues are modified. Residues are entered into this string as a space-delimited list of pairs.
-         * Each pair is of the form: <AA residue character> <mod mass>
-         * Thus, to treat cysteine as always being carboxymethylated, this parameter would be set to something like the string C 57.0215
+         * If a residue (or multiple residues) should always be treated as
+         * having a modification on their natural mass, set this parameter to
+         * inform the tagging engine which residues are modified. Residues are
+         * entered into this string as a space-delimited list of pairs. Each
+         * pair is of the form: <AA residue character> <mod mass>
+         * Thus, to treat cysteine as always being carboxymethylated, this
+         * parameter would be set to something like the string C 57.0215
          */
         procCommands.add("-StaticMods");
         procCommands.add("C 57.0215");
-        
+
         // TODO: Variable modifications should be parameterized.
         /**
-         * In order to generate tags with potential post-translational modifications to amino acid residues, 
-         * the user must configure this parameter to inform the tagging engine which residues may be modified. 
-         * Residues that are modifiable are entered into this string in a space-delimited list of triplets. Each triplet is of the form:
+         * In order to generate tags with potential post-translational
+         * modifications to amino acid residues, the user must configure this
+         * parameter to inform the tagging engine which residues may be
+         * modified. Residues that are modifiable are entered into this string
+         * in a space-delimited list of triplets. Each triplet is of the form:
          * <AA residue character> <character to represent mod> <mod mass>
-         * Thus, to generate tags for potentially oxidized methionine, this parameter would be set to something like the string M * 15.995.
+         * Thus, to generate tags for potentially oxidized methionine, this
+         * parameter would be set to something like the string M * 15.995.
          */
         procCommands.add("-DynamicMods");
         procCommands.add("M * 15.995");
-                
+
         // Add fragment tolerance
         procCommands.add("-FragmentMzTolerance");
         procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
-        
+
         // Add precursor tolerance
         procCommands.add("-PrecursorMzTolerance");
         procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
-        
+
         //TODO: Parameterize hard-coded tag length...
         procCommands.add("-TagLength");
         procCommands.add("3");
-        
+
         // Add maximum tag count
         procCommands.add("-MaxTagCount");
-        procCommands.add("40");
-                
+        procCommands.add("20");
+        
+        // Set the output directory
+        procCommands.add("-workdir");
+        procCommands.add(outputFolder.getAbsolutePath());
+
         procCommands.trimToSize();
-        
+
         outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + "_directag.out");
-        
-         // Set the description - yet not used
-        setDescription("DIRECTAG");
-        
+
+        // Set the description - yet not used
+        setDescription("DirecTag");
+
         procBuilder = new ProcessBuilder(procCommands);
         procBuilder.directory(exeFolder);
 

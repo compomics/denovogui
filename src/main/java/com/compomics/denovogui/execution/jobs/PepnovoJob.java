@@ -120,7 +120,7 @@ public class PepnovoJob extends Job {
         procCommands.trimToSize();
 
         // Set the description - yet not used
-        setDescription("PEPNOVO");
+        setDescription("PepNovo+");
         procBuilder = new ProcessBuilder(procCommands);
         procBuilder.directory(pepNovoFolder);
 

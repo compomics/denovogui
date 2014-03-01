@@ -356,11 +356,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        deNovoButtonGroup = new javax.swing.ButtonGroup();
         backgroundPanel = new javax.swing.JPanel();
         searchEnginesPanel = new javax.swing.JPanel();
-        enablePepNovoJCheckBox = new javax.swing.JCheckBox();
         pepNovoLinkLabel = new javax.swing.JLabel();
         pepNovoButton = new javax.swing.JButton();
+        direcTagButton = new javax.swing.JButton();
+        direcTagLinkLabel = new javax.swing.JLabel();
+        directTagRadioButton = new javax.swing.JRadioButton();
+        pepNovoRadioButton = new javax.swing.JRadioButton();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -410,15 +414,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         searchEnginesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Sequencing Methods"));
         searchEnginesPanel.setOpaque(false);
 
-        enablePepNovoJCheckBox.setSelected(true);
-        enablePepNovoJCheckBox.setToolTipText("Enable PepNovo+");
-        enablePepNovoJCheckBox.setOpaque(false);
-        enablePepNovoJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enablePepNovoJCheckBoxActionPerformed(evt);
-            }
-        });
-
         pepNovoLinkLabel.setText("<html>De Novo Peptide Sequencing via Probabilistic Network Modeling - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo+ web page</a></html> ");
         pepNovoLinkLabel.setToolTipText("Open the PepNovo+ web page");
         pepNovoLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -452,27 +447,80 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         });
 
+        direcTagButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/directag.png"))); // NOI18N
+        direcTagButton.setToolTipText("Open the DirecTag web page");
+        direcTagButton.setBorder(null);
+        direcTagButton.setBorderPainted(false);
+        direcTagButton.setContentAreaFilled(false);
+        direcTagButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                direcTagButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                direcTagButtonMouseExited(evt);
+            }
+        });
+        direcTagButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                direcTagButtonActionPerformed(evt);
+            }
+        });
+
+        direcTagLinkLabel.setText("<html>DirecTag for MS-MS Sequence Tagging - <a href=\"http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/\">DirecTag web page</a></html> ");
+        direcTagLinkLabel.setToolTipText("Open the DirecTag web page");
+        direcTagLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                direcTagLinkLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                direcTagLinkLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                direcTagLinkLabelMouseExited(evt);
+            }
+        });
+
+        deNovoButtonGroup.add(directTagRadioButton);
+        directTagRadioButton.setToolTipText("Enable DirecTag");
+        directTagRadioButton.setOpaque(false);
+
+        deNovoButtonGroup.add(pepNovoRadioButton);
+        pepNovoRadioButton.setSelected(true);
+        pepNovoRadioButton.setToolTipText("Enable PepNovo+");
+        pepNovoRadioButton.setOpaque(false);
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addComponent(enablePepNovoJCheckBox)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(directTagRadioButton)
+                    .addComponent(pepNovoRadioButton))
                 .addGap(71, 71, 71)
-                .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
-                .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(enablePepNovoJCheckBox)
                     .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pepNovoRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(directTagRadioButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -639,19 +687,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(backgroundPanelLayout.createSequentialGroup()
-                        .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(searchEnginesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(inputFilesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
+                    .addComponent(searchEnginesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(inputFilesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(backgroundPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
-                        .addComponent(deNovoGuiWebPageJLabel)
+                        .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
                         .addGap(80, 80, 80)
                         .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(21, 21, 21))))
+                        .addGap(11, 11, 11)))
+                .addContainerGap())
         );
         backgroundPanelLayout.setVerticalGroup(
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -778,7 +824,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -865,7 +911,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 cancelSequencing();
             }
         });
-        waitingDialog.setCloseDialogWhenImportCompletes(true, true);
+        if (pepNovoRadioButton.isSelected()) { // @TODO: change this when DirecTag results can be displayed too
+            waitingDialog.setCloseDialogWhenImportCompletes(true, true);
+        }
         waitingDialog.setLocationRelativeTo(this);
         startSequencing(waitingDialog);
 
@@ -879,18 +927,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private void modsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modsMenuItemActionPerformed
         new ModificationsDialog(this, this, true);
     }//GEN-LAST:event_modsMenuItemActionPerformed
-
-    /**
-     * Enable/disable PepNovo.
-     *
-     * @param evt
-     */
-    private void enablePepNovoJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enablePepNovoJCheckBoxActionPerformed
-
-        // @TODO: add testsing of the PepNovo installation
-
-        validateInput(false);
-    }//GEN-LAST:event_enablePepNovoJCheckBoxActionPerformed
 
     /**
      * Open the PepNovo web page.
@@ -944,7 +980,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     private void pepNovoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoButtonActionPerformed
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        BareBonesBrowserLaunch.openURL("http://proteomics.ucsd.edu/Software/PepNovo.html");
+        BareBonesBrowserLaunch.openURL("http://proteomics.ucsd.edu/Software/PepNovo/");
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_pepNovoButtonActionPerformed
 
@@ -1254,6 +1290,62 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }//GEN-LAST:event_formWindowClosing
 
     /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void direcTagButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_direcTagButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void direcTagButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_direcTagButtonMouseExited
+
+    /**
+     * Open the DirecTag web page.
+     * 
+     * @param evt 
+     */
+    private void direcTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagButtonActionPerformed
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_direcTagButtonActionPerformed
+
+    /**
+     * Open the DirecTag web page.
+     * 
+     * @param evt 
+     */
+    private void direcTagLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagLinkLabelMouseClicked
+        direcTagButtonActionPerformed(null);
+    }//GEN-LAST:event_direcTagLinkLabelMouseClicked
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void direcTagLinkLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagLinkLabelMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_direcTagLinkLabelMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void direcTagLinkLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagLinkLabelMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_direcTagLinkLabelMouseExited
+
+    /**
      * The main method.
      *
      * @param args the command line arguments
@@ -1328,9 +1420,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton clearSpectraButton;
     private javax.swing.JLabel configurationFileLbl;
+    private javax.swing.ButtonGroup deNovoButtonGroup;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;
+    private javax.swing.JButton direcTagButton;
+    private javax.swing.JLabel direcTagLinkLabel;
+    private javax.swing.JRadioButton directTagRadioButton;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JCheckBox enablePepNovoJCheckBox;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
@@ -1352,6 +1447,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JButton pepNovoButton;
     private javax.swing.JLabel pepNovoLinkLabel;
     private javax.swing.JMenuItem pepNovoMenuItem;
+    private javax.swing.JRadioButton pepNovoRadioButton;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
     private javax.swing.JPanel searchEnginesPanel;
@@ -1370,7 +1466,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public void startSequencing(WaitingHandler waitingHandler) {
 
-        sequencingWorker = new SequencingWorker(waitingHandler);
+        sequencingWorker = new SequencingWorker(waitingHandler, pepNovoRadioButton.isSelected()); // @TODO: change this when DirecTag results can be displayed as well
         sequencingWorker.execute();
 
         // Display the waiting dialog
@@ -1429,14 +1525,19 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
          * True if the process has finished.
          */
         private boolean finished = false;
+        /**
+         * If true, the results will be displayed in the results frame when done.
+         */
+        private boolean displayResults = true;
 
         /**
          * Constructor.
          *
          * @param waitingHandler
          */
-        public SequencingWorker(WaitingHandler waitingHandler) {
+        public SequencingWorker(WaitingHandler waitingHandler, boolean displayResults) {
             this.waitingHandler = waitingHandler;
+            this.displayResults = displayResults;
         }
 
         @Override
@@ -1450,7 +1551,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, waitingHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, 
+                        pepNovoRadioButton.isSelected(), directTagRadioButton.isSelected(), waitingHandler);
             } catch (Exception e) {
                 catchException(e);
             }
@@ -1466,10 +1568,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 waitingHandler.appendReport("The de novo sequencing is complete.", true, true);
                 waitingHandler.setRunFinished();
 
-                try {
-                    displayResults();
-                } catch (Exception e) {
-                    catchException(e);
+                if (displayResults) {
+                    try {
+                        displayResults();
+                    } catch (Exception e) {
+                        catchException(e);
+                    }
                 }
             }
         }
@@ -1794,9 +1898,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         boolean valid = true;
 
-        if (!enablePepNovoJCheckBox.isSelected()) {
+        if (!pepNovoRadioButton.isSelected() && !directTagRadioButton.isSelected()) {
             if (showMessage && valid) {
-                JOptionPane.showMessageDialog(this, "You need to select at least one search engine.", "No Search Engines Selected", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "You need to select at least one sequencing method.", "No Sequencing Methods Selected", JOptionPane.WARNING_MESSAGE);
             }
             valid = false;
         }

@@ -37,12 +37,18 @@ public class DeNovoSequencingHandler {
      * The PepNovo folder.
      */
     private File pepNovoFolder;
-    
     /**
      * The DirecTag folder.
      */
     private File direcTagFolder;
-    
+    /**
+     * If true, PepNovo will be run.
+     */
+    private boolean enablePepNovo = true;
+    /**
+     * If true, DirecTag will be used.
+     */
+    private boolean enableDirecTag = true;
     /**
      * Default PTM selection.
      */
@@ -88,7 +94,7 @@ public class DeNovoSequencingHandler {
      * Constructor.
      *
      * @param pepNovoFolder the PepNovo+ folder.
-     * @param directTagFolder the DirecTag folder.
+     * @param direcTagFolder the DirecTag folder.
      */
     public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder) {
         this.pepNovoFolder = pepNovoFolder;
@@ -104,11 +110,17 @@ public class DeNovoSequencingHandler {
      * @param outputFolder the output folder
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
+     * @param enablePepNovo run PepNovo?
+     * @param enableDirecTag run DirecTag?
      * @param waitingHandler the waiting handler
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle,
+            boolean enablePepNovo, boolean enableDirecTag, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
+
+        this.enablePepNovo = enablePepNovo;
+        this.enableDirecTag = enableDirecTag;
 
         long startTime = System.nanoTime();
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra());
@@ -119,7 +131,7 @@ public class DeNovoSequencingHandler {
         if (searchParameters.getParametersFile() != null) {
             SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
         }
-        
+
         // Write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
@@ -199,8 +211,11 @@ public class DeNovoSequencingHandler {
             report += " spectra per thread).";
             waitingHandler.appendReport(report, true, true);
 
-            waitingHandler.appendReport("Preparing the spectra.", true, true);
-            chunkFiles = FileProcessor.chunkFile(spectrumFile, chunkSize, remaining, nSpectra, waitingHandler);
+            if (enablePepNovo) {
+                waitingHandler.appendReport("Preparing the spectra.", true, true);
+                chunkFiles = FileProcessor.chunkFile(spectrumFile, chunkSize, remaining, nSpectra, waitingHandler);
+            }
+
             if (waitingHandler.isRunCanceled()) {
                 return;
             }
@@ -214,15 +229,19 @@ public class DeNovoSequencingHandler {
             }
 
             // Distribute the chunked spectra to the different PepNovo+ jobs.
-            for (File chunkFile : chunkFiles) {
-                PepnovoJob job = new PepnovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
-                jobs.add(job);
+            if (enablePepNovo) {
+                for (File chunkFile : chunkFiles) {
+                    PepnovoJob pepNovoJob = new PepnovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                    jobs.add(pepNovoJob);
+                }
             }
-            
+
             // Add the DirecTag job only once - multithreading is done in the application itself!
-            DirectagJob job2 = new DirectagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
-            jobs.add(job2);
-            
+            if (enableDirecTag) {
+                DirectagJob direcTagJob = new DirectagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
+                jobs.add(direcTagJob);
+            }
+
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
             return;
@@ -267,12 +286,14 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReportEndLine();
         waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
         waitingHandler.appendReportEndLine();
-        waitingHandler.setSecondaryProgressCounterIndeterminate(true);        
-        
-        FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
+        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
-        // Delete the mgf file chunks.
-        FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
+        if (enablePepNovo) {
+            FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
+
+            // Delete the mgf file chunks.
+            FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
+        }
     }
 
     /**
@@ -298,11 +319,11 @@ public class DeNovoSequencingHandler {
                     threadExecutor.shutdownNow();
                     ex.printStackTrace();
                 }
-            }            
-            
+            }
+
             // Delete the output files.
             FileProcessor.deleteChunkFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles), waitingHandler);
-            
+
             // Delete the mgf file chunks.
             FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
         }

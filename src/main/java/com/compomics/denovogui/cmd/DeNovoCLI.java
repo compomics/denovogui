@@ -93,15 +93,18 @@ public class DeNovoCLI implements Callable {
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
 
+            boolean runPepNovo = true; // @TODO: get this from deNovoCLIInputBean!!!
+            boolean runDirecTag = true; // @TODO: get this from deNovoCLIInputBean!!!
+
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
             File pepNovoFolder = null;
             File direcTagFolder = null;
-            String executableTitle = null;
-            String executableTitle2 = null;
+            String pepNovoExecutableTitle = null;
+            String direcTagExecutableTitle = null;
 
             if (pepNovoExecutable != null) {
-                executableTitle = pepNovoExecutable.getName();
+                pepNovoExecutableTitle = pepNovoExecutable.getName();
                 pepNovoFolder = pepNovoExecutable.getParentFile();
             } else if (new File(getJarFilePath() + "/resources/PepNovo").exists()) {
 
@@ -112,18 +115,18 @@ public class DeNovoCLI implements Callable {
                 String osName = System.getProperty("os.name").toLowerCase();
 
                 if (osName.contains("mac os")) {
-                    executableTitle = "PepNovo_Mac";
+                    pepNovoExecutableTitle = "PepNovo_Mac";
                 } else if (osName.contains("windows")) {
-                    executableTitle = "PepNovo_Windows.exe";
+                    pepNovoExecutableTitle = "PepNovo_Windows.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                    executableTitle = "PepNovo_Linux";
+                    pepNovoExecutableTitle = "PepNovo_Linux";
                 } else {
                     // unsupported OS version
                 }
             }
             
              if (direcTagExecutable != null) {
-                executableTitle2 = direcTagExecutable.getName();
+                direcTagExecutableTitle = direcTagExecutable.getName();
                 direcTagFolder = direcTagExecutable.getParentFile();
             } else if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
 
@@ -134,11 +137,11 @@ public class DeNovoCLI implements Callable {
                 String osName = System.getProperty("os.name").toLowerCase();
 
 //                if (osName.contains("mac os")) {
-//                    executableTitle = "PepNovo_Mac";
+//                    executableTitle = "PepNovo_Mac"; // @TODO: is Mac supported via the linux option?
                 if (osName.contains("windows")) {
-                    executableTitle2 = "DirecTag_Windows.exe";
+                    direcTagExecutableTitle = "DirecTag_Windows.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                    executableTitle2 = "DirecTag_Linux";
+                    direcTagExecutableTitle = "DirecTag_Linux";
                 } else {
                     // unsupported OS version
                 }
@@ -151,7 +154,7 @@ public class DeNovoCLI implements Callable {
             }
 
             // check of the PepNovo executable is set
-            if (executableTitle == null) {
+            if (pepNovoExecutableTitle == null) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
@@ -163,7 +166,7 @@ public class DeNovoCLI implements Callable {
             }
 
             // check of the DirecTag executable is set
-            if (executableTitle2 == null) {
+            if (direcTagExecutableTitle == null) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
@@ -192,7 +195,7 @@ public class DeNovoCLI implements Callable {
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), executableTitle, executableTitle2, waitingHandlerCLIImpl);
+                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, runPepNovo, runDirecTag, waitingHandlerCLIImpl);
         } catch (Exception e) {
             e.printStackTrace();
         }
