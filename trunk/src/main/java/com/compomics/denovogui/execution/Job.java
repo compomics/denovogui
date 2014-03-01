@@ -101,20 +101,24 @@ public abstract class Job implements Executable, Runnable {
             }
 
             // Get input from scanner and send to stdout
-            while (scan.hasNext() && !waitingHandler.isRunCanceled()) {
-                String temp = scan.next();
+            while (scan.hasNextLine()&& !waitingHandler.isRunCanceled()) {
+                String temp = scan.nextLine();
                 writer.write(temp);
                 writer.newLine();
 
-                if (temp.startsWith(">>")) {
-                    int progressCounter = waitingHandler.getPrimaryProgressCounter();
-                    if (progressCounter % spectrumCount == 0) {
-                        waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
-                                + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
-                                + " of " + totalSpectrumCount + ".", true, true);
+                if (description.equalsIgnoreCase("DirecTag")) {
+                    waitingHandler.appendReport(temp, false, true);
+                } else {
+                    if (temp.startsWith(">>")) {
+                        int progressCounter = waitingHandler.getPrimaryProgressCounter();
+                        if (progressCounter % spectrumCount == 0) {
+                            waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
+                                    + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
+                                    + " of " + totalSpectrumCount + ".", true, true);
+                        }
+                        waitingHandler.increasePrimaryProgressCounter();
+                        waitingHandler.increaseSecondaryProgressCounter();
                     }
-                    waitingHandler.increasePrimaryProgressCounter();
-                    waitingHandler.increaseSecondaryProgressCounter();
                 }
             }
 

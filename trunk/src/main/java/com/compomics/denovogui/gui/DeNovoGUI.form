@@ -2,6 +2,8 @@
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="deNovoButtonGroup">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">
@@ -157,7 +159,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="backgroundPanel" max="32767" attributes="0"/>
+          <Component id="backgroundPanel" min="-2" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -172,33 +174,29 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="searchEnginesPanel" max="32767" attributes="0"/>
-                              <Component id="inputFilesPanel1" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="searchEnginesPanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="inputFilesPanel1" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Component id="aboutButton" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                          <Component id="deNovoGuiWebPageJLabel" max="32767" attributes="0"/>
+                          <Component id="deNovoGuiWebPageJLabel" pref="343" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
                           <Component id="startButton" min="-2" pref="162" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="searchEnginesPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="inputFilesPanel1" min="-2" max="-2" attributes="0"/>
@@ -229,12 +227,21 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                      <Component id="enablePepNovoJCheckBox" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="directTagRadioButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoRadioButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
-                      <Component id="pepNovoButton" min="-2" pref="101" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="pepNovoButton" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
+                          <Component id="direcTagButton" alignment="0" min="-2" pref="88" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="53" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -243,9 +250,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="enablePepNovoJCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoRadioButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="directTagRadioButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -253,16 +266,6 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JCheckBox" name="enablePepNovoJCheckBox">
-              <Properties>
-                <Property name="selected" type="boolean" value="true"/>
-                <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enablePepNovoJCheckBoxActionPerformed"/>
-              </Events>
-            </Component>
             <Component class="javax.swing.JLabel" name="pepNovoLinkLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;De Novo Peptide Sequencing via Probabilistic Network Modeling - &lt;a href=&quot;http://proteomics.ucsd.edu/Software/PepNovo.html&quot;&gt;PepNovo+ web page&lt;/a&gt;&lt;/html&gt; "/>
@@ -291,6 +294,54 @@
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoButtonMouseExited"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoButtonActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="direcTagButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/directag.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Open the DirecTag web page"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagButtonMouseExited"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="direcTagButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="direcTagLinkLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;DirecTag for MS-MS Sequence Tagging - &lt;a href=&quot;http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/&quot;&gt;DirecTag web page&lt;/a&gt;&lt;/html&gt; "/>
+                <Property name="toolTipText" type="java.lang.String" value="Open the DirecTag web page"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseClicked"/>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseExited"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JRadioButton" name="directTagRadioButton">
+              <Properties>
+                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                  <ComponentRef name="deNovoButtonGroup"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Enable DirecTag"/>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JRadioButton" name="pepNovoRadioButton">
+              <Properties>
+                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                  <ComponentRef name="deNovoButtonGroup"/>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
