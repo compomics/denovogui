@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
  *
  * @author Harald Barsnes
  */
-public class PepNovoLocationDialog extends javax.swing.JDialog {
+public class LocationDialog extends javax.swing.JDialog {
 
     /**
      * Reference to the DeNovoGUI main frame.
@@ -22,7 +22,7 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
      * @param deNovoGUI the DeNovoGUI main frame
      * @param modal
      */
-    public PepNovoLocationDialog(DeNovoGUI deNovoGUI, boolean modal) {
+    public LocationDialog(DeNovoGUI deNovoGUI, boolean modal) {
         super(deNovoGUI, modal);
         initComponents();
         this.deNovoGUI = deNovoGUI;
@@ -30,6 +30,10 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
         if (deNovoGUI.getPepNovoFolder() != null) {
             pepNovoLocationTextField.setText(new File(deNovoGUI.getPepNovoFolder(), deNovoGUI.getPepNovoExecutable()).getAbsolutePath());
             okButton.setEnabled(deNovoGUI.checkPepNovoFolder(deNovoGUI.getPepNovoFolder()));
+        }
+        if (deNovoGUI.getDirecTagFolder()!= null) {
+            direcTagLocationTextField.setText(new File(deNovoGUI.getDirecTagFolder(), deNovoGUI.getDirecTagExecutable()).getAbsolutePath());
+            okButton.setEnabled(deNovoGUI.checkDirecTagFolder(deNovoGUI.getDirecTagFolder()));
         }
 
         setLocationRelativeTo(deNovoGUI);
@@ -50,6 +54,9 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
         pepNovoLocationLabel = new javax.swing.JLabel();
         pepNovoLocationTextField = new javax.swing.JTextField();
         popNovoLocationBrowseButton = new javax.swing.JButton();
+        direcTagLocationLabel = new javax.swing.JLabel();
+        direcTagLocationTextField = new javax.swing.JTextField();
+        direcTagLocationBrowseButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
@@ -58,15 +65,24 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
-        pepNovoLocationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("PepNovo Executable"));
+        pepNovoLocationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Executables"));
         pepNovoLocationPanel.setOpaque(false);
 
-        pepNovoLocationLabel.setText("PepNovo Location");
+        pepNovoLocationLabel.setText("PepNovo+ Location");
 
         popNovoLocationBrowseButton.setText("Browse");
         popNovoLocationBrowseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 popNovoLocationBrowseButtonActionPerformed(evt);
+            }
+        });
+
+        direcTagLocationLabel.setText("DirecTag Location");
+
+        direcTagLocationBrowseButton.setText("Browse");
+        direcTagLocationBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                direcTagLocationBrowseButtonActionPerformed(evt);
             }
         });
 
@@ -76,11 +92,19 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
             pepNovoLocationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pepNovoLocationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pepNovoLocationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pepNovoLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(popNovoLocationBrowseButton)
+                .addGroup(pepNovoLocationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pepNovoLocationPanelLayout.createSequentialGroup()
+                        .addComponent(pepNovoLocationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(pepNovoLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(popNovoLocationBrowseButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pepNovoLocationPanelLayout.createSequentialGroup()
+                        .addComponent(direcTagLocationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(direcTagLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(direcTagLocationBrowseButton)))
                 .addContainerGap())
         );
         pepNovoLocationPanelLayout.setVerticalGroup(
@@ -91,6 +115,11 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
                     .addComponent(pepNovoLocationLabel)
                     .addComponent(pepNovoLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(popNovoLocationBrowseButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pepNovoLocationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(direcTagLocationLabel)
+                    .addComponent(direcTagLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(direcTagLocationBrowseButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -179,9 +208,22 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
+
+    /**
+     * Set the DirecTag location.
+     *
+     * @param evt
+     */
+    private void direcTagLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagLocationBrowseButtonActionPerformed
+        browsePepNovoExecutable();
+    }//GEN-LAST:event_direcTagLocationBrowseButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JButton direcTagLocationBrowseButton;
+    private javax.swing.JLabel direcTagLocationLabel;
+    private javax.swing.JTextField direcTagLocationTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel pepNovoLocationLabel;
     private javax.swing.JPanel pepNovoLocationPanel;
@@ -215,5 +257,33 @@ public class PepNovoLocationDialog extends javax.swing.JDialog {
         }
 
         okButton.setEnabled(deNovoGUI.checkPepNovoFolder(deNovoGUI.getPepNovoFolder()));
+    }
+    
+    /**
+     * This method is called when the Browse button for DirecTag is pressed.
+     */
+    public void browseDirecTagExecutable() {
+
+        String startLocation = direcTagLocationTextField.getText();
+        JFileChooser fc = new JFileChooser(startLocation);
+        int result = fc.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File direcTagExecutable = fc.getSelectedFile();
+
+            if (deNovoGUI.checkDirecTagFolder(direcTagExecutable.getParentFile())) {
+                deNovoGUI.setLastSelectedFolder(direcTagExecutable.getAbsolutePath());
+                deNovoGUI.setDirecTagFolder(direcTagExecutable.getParentFile());
+                deNovoGUI.setDirecTagExecutable(direcTagExecutable.getName());
+                direcTagLocationTextField.setText(direcTagExecutable.getAbsolutePath());
+            } else {
+                JOptionPane.showMessageDialog(this, "Incorrect DirecTag executable selected.\n"
+                        + "Please try again, or press cancel to exit.",
+                        "Incorrect DirecTag Executable", JOptionPane.WARNING_MESSAGE);
+                browseDirecTagExecutable();
+            }
+        }
+
+        okButton.setEnabled(deNovoGUI.checkDirecTagFolder(deNovoGUI.getDirecTagFolder()));
     }
 }

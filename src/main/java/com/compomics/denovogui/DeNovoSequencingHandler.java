@@ -1,8 +1,8 @@
 package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.Job;
-import com.compomics.denovogui.execution.jobs.DirectagJob;
-import com.compomics.denovogui.execution.jobs.PepnovoJob;
+import com.compomics.denovogui.execution.jobs.DirecTagJob;
+import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.software.CompomicsWrapper;
@@ -231,14 +231,14 @@ public class DeNovoSequencingHandler {
             // Distribute the chunked spectra to the different PepNovo+ jobs.
             if (enablePepNovo) {
                 for (File chunkFile : chunkFiles) {
-                    PepnovoJob pepNovoJob = new PepnovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                    PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
                     jobs.add(pepNovoJob);
                 }
             }
 
             // Add the DirecTag job only once - multithreading is done in the application itself!
             if (enableDirecTag) {
-                DirectagJob direcTagJob = new DirectagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
+                DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
                 jobs.add(direcTagJob);
             }
 
@@ -321,11 +321,13 @@ public class DeNovoSequencingHandler {
                 }
             }
 
-            // Delete the output files.
-            FileProcessor.deleteChunkFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles), waitingHandler);
+            if (chunkFiles != null) {
+                // Delete the output files.
+                FileProcessor.deleteChunkFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles), waitingHandler);
 
-            // Delete the mgf file chunks.
-            FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
+                // Delete the mgf file chunks.
+                FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
+            }
         }
     }
 

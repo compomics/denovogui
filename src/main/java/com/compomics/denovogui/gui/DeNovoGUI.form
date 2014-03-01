@@ -73,7 +73,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="pepNovoMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="PepNovo"/>
+                <Property name="text" type="java.lang.String" value="Locations"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoMenuItemActionPerformed"/>
@@ -282,7 +282,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/pepnovo.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Open the PepNovo+ web page"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
@@ -300,7 +300,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/directag.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Open the DirecTag web page"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable DirecTag"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>

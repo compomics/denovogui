@@ -3,7 +3,13 @@ package com.compomics.denovogui.gui;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
+import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
@@ -100,10 +106,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         // centrally align the comboboxes
         modificationsListCombo.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
-        enzymeComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
-        modelComboBox.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
-
-        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSequencingHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
+        duplicateSpectraPerChargeCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
+        adjustPrecursorCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
+        useSpectrumChargeCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
 
         fixedModsJScrollPane.getViewport().setOpaque(false);
         variableModsJScrollPane.getViewport().setOpaque(false);
@@ -164,27 +169,65 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             parametersFile = searchParameters.getParametersFile();
         }
 
-        if (searchParameters.getEnzyme() == null || searchParameters.getEnzyme().getName().equalsIgnoreCase("Trypsin")) {
-            enzymeComboBox.setSelectedItem("TRYPSIN");
-        } else if (searchParameters.getEnzyme().getName().equalsIgnoreCase("No Enzyme")) {
-            enzymeComboBox.setSelectedItem("NON_SPECIFIC");
-        } else {
-            // enzyme not supported...
-            // @TODO: support more enzymes??
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), new OmssaParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), new XtandemParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), new MsgfParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), new DirecTagParameters());
         }
 
-        modelComboBox.setSelectedItem("CID_IT_TRYP"); // @TODO: support other models??
+        PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
 
+        // the general parameters
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
         precursorMassToleranceSpinner.setValue(searchParameters.getPrecursorAccuracyDalton());
-        //searchParameters.setPrecursorAccuracyType(SearchParameters.PrecursorAccuracyType.DA);
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSequencingHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
+        numberOfSolutionsSpinner.setValue(pepNovoParameters.getHitListLength());
+        if (pepNovoParameters.isCorrectPrecursorMass()) {
+            adjustPrecursorCmb.setSelectedIndex(0);
+        } else {
+            adjustPrecursorCmb.setSelectedIndex(1);
+        }
+        if (pepNovoParameters.isEstimateCharge()) {
+            useSpectrumChargeCmb.setSelectedIndex(1);
+        } else {
+            useSpectrumChargeCmb.setSelectedIndex(0);
+        }
 
-        numberOfSolutionsSpinner.setValue(searchParameters.getHitListLengthDeNovo());
+        // DirecTag specific parameters
+        tagLengthTextField.setText(String.valueOf(direcTagParameters.getTagLength()));
+        numVariableModsTextField.setText(String.valueOf(direcTagParameters.getMaxDynamicMods()));
+        numberOfChargeStatesTextField.setText(String.valueOf(direcTagParameters.getNumChargeStates()));
+        if (direcTagParameters.isDuplicateSpectra()) {
+            duplicateSpectraPerChargeCmb.setSelectedIndex(0);
+        } else {
+            duplicateSpectraPerChargeCmb.setSelectedIndex(1);
+        }
+        deisptopingModeTextField.setText(String.valueOf(direcTagParameters.getDeisotopingMode()));
+        isotopeToleranceTextField.setText(String.valueOf(direcTagParameters.getIsotopeMzTolerance()));
+        numberOfIntensityClassesTextField.setText(String.valueOf(direcTagParameters.getNumIntensityClasses()));
+        outputSuffixTextField.setText(String.valueOf(direcTagParameters.getOutputSuffix()));
+        maxPeakCountTextField.setText(String.valueOf(direcTagParameters.getMaxPeakCount()));
+        ticCutoffTextField.setText(String.valueOf(direcTagParameters.getTicCutoffPercentage()));
+        complementToleranceTextField.setText(String.valueOf(direcTagParameters.getComplementMzTolerance()));
+        precursorAdjustmentStepTextField.setText(String.valueOf(direcTagParameters.getPrecursorAdjustmentStep()));
+        minPrecursorAdjustmentTextField.setText(String.valueOf(direcTagParameters.getMinPrecursorAdjustment()));
+        maxPrecursorAdjustmentTextField.setText(String.valueOf(direcTagParameters.getMaxPrecursorAdjustment()));
+        intensityScoreWeightTextField.setText(String.valueOf(direcTagParameters.getIntensityScoreWeight()));
+        mzFidelityScoreWeightTextField.setText(String.valueOf(direcTagParameters.getMzFidelityScoreWeight()));
+        complementScoreWeightTextField.setText(String.valueOf(direcTagParameters.getComplementScoreWeight()));
 
-        spectrumChargeCheckBox.setSelected(!searchParameters.isEstimateCharge());
-        spectrumPrecursorCheckBox.setSelected(!searchParameters.isCorrectPrecursorMass());
-        filterLowQualityCheckBox.setSelected(searchParameters.getDiscardLowQualitySpectra());
-
+        // add the modifications
         ArrayList<String> missingPtms = new ArrayList<String>();
         ModificationProfile modificationProfile = searchParameters.getModificationProfile();
         if (modificationProfile != null) {
@@ -288,23 +331,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        enzymeLabel = new javax.swing.JLabel();
-        enzymeComboBox = new javax.swing.JComboBox();
-        modelLabel = new javax.swing.JLabel();
-        modelComboBox = new javax.swing.JComboBox();
         backgroundPanel = new javax.swing.JPanel();
-        deNovoSettingsPanel = new javax.swing.JPanel();
-        fragmentMassToleranceLabel = new javax.swing.JLabel();
-        fragmentMassToleranceSpinner = new javax.swing.JSpinner();
-        precursorMassToleranceLabel = new javax.swing.JLabel();
-        precursorMassToleranceSpinner = new javax.swing.JSpinner();
-        numberOfSolutionsLabel = new javax.swing.JLabel();
-        numberOfSolutionsSpinner = new javax.swing.JSpinner();
-        spectrumChargeCheckBox = new javax.swing.JCheckBox();
-        spectrumPrecursorCheckBox = new javax.swing.JCheckBox();
-        filterLowQualityCheckBox = new javax.swing.JCheckBox();
-        numberOfThreadsLabel = new javax.swing.JLabel();
-        numberOfThreadsSpinner = new javax.swing.JSpinner();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         modificationsPanel1 = new javax.swing.JPanel();
@@ -339,116 +366,61 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         };
         openModificationSettingsJButton = new javax.swing.JButton();
         openDialogHelpJButton = new javax.swing.JButton();
-
-        enzymeLabel.setText("Enzyme");
-
-        enzymeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TRYPSIN", "NON_SPECIFIC" }));
-        enzymeComboBox.setEnabled(false);
-
-        modelLabel.setText("Model");
-
-        modelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CID_IT_TRYP" }));
-        modelComboBox.setEnabled(false);
+        directTagPanel = new javax.swing.JPanel();
+        numberOfChargeStatesLabel = new javax.swing.JLabel();
+        duplicateSpectraLabel = new javax.swing.JLabel();
+        deisotopingModeLabel = new javax.swing.JLabel();
+        isotopeToleranceLabel = new javax.swing.JLabel();
+        complementToleranceLabel = new javax.swing.JLabel();
+        tagLengthLabel = new javax.swing.JLabel();
+        numVariableModsLabel = new javax.swing.JLabel();
+        intensityScoreWeightLabel = new javax.swing.JLabel();
+        mzFidelityScoreWeightLabel = new javax.swing.JLabel();
+        complementScoreWeightLabel = new javax.swing.JLabel();
+        numberOfChargeStatesTextField = new javax.swing.JTextField();
+        ticCutoffLabel = new javax.swing.JLabel();
+        maxPeakCountTextField = new javax.swing.JTextField();
+        maxPeakCountLabel = new javax.swing.JLabel();
+        numberOfIntensityClassesTextField = new javax.swing.JTextField();
+        numberOfIntensityClassesLabel = new javax.swing.JLabel();
+        minPrecursorAdjustmentLabel = new javax.swing.JLabel();
+        minPrecursorAdjustmentTextField = new javax.swing.JTextField();
+        maxPrecursorAdjustmentLabel = new javax.swing.JLabel();
+        maxPrecursorAdjustmentTextField = new javax.swing.JTextField();
+        precursorAdjustmentStepLabel = new javax.swing.JLabel();
+        precursorAdjustmentStepTextField = new javax.swing.JTextField();
+        outputSuffixLabel = new javax.swing.JLabel();
+        outputSuffixTextField = new javax.swing.JTextField();
+        duplicateSpectraPerChargeCmb = new javax.swing.JComboBox();
+        deisptopingModeTextField = new javax.swing.JTextField();
+        isotopeToleranceTextField = new javax.swing.JTextField();
+        complementToleranceTextField = new javax.swing.JTextField();
+        tagLengthTextField = new javax.swing.JTextField();
+        numVariableModsTextField = new javax.swing.JTextField();
+        intensityScoreWeightTextField = new javax.swing.JTextField();
+        mzFidelityScoreWeightTextField = new javax.swing.JTextField();
+        complementScoreWeightTextField = new javax.swing.JTextField();
+        ticCutoffTextField = new javax.swing.JTextField();
+        generalPanel = new javax.swing.JPanel();
+        fragmentMassToleranceLabel = new javax.swing.JLabel();
+        fragmentMassToleranceSpinner = new javax.swing.JSpinner();
+        precursorMassToleranceLabel = new javax.swing.JLabel();
+        precursorMassToleranceSpinner = new javax.swing.JSpinner();
+        numberOfSolutionsLabel = new javax.swing.JLabel();
+        numberOfSolutionsSpinner = new javax.swing.JSpinner();
+        numberOfThreadsLabel = new javax.swing.JLabel();
+        numberOfThreadsSpinner = new javax.swing.JSpinner();
+        adjustPrecursorLabel = new javax.swing.JLabel();
+        adjustPrecursorCmb = new javax.swing.JComboBox();
+        useSpectrumChargeStageLabel = new javax.swing.JLabel();
+        useSpectrumChargeCmb = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("De Novo Settings");
         setMinimumSize(new java.awt.Dimension(800, 600));
+        setResizable(false);
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
-
-        deNovoSettingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Settings"));
-        deNovoSettingsPanel.setOpaque(false);
-
-        fragmentMassToleranceLabel.setText("Fragment Mass Tolerance (Da)");
-        fragmentMassToleranceLabel.setToolTipText("Fragment mass tolerance - max 0.75 Da");
-
-        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
-        fragmentMassToleranceSpinner.setToolTipText("Fragment mass tolerance - max 0.75 Da");
-
-        precursorMassToleranceLabel.setText("Precursor Mass Tolerance (Da)");
-        precursorMassToleranceLabel.setToolTipText("Precursor mass tolerance - max 5.0 Da");
-
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.1d));
-        precursorMassToleranceSpinner.setToolTipText("Precursor mass tolerance - max 5.0 Da");
-
-        numberOfSolutionsLabel.setText("No. Solutions (max. 20)");
-
-        numberOfSolutionsSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 1, 2000, 1));
-
-        spectrumChargeCheckBox.setText("Use Spectrum Charge (No Correction)");
-        spectrumChargeCheckBox.setIconTextGap(15);
-        spectrumChargeCheckBox.setOpaque(false);
-
-        spectrumPrecursorCheckBox.setText("Use Spectrum Precursor m/z (No Correction)");
-        spectrumPrecursorCheckBox.setIconTextGap(15);
-        spectrumPrecursorCheckBox.setOpaque(false);
-
-        filterLowQualityCheckBox.setText("Filter Low Quality Spectra");
-        filterLowQualityCheckBox.setIconTextGap(15);
-        filterLowQualityCheckBox.setOpaque(false);
-
-        numberOfThreadsLabel.setText("No. Threads/Cores");
-
-        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
-
-        javax.swing.GroupLayout deNovoSettingsPanelLayout = new javax.swing.GroupLayout(deNovoSettingsPanel);
-        deNovoSettingsPanel.setLayout(deNovoSettingsPanelLayout);
-        deNovoSettingsPanelLayout.setHorizontalGroup(
-            deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                            .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(precursorMassToleranceLabel)
-                                .addComponent(fragmentMassToleranceLabel))
-                            .addGap(18, 18, 18))
-                        .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                            .addComponent(numberOfSolutionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGap(28, 28, 28)))
-                    .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(numberOfThreadsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(81, 81, 81)
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectrumChargeCheckBox)
-                    .addComponent(spectrumPrecursorCheckBox)
-                    .addComponent(filterLowQualityCheckBox))
-                .addContainerGap(73, Short.MAX_VALUE))
-        );
-
-        deNovoSettingsPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {fragmentMassToleranceSpinner, numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
-
-        deNovoSettingsPanelLayout.setVerticalGroup(
-            deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(deNovoSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fragmentMassToleranceLabel)
-                    .addComponent(spectrumChargeCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(precursorMassToleranceLabel)
-                    .addComponent(spectrumPrecursorCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfSolutionsLabel)
-                    .addComponent(filterLowQualityCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(deNovoSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfThreadsLabel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -525,11 +497,11 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
         fixedModsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fixedModsTableMouseExited(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 fixedModsTableMouseReleased(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                fixedModsTableMouseExited(evt);
             }
         });
         fixedModsTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -546,7 +518,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(fixedModificationsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                        .addComponent(fixedModificationsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(242, 242, 242))
                     .addGroup(jPanel8Layout.createSequentialGroup()
                         .addComponent(fixedModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -566,7 +538,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addComponent(addFixedModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeFixedModification)
-                        .addContainerGap(26, Short.MAX_VALUE))
+                        .addContainerGap(78, Short.MAX_VALUE))
                     .addComponent(fixedModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -619,11 +591,11 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
         variableModsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                variableModsTableMouseExited(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 variableModsTableMouseReleased(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                variableModsTableMouseExited(evt);
             }
         });
         variableModsTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -640,7 +612,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             .addComponent(variableModificationsLabel)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                 .addGap(1, 1, 1)
-                .addComponent(variableModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                .addComponent(variableModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(addVariableModification, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -657,7 +629,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addComponent(addVariableModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeVariableModification)
-                        .addContainerGap(37, Short.MAX_VALUE))
+                        .addContainerGap())
                     .addComponent(variableModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -736,9 +708,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         availableModsPanel.setLayout(availableModsPanelLayout);
         availableModsPanelLayout.setHorizontalGroup(
             availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(modificationsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
+            .addComponent(modificationsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(availableModsPanelLayout.createSequentialGroup()
-                .addComponent(modificationsListCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(modificationsListCombo, 0, 435, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(openModificationSettingsJButton)
                 .addContainerGap())
@@ -761,7 +733,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 .addContainerGap()
                 .addComponent(modificationTypesSplitPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(availableModsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(availableModsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         modificationsPanel1Layout.setVerticalGroup(
@@ -792,6 +764,363 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
 
+        directTagPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("DirecTag Settings"));
+        directTagPanel.setOpaque(false);
+
+        numberOfChargeStatesLabel.setText("Number of Charge States");
+
+        duplicateSpectraLabel.setText("Duplicate Spectra per Charge");
+
+        deisotopingModeLabel.setText("Deisptoping Mode");
+
+        isotopeToleranceLabel.setText("Isotope MZ Tolerance (Da)");
+
+        complementToleranceLabel.setText("Complement MZ Tolerance (Da)");
+
+        tagLengthLabel.setText("Tag Length");
+
+        numVariableModsLabel.setText("Max Number of Variable PTMs");
+
+        intensityScoreWeightLabel.setText("Intensity Score Weight");
+
+        mzFidelityScoreWeightLabel.setText("MZ Fidelity Score Weight");
+
+        complementScoreWeightLabel.setText("Complement Score Weight");
+
+        numberOfChargeStatesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        numberOfChargeStatesTextField.setText("3");
+
+        ticCutoffLabel.setText("TIC Cutoff Percentage");
+
+        maxPeakCountTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        maxPeakCountTextField.setText("400");
+
+        maxPeakCountLabel.setText("Max Peak Count");
+
+        numberOfIntensityClassesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        numberOfIntensityClassesTextField.setText("3");
+
+        numberOfIntensityClassesLabel.setText("Number of Intensity Classes");
+
+        minPrecursorAdjustmentLabel.setText("Min Precursor Adjustment");
+
+        minPrecursorAdjustmentTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        minPrecursorAdjustmentTextField.setText("-2.5");
+
+        maxPrecursorAdjustmentLabel.setText("Max Precursor Adjustment");
+
+        maxPrecursorAdjustmentTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        maxPrecursorAdjustmentTextField.setText("2.5");
+
+        precursorAdjustmentStepLabel.setText("Precursor Adjustment Step");
+
+        precursorAdjustmentStepTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        precursorAdjustmentStepTextField.setText("0.1");
+
+        outputSuffixLabel.setText("Output Suffix");
+
+        outputSuffixTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        duplicateSpectraPerChargeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Yes", "No" }));
+
+        deisptopingModeTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        deisptopingModeTextField.setText("0");
+
+        isotopeToleranceTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        isotopeToleranceTextField.setText("0.25");
+
+        complementToleranceTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        complementToleranceTextField.setText("0.5");
+
+        tagLengthTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        tagLengthTextField.setText("3");
+
+        numVariableModsTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        numVariableModsTextField.setText("2");
+
+        intensityScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        intensityScoreWeightTextField.setText("1");
+
+        mzFidelityScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        mzFidelityScoreWeightTextField.setText("1");
+
+        complementScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        complementScoreWeightTextField.setText("1");
+
+        ticCutoffTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        ticCutoffTextField.setText("85");
+
+        javax.swing.GroupLayout directTagPanelLayout = new javax.swing.GroupLayout(directTagPanel);
+        directTagPanel.setLayout(directTagPanelLayout);
+        directTagPanelLayout.setHorizontalGroup(
+            directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(directTagPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(directTagPanelLayout.createSequentialGroup()
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addGap(198, 198, 198)
+                                .addComponent(tagLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tagLengthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addComponent(numVariableModsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(numVariableModsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addComponent(numberOfChargeStatesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(numberOfChargeStatesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addComponent(duplicateSpectraLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(duplicateSpectraPerChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(50, 50, 50)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
+                                .addComponent(ticCutoffLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(ticCutoffTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(directTagPanelLayout.createSequentialGroup()
+                                    .addComponent(numberOfIntensityClassesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(numberOfIntensityClassesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(directTagPanelLayout.createSequentialGroup()
+                                    .addComponent(maxPeakCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(maxPeakCountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(directTagPanelLayout.createSequentialGroup()
+                                    .addComponent(outputSuffixLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(outputSuffixTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, directTagPanelLayout.createSequentialGroup()
+                        .addComponent(isotopeToleranceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(isotopeToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(precursorAdjustmentStepLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(precursorAdjustmentStepTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(directTagPanelLayout.createSequentialGroup()
+                        .addComponent(deisotopingModeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(deisptopingModeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(complementToleranceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(complementToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(directTagPanelLayout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(minPrecursorAdjustmentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(maxPrecursorAdjustmentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(minPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(maxPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
+                                .addComponent(complementScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(complementScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(mzFidelityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(intensityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(intensityScoreWeightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                    .addComponent(mzFidelityScoreWeightTextField))))
+                        .addGap(10, 10, 10))))
+        );
+
+        directTagPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {complementScoreWeightLabel, complementToleranceLabel, deisotopingModeLabel, duplicateSpectraLabel, intensityScoreWeightLabel, isotopeToleranceLabel, maxPeakCountLabel, maxPrecursorAdjustmentLabel, minPrecursorAdjustmentLabel, mzFidelityScoreWeightLabel, numVariableModsLabel, numberOfChargeStatesLabel, numberOfIntensityClassesLabel, outputSuffixLabel, precursorAdjustmentStepLabel, tagLengthLabel, ticCutoffLabel});
+
+        directTagPanelLayout.setVerticalGroup(
+            directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(directTagPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(directTagPanelLayout.createSequentialGroup()
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(minPrecursorAdjustmentLabel)
+                            .addComponent(minPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(maxPrecursorAdjustmentLabel)
+                            .addComponent(maxPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(intensityScoreWeightLabel)
+                            .addComponent(intensityScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(mzFidelityScoreWeightLabel)
+                            .addComponent(mzFidelityScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(complementScoreWeightLabel)
+                            .addComponent(complementScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(directTagPanelLayout.createSequentialGroup()
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(numberOfIntensityClassesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(numberOfIntensityClassesLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(outputSuffixLabel)
+                                    .addComponent(outputSuffixTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(maxPeakCountLabel)
+                                    .addComponent(maxPeakCountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(ticCutoffTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ticCutoffLabel)))
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(tagLengthLabel)
+                                    .addComponent(tagLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(numVariableModsLabel)
+                                    .addComponent(numVariableModsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(numberOfChargeStatesLabel)
+                                    .addComponent(numberOfChargeStatesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(duplicateSpectraLabel)
+                                    .addComponent(duplicateSpectraPerChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(complementToleranceLabel)
+                                    .addComponent(complementToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(isotopeToleranceLabel)
+                                    .addComponent(isotopeToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(precursorAdjustmentStepLabel)
+                                    .addComponent(precursorAdjustmentStepTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(directTagPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(deisotopingModeLabel)
+                                    .addComponent(deisptopingModeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        generalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("General Settings"));
+        generalPanel.setOpaque(false);
+
+        fragmentMassToleranceLabel.setText("Fragment Mass Tolerance (Da)");
+        fragmentMassToleranceLabel.setToolTipText("Fragment mass tolerance - max 0.75 Da");
+
+        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, 0.75d, 0.1d));
+        fragmentMassToleranceSpinner.setToolTipText("Fragment mass tolerance - max 0.75 Da");
+
+        precursorMassToleranceLabel.setText("Precursor Mass Tolerance (Da)");
+        precursorMassToleranceLabel.setToolTipText("Precursor mass tolerance - max 5.0 Da");
+
+        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 5.0d, 0.1d));
+        precursorMassToleranceSpinner.setToolTipText("Precursor mass tolerance - max 5.0 Da");
+
+        numberOfSolutionsLabel.setText("#Solutions (max. 20)");
+
+        numberOfSolutionsSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 1, 2000, 1));
+
+        numberOfThreadsLabel.setText("#Threads/Cores");
+
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+
+        adjustPrecursorLabel.setText("Use Spectrum Precursor m/z");
+
+        adjustPrecursorCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Yes", "No" }));
+
+        useSpectrumChargeStageLabel.setText("Use Spectrum Charge State");
+
+        useSpectrumChargeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Yes", "No" }));
+
+        javax.swing.GroupLayout generalPanelLayout = new javax.swing.GroupLayout(generalPanel);
+        generalPanel.setLayout(generalPanelLayout);
+        generalPanelLayout.setHorizontalGroup(
+            generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(generalPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(generalPanelLayout.createSequentialGroup()
+                        .addComponent(fragmentMassToleranceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(generalPanelLayout.createSequentialGroup()
+                        .addComponent(precursorMassToleranceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(50, 50, 50)
+                .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, generalPanelLayout.createSequentialGroup()
+                        .addComponent(numberOfThreadsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(useSpectrumChargeStageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(useSpectrumChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, generalPanelLayout.createSequentialGroup()
+                        .addComponent(numberOfSolutionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(adjustPrecursorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(adjustPrecursorCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+
+        generalPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
+
+        generalPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {adjustPrecursorLabel, useSpectrumChargeStageLabel});
+
+        generalPanelLayout.setVerticalGroup(
+            generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(generalPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(generalPanelLayout.createSequentialGroup()
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(fragmentMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fragmentMassToleranceLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(precursorMassToleranceLabel)))
+                    .addGroup(generalPanelLayout.createSequentialGroup()
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(numberOfSolutionsLabel)
+                            .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(adjustPrecursorLabel)
+                                .addComponent(adjustPrecursorCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(numberOfThreadsLabel)
+                            .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(useSpectrumChargeStageLabel)
+                                .addComponent(useSpectrumChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
         backgroundPanel.setLayout(backgroundPanelLayout);
         backgroundPanelLayout.setHorizontalGroup(
@@ -799,15 +1128,16 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
+                    .addComponent(directTagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(generalPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(backgroundPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(openDialogHelpJButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(863, 863, 863)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton))
-                    .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deNovoSettingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(cancelButton)))
                 .addContainerGap())
         );
 
@@ -817,7 +1147,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(generalPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(directTagPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -849,46 +1181,51 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 
-        // store the number of threads
-        deNovoGUI.getDeNovoSequencingHandler().setNThreads((Integer) numberOfThreadsSpinner.getValue());
+        boolean valid = validateParametersInput(true);
 
-        SearchParameters tempSearchParameters = getSearchParametersFromGUI();
+        if (valid) {
 
-        if (!deNovoGUI.getSearchParameters().equals(tempSearchParameters)) {
+            // store the number of threads
+            deNovoGUI.getDeNovoSequencingHandler().setNThreads((Integer) numberOfThreadsSpinner.getValue());
 
-            int value = JOptionPane.showConfirmDialog(this, "The settings have changed."
-                    + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+            SearchParameters tempSearchParameters = getSearchParametersFromGUI();
 
-            if (value == JOptionPane.YES_OPTION) {
+            if (!deNovoGUI.getSearchParameters().equals(tempSearchParameters)) {
 
-                // no params file > have the user select a file
-                if (tempSearchParameters.getParametersFile() == null) {
-                    saveAsPressed();
-                    tempSearchParameters = getSearchParametersFromGUI(); // see if the settings have changed
-                }
+                int value = JOptionPane.showConfirmDialog(this, "The settings have changed."
+                        + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
 
-                if (tempSearchParameters.getParametersFile() != null) {
+                if (value == JOptionPane.YES_OPTION) {
 
-                    try {
-                        tempSearchParameters.setParametersFile(deNovoGUI.getSearchParameters().getParametersFile());
-                        SearchParameters.saveIdentificationParameters(tempSearchParameters, deNovoGUI.getSearchParameters().getParametersFile());
-                        deNovoGUI.setSearchParameters(tempSearchParameters);
-                        dispose();
-                    } catch (ClassNotFoundException e) {
-                        JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
+                    // no params file > have the user select a file
+                    if (tempSearchParameters.getParametersFile() == null) {
+                        saveAsPressed();
+                        tempSearchParameters = getSearchParametersFromGUI(); // see if the settings have changed
                     }
+
+                    if (tempSearchParameters.getParametersFile() != null) {
+
+                        try {
+                            tempSearchParameters.setParametersFile(deNovoGUI.getSearchParameters().getParametersFile());
+                            SearchParameters.saveIdentificationParameters(tempSearchParameters, deNovoGUI.getSearchParameters().getParametersFile());
+                            deNovoGUI.setSearchParameters(tempSearchParameters);
+                            dispose();
+                        } catch (ClassNotFoundException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                    }
+                } else if (value == JOptionPane.NO_OPTION) {
+                    dispose(); // reject the changes
                 }
-            } else if (value == JOptionPane.NO_OPTION) {
-                dispose(); // reject the changes
+            } else {
+                dispose(); // no changes
             }
-        } else {
-            dispose(); // no changes
         }
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -1345,30 +1682,55 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 "Search Settings Help", 500, 10);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_openDialogHelpJButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
+    private javax.swing.JComboBox adjustPrecursorCmb;
+    private javax.swing.JLabel adjustPrecursorLabel;
     private javax.swing.JPanel availableModsPanel;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel deNovoSettingsPanel;
-    private javax.swing.JComboBox enzymeComboBox;
-    private javax.swing.JLabel enzymeLabel;
-    private javax.swing.JCheckBox filterLowQualityCheckBox;
+    private javax.swing.JLabel complementScoreWeightLabel;
+    private javax.swing.JTextField complementScoreWeightTextField;
+    private javax.swing.JLabel complementToleranceLabel;
+    private javax.swing.JTextField complementToleranceTextField;
+    private javax.swing.JLabel deisotopingModeLabel;
+    private javax.swing.JTextField deisptopingModeTextField;
+    private javax.swing.JPanel directTagPanel;
+    private javax.swing.JLabel duplicateSpectraLabel;
+    private javax.swing.JComboBox duplicateSpectraPerChargeCmb;
     private javax.swing.JLabel fixedModificationsLabel;
     private javax.swing.JScrollPane fixedModsJScrollPane;
     private javax.swing.JTable fixedModsTable;
     private javax.swing.JLabel fragmentMassToleranceLabel;
     private javax.swing.JSpinner fragmentMassToleranceSpinner;
+    private javax.swing.JPanel generalPanel;
+    private javax.swing.JLabel intensityScoreWeightLabel;
+    private javax.swing.JTextField intensityScoreWeightTextField;
+    private javax.swing.JLabel isotopeToleranceLabel;
+    private javax.swing.JTextField isotopeToleranceTextField;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JComboBox modelComboBox;
-    private javax.swing.JLabel modelLabel;
+    private javax.swing.JLabel maxPeakCountLabel;
+    private javax.swing.JTextField maxPeakCountTextField;
+    private javax.swing.JLabel maxPrecursorAdjustmentLabel;
+    private javax.swing.JTextField maxPrecursorAdjustmentTextField;
+    private javax.swing.JLabel minPrecursorAdjustmentLabel;
+    private javax.swing.JTextField minPrecursorAdjustmentTextField;
     private javax.swing.JSplitPane modificationTypesSplitPane;
     private javax.swing.JScrollPane modificationsJScrollPane;
     private javax.swing.JComboBox modificationsListCombo;
     private javax.swing.JPanel modificationsPanel1;
     private javax.swing.JTable modificationsTable;
+    private javax.swing.JLabel mzFidelityScoreWeightLabel;
+    private javax.swing.JTextField mzFidelityScoreWeightTextField;
+    private javax.swing.JLabel numVariableModsLabel;
+    private javax.swing.JTextField numVariableModsTextField;
+    private javax.swing.JLabel numberOfChargeStatesLabel;
+    private javax.swing.JTextField numberOfChargeStatesTextField;
+    private javax.swing.JLabel numberOfIntensityClassesLabel;
+    private javax.swing.JTextField numberOfIntensityClassesTextField;
     private javax.swing.JLabel numberOfSolutionsLabel;
     private javax.swing.JSpinner numberOfSolutionsSpinner;
     private javax.swing.JLabel numberOfThreadsLabel;
@@ -1376,12 +1738,20 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private javax.swing.JButton okButton;
     private javax.swing.JButton openDialogHelpJButton;
     private javax.swing.JButton openModificationSettingsJButton;
+    private javax.swing.JLabel outputSuffixLabel;
+    private javax.swing.JTextField outputSuffixTextField;
+    private javax.swing.JLabel precursorAdjustmentStepLabel;
+    private javax.swing.JTextField precursorAdjustmentStepTextField;
     private javax.swing.JLabel precursorMassToleranceLabel;
     private javax.swing.JSpinner precursorMassToleranceSpinner;
     private javax.swing.JButton removeFixedModification;
     private javax.swing.JButton removeVariableModification;
-    private javax.swing.JCheckBox spectrumChargeCheckBox;
-    private javax.swing.JCheckBox spectrumPrecursorCheckBox;
+    private javax.swing.JLabel tagLengthLabel;
+    private javax.swing.JTextField tagLengthTextField;
+    private javax.swing.JLabel ticCutoffLabel;
+    private javax.swing.JTextField ticCutoffTextField;
+    private javax.swing.JComboBox useSpectrumChargeCmb;
+    private javax.swing.JLabel useSpectrumChargeStageLabel;
     private javax.swing.JLabel variableModificationsLabel;
     private javax.swing.JScrollPane variableModsJScrollPane;
     private javax.swing.JTable variableModsTable;
@@ -1395,32 +1765,69 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     public SearchParameters getSearchParametersFromGUI() {
 
         SearchParameters tempSearchParameters = new SearchParameters();
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()));
 
-        // @TODO: implement other enzymes
-        Enzyme enzyme;
-        if (enzymeComboBox.getSelectedIndex() == 0) {
-            enzyme = enzymeFactory.getEnzyme("Trypsin");
-        } else {
-            enzyme = enzymeFactory.getEnzyme("No Enzyme"); // @TODO: what does NON_SPECIFIC mean in PepNovo..?
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), new OmssaParameters());
         }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), new XtandemParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), new MsgfParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), new DirecTagParameters());
+        }
+
+        PepnovoParameters pepNovoParameters = (PepnovoParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
+
+        Enzyme enzyme = enzymeFactory.getEnzyme("Trypsin"); // only trypsin is supported by pepnovo anyway...
         tempSearchParameters.setEnzyme(enzyme);
 
-        // @TODO: implement other models
-        String fragmentationModel = (String) modelComboBox.getSelectedItem();
-        tempSearchParameters.setFragmentationModel(fragmentationModel);
+        // general parameters
         double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();
         tempSearchParameters.setFragmentIonAccuracy(fragmentIonTolerance);
         double precursorIonTolerance = (Double) precursorMassToleranceSpinner.getValue();
         tempSearchParameters.setPrecursorAccuracyDalton(precursorIonTolerance);
         int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
-        tempSearchParameters.setHitListLength(maxHitListLength);
-        boolean estimateCharge = !spectrumChargeCheckBox.isSelected();
-        tempSearchParameters.setEstimateCharge(estimateCharge);
-        boolean estimatePrecursorMass = !spectrumPrecursorCheckBox.isSelected();
-        tempSearchParameters.correctPrecursorMass(estimatePrecursorMass);
-        boolean filterLowQualitySpectra = filterLowQualityCheckBox.isSelected();
-        tempSearchParameters.setDiscardLowQualitySpectra(filterLowQualitySpectra);
+        pepNovoParameters.setHitListLength(maxHitListLength);
+        
+        pepNovoParameters.setCorrectPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
+        direcTagParameters.setAdjustPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
+        
+        pepNovoParameters.setEstimateCharge(useSpectrumChargeCmb.getSelectedIndex() == 1);
+        direcTagParameters.setUseChargeStateFromMS(useSpectrumChargeCmb.getSelectedIndex() == 0);
+ 
+        pepNovoParameters.setDiscardLowQualitySpectra(true); // note: hardcoded to true (mainly because if not this would be the only pepnovo parameter left...)
 
+        // DirecTag parameters
+        direcTagParameters.setMaxTagCount(maxHitListLength);
+        direcTagParameters.setTagLength(Integer.parseInt(tagLengthTextField.getText()));
+        direcTagParameters.setMaxDynamicMods(Integer.parseInt(numVariableModsTextField.getText()));
+        direcTagParameters.setNumChargeStates(Integer.parseInt(numberOfChargeStatesTextField.getText()));
+        direcTagParameters.setDuplicateSpectra(duplicateSpectraPerChargeCmb.getSelectedIndex() == 0);
+        direcTagParameters.setDeisotopingMode(Integer.parseInt(deisptopingModeTextField.getText()));
+        direcTagParameters.setIsotopeMzTolerance(Double.parseDouble(isotopeToleranceTextField.getText()));
+        direcTagParameters.setNumIntensityClasses(Integer.parseInt(numberOfIntensityClassesTextField.getText()));
+        direcTagParameters.setOutputSuffix(outputSuffixTextField.getText());
+        direcTagParameters.setMaxPeakCount(Integer.parseInt(maxPeakCountTextField.getText()));
+        direcTagParameters.setTicCutoffPercentage(Double.parseDouble(ticCutoffTextField.getText()));
+        direcTagParameters.setComplementMzTolerance(Double.parseDouble(complementToleranceTextField.getText()));
+        direcTagParameters.setPrecursorAdjustmentStep(Double.parseDouble(precursorAdjustmentStepTextField.getText()));
+        direcTagParameters.setMinPrecursorAdjustment(Double.parseDouble(minPrecursorAdjustmentTextField.getText()));
+        direcTagParameters.setMaxPrecursorAdjustment(Double.parseDouble(maxPrecursorAdjustmentTextField.getText()));
+        direcTagParameters.setIntensityScoreWeight(Double.parseDouble(intensityScoreWeightTextField.getText()));
+        direcTagParameters.setMzFidelityScoreWeight(Double.parseDouble(mzFidelityScoreWeightTextField.getText()));
+        direcTagParameters.setComplementScoreWeight(Double.parseDouble(complementScoreWeightTextField.getText()));
+        
+        // set the modifications
         ModificationProfile modificationProfile = new ModificationProfile();
         for (int i = 0; i < fixedModsTable.getRowCount(); i++) {
             String modName = (String) fixedModsTable.getValueAt(i, 1);
@@ -1435,9 +1842,15 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
         tempSearchParameters.setModificationProfile(modificationProfile);
 
+        // Set omssa indexes
+        ptmFactory.setSearchedOMSSAIndexes(tempSearchParameters.getModificationProfile());
+        
         if (searchParameters.getParametersFile() != null) {
             tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
         }
+
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), pepNovoParameters);
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), direcTagParameters);
 
         return tempSearchParameters;
     }
@@ -1452,7 +1865,10 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         boolean valid = true;
 
-        // @TODO: do we need any sort of validation here??
+        
+        // @TODO: implement parameters validation!!!
+        
+        
         okButton.setEnabled(valid);
 
         return valid;

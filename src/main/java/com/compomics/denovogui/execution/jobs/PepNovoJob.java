@@ -3,18 +3,20 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
 
 /**
- * <b>PepnovoJob</b> <p> This job class runs the PepNovo+ software in wrapper
+ * <b>PepNovoJob</b> <p> This job class runs the PepNovo+ software in wrapper
  * mode. </p>
  *
  * @author Thilo Muth
  */
-public class PepnovoJob extends Job {
+public class PepNovoJob extends Job {
 
     /**
      * Title of the PepNovo+ executable.
@@ -47,7 +49,7 @@ public class PepnovoJob extends Job {
      * @param searchParameters The search parameters.
      * @param waitingHandler the waiting handler
      */
-    public PepnovoJob(File pepNovoFolder, String exeTitle, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
+    public PepNovoJob(File pepNovoFolder, String exeTitle, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
         this.pepNovoFolder = pepNovoFolder;
         this.exeTitle = exeTitle;
         this.spectrumFile = mgfFile;
@@ -61,6 +63,9 @@ public class PepnovoJob extends Job {
      * Initializes the job, setting up the commands for the ProcessBuilder.
      */
     private void initJob() {
+        
+        // get the DirecTag specific parameters
+        PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
 
         // full path to executable
         procCommands.add(pepNovoFolder.getAbsolutePath() + File.separator + exeTitle);
@@ -72,7 +77,7 @@ public class PepnovoJob extends Job {
 
         // Add Model
         procCommands.add("-model");
-        procCommands.add(searchParameters.getFragmentationModel());
+        procCommands.add(pepNovoParameters.getFragmentationModel());
 
         // Add modifications
         ArrayList<String> modifications = searchParameters.getModificationProfile().getAllModifications();
@@ -87,29 +92,29 @@ public class PepnovoJob extends Job {
 
         // Add solution number
         procCommands.add("-num_solutions");
-        procCommands.add(String.valueOf(searchParameters.getHitListLengthDeNovo()));
+        procCommands.add(String.valueOf(pepNovoParameters.getHitListLength()));
 
         // Precursor tolerance
         procCommands.add("-pm_tolerance");
         procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
 
         // Use spectrum charge: no by default
-        if (!searchParameters.isEstimateCharge()) {
+        if (!pepNovoParameters.isEstimateCharge()) {
             procCommands.add("-use_spectrum_charge");
         }
 
         // Use spectrum mz: no by default
-        if (!searchParameters.isCorrectPrecursorMass()) {
+        if (!pepNovoParameters.isCorrectPrecursorMass()) {
             procCommands.add("-use_spectrum_mz");
         }
 
         // Remove low quality spectra: yes by default
-        if (!searchParameters.getDiscardLowQualitySpectra()) {
+        if (!pepNovoParameters.getDiscardLowQualitySpectra()) {
             procCommands.add("-no_quality_filter");
         }
 
         // Generate blast query
-        if (searchParameters.generateQuery()) {
+        if (pepNovoParameters.generateQuery()) {
             procCommands.add("-msb_generate_query");
             procCommands.add("-msb_query_name");
             procCommands.add(outputFolder.getAbsolutePath() + System.getProperty("file.separator") + spectrumFile.getName() + ".query");
@@ -118,6 +123,13 @@ public class PepnovoJob extends Job {
         // Add output path
         outputFile = FileProcessor.getOutFile(outputFolder, spectrumFile);
         procCommands.trimToSize();
+        
+        // print the command to the log file
+        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: ");
+        for (int i = 0; i < procCommands.size(); i++) {
+            System.out.print(procCommands.get(i) + " ");
+        }
+        System.out.println(System.getProperty("line.separator"));
 
         // Set the description - yet not used
         setDescription("PepNovo+");

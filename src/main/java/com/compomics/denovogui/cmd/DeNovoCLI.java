@@ -93,8 +93,8 @@ public class DeNovoCLI implements Callable {
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
 
-            boolean runPepNovo = true; // @TODO: get this from deNovoCLIInputBean!!!
-            boolean runDirecTag = true; // @TODO: get this from deNovoCLIInputBean!!!
+            boolean runPepNovo = deNovoCLIInputBean.enablePepNovo();
+            boolean runDirecTag = deNovoCLIInputBean.enableDirecTag();
 
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
@@ -148,28 +148,38 @@ public class DeNovoCLI implements Callable {
             }
 
             // check if the PepNovo folder is set
-            if (pepNovoFolder == null) {
+            if (pepNovoFolder == null && runPepNovo) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
 
             // check of the PepNovo executable is set
-            if (pepNovoExecutableTitle == null) {
+            if (pepNovoExecutableTitle == null && runPepNovo) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
             
             // check if the DirecTag folder is set
-            if (direcTagFolder == null) {
+            if (direcTagFolder == null && runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag location not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
 
             // check of the DirecTag executable is set
-            if (direcTagExecutableTitle == null) {
+            if (direcTagExecutableTitle == null && runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
+            
+            if (!runPepNovo && !runDirecTag) {
+                waitingHandlerCLIImpl.appendReport("\nNeither PepNovo+ or DirecTag is selected! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+            
+//            if (runPepNovo && runDirecTag) {
+//                waitingHandlerCLIImpl.appendReport("\nPepNovo+ and DirecTag cannot be selected at the same time! Sequencing canceled.", false, true);
+//                System.exit(0);
+//            }
 
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (deNovoCLIInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {

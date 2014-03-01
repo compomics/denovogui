@@ -1,45 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
-  <NonVisualComponents>
-    <Component class="javax.swing.JLabel" name="enzymeLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Enzyme"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="enzymeComboBox">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="2">
-            <StringItem index="0" value="TRYPSIN"/>
-            <StringItem index="1" value="NON_SPECIFIC"/>
-          </StringArray>
-        </Property>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="modelLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Model"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="modelComboBox">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
-            <StringItem index="0" value="CID_IT_TRYP"/>
-          </StringArray>
-        </Property>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
-    </Component>
-  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="De Novo Settings"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[800, 600]"/>
     </Property>
+    <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -60,7 +28,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="backgroundPanel" alignment="0" max="32767" attributes="0"/>
+          <Component id="backgroundPanel" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -83,16 +51,17 @@
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
+                      <Component id="directTagPanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="generalPanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="modificationsPanel1" alignment="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                           <Component id="openDialogHelpJButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace min="863" pref="863" max="-2" attributes="0"/>
                           <Component id="okButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="modificationsPanel1" alignment="0" max="32767" attributes="0"/>
-                      <Component id="deNovoSettingsPanel" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
@@ -101,179 +70,24 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="deNovoSettingsPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Component id="generalPanel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Component id="directTagPanel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="modificationsPanel1" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="openDialogHelpJButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="okButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cancelButton" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="deNovoSettingsPanel">
-          <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                <TitledBorder title="De Novo Settings"/>
-              </Border>
-            </Property>
-            <Property name="opaque" type="boolean" value="false"/>
-          </Properties>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="precursorMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="fragmentMassToleranceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" attributes="0">
-                                  <Component id="numberOfSolutionsLabel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="numberOfThreadsLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="fragmentMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="numberOfSolutionsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="precursorMassToleranceSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          <Component id="numberOfThreadsSpinner" linkSize="3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="spectrumChargeCheckBox" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumPrecursorCheckBox" min="-2" max="-2" attributes="0"/>
-                          <Component id="filterLowQualityCheckBox" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="73" max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumChargeCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="spectrumPrecursorCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="filterLowQualityCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
-                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="0.5" maximum="0.75" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance (Da)"/>
-                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="numberOfSolutionsLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="No. Solutions (max. 20)"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="numberOfSolutionsSpinner">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="10" maximum="2000" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JCheckBox" name="spectrumChargeCheckBox">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Use Spectrum Charge (No Correction)"/>
-                <Property name="iconTextGap" type="int" value="15"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JCheckBox" name="spectrumPrecursorCheckBox">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Use Spectrum Precursor m/z (No Correction)"/>
-                <Property name="iconTextGap" type="int" value="15"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JCheckBox" name="filterLowQualityCheckBox">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Filter Low Quality Spectra"/>
-                <Property name="iconTextGap" type="int" value="15"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="numberOfThreadsLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="No. Threads/Cores"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="numberOfThreadsSpinner">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="1" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
         <Component class="javax.swing.JButton" name="okButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="OK"/>
@@ -304,11 +118,11 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="modificationTypesSplitPane" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="availableModsPanel" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="availableModsPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -357,7 +171,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="fixedModificationsLabel" pref="126" max="32767" attributes="1"/>
+                                      <Component id="fixedModificationsLabel" max="32767" attributes="1"/>
                                       <EmptySpace min="-2" pref="242" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -383,7 +197,7 @@
                                       <Component id="addFixedModification" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="removeFixedModification" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="26" max="32767" attributes="0"/>
+                                      <EmptySpace pref="78" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="fixedModsJScrollPane" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -443,8 +257,8 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fixedModsTableMouseExited"/>
                             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fixedModsTableMouseReleased"/>
+                            <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fixedModsTableMouseExited"/>
                             <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="fixedModsTableMouseMoved"/>
                           </Events>
                         </Component>
@@ -468,7 +282,7 @@
                           <Component id="variableModificationsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                              <Component id="variableModsJScrollPane" pref="361" max="32767" attributes="0"/>
+                              <Component id="variableModsJScrollPane" pref="457" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="addVariableModification" alignment="1" min="-2" pref="54" max="-2" attributes="0"/>
@@ -488,7 +302,7 @@
                                       <Component id="addVariableModification" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="removeVariableModification" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="37" max="32767" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="variableModsJScrollPane" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -548,8 +362,8 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="variableModsTableMouseExited"/>
                             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="variableModsTableMouseReleased"/>
+                            <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="variableModsTableMouseExited"/>
                             <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="variableModsTableMouseMoved"/>
                           </Events>
                         </Component>
@@ -567,9 +381,9 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="modificationsJScrollPane" pref="340" max="32767" attributes="0"/>
+                      <Component id="modificationsJScrollPane" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
-                          <Component id="modificationsListCombo" max="32767" attributes="1"/>
+                          <Component id="modificationsListCombo" pref="435" max="32767" attributes="1"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="openModificationSettingsJButton" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -680,6 +494,607 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openDialogHelpJButtonActionPerformed"/>
           </Events>
         </Component>
+        <Container class="javax.swing.JPanel" name="directTagPanel">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="DirecTag Settings"/>
+              </Border>
+            </Property>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="198" pref="198" max="-2" attributes="0"/>
+                                      <Component id="tagLengthTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="tagLengthLabel" linkSize="4" alignment="0" min="-2" pref="180" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="numVariableModsLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="numVariableModsTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="numberOfChargeStatesLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="numberOfChargeStatesTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="duplicateSpectraLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="duplicateSpectraPerChargeCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="ticCutoffLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="ticCutoffTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="numberOfIntensityClassesLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="numberOfIntensityClassesTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="maxPeakCountLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="maxPeakCountTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="outputSuffixLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="outputSuffixTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="isotopeToleranceLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="isotopeToleranceTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="precursorAdjustmentStepLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="precursorAdjustmentStepTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="deisotopingModeLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="deisptopingModeTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="complementToleranceLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="complementToleranceTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="minPrecursorAdjustmentLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                  <Component id="maxPrecursorAdjustmentLabel" linkSize="4" alignment="0" min="-2" pref="180" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="minPrecursorAdjustmentTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  <Component id="maxPrecursorAdjustmentTextField" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="complementScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="complementScoreWeightTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="mzFidelityScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                          <Component id="intensityScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="intensityScoreWeightTextField" pref="100" max="32767" attributes="0"/>
+                                          <Component id="mzFidelityScoreWeightTextField" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="minPrecursorAdjustmentLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="minPrecursorAdjustmentTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="maxPrecursorAdjustmentLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="maxPrecursorAdjustmentTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="intensityScoreWeightLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="intensityScoreWeightTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="mzFidelityScoreWeightLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="mzFidelityScoreWeightTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="complementScoreWeightLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="complementScoreWeightTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="numberOfIntensityClassesTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="numberOfIntensityClassesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="outputSuffixLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="outputSuffixTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="maxPeakCountLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="maxPeakCountTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="ticCutoffTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="ticCutoffLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="tagLengthLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tagLengthTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="numVariableModsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="numVariableModsTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="numberOfChargeStatesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="numberOfChargeStatesTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="duplicateSpectraLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="duplicateSpectraPerChargeCmb" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="complementToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="complementToleranceTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="isotopeToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="isotopeToleranceTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="precursorAdjustmentStepLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="precursorAdjustmentStepTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="deisotopingModeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="deisptopingModeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="numberOfChargeStatesLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Number of Charge States"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="duplicateSpectraLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Duplicate Spectra per Charge"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="deisotopingModeLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Deisptoping Mode"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="isotopeToleranceLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Isotope MZ Tolerance (Da)"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="complementToleranceLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Complement MZ Tolerance (Da)"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="tagLengthLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Tag Length"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="numVariableModsLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Max Number of Variable PTMs"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="intensityScoreWeightLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Intensity Score Weight"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="mzFidelityScoreWeightLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="MZ Fidelity Score Weight"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="complementScoreWeightLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Complement Score Weight"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="numberOfChargeStatesTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="ticCutoffLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="TIC Cutoff Percentage"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="maxPeakCountTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="400"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="maxPeakCountLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Max Peak Count"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="numberOfIntensityClassesTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="numberOfIntensityClassesLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Number of Intensity Classes"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="minPrecursorAdjustmentLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Min Precursor Adjustment"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="minPrecursorAdjustmentTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="-2.5"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="maxPrecursorAdjustmentLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Max Precursor Adjustment"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="maxPrecursorAdjustmentTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="2.5"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="precursorAdjustmentStepLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Precursor Adjustment Step"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="precursorAdjustmentStepTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="0.1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="outputSuffixLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Output Suffix"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="outputSuffixTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="duplicateSpectraPerChargeCmb">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Yes"/>
+                    <StringItem index="1" value="No"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="deisptopingModeTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="0"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="isotopeToleranceTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="0.25"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="complementToleranceTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="0.5"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="tagLengthTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="numVariableModsTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="2"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="intensityScoreWeightTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="mzFidelityScoreWeightTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="complementScoreWeightTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="ticCutoffTextField">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="85"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="generalPanel">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="General Settings"/>
+              </Border>
+            </Property>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="fragmentMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="fragmentMassToleranceSpinner" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="precursorMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="precursorMassToleranceSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="numberOfThreadsLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="numberOfThreadsSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="useSpectrumChargeStageLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="useSpectrumChargeCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="numberOfSolutionsLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="numberOfSolutionsSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="adjustPrecursorLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="adjustPrecursorCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                      <Component id="adjustPrecursorLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="adjustPrecursorCmb" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                      <Component id="useSpectrumChargeStageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="useSpectrumChargeCmb" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
+                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
+              <Properties>
+                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                  <SpinnerModel initial="0.5" maximum="0.75" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance (Da)"/>
+                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
+              <Properties>
+                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                  <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="numberOfSolutionsLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="#Solutions (max. 20)"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JSpinner" name="numberOfSolutionsSpinner">
+              <Properties>
+                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                  <SpinnerModel initial="10" maximum="2000" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="numberOfThreadsLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="#Threads/Cores"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JSpinner" name="numberOfThreadsSpinner">
+              <Properties>
+                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                  <SpinnerModel initial="1" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="adjustPrecursorLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Use Spectrum Precursor m/z"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="adjustPrecursorCmb">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Yes"/>
+                    <StringItem index="1" value="No"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="useSpectrumChargeStageLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Use Spectrum Charge State"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="useSpectrumChargeCmb">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Yes"/>
+                    <StringItem index="1" value="No"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>
