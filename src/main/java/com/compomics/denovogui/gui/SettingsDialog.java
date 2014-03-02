@@ -10,6 +10,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Ms
 import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
+import com.compomics.util.gui.GuiUtilities;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
@@ -92,6 +93,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     setVisible(true);
+                    validateParametersInput(true);
                 }
             });
         }
@@ -789,16 +791,31 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         numberOfChargeStatesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         numberOfChargeStatesTextField.setText("3");
+        numberOfChargeStatesTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                numberOfChargeStatesTextFieldKeyPressed(evt);
+            }
+        });
 
         ticCutoffLabel.setText("TIC Cutoff Percentage");
 
         maxPeakCountTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         maxPeakCountTextField.setText("400");
+        maxPeakCountTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                maxPeakCountTextFieldKeyReleased(evt);
+            }
+        });
 
         maxPeakCountLabel.setText("Max Peak Count");
 
         numberOfIntensityClassesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         numberOfIntensityClassesTextField.setText("3");
+        numberOfIntensityClassesTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                numberOfIntensityClassesTextFieldKeyReleased(evt);
+            }
+        });
 
         numberOfIntensityClassesLabel.setText("Number of Intensity Classes");
 
@@ -806,49 +823,114 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         minPrecursorAdjustmentTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         minPrecursorAdjustmentTextField.setText("-2.5");
+        minPrecursorAdjustmentTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                minPrecursorAdjustmentTextFieldKeyReleased(evt);
+            }
+        });
 
         maxPrecursorAdjustmentLabel.setText("Max Precursor Adjustment");
 
         maxPrecursorAdjustmentTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         maxPrecursorAdjustmentTextField.setText("2.5");
+        maxPrecursorAdjustmentTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                maxPrecursorAdjustmentTextFieldKeyReleased(evt);
+            }
+        });
 
         precursorAdjustmentStepLabel.setText("Precursor Adjustment Step");
 
         precursorAdjustmentStepTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         precursorAdjustmentStepTextField.setText("0.1");
+        precursorAdjustmentStepTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                precursorAdjustmentStepTextFieldKeyReleased(evt);
+            }
+        });
 
         outputSuffixLabel.setText("Output Suffix");
 
         outputSuffixTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        outputSuffixTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                outputSuffixTextFieldKeyReleased(evt);
+            }
+        });
 
         duplicateSpectraPerChargeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Yes", "No" }));
 
         deisptopingModeTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         deisptopingModeTextField.setText("0");
+        deisptopingModeTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                deisptopingModeTextFieldKeyReleased(evt);
+            }
+        });
 
         isotopeToleranceTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         isotopeToleranceTextField.setText("0.25");
+        isotopeToleranceTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                isotopeToleranceTextFieldKeyReleased(evt);
+            }
+        });
 
         complementToleranceTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         complementToleranceTextField.setText("0.5");
+        complementToleranceTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                complementToleranceTextFieldKeyReleased(evt);
+            }
+        });
 
         tagLengthTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         tagLengthTextField.setText("3");
+        tagLengthTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tagLengthTextFieldKeyReleased(evt);
+            }
+        });
 
         numVariableModsTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         numVariableModsTextField.setText("2");
+        numVariableModsTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                numVariableModsTextFieldKeyReleased(evt);
+            }
+        });
 
         intensityScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         intensityScoreWeightTextField.setText("1");
+        intensityScoreWeightTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                intensityScoreWeightTextFieldKeyReleased(evt);
+            }
+        });
 
         mzFidelityScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         mzFidelityScoreWeightTextField.setText("1");
+        mzFidelityScoreWeightTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                mzFidelityScoreWeightTextFieldKeyReleased(evt);
+            }
+        });
 
         complementScoreWeightTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         complementScoreWeightTextField.setText("1");
+        complementScoreWeightTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                complementScoreWeightTextFieldKeyReleased(evt);
+            }
+        });
 
         ticCutoffTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         ticCutoffTextField.setText("85");
+        ticCutoffTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                ticCutoffTextFieldKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout directTagPanelLayout = new javax.swing.GroupLayout(directTagPanel);
         directTagPanel.setLayout(directTagPanelLayout);
@@ -910,33 +992,29 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addComponent(complementToleranceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(complementToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(50, 50, 50)
                 .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(directTagPanelLayout.createSequentialGroup()
-                        .addGap(50, 50, 50)
                         .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(minPrecursorAdjustmentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(maxPrecursorAdjustmentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(minPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(maxPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10))
+                            .addComponent(maxPrecursorAdjustmentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
-                                .addComponent(complementScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(complementScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
-                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(mzFidelityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(intensityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(intensityScoreWeightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                    .addComponent(mzFidelityScoreWeightTextField))))
-                        .addGap(10, 10, 10))))
+                        .addComponent(complementScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(complementScoreWeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, directTagPanelLayout.createSequentialGroup()
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(mzFidelityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(intensityScoreWeightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(directTagPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(intensityScoreWeightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(mzFidelityScoreWeightTextField))))
+                .addGap(10, 10, 10))
         );
 
         directTagPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {complementScoreWeightLabel, complementToleranceLabel, deisotopingModeLabel, duplicateSpectraLabel, intensityScoreWeightLabel, isotopeToleranceLabel, maxPeakCountLabel, maxPrecursorAdjustmentLabel, minPrecursorAdjustmentLabel, mzFidelityScoreWeightLabel, numVariableModsLabel, numberOfChargeStatesLabel, numberOfIntensityClassesLabel, outputSuffixLabel, precursorAdjustmentStepLabel, tagLengthLabel, ticCutoffLabel});
@@ -1089,8 +1167,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         generalPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {numberOfSolutionsSpinner, numberOfThreadsSpinner, precursorMassToleranceSpinner});
 
-        generalPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {adjustPrecursorLabel, useSpectrumChargeStageLabel});
-
         generalPanelLayout.setVerticalGroup(
             generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(generalPanelLayout.createSequentialGroup()
@@ -1105,19 +1181,21 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                             .addComponent(precursorMassToleranceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(precursorMassToleranceLabel)))
                     .addGroup(generalPanelLayout.createSequentialGroup()
-                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(numberOfSolutionsLabel)
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(adjustPrecursorLabel)
-                                .addComponent(adjustPrecursorCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(adjustPrecursorCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(adjustPrecursorLabel))
+                            .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(numberOfSolutionsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(numberOfSolutionsLabel)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(numberOfThreadsLabel)
+                        .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(useSpectrumChargeStageLabel)
-                                .addComponent(useSpectrumChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(useSpectrumChargeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(generalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(numberOfThreadsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(numberOfThreadsLabel)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1683,6 +1761,150 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_openDialogHelpJButtonActionPerformed
 
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void tagLengthTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tagLengthTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_tagLengthTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void numVariableModsTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numVariableModsTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_numVariableModsTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void numberOfChargeStatesTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numberOfChargeStatesTextFieldKeyPressed
+        validateParametersInput(false);
+    }//GEN-LAST:event_numberOfChargeStatesTextFieldKeyPressed
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void deisptopingModeTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_deisptopingModeTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_deisptopingModeTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void isotopeToleranceTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_isotopeToleranceTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_isotopeToleranceTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void numberOfIntensityClassesTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numberOfIntensityClassesTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_numberOfIntensityClassesTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void outputSuffixTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_outputSuffixTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_outputSuffixTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void maxPeakCountTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_maxPeakCountTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_maxPeakCountTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void ticCutoffTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ticCutoffTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_ticCutoffTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void complementToleranceTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_complementToleranceTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_complementToleranceTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void precursorAdjustmentStepTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precursorAdjustmentStepTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_precursorAdjustmentStepTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void minPrecursorAdjustmentTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_minPrecursorAdjustmentTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_minPrecursorAdjustmentTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void maxPrecursorAdjustmentTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_maxPrecursorAdjustmentTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_maxPrecursorAdjustmentTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void intensityScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_intensityScoreWeightTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_intensityScoreWeightTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void mzFidelityScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mzFidelityScoreWeightTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_mzFidelityScoreWeightTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     * 
+     * @param evt 
+     */
+    private void complementScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_complementScoreWeightTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_complementScoreWeightTextFieldKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
@@ -1798,13 +2020,13 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         tempSearchParameters.setPrecursorAccuracyDalton(precursorIonTolerance);
         int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
         pepNovoParameters.setHitListLength(maxHitListLength);
-        
+
         pepNovoParameters.setCorrectPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
         direcTagParameters.setAdjustPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
-        
+
         pepNovoParameters.setEstimateCharge(useSpectrumChargeCmb.getSelectedIndex() == 1);
         direcTagParameters.setUseChargeStateFromMS(useSpectrumChargeCmb.getSelectedIndex() == 0);
- 
+
         pepNovoParameters.setDiscardLowQualitySpectra(true); // note: hardcoded to true (mainly because if not this would be the only pepnovo parameter left...)
 
         // DirecTag parameters
@@ -1826,7 +2048,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         direcTagParameters.setIntensityScoreWeight(Double.parseDouble(intensityScoreWeightTextField.getText()));
         direcTagParameters.setMzFidelityScoreWeight(Double.parseDouble(mzFidelityScoreWeightTextField.getText()));
         direcTagParameters.setComplementScoreWeight(Double.parseDouble(complementScoreWeightTextField.getText()));
-        
+
         // set the modifications
         ModificationProfile modificationProfile = new ModificationProfile();
         for (int i = 0; i < fixedModsTable.getRowCount(); i++) {
@@ -1844,7 +2066,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         // Set omssa indexes
         ptmFactory.setSearchedOMSSAIndexes(tempSearchParameters.getModificationProfile());
-        
+
         if (searchParameters.getParametersFile() != null) {
             tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
         }
@@ -1864,13 +2086,24 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     public boolean validateParametersInput(boolean showMessage) {
 
         boolean valid = true;
+        
+        valid = GuiUtilities.validateIntegerInput(this, tagLengthLabel, tagLengthTextField, "tag length", "Tag Length Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, numVariableModsLabel, numVariableModsTextField, "number of variable modifications", "Variable Modifications Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, numberOfChargeStatesLabel, numberOfChargeStatesTextField, "number of charge states", "Charge States Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, deisotopingModeLabel, deisptopingModeTextField, "deisotoping mode", "Deisotoping Mode Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, isotopeToleranceLabel, isotopeToleranceTextField, "isotope tolerance", "Isotope Tolerance Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, numberOfIntensityClassesLabel, numberOfIntensityClassesTextField, "number of intensity classes", "Intensity Classes Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, maxPeakCountLabel, maxPeakCountTextField, "maximum peak count", "Max Peak Count Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, ticCutoffLabel, ticCutoffTextField, "TIC cutoff", "TIC Cutoff Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, complementToleranceLabel, complementToleranceTextField, "complement tolerance", "Complement Tolerance Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, precursorAdjustmentStepLabel, precursorAdjustmentStepTextField, "precursor adjustment step", "Precursor Adjustment Step Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, minPrecursorAdjustmentLabel, minPrecursorAdjustmentTextField, "minimum precursor adjustment", "Minimum Precursor Adjustment Error", false, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, maxPrecursorAdjustmentLabel, maxPrecursorAdjustmentTextField, "maximum precursor adjustment", "Maximum Precursor Adjustment Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, intensityScoreWeightLabel, intensityScoreWeightTextField, "intensity score weight", "Intensity Score Waight Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, mzFidelityScoreWeightLabel, mzFidelityScoreWeightTextField, "mz fidelity score weight", "MZ Fidelity Score Weight Error", true, showMessage, valid);
+        valid = GuiUtilities.validateDoubleInput(this, complementScoreWeightLabel, complementScoreWeightTextField, "complement score weight", "Complement Score Weight Error", true, showMessage, valid);
 
-        
-        // @TODO: implement parameters validation!!!
-        
-        
         okButton.setEnabled(valid);
-
         return valid;
     }
 
