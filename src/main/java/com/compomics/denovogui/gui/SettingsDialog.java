@@ -196,9 +196,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(deNovoGUI.getDeNovoSequencingHandler().getNThreads(), 1, Runtime.getRuntime().availableProcessors(), 1));
         numberOfSolutionsSpinner.setValue(pepNovoParameters.getHitListLength());
         if (pepNovoParameters.isCorrectPrecursorMass()) {
-            adjustPrecursorCmb.setSelectedIndex(0);
-        } else {
             adjustPrecursorCmb.setSelectedIndex(1);
+        } else {
+            adjustPrecursorCmb.setSelectedIndex(0);
         }
         if (pepNovoParameters.isEstimateCharge()) {
             useSpectrumChargeCmb.setSelectedIndex(1);
@@ -2021,8 +2021,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         int maxHitListLength = (Integer) numberOfSolutionsSpinner.getValue();
         pepNovoParameters.setHitListLength(maxHitListLength);
 
-        pepNovoParameters.setCorrectPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
-        direcTagParameters.setAdjustPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 0);
+        pepNovoParameters.setCorrectPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 1);
+        direcTagParameters.setAdjustPrecursorMass(adjustPrecursorCmb.getSelectedIndex() == 1);
 
         pepNovoParameters.setEstimateCharge(useSpectrumChargeCmb.getSelectedIndex() == 1);
         direcTagParameters.setUseChargeStateFromMS(useSpectrumChargeCmb.getSelectedIndex() == 0);
