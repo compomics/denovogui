@@ -457,6 +457,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         splitterMenu9 = new javax.swing.JMenu();
         settingsMenu = new javax.swing.JMenu();
         allCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        highResAnnotationCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         automaticAnnotationCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator14 = new javax.swing.JPopupMenu.Separator();
@@ -714,6 +715,16 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
         });
         settingsMenu.add(allCheckBoxMenuItem);
+
+        highResAnnotationCheckBoxMenuItem.setSelected(true);
+        highResAnnotationCheckBoxMenuItem.setText("High Resolution");
+        highResAnnotationCheckBoxMenuItem.setToolTipText("Use high resolution annotation");
+        highResAnnotationCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highResAnnotationCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        settingsMenu.add(highResAnnotationCheckBoxMenuItem);
         settingsMenu.add(jSeparator5);
 
         automaticAnnotationCheckBoxMenuItem.setSelected(true);
@@ -1577,6 +1588,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
     }//GEN-LAST:event_exportPeptideMatchesMenuItemActionPerformed
 
+    /**
+     * @see #updateAnnotationPreferences()
+     */
+    private void highResAnnotationCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highResAnnotationCheckBoxMenuItemActionPerformed
+        updateAnnotationPreferences();
+    }//GEN-LAST:event_highResAnnotationCheckBoxMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1615,6 +1633,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.JMenuItem helpMainMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JCheckBoxMenuItem highResAnnotationCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
     private javax.swing.JMenu ionsMenu;
     private javax.swing.JPopupMenu.Separator jSeparator14;
@@ -1723,8 +1742,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                 for (double score : scores) {
-                    ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
-                    for (SpectrumIdentificationAssumption assumption : assumptions) {
+                    ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                    for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
                         if (assumption instanceof TagAssumption) {
                             TagAssumption tagAssumption = (TagAssumption) assumption;
                             HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
@@ -1745,7 +1764,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     objectsCache.reduceMemoryConsumption(0.5, null);
                 }
                 waitingHandler.increaseSecondaryProgressCounter();
-        waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, spectrum " + ++progress + " of " + total + "). Please Wait...");
+                waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, spectrum " + ++progress + " of " + total + "). Please Wait...");
             }
         }
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
@@ -2135,7 +2154,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             currentSpectrum, tagAssumption.getTag(),
                             currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
                             annotationPreferences.getFragmentIonAccuracy(),
-                            false);
+                            false, annotationPreferences.isHighResolutionAnnotation());
                     spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
                     spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
                     spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
@@ -2401,6 +2420,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         automaticAnnotationCheckBoxMenuItem.setSelected(annotationPreferences.useAutomaticAnnotation());
         adaptCheckBoxMenuItem.setSelected(annotationPreferences.areNeutralLossesSequenceDependant());
+        highResAnnotationCheckBoxMenuItem.setSelected(getAnnotationPreferences().isHighResolutionAnnotation());
 
         // disable/enable the neutral loss options
         for (JCheckBoxMenuItem lossMenuItem : lossMenus.values()) {
@@ -2464,6 +2484,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         annotationPreferences.useAutomaticAnnotation(automaticAnnotationCheckBoxMenuItem.isSelected());
         annotationPreferences.setNeutralLossesSequenceDependant(adaptCheckBoxMenuItem.isSelected());
+        annotationPreferences.setHighResolutionAnnotation(highResAnnotationCheckBoxMenuItem.isSelected());
 
         annotationPreferences.setShowAllPeaks(allCheckBoxMenuItem.isSelected());
 
