@@ -1,6 +1,6 @@
 package com.compomics.denovogui;
 
-import com.compomics.denovogui.io.PepNovoIdfileReader;
+import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import java.io.File;
