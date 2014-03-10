@@ -1,6 +1,6 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.denovogui.io.PepNovoIdfileReader;
+import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
 import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
