@@ -238,7 +238,11 @@
                       </Group>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="direcTagBetaLabel" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -259,6 +263,7 @@
                           <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="directTagRadioButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="direcTagBetaLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -341,6 +346,11 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
                 <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="direcTagBetaLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="(beta)"/>
               </Properties>
             </Component>
           </SubComponents>
