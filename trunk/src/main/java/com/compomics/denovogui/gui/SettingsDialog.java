@@ -801,6 +801,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         maxPeakCountTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         maxPeakCountTextField.setText("400");
+        maxPeakCountTextField.setEnabled(false);
         maxPeakCountTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 maxPeakCountTextFieldKeyReleased(evt);
@@ -1275,13 +1276,31 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
                 if (value == JOptionPane.YES_OPTION) {
 
-                    // no params file > have the user select a file
-                    if (tempSearchParameters.getParametersFile() == null) {
-                        saveAsPressed();
+                    boolean userSelectFile = false;
+
+                    // see if the user wants to overwrite the current settings file
+                    if (tempSearchParameters.getParametersFile() != null) {
+                        value = JOptionPane.showConfirmDialog(this, "Overwrite current settings file?", "Overwrite?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                        if (value == JOptionPane.NO_OPTION) {
+                            userSelectFile = true;
+                        } else if (value == JOptionPane.CANCEL_OPTION) {
+                            return;
+                        }
+
+                    } else {
+                        // no params file > have the user select a file
+                        userSelectFile = true;
+                    }
+
+                    boolean fileSaved = true;
+                    
+                    if (userSelectFile) {
+                        fileSaved = saveAsPressed();
                         tempSearchParameters = getSearchParametersFromGUI(); // see if the settings have changed
                     }
 
-                    if (tempSearchParameters.getParametersFile() != null) {
+                    if (fileSaved && tempSearchParameters.getParametersFile() != null) {
 
                         try {
                             tempSearchParameters.setParametersFile(deNovoGUI.getSearchParameters().getParametersFile());
@@ -1763,8 +1782,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void tagLengthTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tagLengthTextFieldKeyReleased
         validateParametersInput(false);
@@ -1772,8 +1791,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void numVariableModsTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numVariableModsTextFieldKeyReleased
         validateParametersInput(false);
@@ -1781,8 +1800,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void numberOfChargeStatesTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numberOfChargeStatesTextFieldKeyPressed
         validateParametersInput(false);
@@ -1790,8 +1809,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void deisptopingModeTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_deisptopingModeTextFieldKeyReleased
         validateParametersInput(false);
@@ -1799,8 +1818,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void isotopeToleranceTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_isotopeToleranceTextFieldKeyReleased
         validateParametersInput(false);
@@ -1808,8 +1827,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void numberOfIntensityClassesTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numberOfIntensityClassesTextFieldKeyReleased
         validateParametersInput(false);
@@ -1817,8 +1836,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void outputSuffixTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_outputSuffixTextFieldKeyReleased
         validateParametersInput(false);
@@ -1826,8 +1845,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void maxPeakCountTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_maxPeakCountTextFieldKeyReleased
         validateParametersInput(false);
@@ -1835,8 +1854,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void ticCutoffTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ticCutoffTextFieldKeyReleased
         validateParametersInput(false);
@@ -1844,8 +1863,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void complementToleranceTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_complementToleranceTextFieldKeyReleased
         validateParametersInput(false);
@@ -1853,8 +1872,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void precursorAdjustmentStepTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precursorAdjustmentStepTextFieldKeyReleased
         validateParametersInput(false);
@@ -1862,8 +1881,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void minPrecursorAdjustmentTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_minPrecursorAdjustmentTextFieldKeyReleased
         validateParametersInput(false);
@@ -1871,8 +1890,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void maxPrecursorAdjustmentTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_maxPrecursorAdjustmentTextFieldKeyReleased
         validateParametersInput(false);
@@ -1880,8 +1899,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void intensityScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_intensityScoreWeightTextFieldKeyReleased
         validateParametersInput(false);
@@ -1889,8 +1908,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void mzFidelityScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mzFidelityScoreWeightTextFieldKeyReleased
         validateParametersInput(false);
@@ -1898,8 +1917,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * Validate the input parameters.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void complementScoreWeightTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_complementScoreWeightTextFieldKeyReleased
         validateParametersInput(false);
@@ -2067,7 +2086,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         // Set omssa indexes
         ptmFactory.setSearchedOMSSAIndexes(tempSearchParameters.getModificationProfile());
 
-        if (searchParameters.getParametersFile() != null) {
+        if (searchParameters.getParametersFile() != null && searchParameters.getParametersFile().exists()) {
             tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
         }
 
@@ -2086,7 +2105,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     public boolean validateParametersInput(boolean showMessage) {
 
         boolean valid = true;
-        
+
         valid = GuiUtilities.validateIntegerInput(this, tagLengthLabel, tagLengthTextField, "tag length", "Tag Length Error", true, showMessage, valid);
         valid = GuiUtilities.validateIntegerInput(this, numVariableModsLabel, numVariableModsTextField, "number of variable modifications", "Variable Modifications Error", true, showMessage, valid);
         valid = GuiUtilities.validateIntegerInput(this, numberOfChargeStatesLabel, numberOfChargeStatesTextField, "number of charge states", "Charge States Error", true, showMessage, valid);
@@ -2109,26 +2128,34 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * This method is called when the user clicks the 'Save' button.
+     * 
+     * @return true of the file was saved
      */
-    public void savePressed() {
+    public boolean savePressed() {
         if (parametersFile == null) {
-            saveAsPressed();
+            return saveAsPressed();
         } else if (validateParametersInput(true)) {
             try {
                 searchParameters = getSearchParametersFromGUI();
                 SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
                 deNovoGUI.setSearchParameters(searchParameters);
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, new String[]{"An error occurred while writing: " + parametersFile.getName(), e.getMessage()}, "Error Saving File", JOptionPane.WARNING_MESSAGE);
+                return false;
             }
+        } else {
+            return false;
         }
     }
 
     /**
      * This method is called when the user clicks the 'Save As' button.
+     * 
+     * @return true of the file was saved
      */
-    public void saveAsPressed() {
+    public boolean saveAsPressed() {
 
         if (validateParametersInput(true)) {
 
@@ -2179,12 +2206,15 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         }
                     }
                 } else {
-                    return;
+                    return complete;
                 }
             }
 
-            savePressed();
+            boolean saved = savePressed();
             searchParameters.setParametersFile(parametersFile);
+            return saved;
+        } else {
+            return false;
         }
     }
 

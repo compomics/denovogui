@@ -364,6 +364,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         direcTagLinkLabel = new javax.swing.JLabel();
         directTagRadioButton = new javax.swing.JRadioButton();
         pepNovoRadioButton = new javax.swing.JRadioButton();
+        direcTagBetaLabel = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -488,6 +489,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         pepNovoRadioButton.setToolTipText("Enable PepNovo+");
         pepNovoRadioButton.setOpaque(false);
 
+        direcTagBetaLabel.setText("(beta)");
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -503,7 +506,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                        .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(direcTagBetaLabel))
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -519,7 +525,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(directTagRadioButton))
+                    .addComponent(directTagRadioButton)
+                    .addComponent(direcTagBetaLabel))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1434,6 +1441,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JLabel configurationFileLbl;
     private javax.swing.ButtonGroup deNovoButtonGroup;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;
+    private javax.swing.JLabel direcTagBetaLabel;
     private javax.swing.JButton direcTagButton;
     private javax.swing.JLabel direcTagLinkLabel;
     private javax.swing.JRadioButton directTagRadioButton;
