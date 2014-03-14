@@ -41,7 +41,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private String lastSelectedFolder = null;
     /**
-     * The parent frame
+     * The parent frame.
      */
     private JFrame parentFrame;
 
@@ -134,7 +134,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
-        outputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Select DenovoGUI Output"));
+        outputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Select DeNovoGUI Output"));
         outputPanel.setOpaque(false);
 
         browseOutButton.setText("Browse");
@@ -146,8 +146,8 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
         outTxt.setEditable(false);
 
-        resultsLabel.setText("de novo Results");
-        resultsLabel.setToolTipText("de novo Sequencing Result Files");
+        resultsLabel.setText("De Novo Results");
+        resultsLabel.setToolTipText("De Novo Sequencing Result Files");
 
         spectraLabel.setText("Spectra");
 

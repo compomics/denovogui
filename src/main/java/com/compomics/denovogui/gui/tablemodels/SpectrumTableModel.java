@@ -196,13 +196,13 @@ public class SpectrumTableModel extends DefaultTableModel {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.DirecTag.getIndex());
                         if (hitMap != null) {
-                        double bestScore = 0;
+                            double bestScore = 0;
                             for (double score : hitMap.keySet()) {
                                 if (bestScore == 0 || score < bestScore) {
                                     bestScore = score;
                                 }
                             }
-                        return bestScore;
+                            return bestScore;
                         }
                     }
                     return "";
