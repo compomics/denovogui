@@ -2725,9 +2725,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                     modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                 } else if (advocate == Advocate.DirecTag.getIndex()) {
                                                     Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                    DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-//                                                    String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
-                                                    String utilitiesPtmName = "oxidation of m"; //@TODO remove when the mapping is implemented
+                                                    String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
                                                     if (utilitiesPtmName == null) {
                                                         throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                     }
