@@ -4,7 +4,13 @@ import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.gui.filehandling.FileSelectionDialog;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Dialog for selecting DeNovoGUI results to display.
@@ -19,13 +25,13 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private boolean canceled = false;
     /**
-     * The output file selected.
+     * The output files selected.
      */
-    private File outFile = null;
+    private ArrayList<File> outFiles = new ArrayList<File>();
     /**
-     * The mgf file selected.
+     * The mgf files selected.
      */
-    private File mgfFile = null;
+    private ArrayList<File> mgfFiles = new ArrayList<File>();
     /**
      * The search parameters.
      */
@@ -34,6 +40,10 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      * The last selected folder.
      */
     private String lastSelectedFolder = null;
+    /**
+     * The parent frame
+     */
+    private JFrame parentFrame;
 
     /**
      * Creates a new SelectResultsDialog.
@@ -41,8 +51,9 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      * @param parent the parent
      * @param lastSelectedFolder the last selected folder
      */
-    public SelectResultsDialog(java.awt.Frame parent, String lastSelectedFolder) {
+    public SelectResultsDialog(JFrame parent, String lastSelectedFolder) {
         super(parent, true);
+        this.parentFrame = parent;
         this.lastSelectedFolder = lastSelectedFolder;
         initComponents();
         setLocationRelativeTo(parent);
@@ -59,21 +70,21 @@ public class SelectResultsDialog extends javax.swing.JDialog {
     }
 
     /**
-     * Returns the output file selected by the user.
+     * Returns the output files selected by the user.
      *
-     * @return the output file selected by the user
+     * @return the output files selected by the user
      */
-    public File getOutFile() {
-        return outFile;
+    public ArrayList<File> getOutFiles() {
+        return outFiles;
     }
 
     /**
-     * Returns the mgf file selected by the user.
+     * Returns the mgf files selected by the user.
      *
-     * @return the mgf file selected by the user
+     * @return the mgf files selected by the user
      */
-    public File getMgfFile() {
-        return mgfFile;
+    public ArrayList<File> getMgfFiles() {
+        return mgfFiles;
     }
 
     /**
@@ -135,7 +146,8 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
         outTxt.setEditable(false);
 
-        resultsLabel.setText("PepNovo Result");
+        resultsLabel.setText("de novo Results");
+        resultsLabel.setToolTipText("de novo Sequencing Result Files");
 
         spectraLabel.setText("Spectra");
 
@@ -277,33 +289,106 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private void browseOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseOutButtonActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".out", "DeNovoGUI result file (.out)", "Select Output File", lastSelectedFolder, true);
+        JFileChooser fileChooser = new JFileChooser(lastSelectedFolder);
+        fileChooser.setDialogTitle("Select Identification File");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(true);
 
-        if (selectedFile != null) {
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
 
-            outFile = selectedFile;
-            lastSelectedFolder = outFile.getParent();
-            outTxt.setText(outFile.getName());
-
-            // try to find the mgf file
-            File tempMgfFile = FileProcessor.getMgfFile(outFile);
-            if (tempMgfFile.exists()) {
-                mgfFile = tempMgfFile;
-                mgfTxt.setText(mgfFile.getName());
-            }
-
-            // try to find the parameters file
-            File tempParamtersFile = new File(outFile.getParent(), DeNovoSequencingHandler.parametersFileName);
-            if (tempParamtersFile.exists()) {
-                try {
-                    searchParameters = SearchParameters.getIdentificationParameters(tempParamtersFile);
-                    paramtersTxt.setText(tempParamtersFile.getName());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (myFile.getName().equalsIgnoreCase("mods.xml")
+                        || myFile.getName().equalsIgnoreCase("usermods.xml")) {
+                    return false;
                 }
+
+                return myFile.getName().toLowerCase().endsWith(".out")
+                        || myFile.getName().toLowerCase().endsWith(".tags")
+                        || myFile.isDirectory();
             }
 
-            validateInput();
+            @Override
+            public String getDescription() {
+                return "Supported formats: Pepnovo (.out), Directag (.tags)";
+            }
+        };
+
+        fileChooser.setFileFilter(filter);
+
+        int returnVal = fileChooser.showDialog(this, "OK");
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = fileChooser.getSelectedFiles();
+
+            if (selectedFiles != null && selectedFiles.length > 0) {
+
+                outFiles = new ArrayList<File>();
+                ArrayList<File> parameterFiles = new ArrayList<File>();
+                for (File file : selectedFiles) {
+                    if (file.exists()) {
+                        outFiles.add(file);
+                        File tempMgfFile = FileProcessor.getMgfFile(file);
+
+                        if (tempMgfFile.exists() && !mgfFiles.contains(tempMgfFile)) {
+                            mgfFiles.add(tempMgfFile);
+                        }
+                        lastSelectedFolder = file.getParent();
+                    }
+                }
+                File parentFolder = new File(lastSelectedFolder);
+                for (File file : parentFolder.listFiles()) {
+                    if (file.getName().toLowerCase().endsWith(".parameters") && !parameterFiles.contains(file)) {
+                        parameterFiles.add(file);
+                    }
+                }
+                outTxt.setText(outFiles.size() + " file(s) selected");
+                if (!mgfFiles.isEmpty()) {
+                mgfTxt.setText(mgfFiles.size() + " file(s) selected");
+                }
+
+                // try to find the parameters file
+                File parameterFile = null;
+                if (parameterFiles.size() == 1) {
+                    parameterFile = parameterFiles.get(0);
+                } else if (parameterFiles.size() > 1) {
+
+                    boolean equalParameters = true;
+
+                    try {
+                        for (int i = 0; i < parameterFiles.size() && equalParameters; i++) {
+                            for (int j = 0; j < parameterFiles.size() && equalParameters; j++) {
+                                equalParameters = SearchParameters.getIdentificationParameters(parameterFiles.get(i)).equals(SearchParameters.getIdentificationParameters(parameterFiles.get(j)));
+                            }
+                        }
+                    } catch (ClassNotFoundException e) {
+                        equalParameters = false;
+                    } catch (IOException e) {
+                        equalParameters = false;
+                    }
+
+                    if (equalParameters) {
+                        // all parameters are equal, just select one of them
+                        parameterFile = parameterFiles.get(0); // @TODO: can we be more clever in selecting the "right" one?
+                    } else {
+                        FileSelectionDialog fileSelection = new FileSelectionDialog(parentFrame, parameterFiles, "Select the wanted SearchGUI parameters file.");
+                        if (!fileSelection.isCanceled()) {
+                            parameterFile = fileSelection.getSelectedFile();
+                        }
+                    }
+                }
+
+                if (parameterFile.exists()) {
+                    try {
+                        searchParameters = SearchParameters.getIdentificationParameters(parameterFile);
+                        paramtersTxt.setText(parameterFile.getName());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                validateInput();
+            }
         }
     }//GEN-LAST:event_browseOutButtonActionPerformed
 
@@ -314,14 +399,42 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private void browseMgfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseMgfButtonActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".mgf", "Spectrum files (.mgf)", "Select Spectrum File", lastSelectedFolder, true);
+        JFileChooser fileChooser = new JFileChooser(lastSelectedFolder);
+        fileChooser.setDialogTitle("Select Identification File");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(true);
 
-        if (selectedFile != null) {
-            mgfFile = selectedFile;
-            lastSelectedFolder = mgfFile.getParent();
-            mgfTxt.setText(mgfFile.getName());
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File myFile) {
+
+                return myFile.getName().toLowerCase().endsWith(".mgf")
+                        || myFile.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Supported formats: Mascot Generic Format (.mgf)";
+            }
+        };
+
+        fileChooser.setFileFilter(filter);
+
+        int returnVal = fileChooser.showDialog(this, "OK");
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = fileChooser.getSelectedFiles();
+            for (File selectedFile : selectedFiles) {
+                if (selectedFile.exists()) {
+                    mgfFiles.add(selectedFile);
+                    lastSelectedFolder = selectedFile.getParent();
+                }
+
+            }
+            mgfTxt.setText(mgfFiles.size() + " file(s) selected.");
             validateInput();
         }
+
     }//GEN-LAST:event_browseMgfButtonActionPerformed
 
     /**

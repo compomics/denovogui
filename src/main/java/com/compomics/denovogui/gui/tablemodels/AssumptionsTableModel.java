@@ -1,5 +1,6 @@
 package com.compomics.denovogui.gui.tablemodels;
 
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.preferences.ModificationProfile;
@@ -11,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Marc Vaudel
  */
-public class TagSpectrumMatchTableModel extends DefaultTableModel {
+public class AssumptionsTableModel extends DefaultTableModel {
 
     /**
      * The ordered peptide assumptions of the selected spectrum match.
@@ -29,7 +30,7 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
     /**
      * Constructor.
      */
-    public TagSpectrumMatchTableModel() {
+    public AssumptionsTableModel() {
     }
 
     /**
@@ -40,7 +41,7 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
      * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
      * table
      */
-    public TagSpectrumMatchTableModel(ArrayList<TagAssumption> tagAssumptions, ModificationProfile modificationProfile, boolean excludeAllFixedPtms) {
+    public AssumptionsTableModel(ArrayList<TagAssumption> tagAssumptions, ModificationProfile modificationProfile, boolean excludeAllFixedPtms) {
         this.tagAssumptions = tagAssumptions;
         this.modificationProfile = modificationProfile;
         this.excludeAllFixedPtms = excludeAllFixedPtms;
@@ -66,7 +67,7 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return 10;
     }
 
     @Override
@@ -85,10 +86,12 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
             case 5:
                 return "C-Gap";
             case 6:
-                return "Rank Score";
+                return "Rank Score (P)";
             case 7:
-                return "Score";
+                return "Score (P)";
             case 8:
+                return "Score (D)";
+            case 9:
                 return "  ";
             default:
                 return "";
@@ -97,34 +100,45 @@ public class TagSpectrumMatchTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
+        TagAssumption tagAssumption = tagAssumptions.get(row);
         switch (column) {
             case 0:
-                return row + 1;
+                String rank;
+                if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
+                    rank = "D";
+                } else {
+                    rank = "P";
+                }
+                return rank + tagAssumption.getRank();
             case 1:
-                TagAssumption tagAssumption = tagAssumptions.get(row);
                 String taggedSequence = tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
                 return taggedSequence;
             case 2:
-                tagAssumption = tagAssumptions.get(row);
                 return tagAssumption.getTheoreticMz(true, true);
             case 3:
-                tagAssumption = tagAssumptions.get(row);
                 return tagAssumption.getIdentificationCharge().value;
             case 4:
-                tagAssumption = tagAssumptions.get(row);
                 return tagAssumption.getTag().getNTerminalGap();
             case 5:
-                tagAssumption = tagAssumptions.get(row);
                 return tagAssumption.getTag().getCTerminalGap();
             case 6:
-                tagAssumption = tagAssumptions.get(row);
-                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                return pepnovoAssumptionDetails.getRankScore();
+                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                    PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                    return pepnovoAssumptionDetails.getRankScore();
+                }
+                return "";
             case 7:
-                tagAssumption = tagAssumptions.get(row);
-                return tagAssumption.getScore();
+                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                    return tagAssumption.getScore();
+                }
+                return "";
             case 8:
+                if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
+                    return tagAssumption.getScore();
+                }
+                return "";
+            case 9:
                 return true;
             default:
                 return "";

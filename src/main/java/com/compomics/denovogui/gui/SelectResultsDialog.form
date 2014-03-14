@@ -165,7 +165,8 @@
             </Component>
             <Component class="javax.swing.JLabel" name="resultsLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="PepNovo Result"/>
+                <Property name="text" type="java.lang.String" value="de novo Results"/>
+                <Property name="toolTipText" type="java.lang.String" value="de novo Sequencing Result Files"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="spectraLabel">

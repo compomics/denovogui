@@ -136,9 +136,9 @@ public class FileProcessor {
      */
     public static void deleteChunkFiles(List<File> mgfFiles, WaitingHandler waitingHandler) throws IOException {
 
-        for (File file : mgfFiles) {            
+        for (File file : mgfFiles) {
             if (file.exists()) {
-                boolean deleted = file.delete();                
+                boolean deleted = file.delete();
                 if (!deleted) {
                     waitingHandler.appendReport("Failed to delete: " + file, true, true);
                     System.out.println("Failed to delete: " + file);
@@ -153,8 +153,8 @@ public class FileProcessor {
      * @param outFiles The output files to be merged.
      * @throws IOException
      */
-    public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {        
-        
+    public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
+
         File first = outFiles.get(0);
         File mergedFile = new File(first.getParent(), first.getName().substring(0, first.getName().lastIndexOf("_")) + ".mgf.out");
         BufferedWriter bWriter = new BufferedWriter(new FileWriter(mergedFile));
@@ -205,22 +205,23 @@ public class FileProcessor {
     public static File getOutFile(File outFolder, File spectrumFile) {
         return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
     }
-    
-    
 
     /**
-     * Returns the mgf file corresponding to the given out file.
+     * Returns the mgf file corresponding to the given identification file.
      *
      * @param outFile the out file
      * @return the corresponding mgf file
      */
     public static File getMgfFile(File outFile) {
         String fileName = Util.getFileName(outFile);
-        if (!fileName.endsWith(".out")) {
-            throw new IllegalArgumentException("Output file " + fileName + " does not have the '.out' extension.");
+        if (fileName.endsWith(".out")) {
+            String mgfName = fileName.substring(0, fileName.lastIndexOf("."));
+            return new File(outFile.getParent(), mgfName);
+        } else if (fileName.endsWith(".tags")) {
+            String mgfName = fileName.substring(0, fileName.lastIndexOf("."));
+            return new File(outFile.getParent(), mgfName + ".mgf");
         }
-        String outName = fileName.substring(0, fileName.lastIndexOf("."));
-        return new File(outFile.getParent(), outName);
+        throw new IllegalArgumentException("Output file " + fileName + " format not recognized.");
     }
 
     /**

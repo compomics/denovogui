@@ -7,7 +7,10 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -127,7 +130,10 @@ public class DeNovoSequencingHandler {
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         // store the pepnovo to utilities ptm mapping
-        searchParameters.setPepNovoPtmMap(ModificationFile.getInvertedModIdMap());
+        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
+        pepnovoParameters.setPepNovoPtmMap(ModificationFile.getInvertedModIdMap());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
+        //@TODO: set variable ptms
         if (searchParameters.getParametersFile() != null) {
             SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
         }

@@ -547,7 +547,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="spectrumViewerPanel" max="32767" attributes="0"/>
-                          <Component id="deNovoPeptidesPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="deNovoMatchesPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="querySpectraPanel" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -560,7 +560,7 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="querySpectraPanel" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="deNovoPeptidesPanel" max="32767" attributes="0"/>
+                      <Component id="deNovoMatchesPanel" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="spectrumViewerPanel" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -652,11 +652,12 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="querySpectraTableScrollPane" alignment="0" pref="948" max="32767" attributes="0"/>
+                              <Component id="querySpectraTableScrollPane" alignment="0" pref="956" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="spectrumFileLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="spectrumFileComboBox" max="32767" attributes="0"/>
+                                  <Component id="spectrumFileComboBox" min="-2" pref="314" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -733,11 +734,11 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="deNovoPeptidesPanel">
+            <Container class="javax.swing.JPanel" name="deNovoMatchesPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="De Novo Peptides"/>
+                    <TitledBorder title="De Novo Matches"/>
                   </Border>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
@@ -771,10 +772,13 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="deNovoPeptidesTable">
+                    <Component class="javax.swing.JTable" name="deNovoMatchesTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="new com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel()" type="code"/>
+                          <Connection code="new com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel()" type="code"/>
+                        </Property>
+                        <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+                          <TableColumnModel selectionModel="0"/>
                         </Property>
                         <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
                           <JTableSelectionModel selectionMode="0"/>
@@ -784,10 +788,10 @@
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoPeptidesTableMouseReleased"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoPeptidesTableMouseExited"/>
-                        <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="deNovoPeptidesTableMouseMoved"/>
-                        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="deNovoPeptidesTableKeyReleased"/>
+                        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseReleased"/>
+                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseExited"/>
+                        <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseMoved"/>
+                        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="deNovoMatchesTableKeyReleased"/>
                       </Events>
                       <AuxValues>
                         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JTable() {     &#xa;    protected JTableHeader createDefaultTableHeader() { &#xa;        return new JTableHeader(columnModel) {        &#xa;            public String getToolTipText(MouseEvent e) {                 &#xa;                java.awt.Point p = e.getPoint();       &#xa;                int index = columnModel.getColumnIndexAtX(p.x);                 &#xa;                int realIndex = columnModel.getColumn(index).getModelIndex();                 &#xa;                String tip = (String) deNovoPeptidesTableToolTips.get(realIndex);                 &#xa;                return tip;             &#xa;            }         &#xa;        };     &#xa;    } &#xa;};"/>
