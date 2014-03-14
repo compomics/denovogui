@@ -1,5 +1,6 @@
 package com.compomics.denovogui.gui.tablemodels;
 
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
@@ -7,7 +8,9 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.math.BasicMathFunctions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -72,7 +75,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return 10;
     }
 
     @Override
@@ -93,8 +96,10 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 6:
                 return "#Peaks";
             case 7:
-                return "Score";
+                return "Score (P)";
             case 8:
+                return "Score (D)";
+            case 9:
                 return "  ";
             default:
                 return "";
@@ -167,20 +172,45 @@ public class SpectrumTableModel extends DefaultTableModel {
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        double maxScore = 0;
-                        for (SpectrumIdentificationAssumption assumption : spectrumMatch.getAllAssumptions()) {
-                            if (assumption.getScore() > maxScore) {
-                                maxScore = assumption.getScore();
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
+                        if (hitMap != null) {
+                            double bestScore = 0;
+                            for (double score : hitMap.keySet()) {
+                                if (score > bestScore) {
+                                    bestScore = score;
+                                }
                             }
+                            return bestScore;
                         }
-                        return maxScore;
                     }
-                    return 0;
+                    return "";
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 8:
+                try {
+                    spectrumTitle = orderedSpectrumTitles.get(row);
+                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                    if (update && identification.matchExists(spectrumKey)) {
+                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.DirecTag.getIndex());
+                        if (hitMap != null) {
+                        double bestScore = 0;
+                            for (double score : hitMap.keySet()) {
+                                if (bestScore == 0 || score < bestScore) {
+                                    bestScore = score;
+                                }
+                            }
+                        return bestScore;
+                        }
+                    }
+                    return "";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            case 9:
                 spectrumTitle = orderedSpectrumTitles.get(row);
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 return identification.matchExists(spectrumKey);
@@ -203,10 +233,10 @@ public class SpectrumTableModel extends DefaultTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
-    
+
     /**
      * Sets whether the table content should update.
-     * 
+     *
      * @param update if true the content of the table will update
      */
     public void setUpdate(boolean update) {

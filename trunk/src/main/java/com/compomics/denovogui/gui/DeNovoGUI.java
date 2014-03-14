@@ -11,6 +11,7 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -36,8 +37,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -102,7 +105,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The selected PepNovo folder.
      */
     private File pepNovoFolder;
-       /**
+    /**
      * The selected DirecTag folder.
      */
     private File direcTagFolder;
@@ -158,6 +161,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * The type of matching used for peptide to protein matching.
      */
     public final static AminoAcidPattern.MatchingType MATCHING_TYPE = AminoAcidPattern.MatchingType.indistiguishibleAminoAcids;
+    /**
+     * The implemented algorithms. The matches of these will be displayed only
+     * and in this order.
+     */
+    public final static Advocate[] implementedAlgorithms = {Advocate.DirecTag, Advocate.pepnovo};
 
     /**
      * Creates a new DeNovoGUI.
@@ -170,7 +178,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         // check for new version
         //CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
-
         // set up the ErrorLog
         setUpLogFile();
         String osName = System.getProperty("os.name").toLowerCase();
@@ -181,7 +188,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
 
             // @TODO: add support for desktop icons in mac and linux??
-
             // delete the firstRun file such that the user is not asked the next time around
             boolean fileDeleted = new File(getJarFilePath() + "/resources/conf/firstRun").delete();
 
@@ -221,7 +227,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 // unsupported OS version
             }
         }
-        
+
         // Set the default PepNovo folder
         if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
             direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag");
@@ -1328,8 +1334,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
      * Select DirecTag.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void direcTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagButtonActionPerformed
         directTagRadioButton.setSelected(true);
@@ -1337,8 +1343,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
     /**
      * Open the DirecTag web page.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void direcTagLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_direcTagLinkLabelMouseClicked
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
@@ -1546,7 +1552,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
          */
         private boolean finished = false;
         /**
-         * If true, the results will be displayed in the results frame when done.
+         * If true, the results will be displayed in the results frame when
+         * done.
          */
         private boolean displayResults = true;
 
@@ -1571,7 +1578,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 loadSpectra(spectrumFiles);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, 
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable,
                         pepNovoRadioButton.isSelected(), directTagRadioButton.isSelected(), waitingHandler);
             } catch (Exception e) {
                 catchException(e);
@@ -1664,7 +1671,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
 
             //utilitiesUserPreferences.setDeNovoPath(jarFilePath); // @TODO: add this method to utilities
-
             String iconFileLocation = jarFilePath + "\\resources\\denovogui.ico";
             String jarFileLocation = jarFilePath + "\\DeNovoGUI-" + new Properties().getVersion() + ".jar";
 
@@ -1753,8 +1759,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     public String getPepNovoExecutable() {
         return pepNovoExecutable;
     }
-    
-        /**
+
+    /**
      * Sets the DirecTag folder.
      *
      * @param direcTagFolder DirecTag folder.
@@ -1866,7 +1872,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
 
         return result;
     }
-    
+
     /**
      * This method checks for the folder being the DirecTag folder.
      *
@@ -2022,7 +2028,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         boolean valid = true;
 
         // @TODO: do we need any validation here??
-
         return valid;
     }
 
@@ -2104,5 +2109,48 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         }
 
         return tips;
+    }
+
+    /**
+     * Returns the best score out of a set of scores for the given algorithm. 0
+     * if none found.
+     *
+     * @param advocate the advocate algorithm
+     * @param scores the list of scores to inspect
+     *
+     * @return the best score for this algorithm
+     */
+    public static double getBestScore(Advocate advocate, Set<Double> scores) {
+        double bestScore = 0.0;
+        for (double score : scores) {
+            if (advocate == Advocate.DirecTag) {
+                if (bestScore == 0.0 || score < bestScore) {
+                    bestScore = score;
+                }
+            } else if (advocate == Advocate.pepnovo) {
+                if (score > bestScore) {
+                    bestScore = score;
+                }
+            } else {
+                throw new IllegalArgumentException("Best score selection not implemented for algorithm " + advocate + ".");
+            }
+        }
+        return bestScore;
+    }
+
+    /**
+     * Sorts the score for the given algorithm.
+     *
+     * @param advocate the advocate algorithm
+     * @param scores the scores to sort
+     */
+    public static void sortScores(Advocate advocate, ArrayList<Double> scores) {
+        if (advocate == Advocate.DirecTag) {
+            Collections.sort(scores);
+        } else if (advocate == Advocate.pepnovo) {
+            Collections.sort(scores, Collections.reverseOrder());
+        } else {
+            throw new IllegalArgumentException("Sorting order not implemented for algorithm " + advocate + ".");
+        }
     }
 }

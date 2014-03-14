@@ -1,7 +1,6 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.io.identifications.idfilereaders.PepNovoIdfileReader;
-import com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel;
+import com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
 import com.compomics.denovogui.io.TextExporter;
@@ -31,6 +30,8 @@ import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
+import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
@@ -39,10 +40,13 @@ import com.compomics.util.experiment.identification.protein_inference.proteintre
 import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.identification.tags.TagComponent;
+import com.compomics.util.experiment.io.identifications.IdfileReader;
+import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export.graphics.ExportGraphicsDialog;
@@ -70,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -176,6 +181,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private double maxPepnovoScore = Double.MIN_VALUE;
     /**
+     * The minimal direct tag e-value
+     */
+    private double minDirectTagEvalue = Double.MAX_VALUE;
+    /**
+     * The maximal direct tag e-value
+     */
+    private double maxDirectTagEvalue = Double.MIN_VALUE;
+    /**
      * The maximal n gap.
      */
     private double maxNGap = 0;
@@ -207,10 +220,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The object cache used for the identification.
      */
     private ObjectsCache objectsCache = new ObjectsCache();
-    /**
-     * The type of matching used for peptide to protein matching.
-     */
-    public final static AminoAcidPattern.MatchingType MATCHING_TYPE = AminoAcidPattern.MatchingType.indistiguishibleAminoAcids;
 
     /**
      * Creates a new ResultsPanel.
@@ -273,17 +282,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableScrollPane.getViewport().setOpaque(false);
 
         querySpectraTable.getTableHeader().setReorderingAllowed(false);
-        deNovoPeptidesTable.getTableHeader().setReorderingAllowed(false);
+        deNovoMatchesTable.getTableHeader().setReorderingAllowed(false);
 
         querySpectraTable.setAutoCreateRowSorter(true);
-        deNovoPeptidesTable.setAutoCreateRowSorter(true);
+        deNovoMatchesTable.setAutoCreateRowSorter(true);
 
         // correct the color for the upper right corner
         JPanel queryCorner = new JPanel();
         queryCorner.setBackground(querySpectraTable.getTableHeader().getBackground());
         deNovoPeptidesTableScrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, queryCorner);
         JPanel peptideCorner = new JPanel();
-        peptideCorner.setBackground(deNovoPeptidesTable.getTableHeader().getBackground());
+        peptideCorner.setBackground(deNovoMatchesTable.getTableHeader().getBackground());
         deNovoPeptidesTableScrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, peptideCorner);
 
         // hide items that are not implemented
@@ -299,7 +308,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTableToolTips.add("Precursor Intensity");
         querySpectraTableToolTips.add("Retention Time");
         querySpectraTableToolTips.add("Number of Peaks");
-        querySpectraTableToolTips.add("Max De Novo Score");
+        querySpectraTableToolTips.add("Min DirecTag E-Value");
+        querySpectraTableToolTips.add("Max pepnovo Score");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
@@ -309,6 +319,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
+        deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
@@ -347,35 +358,39 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesIntervalChartTableCellRenderer) querySpectraTable.getColumn("RT").getCellRenderer()).showReferenceLine(true, 0.02, java.awt.Color.BLACK);
         querySpectraTable.getColumn("#Peaks").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, (double) spectrumFactory.getMaxPeakCount(), sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("#Peaks").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        querySpectraTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (P)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
-        deNovoPeptidesTable.getColumn(" ").setMaxWidth(50);
-        deNovoPeptidesTable.getColumn(" ").setMinWidth(50);
-        deNovoPeptidesTable.getColumn("  ").setMaxWidth(30);
-        deNovoPeptidesTable.getColumn("  ").setMinWidth(30);
+        deNovoMatchesTable.getColumn(" ").setMaxWidth(50);
+        deNovoMatchesTable.getColumn(" ").setMinWidth(50);
+        deNovoMatchesTable.getColumn("  ").setMaxWidth(30);
+        deNovoMatchesTable.getColumn("  ").setMinWidth(30);
 
-        deNovoPeptidesTable.getColumn("Rank Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Rank Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("Score").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Score").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMz, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
-        deNovoPeptidesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
-        ((JSparklinesBarChartTableCellRenderer) deNovoPeptidesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
-        deNovoPeptidesTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
+        deNovoMatchesTable.getColumn("Rank Score (P)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Rank Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (P)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("C-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("m/z").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxMz, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("m/z").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
+        deNovoMatchesTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
                 new ImageIcon(this.getClass().getResource("/icons/blast.png")),
                 null,
                 "Click to BLAST tag sequence", null));
 
         querySpectraTable.revalidate();
         querySpectraTable.repaint();
-        deNovoPeptidesTable.revalidate();
-        deNovoPeptidesTable.repaint();
+        deNovoMatchesTable.revalidate();
+        deNovoMatchesTable.repaint();
 
         // make sure that the user is made aware that the tool is doing something during sorting of the query table
         querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
@@ -494,9 +509,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         };
         spectrumFileLabel = new javax.swing.JLabel();
         spectrumFileComboBox = new javax.swing.JComboBox();
-        deNovoPeptidesPanel = new javax.swing.JPanel();
+        deNovoMatchesPanel = new javax.swing.JPanel();
         deNovoPeptidesTableScrollPane = new javax.swing.JScrollPane();
-        deNovoPeptidesTable = new JTable() {
+        deNovoMatchesTable = new JTable() {
             protected JTableHeader createDefaultTableHeader() {
                 return new JTableHeader(columnModel) {
                     public String getToolTipText(MouseEvent e) {
@@ -872,11 +887,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             .addGroup(querySpectraPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
+                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE)
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addComponent(spectrumFileLabel)
                         .addGap(18, 18, 18)
-                        .addComponent(spectrumFileComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         querySpectraPanelLayout.setVerticalGroup(
@@ -891,43 +907,43 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 .addContainerGap())
         );
 
-        deNovoPeptidesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Peptides"));
-        deNovoPeptidesPanel.setOpaque(false);
+        deNovoMatchesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Matches"));
+        deNovoMatchesPanel.setOpaque(false);
 
-        deNovoPeptidesTable.setModel(new com.compomics.denovogui.gui.tablemodels.TagSpectrumMatchTableModel());
-        deNovoPeptidesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        deNovoPeptidesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        deNovoMatchesTable.setModel(new com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel());
+        deNovoMatchesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        deNovoMatchesTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                deNovoPeptidesTableMouseReleased(evt);
+                deNovoMatchesTableMouseReleased(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                deNovoPeptidesTableMouseExited(evt);
+                deNovoMatchesTableMouseExited(evt);
             }
         });
-        deNovoPeptidesTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        deNovoMatchesTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                deNovoPeptidesTableMouseMoved(evt);
+                deNovoMatchesTableMouseMoved(evt);
             }
         });
-        deNovoPeptidesTable.addKeyListener(new java.awt.event.KeyAdapter() {
+        deNovoMatchesTable.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                deNovoPeptidesTableKeyReleased(evt);
+                deNovoMatchesTableKeyReleased(evt);
             }
         });
-        deNovoPeptidesTableScrollPane.setViewportView(deNovoPeptidesTable);
+        deNovoPeptidesTableScrollPane.setViewportView(deNovoMatchesTable);
 
-        javax.swing.GroupLayout deNovoPeptidesPanelLayout = new javax.swing.GroupLayout(deNovoPeptidesPanel);
-        deNovoPeptidesPanel.setLayout(deNovoPeptidesPanelLayout);
-        deNovoPeptidesPanelLayout.setHorizontalGroup(
-            deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout deNovoMatchesPanelLayout = new javax.swing.GroupLayout(deNovoMatchesPanel);
+        deNovoMatchesPanel.setLayout(deNovoMatchesPanelLayout);
+        deNovoMatchesPanelLayout.setHorizontalGroup(
+            deNovoMatchesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(deNovoMatchesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        deNovoPeptidesPanelLayout.setVerticalGroup(
-            deNovoPeptidesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(deNovoPeptidesPanelLayout.createSequentialGroup()
+        deNovoMatchesPanelLayout.setVerticalGroup(
+            deNovoMatchesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(deNovoMatchesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                 .addContainerGap())
@@ -941,7 +957,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 .addContainerGap()
                 .addGroup(debovoResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(spectrumViewerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deNovoPeptidesPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deNovoMatchesPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(querySpectraPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -951,7 +967,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 .addContainerGap()
                 .addComponent(querySpectraPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deNovoPeptidesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(deNovoMatchesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(spectrumViewerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -1135,14 +1151,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      *
      * @param evt
      */
-    private void deNovoPeptidesTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseReleased
+    private void deNovoMatchesTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoMatchesTableMouseReleased
 
-        int row = deNovoPeptidesTable.rowAtPoint(evt.getPoint());
-        int column = deNovoPeptidesTable.columnAtPoint(evt.getPoint());
+        int row = deNovoMatchesTable.rowAtPoint(evt.getPoint());
+        int column = deNovoMatchesTable.columnAtPoint(evt.getPoint());
 
         // check of the user clicked the blast columns
-        if (evt.getButton() == 1 && row != -1 && column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) {
-            TagAssumption tagAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
+        if (evt.getButton() == 1 && row != -1 && column == deNovoMatchesTable.getColumn("  ").getModelIndex()) {
+            TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
             BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
                     + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + tagAssumption.getTag().getLongestAminoAcidSequence());
@@ -1150,66 +1166,66 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
 
         updateSpectrum();
-    }//GEN-LAST:event_deNovoPeptidesTableMouseReleased
+    }//GEN-LAST:event_deNovoMatchesTableMouseReleased
 
     /**
      * Changes the cursor back to the default cursor.
      *
      * @param evt
      */
-    private void deNovoPeptidesTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseExited
+    private void deNovoMatchesTableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoMatchesTableMouseExited
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-    }//GEN-LAST:event_deNovoPeptidesTableMouseExited
+    }//GEN-LAST:event_deNovoMatchesTableMouseExited
 
     /**
      * Shows a tooltip with modification details if over the sequence column.
      *
      * @param evt
      */
-    private void deNovoPeptidesTableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableMouseMoved
-        int row = deNovoPeptidesTable.rowAtPoint(evt.getPoint());
-        int column = deNovoPeptidesTable.columnAtPoint(evt.getPoint());
+    private void deNovoMatchesTableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoMatchesTableMouseMoved
+        int row = deNovoMatchesTable.rowAtPoint(evt.getPoint());
+        int column = deNovoMatchesTable.columnAtPoint(evt.getPoint());
 
-        if (row != -1 && column != -1 && deNovoPeptidesTable.getValueAt(row, column) != null) {
-            if (column == deNovoPeptidesTable.getColumn("Sequence").getModelIndex()) {
+        if (row != -1 && column != -1 && deNovoMatchesTable.getValueAt(row, column) != null) {
+            if (column == deNovoMatchesTable.getColumn("Sequence").getModelIndex()) {
 
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
                 // check if we ought to show a tooltip with mod details
-                String sequence = (String) deNovoPeptidesTable.getValueAt(row, column);
+                String sequence = (String) deNovoMatchesTable.getValueAt(row, column);
 
                 if (sequence.indexOf("<span") != -1) {
                     try {
                         TagAssumption tagAssumption = assumptions.get(row);
                         String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
-                        deNovoPeptidesTable.setToolTipText(tooltip);
+                        deNovoMatchesTable.setToolTipText(tooltip);
                     } catch (Exception e) {
                         e.printStackTrace();
                         deNovoGUI.catchException(e);
                     }
                 } else {
-                    deNovoPeptidesTable.setToolTipText(null);
+                    deNovoMatchesTable.setToolTipText(null);
                 }
-            } else if (column == deNovoPeptidesTable.getColumn("  ").getModelIndex()) { // the BLAST column
+            } else if (column == deNovoMatchesTable.getColumn("  ").getModelIndex()) { // the BLAST column
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-                deNovoPeptidesTable.setToolTipText(null);
+                deNovoMatchesTable.setToolTipText(null);
             }
         } else {
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-            deNovoPeptidesTable.setToolTipText(null);
+            deNovoMatchesTable.setToolTipText(null);
         }
-    }//GEN-LAST:event_deNovoPeptidesTableMouseMoved
+    }//GEN-LAST:event_deNovoMatchesTableMouseMoved
 
     /**
      * Update the spectrum.
      *
      * @param evt
      */
-    private void deNovoPeptidesTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_deNovoPeptidesTableKeyReleased
+    private void deNovoMatchesTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_deNovoMatchesTableKeyReleased
         updateSpectrum();
-    }//GEN-LAST:event_deNovoPeptidesTableKeyReleased
+    }//GEN-LAST:event_deNovoMatchesTableKeyReleased
 
     /**
      * @see #updateAnnotationPreferences()
@@ -1323,7 +1339,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (automaticAnnotationCheckBoxMenuItem.isSelected()) {
             adaptCheckBoxMenuItem.setSelected(true);
             try {
-                annotationPreferences.resetAutomaticAnnotation(MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                annotationPreferences.resetAutomaticAnnotation(DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
             } catch (Exception e) {
                 deNovoGUI.catchException(e);
             }
@@ -1471,11 +1487,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void fixedPtmsCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixedPtmsCheckBoxMenuItemActionPerformed
-        int selectedRow = deNovoPeptidesTable.getSelectedRow();
-        ((TagSpectrumMatchTableModel) deNovoPeptidesTable.getModel()).setExcludeAllFixedPtms(!fixedPtmsCheckBoxMenuItem.isSelected());
-        ((TagSpectrumMatchTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
+        int selectedRow = deNovoMatchesTable.getSelectedRow();
+        ((AssumptionsTableModel) deNovoMatchesTable.getModel()).setExcludeAllFixedPtms(!fixedPtmsCheckBoxMenuItem.isSelected());
+        ((AssumptionsTableModel) deNovoMatchesTable.getModel()).fireTableDataChanged();
         if (selectedRow != -1) {
-            deNovoPeptidesTable.setRowSelectionInterval(selectedRow, selectedRow);
+            deNovoMatchesTable.setRowSelectionInterval(selectedRow, selectedRow);
             updateSpectrum();
         }
     }//GEN-LAST:event_fixedPtmsCheckBoxMenuItemActionPerformed
@@ -1612,9 +1628,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     private javax.swing.ButtonGroup deNovoChargeButtonGroup;
     private javax.swing.JRadioButtonMenuItem deNovoChargeOneJRadioButtonMenuItem;
     private javax.swing.JRadioButtonMenuItem deNovoChargeTwoJRadioButtonMenuItem;
+    private javax.swing.JPanel deNovoMatchesPanel;
+    private javax.swing.JTable deNovoMatchesTable;
     private javax.swing.JMenu deNovoMenu;
-    private javax.swing.JPanel deNovoPeptidesPanel;
-    private javax.swing.JTable deNovoPeptidesTable;
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
     private javax.swing.JMenu editMenu;
@@ -1738,23 +1754,25 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             identification.loadSpectrumMatches(spectrumFile, null);
             for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                int advocateIndex = Advocate.pepnovo.getIndex();
-                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
-                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                for (double score : scores) {
-                    ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
-                    for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
-                        if (assumption instanceof TagAssumption) {
-                            TagAssumption tagAssumption = (TagAssumption) assumption;
-                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
-                            for (Peptide peptide : proteinMapping.keySet()) {
-                                peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                peptideAssumption.addUrParam(tagAssumption);
-                                spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+                    int advocateIndex = advocate.getIndex();
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
+                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                    for (double score : scores) {
+                        ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                        for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
+                            if (assumption instanceof TagAssumption) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
+                                for (Peptide peptide : proteinMapping.keySet()) {
+                                    peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                    PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                    peptideAssumption.addUrParam(tagAssumption);
+                                    spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                                }
+                            } else {
+                                throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
                             }
-                        } else {
-                            throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
                         }
                     }
                 }
@@ -1789,70 +1807,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void openNewFile() {
         final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder());
-        if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFile() != null && selectResultsDialog.getOutFile() != null && selectResultsDialog.getSearchParameters() != null) {
+        if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFiles() != null && selectResultsDialog.getOutFiles() != null && selectResultsDialog.getSearchParameters() != null) {
             deNovoGUI.setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
             searchParameters = selectResultsDialog.getSearchParameters();
             setVisible(true);
             deNovoGUI.setVisible(false);
-            openNewFile(selectResultsDialog.getOutFile(), selectResultsDialog.getMgfFile());
+            displayResults(selectResultsDialog.getOutFiles(), selectResultsDialog.getMgfFiles());
         } else {
             dispose();
         }
-    }
-
-    /**
-     * Opens a new out file.
-     *
-     * @param outFile the .out file
-     * @param spectrumFile the corresponding mgf file
-     */
-    private void openNewFile(File outFile, File spectrumFile) {
-        final File finalOutFile = outFile;
-        final File finalMgfFile = spectrumFile;
-        progressDialog = new ProgressDialogX(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                true);
-        progressDialog.setPrimaryProgressCounterIndeterminate(true);
-        progressDialog.setTitle("Loading Spectra. Please Wait...");
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    progressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
-                }
-            }
-        }, "ProgressDialog").start();
-
-        new Thread("importThread") {
-            public void run() {
-                try {
-                    spectrumFactory.addSpectra(finalMgfFile, progressDialog);
-                    String[] filesArray = {finalMgfFile.getName()};
-                    spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
-                    progressDialog.setRunFinished();
-                } catch (Exception e) {
-                    progressDialog.setRunFinished();
-                    JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while loading the spectra.", "Mgf File Error", JOptionPane.WARNING_MESSAGE);
-                    e.printStackTrace();
-                    return;
-                }
-                progressDialog.setRunFinished();
-                if (!progressDialog.isRunCanceled()) {
-                    ArrayList<File> outFiles = new ArrayList<File>();
-                    outFiles.add(finalOutFile);
-                    try {
-                        displayResults(outFiles);
-                    } catch (Exception e) {
-                        progressDialog.setRunFinished();
-                        JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while importing the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
     }
 
     /**
@@ -1904,11 +1867,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
                     ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra (?/"
-                            + querySpectraTable.getRowCount() + ")");
+                            + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
                 } else {
                     ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
                             + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
-                            + querySpectraTable.getRowCount() + ")");
+                            + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
                 }
 
                 querySpectraPanel.repaint();
@@ -1945,37 +1908,50 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         progressDialog.setPrimaryProgressCounterIndeterminate(false);
         progressDialog.resetPrimaryProgressCounter();
         progressDialog.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra(spectrumFile));
-        HashMap<Double, ArrayList<String>> titlesMap = new HashMap<Double, ArrayList<String>>();
+        // score to title map: advocate -> score -> titles
+        HashMap<Integer, HashMap<Double, ArrayList<String>>> titlesMap = new HashMap<Integer, HashMap<Double, ArrayList<String>>>();
         ArrayList<String> noId = new ArrayList<String>();
 
         for (String spectrumTitle : spectrumFactory.getSpectrumTitles(spectrumFile)) {
             String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
             if (identification.matchExists(spectrumKey)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                double maxScore = 0;
-                for (SpectrumIdentificationAssumption assumption : spectrumMatch.getAllAssumptions()) {
-                    if (assumption.getScore() > maxScore) {
-                        maxScore = assumption.getScore();
+                for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+                    int advocateId = advocate.getIndex();
+                    HashMap<Double, ArrayList<String>> advocateMap = titlesMap.get(advocateId);
+                    if (advocateMap == null) {
+                        advocateMap = new HashMap<Double, ArrayList<String>>();
+                        titlesMap.put(advocateId, advocateMap);
+                    }
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateId);
+                    if (assumptionsMap != null) {
+                        double bestScore = DeNovoGUI.getBestScore(advocate, assumptionsMap.keySet());
+                        ArrayList<String> titles = advocateMap.get(bestScore);
+                        if (titles == null) {
+                            titles = new ArrayList<String>();
+                            advocateMap.put(bestScore, titles);
+                        }
+                        titles.add(spectrumTitle);
+                        break;
                     }
                 }
-                if (!titlesMap.containsKey(maxScore)) {
-                    titlesMap.put(maxScore, new ArrayList<String>());
-                }
-                titlesMap.get(maxScore).add(spectrumTitle);
             } else {
                 noId.add(spectrumTitle);
             }
             progressDialog.increasePrimaryProgressCounter();
         }
 
-        ArrayList<Double> scores = new ArrayList<Double>(titlesMap.keySet());
-        Collections.sort(scores, Collections.reverseOrder());
         ArrayList<String> orderedTitles = new ArrayList<String>();
-
-        for (double score : scores) {
-            orderedTitles.addAll(titlesMap.get(score));
+        for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+            HashMap<Double, ArrayList<String>> advocateMap = titlesMap.get(advocate.getIndex());
+            if (advocateMap != null) {
+                ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
+                DeNovoGUI.sortScores(advocate, scores);
+                for (double score : scores) {
+                    orderedTitles.addAll(titlesMap.get(advocate.getIndex()).get(score));
+                }
+            }
         }
-
         orderedTitles.addAll(noId);
         return orderedTitles;
     }
@@ -2075,38 +2051,40 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 if (identification.matchExists(psmKey)) {
                     SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
-                    if (assumptionsMap != null) {
-                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                        Collections.sort(scores, Collections.reverseOrder());
-                        for (Double score : scores) {
-                            for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                if (assumption instanceof TagAssumption) {
-                                    TagAssumption tagAssumption = (TagAssumption) assumption;
-                                    assumptions.add(tagAssumption);
+                    for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocate.getIndex());
+                        if (assumptionsMap != null) {
+                            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                            DeNovoGUI.sortScores(advocate, scores);
+                            for (Double score : scores) {
+                                for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                    if (assumption instanceof TagAssumption) {
+                                        TagAssumption tagAssumption = (TagAssumption) assumption;
+                                        assumptions.add(tagAssumption);
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                TableModel tableModel = new TagSpectrumMatchTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
-                deNovoPeptidesTable.setModel(tableModel);
+                TableModel tableModel = new AssumptionsTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
+                deNovoMatchesTable.setModel(tableModel);
 
-                ((DefaultTableModel) deNovoPeptidesTable.getModel()).fireTableDataChanged();
+                ((DefaultTableModel) deNovoMatchesTable.getModel()).fireTableDataChanged();
                 setTableProperties();
 
-                if (deNovoPeptidesTable.getRowCount() > 0) {
-                    if (selectedPsmRow != -1 && selectedPsmRow < deNovoPeptidesTable.getRowCount()) {
-                        deNovoPeptidesTable.setRowSelectionInterval(selectedPsmRow, selectedPsmRow);
-                        deNovoPeptidesTable.scrollRectToVisible(deNovoPeptidesTable.getCellRect(selectedPsmRow, 0, false));
+                if (deNovoMatchesTable.getRowCount() > 0) {
+                    if (selectedPsmRow != -1 && selectedPsmRow < deNovoMatchesTable.getRowCount()) {
+                        deNovoMatchesTable.setRowSelectionInterval(selectedPsmRow, selectedPsmRow);
+                        deNovoMatchesTable.scrollRectToVisible(deNovoMatchesTable.getCellRect(selectedPsmRow, 0, false));
                     } else {
-                        deNovoPeptidesTable.setRowSelectionInterval(0, 0);
+                        deNovoMatchesTable.setRowSelectionInterval(0, 0);
                     }
                 }
 
-                ((TitledBorder) deNovoPeptidesPanel.getBorder()).setTitle("De Novo Peptides (" + deNovoPeptidesTable.getRowCount() + ")");
-                deNovoPeptidesPanel.repaint();
+                ((TitledBorder) deNovoMatchesPanel.getBorder()).setTitle("De Novo Matches (" + deNovoMatchesTable.getRowCount() + ")");
+                deNovoMatchesPanel.repaint();
 
                 updateSpectrum();
             }
@@ -2133,8 +2111,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 // add the data to the spectrum panel
                 Precursor precursor = currentSpectrum.getPrecursor();
-                if (deNovoPeptidesTable.getSelectedRow() != -1) {
-                    TagAssumption tagAssumption = assumptions.get(deNovoPeptidesTable.convertRowIndexToModel(deNovoPeptidesTable.getSelectedRow()));
+                if (deNovoMatchesTable.getSelectedRow() != -1) {
+                    TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
 
                     SpectrumPanel spectrumPanel = new SpectrumPanel(
                             currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
@@ -2143,7 +2121,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumPanel.setBorder(null);
 
                     // add the annotations
-                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
 
                     TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
 
@@ -2209,6 +2187,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         spectrumJPanel.revalidate();
         spectrumJPanel.repaint();
+
     }
 
     /**
@@ -2218,8 +2197,21 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param outFiles the out files
      */
     public void displayResults(ArrayList<File> outFiles) {
+        displayResults(outFiles, null);
+    }
+
+    /**
+     * Loads the results of the given spectrum files and loads everything in the
+     * identification.
+     *
+     * @param outFiles the out files
+     * @param spectrumFiles the spectrum files to be added in the spectrum
+     * factory, ignored if null
+     */
+    public void displayResults(ArrayList<File> outFiles, ArrayList<File> spectrumFiles) {
 
         final ArrayList<File> finalOutFiles = outFiles;
+        final ArrayList<File> finalMgfFiles = spectrumFiles;
 
         progressDialog = new ProgressDialogX(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -2242,8 +2234,20 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             @Override
             public void run() {
                 try {
-                    // import the PepNovo results
-                    identification = importPepNovoResults(finalOutFiles, searchParameters, progressDialog);
+
+                    if (finalMgfFiles != null) {
+
+                        String[] fileNamesArray = new String[finalMgfFiles.size()];
+                        for (int i = 0; i < finalMgfFiles.size(); i++) {
+                            File mgfFile = finalMgfFiles.get(i);
+                            spectrumFactory.addSpectra(mgfFile, progressDialog);
+                            fileNamesArray[i] = mgfFile.getName();
+                        }
+                        spectrumFileComboBox.setModel(new DefaultComboBoxModel(fileNamesArray));
+                    }
+
+                    // import the de novo results
+                    identification = importDeNovoResults(finalOutFiles, searchParameters, progressDialog);
                     progressDialog.setRunFinished();
                     if (identification != null) {
                         displayResults(0, 0);
@@ -2497,7 +2501,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             annotationPreferences.setDeNovoCharge(2);
         }
 
-        if (deNovoPeptidesTable.getSelectedRow() != -1) {
+        if (deNovoMatchesTable.getSelectedRow() != -1) {
             updateSpectrum();
         }
     }
@@ -2572,7 +2576,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
-        if (spectrumFactory.spectrumLoaded(spectrumKey) && deNovoPeptidesTable.getSelectedRow() != -1) {
+        if (spectrumFactory.spectrumLoaded(spectrumKey) && deNovoMatchesTable.getSelectedRow() != -1) {
 
             StringBuilder spectraAsMgf = new StringBuilder();
 
@@ -2647,7 +2651,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @throws ClassNotFoundException
      * @throws Exception
      */
-    public Identification importPepNovoResults(ArrayList<File> outFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
+    public Identification importDeNovoResults(ArrayList<File> outFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
             throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         // @TODO: let the user reference his project
@@ -2688,7 +2692,117 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
             }
             progressDialog.setTitle(loadingText);
-            PepNovoIdfileReader idfileReader = new PepNovoIdfileReader(outFile, searchParameters, waitingHandler);
+
+            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(outFile);
+
+            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+
+            // remap the ptms and set GUI min/max values
+            for (SpectrumMatch spectrumMatch : spectrumMatches) {
+                for (int advocate : spectrumMatch.getAdvocates()) {
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptions = spectrumMatch.getAllAssumptions(advocate);
+                    for (double score : assumptions.keySet()) {
+                        for (SpectrumIdentificationAssumption assumption : assumptions.get(score)) {
+                            TagAssumption tagAssumption = (TagAssumption) assumption;
+                            Tag tag = tagAssumption.getTag();
+                            // add the fixed PTMs
+                            ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                            // Rename the varialbe modifications
+                            for (TagComponent tagComponent : tag.getContent()) {
+                                if (tagComponent instanceof AminoAcidPattern) {
+                                    AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                                    for (int aa : aminoAcidPattern.getModificationIndexes()) {
+                                        for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
+                                            if (modificationMatch.isVariable()) {
+                                                if (advocate == Advocate.pepnovo.getIndex()) {
+                                                    String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                    PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                    String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                    if (utilitiesPtmName == null) {
+                                                        throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                    }
+                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                } else if (advocate == Advocate.DirecTag.getIndex()) {
+                                                    Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
+                                                    DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+//                                                    String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
+                                                    String utilitiesPtmName = "oxidation of m"; //@TODO remove when the mapping is implemented
+                                                    if (utilitiesPtmName == null) {
+                                                        throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                    }
+                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
+                                                    ArrayList<AminoAcid> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                    if (aaAtTarget.size() > 1) {
+                                                        throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                    }
+                                                    int aaIndex = aa - 1;
+                                                    aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
+                                                } else {
+                                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                    if (notImplemented == null) {
+                                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                    }
+                                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // Set GUI max/min values
+                            double mz = tagAssumption.getTheoreticMz();
+                            if (mz > maxIdentificationMz) {
+                                maxIdentificationMz = mz;
+                            }
+                            if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
+                                maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
+                            }
+                            double nGap = tag.getNTerminalGap();
+                            if (nGap > maxNGap) {
+                                maxNGap = nGap;
+                            }
+                            double cGap = tag.getCTerminalGap();
+                            if (cGap > maxCGap) {
+                                maxCGap = cGap;
+                            }
+                            if (advocate == Advocate.pepnovo.getIndex()) {
+                                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                double rankScore = pepnovoAssumptionDetails.getRankScore();
+                                if (rankScore < minRankScore) {
+                                    minRankScore = rankScore;
+                                }
+                                if (rankScore > maxRankScore) {
+                                    maxRankScore = rankScore;
+                                }
+                                if (score > maxPepnovoScore) {
+                                    maxPepnovoScore = score;
+                                }
+                            } else if (advocate == Advocate.DirecTag.getIndex()) {
+                                if (score > maxDirectTagEvalue) {
+                                    maxDirectTagEvalue = score;
+                                }
+                                if (score < minDirectTagEvalue) {
+                                    minDirectTagEvalue = score;
+                                }
+                            } else {
+                                Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                if (notImplemented == null) {
+                                    throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                }
+                                throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // put the matches in the identification object
+            tempIdentification.addSpectrumMatch(spectrumMatches, true);
+
+            idfileReader.close();
 
             // get spectrum matches
             loadingText = "Loading Results. Loading Matches. Please Wait...";
@@ -2696,36 +2810,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
             }
             progressDialog.setTitle(loadingText);
-            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
-            progressDialog.setPrimaryProgressCounterIndeterminate(true);
-
-            // put the matches in the identification object
-            tempIdentification.addSpectrumMatch(spectrumMatches, true);
-
-            // get gui min/max values
-            if (idfileReader.getMinRankScore() < minRankScore) {
-                minRankScore = idfileReader.getMinRankScore();
-            }
-            if (idfileReader.getMaxRankScore() > maxRankScore) {
-                maxRankScore = idfileReader.getMaxRankScore();
-            }
-            if (idfileReader.getMaxPepNovoScore() > maxPepnovoScore) {
-                maxPepnovoScore = idfileReader.getMaxPepNovoScore();
-            }
-            if (idfileReader.getMaxNGap() > maxNGap) {
-                maxNGap = idfileReader.getMaxNGap();
-            }
-            if (idfileReader.getMaxCGap() > maxCGap) {
-                maxCGap = idfileReader.getMaxCGap();
-            }
-            if (idfileReader.getMaxMz() > maxIdentificationMz) {
-                maxIdentificationMz = idfileReader.getMaxMz();
-            }
-            if (idfileReader.getMaxCharge() > maxIdentificationCharge) {
-                maxIdentificationCharge = idfileReader.getMaxCharge();
-            }
-
-            idfileReader.close();
         }
 
         return tempIdentification;
@@ -2799,7 +2883,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 int spectrumRowIndex = querySpectraTable.convertRowIndexToView(orderedSpectrumTitles.indexOf(spectrumTitle));
                 querySpectraTable.setRowSelectionInterval(spectrumRowIndex, spectrumRowIndex);
                 querySpectraTable.scrollRectToVisible(querySpectraTable.getCellRect(spectrumRowIndex, 0, false));
-                updateAssumptionsTable(deNovoPeptidesTable.convertRowIndexToView(psmRow));
+                updateAssumptionsTable(deNovoMatchesTable.convertRowIndexToView(psmRow));
             }
         });
     }
