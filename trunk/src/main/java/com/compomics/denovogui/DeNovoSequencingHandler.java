@@ -132,8 +132,7 @@ public class DeNovoSequencingHandler {
         // store the pepnovo to utilities ptm mapping
         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         pepnovoParameters.setPepNovoPtmMap(ModificationFile.getInvertedModIdMap());
-        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
-        //@TODO: set variable ptms
+
         if (searchParameters.getParametersFile() != null) {
             SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
         }

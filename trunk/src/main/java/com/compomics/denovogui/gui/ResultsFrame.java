@@ -306,20 +306,21 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTableToolTips.add("Precursor Intensity");
         querySpectraTableToolTips.add("Retention Time");
         querySpectraTableToolTips.add("Number of Peaks");
+        querySpectraTableToolTips.add("Max PepNovo Score");
         querySpectraTableToolTips.add("Min DirecTag E-Value");
-        querySpectraTableToolTips.add("Max pepnovo Score");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
+        deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add("Tag Sequences");
         deNovoPeptidesTableToolTips.add("Precursor m/z");
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
-        deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo Score");
+        deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
@@ -361,6 +362,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
+        deNovoMatchesTable.getColumn("").setMaxWidth(50);
+        deNovoMatchesTable.getColumn("").setMinWidth(50);
         deNovoMatchesTable.getColumn(" ").setMaxWidth(50);
         deNovoMatchesTable.getColumn(" ").setMinWidth(50);
         deNovoMatchesTable.getColumn("  ").setMaxWidth(30);
@@ -883,10 +886,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraPanelLayout.setHorizontalGroup(
             querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(querySpectraPanelLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE)
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE))
+                    .addGroup(querySpectraPanelLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
                         .addComponent(spectrumFileLabel)
                         .addGap(18, 18, 18)
                         .addComponent(spectrumFileComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
