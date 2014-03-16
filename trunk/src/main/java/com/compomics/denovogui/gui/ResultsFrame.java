@@ -1740,21 +1740,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
                     int advocateIndex = advocate.getIndex();
                     HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
-                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                    for (double score : scores) {
-                        ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
-                        for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
-                            if (assumption instanceof TagAssumption) {
-                                TagAssumption tagAssumption = (TagAssumption) assumption;
-                                HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
-                                for (Peptide peptide : proteinMapping.keySet()) {
-                                    peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                    PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                    peptideAssumption.addUrParam(tagAssumption);
-                                    spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                    if (assumptionsMap != null) {
+                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                        for (double score : scores) {
+                            ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                            for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
+                                if (assumption instanceof TagAssumption) {
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
+                                    for (Peptide peptide : proteinMapping.keySet()) {
+                                        peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                        PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                        peptideAssumption.addUrParam(tagAssumption);
+                                        spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                                    }
+                                } else {
+                                    throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
                                 }
-                            } else {
-                                throw new IllegalArgumentException("Non-supported assumption type " + assumption.getClass() + ".");
                             }
                         }
                     }
