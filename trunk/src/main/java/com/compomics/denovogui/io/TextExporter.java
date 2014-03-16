@@ -291,7 +291,9 @@ public class TextExporter {
      * @param searchParameters the search parameters used for the search
      * @param waitingHandler waiting handler displaying progress to the user and
      * allowing to cancel the process.
-     * @param scoreThreshold De novo score threshold
+     * @param scoreThreshold de novo score threshold
+     * @param aNumberOfMatches the maximum number of matches to export per
+     * spectrum
      *
      * @throws IOException
      * @throws SQLException
@@ -299,20 +301,23 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters,
-            WaitingHandler waitingHandler, String scoreThreshold) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+    public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler,
+            Double scoreThreshold, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         double threshold = 0;
-        if (!scoreThreshold.equals("")) {
-            threshold = Double.valueOf(scoreThreshold);
+        if (scoreThreshold != null) {
+            threshold = scoreThreshold;
+        }
+        int numberOfMatches = 10;
+        if (aNumberOfMatches != null) {
+            numberOfMatches = aNumberOfMatches;
         }
 
         try {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-
                 if (waitingHandler != null) {
                     waitingHandler.setWaitingText("Exporting Spectra - Writing File. Please Wait...");
                     // reset the progress bar
@@ -325,16 +330,14 @@ public class TextExporter {
                         if (identification.matchExists(spectrumKey)) {
 
                             String spectrumDetails = ">";
-
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
                             SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                             spectrumDetails += mgfFile + separator2 + spectrumTitle + separator2;
-
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
-
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
                             HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
+
                             if (assumptionsMap != null) {
                                 ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                                 Collections.sort(scores, Collections.reverseOrder());
@@ -346,9 +349,13 @@ public class TextExporter {
                                 }
                             }
 
-                            for (TagAssumption tagAssumption : assumptions) {
+                            // export all matches above the score threshold up to the given user selected amount
+                            for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
+
+                                TagAssumption tagAssumption = assumptions.get(i);
                                 PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                 pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+
                                 if (tagAssumption.getScore() > threshold) {
                                     b.write(spectrumDetails);
                                     b.write(pepnovoAssumptionDetails.getRankScore() + separator2);
@@ -358,9 +365,11 @@ public class TextExporter {
                                     b.newLine();
                                 }
                             }
+
                             if (assumptions.isEmpty()) {
                                 b.newLine(); //This should not happen. Should.
                             }
+
                             if (waitingHandler != null) {
                                 waitingHandler.increaseSecondaryProgressCounter();
                                 if (waitingHandler.isRunCanceled()) {

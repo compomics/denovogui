@@ -30,7 +30,6 @@ import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.experiment.identification.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
-import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.identification.identifications.Ms2Identification;
 import com.compomics.util.experiment.identification.matches.IonMatch;
@@ -74,7 +73,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -181,11 +179,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private double maxPepnovoScore = Double.MIN_VALUE;
     /**
-     * The minimal direct tag e-value
+     * The minimal direct tag e-value.
      */
     private double minDirectTagEvalue = Double.MAX_VALUE;
     /**
-     * The maximal direct tag e-value
+     * The maximal direct tag e-value.
      */
     private double maxDirectTagEvalue = Double.MIN_VALUE;
     /**
@@ -891,8 +889,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addComponent(spectrumFileLabel)
                         .addGap(18, 18, 18)
-                        .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(spectrumFileComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         querySpectraPanelLayout.setVerticalGroup(
@@ -1468,7 +1465,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, ExportType.tags, null);
+            exportIdentification(selectedFile, ExportType.tags, null, null);
         }
     }//GEN-LAST:event_exportTagMatchesMenuItemActionPerformed
 
@@ -1503,27 +1500,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
 
-        boolean export = true;
-        String threshold = JOptionPane.showInputDialog(this, "Please enter the de novo score threshold:");
+        BlastExportSettingsDialog blastDialog = new BlastExportSettingsDialog(this, true);
 
-        if (threshold == null) {
-            export = false;
-        }
-
-        if (export) {
-            try {
-                new Double(threshold);
-            } catch (NumberFormatException e) {
-                export = false;
-                JOptionPane.showMessageDialog(this, "The score threshold has to be a number!", "Export Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
-        if (export) {
+        if (!blastDialog.canceled()) {
             File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                exportIdentification(selectedFile, ExportType.blast, threshold);
+                exportIdentification(selectedFile, ExportType.blast, blastDialog.getThreshold(), blastDialog.getNumberOfPeptides());
             }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
@@ -1961,9 +1944,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      *
      * @param file the destination file
      * @param exportType the type of export desired
-     * @param scoreThreshold Score threshold for BLAST-compatible export
+     * @param scoreThreshold score threshold for BLAST-compatible export
+     * @param numberOfMatches the maximum number of matches to export per spectrum
      */
-    public void exportIdentification(File file, final ExportType exportType, final String scoreThreshold) {
+    public void exportIdentification(File file, final ExportType exportType, final Double scoreThreshold, final Integer numberOfMatches) {
 
         final File finalFile = file;
 
@@ -1995,7 +1979,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
                             break;
                         case blast:
-                            TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold);
+                            TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold, numberOfMatches);
                     }
 
                     boolean cancelled = progressDialog.isRunCanceled();
