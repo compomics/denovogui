@@ -8,7 +8,6 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.math.BasicMathFunctions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
@@ -205,7 +204,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                             return bestScore;
                         }
                     }
-                    return "";
+                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;

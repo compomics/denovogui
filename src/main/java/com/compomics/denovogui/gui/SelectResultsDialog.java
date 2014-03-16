@@ -310,7 +310,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
             @Override
             public String getDescription() {
-                return "Supported formats: Pepnovo (.out), Directag (.tags)";
+                return "Supported formats: PepNovo+ (.out), DirecTag (.tags)";
             }
         };
 

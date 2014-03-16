@@ -67,31 +67,33 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 10;
+        return 11;
     }
 
     @Override
     public String getColumnName(int column) {
         switch (column) {
             case 0:
-                return " ";
+                return "";
             case 1:
-                return "Sequence";
+                return " ";
             case 2:
-                return "m/z";
+                return "Sequence";
             case 3:
-                return "Charge";
+                return "m/z";
             case 4:
-                return "N-Gap";
+                return "Charge";
             case 5:
-                return "C-Gap";
+                return "N-Gap";
             case 6:
-                return "Rank Score (P)";
+                return "C-Gap";
             case 7:
-                return "Score (P)";
+                return "Rank Score (P)";
             case 8:
-                return "Score (D)";
+                return "Score (P)";
             case 9:
+                return "Score (D)";
+            case 10:
                 return "  ";
             default:
                 return "";
@@ -103,6 +105,8 @@ public class AssumptionsTableModel extends DefaultTableModel {
         TagAssumption tagAssumption = tagAssumptions.get(row);
         switch (column) {
             case 0:
+                return (row + 1);
+            case 1:
                 String rank;
                 if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
                     rank = "D";
@@ -110,35 +114,35 @@ public class AssumptionsTableModel extends DefaultTableModel {
                     rank = "P";
                 }
                 return rank + tagAssumption.getRank();
-            case 1:
+            case 2:
                 String taggedSequence = tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
                 return taggedSequence;
-            case 2:
-                return tagAssumption.getTheoreticMz(true, true);
             case 3:
-                return tagAssumption.getIdentificationCharge().value;
+                return tagAssumption.getTheoreticMz(true, true);
             case 4:
-                return tagAssumption.getTag().getNTerminalGap();
+                return tagAssumption.getIdentificationCharge().value;
             case 5:
-                return tagAssumption.getTag().getCTerminalGap();
+                return tagAssumption.getTag().getNTerminalGap();
             case 6:
+                return tagAssumption.getTag().getCTerminalGap();
+            case 7:
                 if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                     PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                     pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                     return pepnovoAssumptionDetails.getRankScore();
                 }
-                return "";
-            case 7:
+                return null;
+            case 8:
                 if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                     return tagAssumption.getScore();
                 }
-                return "";
-            case 8:
+                return null;
+            case 9:
                 if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
                     return tagAssumption.getScore();
                 }
-                return "";
-            case 9:
+                return null;
+            case 10:
                 return true;
             default:
                 return "";
