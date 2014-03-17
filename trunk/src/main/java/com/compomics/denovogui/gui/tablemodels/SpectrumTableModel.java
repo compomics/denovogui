@@ -182,7 +182,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                             return bestScore;
                         }
                     }
-                    return "";
+                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -204,7 +204,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                             return bestScore;
                         }
                     }
-                    return null;
+                    return "";
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
