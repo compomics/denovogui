@@ -285,6 +285,27 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.setAutoCreateRowSorter(true);
         deNovoMatchesTable.setAutoCreateRowSorter(true);
 
+        // make sure that the user is made aware that the tool is doing something during sorting of the query table
+        querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
+            @Override
+            public void sorterChanged(RowSorterEvent e) {
+
+                if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+
+                    // change the icon to a "waiting version"
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")));
+                } else if (e.getType() == RowSorterEvent.Type.SORTED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+                    // change the icon to the normal version
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+                }
+            }
+        });
+
         // correct the color for the upper right corner
         JPanel queryCorner = new JPanel();
         queryCorner.setBackground(querySpectraTable.getTableHeader().getBackground());
@@ -328,9 +349,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }
 
     /**
-     * Set the table properties.
+     * Set the spectrum table properties.
      */
-    private void setTableProperties() {
+    private void setSpectrumTableProperties() {
 
         double maxMz = Math.max(spectrumFactory.getMaxMz(), maxIdentificationMz);
         double maxCharge = Math.max(spectrumFactory.getMaxCharge(), maxIdentificationCharge);
@@ -361,6 +382,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+    }
+
+    /**
+     * Set the assumptions table properties.
+     */
+    private void setAssumptionsTableProperties() {
+
+        double maxMz = Math.max(spectrumFactory.getMaxMz(), maxIdentificationMz);
+        double maxCharge = Math.max(spectrumFactory.getMaxCharge(), maxIdentificationCharge);
 
         deNovoMatchesTable.getColumn("").setMaxWidth(50);
         deNovoMatchesTable.getColumn("").setMinWidth(50);
@@ -387,32 +417,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 new ImageIcon(this.getClass().getResource("/icons/blast.png")),
                 null,
                 "Click to BLAST tag sequence", null));
-
-        querySpectraTable.revalidate();
-        querySpectraTable.repaint();
-        deNovoMatchesTable.revalidate();
-        deNovoMatchesTable.repaint();
-
-        // make sure that the user is made aware that the tool is doing something during sorting of the query table
-        querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
-            @Override
-            public void sorterChanged(RowSorterEvent e) {
-
-                if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-
-                    // change the icon to a "waiting version"
-                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")));
-                } else if (e.getType() == RowSorterEvent.Type.SORTED) {
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-
-                    // change the icon to the normal version
-                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
-                }
-            }
-        });
     }
 
     /**
@@ -1425,7 +1429,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void spectrumFileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumFileComboBoxActionPerformed
-        displayResults(0, 0);
+        displayResults();
     }//GEN-LAST:event_spectrumFileComboBoxActionPerformed
 
     /**
@@ -1814,7 +1818,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param peptideRowSelection the peptide row to select
      * @param psmRowSelection the PSM row to select
      */
-    private void displayResults(final int peptideRowSelection, final int psmRowSelection) {
+    private void displayResults() {
 
         progressDialog = new ProgressDialogX(this,
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1844,16 +1848,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 }
                 progressDialog.setPrimaryProgressCounterIndeterminate(true);
                 progressDialog.setTitle("Updating Display. Please Wait...");
+
+                setSpectrumTableProperties();
                 TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
                 querySpectraTable.setModel(tableModel);
+                setSpectrumTableProperties();
 
-                if (querySpectraTable.getRowCount() > 0) {
-                    if (peptideRowSelection != -1 && peptideRowSelection < querySpectraTable.getRowCount()) {
-                        querySpectraTable.setRowSelectionInterval(peptideRowSelection, peptideRowSelection);
-                    } else {
-                        querySpectraTable.setRowSelectionInterval(0, 0);
-                    }
-                }
+                ((DefaultTableModel) querySpectraTable.getModel()).fireTableDataChanged();
 
                 if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
                     ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra (?/"
@@ -1866,7 +1867,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                 querySpectraPanel.repaint();
 
-                updateAssumptionsTable(psmRowSelection);
+                if (querySpectraTable.getRowCount() > 0) {
+                    querySpectraTable.setRowSelectionInterval(0, 0);
+                }
+
+                // select the first assumption
+                updateAssumptionsTable(0);
+
                 progressDialog.setRunFinished();
                 findPanel.setEnabled(true);
 
@@ -1952,7 +1959,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param file the destination file
      * @param exportType the type of export desired
      * @param scoreThreshold score threshold for BLAST-compatible export
-     * @param numberOfMatches the maximum number of matches to export per spectrum
+     * @param numberOfMatches the maximum number of matches to export per
+     * spectrum
      */
     public void exportIdentification(File file, final ExportType exportType, final Double scoreThreshold, final Integer numberOfMatches) {
 
@@ -2063,7 +2071,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 deNovoMatchesTable.setModel(tableModel);
 
                 ((DefaultTableModel) deNovoMatchesTable.getModel()).fireTableDataChanged();
-                setTableProperties();
+                setAssumptionsTableProperties();
 
                 if (deNovoMatchesTable.getRowCount() > 0) {
                     if (selectedPsmRow != -1 && selectedPsmRow < deNovoMatchesTable.getRowCount()) {
@@ -2225,9 +2233,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             @Override
             public void run() {
                 try {
-
                     if (finalMgfFiles != null) {
-
                         String[] fileNamesArray = new String[finalMgfFiles.size()];
                         for (int i = 0; i < finalMgfFiles.size(); i++) {
                             File mgfFile = finalMgfFiles.get(i);
@@ -2241,7 +2247,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     identification = importDeNovoResults(finalOutFiles, searchParameters, progressDialog);
                     progressDialog.setRunFinished();
                     if (identification != null) {
-                        displayResults(0, 0);
+                        displayResults();
                     }
                 } catch (Exception e) {
                     deNovoGUI.catchException(e);

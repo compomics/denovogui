@@ -355,15 +355,28 @@
                     <artifactId>isorelax</artifactId>
                     <groupId>msv</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jmzidentml</artifactId>
+                    <groupId>uk.ac.ebi.jmzidml</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xxindex</artifactId>
+                    <groupId>psidev.psi.tools</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>ols-dialog</artifactId>
+                    <groupId>no.uib</groupId>
+                </exclusion>
             </exclusions>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.0.13</version>
         </dependency>
-        
+
         <!-- use for adding desktop shortcuts -->
         <dependency>
             <groupId>net.jimmc</groupId>
@@ -371,6 +384,13 @@
             <version>0.4-oberzalek</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>no.uib</groupId>
+            <artifactId>jsparklines</artifactId>
+            <version>0.6.5</version>
+        </dependency>
+
     </dependencies>
 
 
