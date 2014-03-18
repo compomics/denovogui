@@ -487,6 +487,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         });
 
+        direcTagBetaLabel.setFont(direcTagBetaLabel.getFont().deriveFont((direcTagBetaLabel.getFont().getStyle() | java.awt.Font.ITALIC)));
         direcTagBetaLabel.setText("(beta)");
 
         direcTagCheckBox.setSelected(true);
@@ -1000,7 +1001,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param evt
      */
     private void pepNovoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoButtonActionPerformed
-        pepNovoCheckBox.setSelected(true);
+        pepNovoCheckBox.setSelected(!pepNovoCheckBox.isSelected());
+        validateInput(false);
     }//GEN-LAST:event_pepNovoButtonActionPerformed
 
     /**
@@ -1345,7 +1347,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @param evt
      */
     private void direcTagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagButtonActionPerformed
-        direcTagCheckBox.setSelected(true);
+        direcTagCheckBox.setSelected(!direcTagCheckBox.isSelected());
+        validateInput(false);
     }//GEN-LAST:event_direcTagButtonActionPerformed
 
     /**
