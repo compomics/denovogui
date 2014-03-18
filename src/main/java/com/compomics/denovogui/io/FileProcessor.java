@@ -195,8 +195,8 @@ public class FileProcessor {
     }
 
     /**
-     * Returns the result file corresponding to the given spectrum file and
-     * output folder.
+     * Returns the PepNovo result file corresponding to the given spectrum file
+     * and output folder.
      *
      * @param outFolder the output folder
      * @param spectrumFile the spectrum file
@@ -204,6 +204,19 @@ public class FileProcessor {
      */
     public static File getOutFile(File outFolder, File spectrumFile) {
         return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
+    }
+
+    /**
+     * Returns the DirectTag result file corresponding to the given spectrum
+     * file and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding out file
+     */
+    public static File getTagsFile(File outFolder, File spectrumFile) {
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".tags");
     }
 
     /**
@@ -225,7 +238,8 @@ public class FileProcessor {
     }
 
     /**
-     * Returns a list of out files expected from a list of spectrum files.
+     * Returns a list of PepNovo out files expected from a list of spectrum
+     * files.
      *
      * @param outFolder the out folder
      * @param spectrumFiles list of spectrum files
@@ -237,5 +251,38 @@ public class FileProcessor {
             outFiles.add(getOutFile(outFolder, file));
         }
         return outFiles;
+    }
+
+    /**
+     * Returns a list of DirecTag tags files expected from a list of spectrum
+     * files.
+     *
+     * @param outFolder the out folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getTagsFiles(File outFolder, ArrayList<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            outFiles.add(getTagsFile(outFolder, file));
+        }
+        return outFiles;
+    }
+
+    /**
+     * Returns a list of PepNovo out files and DirecTag tags files expected from
+     * a list of spectrum files.
+     *
+     * @param resultsFolder the results folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getAllResultFiles(File resultsFolder, ArrayList<File> spectrumFiles) {
+        ArrayList<File> resultFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            resultFiles.add(getOutFile(resultsFolder, file));
+            resultFiles.add(getTagsFile(resultsFolder, file));
+        }
+        return resultFiles;
     }
 }

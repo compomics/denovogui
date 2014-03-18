@@ -1,6 +1,5 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.SearchParameters;
@@ -21,9 +20,9 @@ import javax.swing.filechooser.FileFilter;
 public class SelectResultsDialog extends javax.swing.JDialog {
 
     /**
-     * Indicates whether the user pressed the cancel button.
+     * Indicates whether the user canceled the dialog.
      */
-    private boolean canceled = false;
+    private boolean canceled = true;
     /**
      * The output files selected.
      */
@@ -61,9 +60,9 @@ public class SelectResultsDialog extends javax.swing.JDialog {
     }
 
     /**
-     * Indicates whether the user pressed the cancel button.
+     * Indicates whether the user canceled the dialog.
      *
-     * @return whether the user pressed the cancel button
+     * @return whether the user canceled the dialog
      */
     public boolean isCanceled() {
         return canceled;
@@ -344,7 +343,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                 }
                 outTxt.setText(outFiles.size() + " file(s) selected");
                 if (!mgfFiles.isEmpty()) {
-                mgfTxt.setText(mgfFiles.size() + " file(s) selected");
+                    mgfTxt.setText(mgfFiles.size() + " file(s) selected");
                 }
 
                 // try to find the parameters file
@@ -475,6 +474,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        canceled = false;
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
