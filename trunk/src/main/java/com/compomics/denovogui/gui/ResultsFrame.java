@@ -223,10 +223,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Creates a new ResultsPanel.
      *
      * @param deNovoGUI a references to the main frame
-     * @param outFiles the out files
+     * @param resultFiles the result files
      * @param searchParameters the search parameters
      */
-    public ResultsFrame(DeNovoGUI deNovoGUI, ArrayList<File> outFiles, SearchParameters searchParameters) {
+    public ResultsFrame(DeNovoGUI deNovoGUI, ArrayList<File> resultFiles, SearchParameters searchParameters) {
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
@@ -237,9 +237,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set the title of the frame and add the icon
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
         setUpGUI();
-        if (outFiles != null) {
+        if (resultFiles != null) {
             setVisible(true);
-            displayResults(outFiles);
+            displayResults(resultFiles);
         } else {
             openNewFile();
         }
@@ -2045,16 +2045,24 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         try {
             assumptions = new ArrayList<TagAssumption>();
+
             if (querySpectraTable.getRowCount() > 0) {
+
                 String psmKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
                 if (identification.matchExists(psmKey)) {
+
                     SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
+
                     for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocate.getIndex());
+
                         if (assumptionsMap != null) {
+
                             ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                             DeNovoGUI.sortScores(advocate, scores);
+
                             for (Double score : scores) {
                                 for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
                                     if (assumption instanceof TagAssumption) {
@@ -2193,23 +2201,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * Loads the results of the given spectrum files and loads everything in the
      * identification.
      *
-     * @param outFiles the out files
+     * @param resultFiles the result files
      */
-    public void displayResults(ArrayList<File> outFiles) {
-        displayResults(outFiles, null);
+    public void displayResults(ArrayList<File> resultFiles) {
+        displayResults(resultFiles, null);
     }
 
     /**
      * Loads the results of the given spectrum files and loads everything in the
      * identification.
      *
-     * @param outFiles the out files
+     * @param resultFiles the result files
      * @param spectrumFiles the spectrum files to be added in the spectrum
      * factory, ignored if null
      */
-    public void displayResults(ArrayList<File> outFiles, ArrayList<File> spectrumFiles) {
+    public void displayResults(ArrayList<File> resultFiles, ArrayList<File> spectrumFiles) {
 
-        final ArrayList<File> finalOutFiles = outFiles;
+        final ArrayList<File> finalOutFiles = resultFiles;
         final ArrayList<File> finalMgfFiles = spectrumFiles;
 
         progressDialog = new ProgressDialogX(this,
@@ -2634,10 +2642,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }
 
     /**
-     * Imports the PepNovo results from the given files and puts all matches in
-     * the identification.
+     * Imports the PepNovo and DirecTag results from the given files and puts
+     * all matches in the identification.
      *
-     * @param outFiles the out files
+     * @param resultFiles the result files
      * @param searchParameters the search parameters
      * @param waitingHandler the waiting handler
      * @return the Identification object
@@ -2648,7 +2656,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @throws ClassNotFoundException
      * @throws Exception
      */
-    public Identification importDeNovoResults(ArrayList<File> outFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
+    public Identification importDeNovoResults(ArrayList<File> resultFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
             throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
 
         // @TODO: let the user reference his project
@@ -2679,36 +2687,42 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             return null;
         }
 
-        for (int i = 0; i < outFiles.size(); i++) {
+        for (int i = 0; i < resultFiles.size(); i++) {
 
-            File outFile = outFiles.get(i);
+            File resultFile = resultFiles.get(i);
 
             // initiate the parser
             String loadingText = "Loading Results. Loading File. Please Wait...";
-            if (outFiles.size() > 1) {
-                loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
+            if (resultFiles.size() > 1) {
+                loadingText += " (" + (i + 1) + "/" + resultFiles.size() + ")";
             }
             progressDialog.setTitle(loadingText);
 
-            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(outFile);
-
+            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile);
             HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
             progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
             // remap the ptms and set GUI min/max values
             for (SpectrumMatch spectrumMatch : spectrumMatches) {
                 for (int advocate : spectrumMatch.getAdvocates()) {
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptions = spectrumMatch.getAllAssumptions(advocate);
-                    for (double score : assumptions.keySet()) {
-                        for (SpectrumIdentificationAssumption assumption : assumptions.get(score)) {
+
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
+
+                    for (double score : tempAssumptions.keySet()) {
+                        for (SpectrumIdentificationAssumption assumption : tempAssumptions.get(score)) {
+
                             TagAssumption tagAssumption = (TagAssumption) assumption;
                             Tag tag = tagAssumption.getTag();
+
                             // add the fixed PTMs
                             ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
-                            // Rename the varialbe modifications
+
+                            // rename the variable modifications
                             for (TagComponent tagComponent : tag.getContent()) {
                                 if (tagComponent instanceof AminoAcidPattern) {
+
                                     AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+
                                     for (int aa : aminoAcidPattern.getModificationIndexes()) {
                                         for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
                                             if (modificationMatch.isVariable()) {
@@ -2746,6 +2760,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                     }
                                 }
                             }
+
                             // Set GUI max/min values
                             double mz = tagAssumption.getTheoreticMz();
                             if (mz > maxIdentificationMz) {
@@ -2762,6 +2777,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             if (cGap > maxCGap) {
                                 maxCGap = cGap;
                             }
+
                             if (advocate == Advocate.pepnovo.getIndex()) {
                                 PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                 pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
@@ -2795,15 +2811,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
 
             // put the matches in the identification object
-            tempIdentification.addSpectrumMatch(spectrumMatches, true);
+            tempIdentification.addSpectrumMatch(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
 
             idfileReader.close();
 
-            // get spectrum matches
             loadingText = "Loading Results. Loading Matches. Please Wait...";
-            if (outFiles.size() > 1) {
-                loadingText += " (" + (i + 1) + "/" + outFiles.size() + ")";
+            if (resultFiles.size() > 1) {
+                loadingText += " (" + (i + 1) + "/" + resultFiles.size() + ")";
             }
+
             progressDialog.setTitle(loadingText);
         }
 

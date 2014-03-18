@@ -9,7 +9,6 @@ import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.waiting.WaitingHandler;
@@ -126,7 +125,7 @@ public class DeNovoSequencingHandler {
         this.enableDirecTag = enableDirecTag;
 
         long startTime = System.nanoTime();
-        waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra());
+        waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         // store the pepnovo to utilities ptm mapping
@@ -170,6 +169,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
                 + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + spectrumEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
+        waitingHandler.increasePrimaryProgressCounter();
 
         for (File spectrumFile : spectrumFiles) {
             startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, waitingHandler, spectrumFiles.size() > 1);

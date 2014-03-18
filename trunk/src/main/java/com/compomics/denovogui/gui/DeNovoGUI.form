@@ -228,8 +228,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="directTagRadioButton" min="-2" max="-2" attributes="0"/>
-                          <Component id="pepNovoRadioButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="direcTagCheckBox" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -245,7 +245,7 @@
                           </Group>
                           <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="53" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -256,14 +256,14 @@
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="pepNovoButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="pepNovoRadioButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="directTagRadioButton" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagBetaLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="direcTagCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -329,29 +329,30 @@
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseExited"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JRadioButton" name="directTagRadioButton">
-              <Properties>
-                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                  <ComponentRef name="deNovoButtonGroup"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Enable DirecTag"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JRadioButton" name="pepNovoRadioButton">
-              <Properties>
-                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                  <ComponentRef name="deNovoButtonGroup"/>
-                </Property>
-                <Property name="selected" type="boolean" value="true"/>
-                <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
-                <Property name="opaque" type="boolean" value="false"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JLabel" name="direcTagBetaLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="(beta)"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="direcTagCheckBox">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable DirecTag"/>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="direcTagCheckBoxActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="pepNovoCheckBox">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoCheckBoxActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
