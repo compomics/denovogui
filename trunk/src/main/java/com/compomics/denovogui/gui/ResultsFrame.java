@@ -91,6 +91,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import no.uib.jsparklines.extra.TrueFalseIconRenderer;
 import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
+import no.uib.jsparklines.renderers.JSparklinesIntegerColorTableCellRenderer;
 import no.uib.jsparklines.renderers.JSparklinesIntervalChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
@@ -218,6 +219,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The object cache used for the identification.
      */
     private ObjectsCache objectsCache = new ObjectsCache();
+    /**
+     * The sequencing software color map.
+     */
+    private HashMap<Integer, java.awt.Color> sequencingSoftwareColorMap;
 
     /**
      * Creates a new ResultsPanel.
@@ -285,27 +290,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.setAutoCreateRowSorter(true);
         deNovoMatchesTable.setAutoCreateRowSorter(true);
 
-        // make sure that the user is made aware that the tool is doing something during sorting of the query table
-        querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
-            @Override
-            public void sorterChanged(RowSorterEvent e) {
-
-                if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-
-                    // change the icon to a "waiting version"
-                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")));
-                } else if (e.getType() == RowSorterEvent.Type.SORTED) {
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-
-                    // change the icon to the normal version
-                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
-                }
-            }
-        });
-
         // correct the color for the upper right corner
         JPanel queryCorner = new JPanel();
         queryCorner.setBackground(querySpectraTable.getTableHeader().getBackground());
@@ -321,31 +305,37 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // setup the column header tooltips
         querySpectraTableToolTips = new ArrayList<String>();
         querySpectraTableToolTips.add(null);
+        querySpectraTableToolTips.add("ID");
         querySpectraTableToolTips.add("Spectrum Title");
         querySpectraTableToolTips.add("Precusor m/z");
         querySpectraTableToolTips.add("Precursor Charge");
         querySpectraTableToolTips.add("Precursor Intensity");
         querySpectraTableToolTips.add("Retention Time");
         querySpectraTableToolTips.add("Number of Peaks");
-        querySpectraTableToolTips.add("Max PepNovo Score");
+        querySpectraTableToolTips.add("Max PepNovo+ Score");
         querySpectraTableToolTips.add("Min DirecTag E-Value");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
         deNovoPeptidesTableToolTips.add(null);
-        deNovoPeptidesTableToolTips.add(null);
+        deNovoPeptidesTableToolTips.add("Sequencing Algorithm");
         deNovoPeptidesTableToolTips.add("Tag Sequences");
         deNovoPeptidesTableToolTips.add("Precursor m/z");
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
         deNovoPeptidesTableToolTips.add("C-terminal Gap");
-        deNovoPeptidesTableToolTips.add("PepNovo Rank Score");
-        deNovoPeptidesTableToolTips.add("PepNovo Score");
+        deNovoPeptidesTableToolTips.add("PepNovo+ Rank Score");
+        deNovoPeptidesTableToolTips.add("PepNovo+ Score");
         deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
+
+        // set up the search engines color map
+        sequencingSoftwareColorMap = new HashMap<Integer, java.awt.Color>();
+        sequencingSoftwareColorMap.put(Advocate.pepnovo.getIndex(), new java.awt.Color(153, 255, 255));
+        sequencingSoftwareColorMap.put(Advocate.DirecTag.getIndex(), new java.awt.Color(205, 92, 92));
     }
 
     /**
@@ -358,8 +348,24 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         querySpectraTable.getColumn(" ").setMaxWidth(50);
         querySpectraTable.getColumn(" ").setMinWidth(50);
+        querySpectraTable.getColumn("ID").setMaxWidth(37);
+        querySpectraTable.getColumn("ID").setMinWidth(37);
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
+
+        // set up the peptide inference color map
+        HashMap<Integer, Color> idColorMap = new HashMap<Integer, Color>();
+        idColorMap.put(0, Color.LIGHT_GRAY);
+        idColorMap.put(1, Color.YELLOW);
+        idColorMap.put(2, sparklineColor);
+
+        // set up the peptide inference tooltip map
+        HashMap<Integer, String> idTooltipMap = new HashMap<Integer, String>();
+        idTooltipMap.put(0, "No de novo solutions");
+        idTooltipMap.put(1, "One de novo algorithm missing");
+        idTooltipMap.put(2, "Found de novo solutions for both algorithms");
+
+        querySpectraTable.getColumn("ID").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, idColorMap, idTooltipMap));
 
         querySpectraTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
                 new ImageIcon(this.getClass().getResource("/icons/accept.png")),
@@ -382,6 +388,27 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+
+        // make sure that the user is made aware that the tool is doing something during sorting of the query table
+        querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
+            @Override
+            public void sorterChanged(RowSorterEvent e) {
+
+                if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+
+                    // change the icon to a "waiting version"
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")));
+                } else if (e.getType() == RowSorterEvent.Type.SORTED) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                    querySpectraTable.getTableHeader().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+                    // change the icon to the normal version
+                    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+                }
+            }
+        });
     }
 
     /**
@@ -394,8 +421,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         deNovoMatchesTable.getColumn("").setMaxWidth(50);
         deNovoMatchesTable.getColumn("").setMinWidth(50);
-        deNovoMatchesTable.getColumn(" ").setMaxWidth(50);
-        deNovoMatchesTable.getColumn(" ").setMinWidth(50);
+        deNovoMatchesTable.getColumn("SA").setMaxWidth(37);
+        deNovoMatchesTable.getColumn("SA").setMinWidth(37);
         deNovoMatchesTable.getColumn("  ").setMaxWidth(30);
         deNovoMatchesTable.getColumn("  ").setMinWidth(30);
 
@@ -417,6 +444,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 new ImageIcon(this.getClass().getResource("/icons/blast.png")),
                 null,
                 "Click to BLAST tag sequence", null));
+
+        // set up the search engines tooltip map
+        HashMap<Integer, String> sequencingSoftwareTooltipMap = new HashMap<Integer, String>();
+        sequencingSoftwareTooltipMap.put(Advocate.pepnovo.getIndex(), Advocate.pepnovo.getName());
+        sequencingSoftwareTooltipMap.put(Advocate.DirecTag.getIndex(), Advocate.DirecTag.getName());
+
+        deNovoMatchesTable.getColumn("SA").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, sequencingSoftwareColorMap, sequencingSoftwareTooltipMap));
     }
 
     /**

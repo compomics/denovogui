@@ -10,7 +10,6 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.util.Util;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
