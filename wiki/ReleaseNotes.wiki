@@ -3,6 +3,24 @@
 
 ----
 
+*Changes in DeNovoGUI 1.3.0 (coming soon...):*
+
+ * NEW FEATURE: Added support for DirecTag.
+ * NEW FEATURE: Added tags to FASTA file mapping. (beta)
+ * NEW FEATURE: Added the possibility to create identification parameters files from the command line.
+ * NEW FEATURE: Added the option of setting the maximum number of hits to export per spectrum for the BLAST export.
+
+ * FEATURE IMPROVEMENT: Improved the memory handling of the object cache.
+ * FEATURE IMPROVEMENT: Updated the TMT modifications to support 10-plex.
+ * FEATURE IMPROVEMENT: Extended the export.
+ * FEATURE IMPROVEMENT: Added the high resolution annotation option to the spectrum menu.
+
+ * BUG FIX: Fixed a bug in the settings dialog that closed the settings dialog if the user canceled the save as dialog.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.25.8. 
+ 
+----
+
 *Changes in DeNovoGUI 1.2.3 (November 27. 2013):*
 
  * FEATURE IMPROVEMENT: Improved the information printed to the waiting dialog during the sequencing.
