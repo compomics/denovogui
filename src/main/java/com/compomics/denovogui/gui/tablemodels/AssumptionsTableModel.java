@@ -76,7 +76,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 0:
                 return "";
             case 1:
-                return " ";
+                return "SA";
             case 2:
                 return "Sequence";
             case 3:
@@ -107,13 +107,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 0:
                 return (row + 1);
             case 1:
-                String rank;
-                if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
-                    rank = "D";
-                } else {
-                    rank = "P";
-                }
-                return rank + tagAssumption.getRank();
+                return tagAssumption.getAdvocate();
             case 2:
                 String taggedSequence = tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
                 return taggedSequence;
