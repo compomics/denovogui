@@ -60,7 +60,8 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) 
+            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -72,7 +73,7 @@ public class TextExporter {
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
                         + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
-                        + "Pepnovo RankScore" + separator + "Pepnovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
                         + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)" + separator + "Tag Mass Error (ppm)" + separator
                         + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)" + separator + "Isotope");
                 b.newLine();
@@ -199,7 +200,8 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) 
+            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -210,7 +212,7 @@ public class TextExporter {
 
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Tag" + separator + "Longest AminoAcid sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
-                        + "Pepnovo RankScore" + separator + "Pepnovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
                         + "Theoretic m/z" + separator + "Identification Charge");
                 b.newLine();
 
