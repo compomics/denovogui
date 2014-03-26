@@ -223,6 +223,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The sequencing software color map.
      */
     private HashMap<Integer, java.awt.Color> sequencingSoftwareColorMap;
+    /**
+     * True if both PepNovo and DirecTag results are loaded.
+     */
+    private boolean pepNovoAndDirecTagLoaded = false;
 
     /**
      * Creates a new ResultsPanel.
@@ -353,17 +357,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTable.getColumn("  ").setMaxWidth(30);
         querySpectraTable.getColumn("  ").setMinWidth(30);
 
-        // set up the peptide inference color map
+        // set up the id column color map and tooltips
         HashMap<Integer, Color> idColorMap = new HashMap<Integer, Color>();
-        idColorMap.put(0, Color.LIGHT_GRAY);
-        idColorMap.put(1, Color.YELLOW);
-        idColorMap.put(2, sparklineColor);
-
-        // set up the peptide inference tooltip map
         HashMap<Integer, String> idTooltipMap = new HashMap<Integer, String>();
-        idTooltipMap.put(0, "No de novo solutions");
-        idTooltipMap.put(1, "One de novo algorithm missing");
-        idTooltipMap.put(2, "Found de novo solutions for both algorithms");
+        if (pepNovoAndDirecTagLoaded) {
+            idColorMap.put(0, Color.LIGHT_GRAY);
+            idColorMap.put(1, Color.YELLOW);
+            idColorMap.put(2, sparklineColor);
+            idTooltipMap.put(0, "No de novo solutions");
+            idTooltipMap.put(1, "One de novo algorithm missing");
+            idTooltipMap.put(2, "Found de novo solutions for both algorithms");
+        } else {
+            idColorMap.put(0, Color.LIGHT_GRAY);
+            idColorMap.put(1, sparklineColor);
+            idTooltipMap.put(0, "No de novo solutions");
+            idTooltipMap.put(1, "De novo solution found");
+        }
 
         querySpectraTable.getColumn("ID").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, idColorMap, idTooltipMap));
 
@@ -1780,25 +1789,25 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             identification.loadSpectrumMatches(spectrumFile, null);
             for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                    for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
-                        int advocateIndex = advocate.getIndex();
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
-                        if (assumptionsMap != null) {
-                            ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                            for (double score : scores) {
-                                ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
-                                for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
-                                    if (assumption instanceof TagAssumption) {
-                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
-                                        for (Peptide peptide : proteinMapping.keySet()) {
-                                            peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                            PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                            peptideAssumption.addUrParam(tagAssumption);
-                                            spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
-                                        }
+                for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+                    int advocateIndex = advocate.getIndex();
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
+                    if (assumptionsMap != null) {
+                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                        for (double score : scores) {
+                            ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                            for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
+                                if (assumption instanceof TagAssumption) {
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
+                                    for (Peptide peptide : proteinMapping.keySet()) {
+                                        peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                        PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                        peptideAssumption.addUrParam(tagAssumption);
+                                        spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
                                     }
                                 }
+                            }
                         }
                     }
                     identification.updateSpectrumMatch(spectrumMatch);
@@ -2719,6 +2728,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             return null;
         }
 
+        pepNovoAndDirecTagLoaded = false;
+        boolean pepNovoDataLoaded = false;
+        boolean direcTagDataLoaded = false;
+
         for (int i = 0; i < resultFiles.size(); i++) {
 
             File resultFile = resultFiles.get(i);
@@ -2737,6 +2750,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             // remap the ptms and set GUI min/max values
             for (SpectrumMatch spectrumMatch : spectrumMatches) {
                 for (int advocate : spectrumMatch.getAdvocates()) {
+
+                    if (advocate == Advocate.pepnovo.getIndex()) {
+                        pepNovoDataLoaded = true;
+                    } else if (advocate == Advocate.DirecTag.getIndex()) {
+                        direcTagDataLoaded = true;
+                    }
 
                     HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
 
@@ -2854,6 +2873,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
             progressDialog.setTitle(loadingText);
         }
+
+        pepNovoAndDirecTagLoaded = pepNovoDataLoaded && direcTagDataLoaded;
 
         return tempIdentification;
     }

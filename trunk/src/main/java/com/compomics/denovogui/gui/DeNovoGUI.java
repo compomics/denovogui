@@ -10,6 +10,8 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
+import com.compomics.software.CompomicsWrapper;
+import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -35,6 +37,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -176,137 +180,145 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public DeNovoGUI(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder) {
 
-        // check for new version
-        //CompomicsWrapper.checkForNewVersion(getVersion(), "DeNovoGUI", "denovogui");
         // set up the ErrorLog
         setUpLogFile();
-        String osName = System.getProperty("os.name").toLowerCase();
 
-        // add desktop shortcut?
-        if (!getJarFilePath().equalsIgnoreCase(".")
-                && osName.lastIndexOf("windows") != -1
-                && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
-
-            // @TODO: add support for desktop icons in mac and linux??
-            // delete the firstRun file such that the user is not asked the next time around
-            boolean fileDeleted = new File(getJarFilePath() + "/resources/conf/firstRun").delete();
-
-            if (!fileDeleted) {
-                JOptionPane.showMessageDialog(this, "Failed to delete the file /resources/conf/firstRun.\n"
-                        + "Please contact the developers.", "File Error", JOptionPane.OK_OPTION);
-            }
-
-            int value = JOptionPane.showConfirmDialog(this,
-                    "Create a shortcut to DeNovoGUI on the desktop?",
-                    "Create Desktop Shortcut?",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
-
-            if (value == JOptionPane.YES_OPTION) {
-                addShortcutAtDeskTop();
-            }
+        // check for new version
+        boolean newVersion = false;
+        if (!getJarFilePath().equalsIgnoreCase(".")) {
+            newVersion = checkForNewVersion();
         }
 
-        // set the font color for the titlted borders, looks better than the default black
-        UIManager.put("TitledBorder.titleColor", new Color(59, 59, 59));
+        if (!newVersion) {
 
-        initComponents();
+            String osName = System.getProperty("os.name").toLowerCase();
 
-        // set the default PepNovo folder
-        if (new File(getJarFilePath() + "/resources/PepNovo").exists()) {
-            pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
+            // add desktop shortcut?
+            if (!getJarFilePath().equalsIgnoreCase(".")
+                    && osName.lastIndexOf("windows") != -1
+                    && new File(getJarFilePath() + "/resources/conf/firstRun").exists()) {
 
-            // OS check
-            if (osName.contains("mac os")) {
-                pepNovoExecutable = "PepNovo_Mac";
-            } else if (osName.contains("windows")) {
-                pepNovoExecutable = "PepNovo_Windows.exe";
-            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                pepNovoExecutable = "PepNovo_Linux";
+                // @TODO: add support for desktop icons in mac and linux??
+                // delete the firstRun file such that the user is not asked the next time around
+                boolean fileDeleted = new File(getJarFilePath() + "/resources/conf/firstRun").delete();
+
+                if (!fileDeleted) {
+                    JOptionPane.showMessageDialog(this, "Failed to delete the file /resources/conf/firstRun.\n"
+                            + "Please contact the developers.", "File Error", JOptionPane.OK_OPTION);
+                }
+
+                int value = JOptionPane.showConfirmDialog(this,
+                        "Create a shortcut to DeNovoGUI on the desktop?",
+                        "Create Desktop Shortcut?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+
+                if (value == JOptionPane.YES_OPTION) {
+                    addShortcutAtDeskTop();
+                }
+            }
+
+            // set the font color for the titlted borders, looks better than the default black
+            UIManager.put("TitledBorder.titleColor", new Color(59, 59, 59));
+
+            initComponents();
+
+            // set the default PepNovo folder
+            if (new File(getJarFilePath() + "/resources/PepNovo").exists()) {
+                pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
+
+                // OS check
+                if (osName.contains("mac os")) {
+                    pepNovoExecutable = "PepNovo_Mac";
+                } else if (osName.contains("windows")) {
+                    pepNovoExecutable = "PepNovo_Windows.exe";
+                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                    pepNovoExecutable = "PepNovo_Linux";
+                } else {
+                    // unsupported OS version
+                }
+            }
+
+            // Set the default PepNovo folder
+            if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
+                direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag");
+
+                // OS check
+                if (osName.contains("windows")) {
+                    direcTagExecutable = "DirecTag_Windows.exe";
+                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                    direcTagExecutable = "DirecTag_Linux";
+                } else {
+                    // unsupported OS version
+                }
+            }
+            deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
+
+            setUpGUI();
+
+            // set the title
+            this.setTitle("DeNovoGUI " + getVersion());
+
+            // set the title of the frame and add the icon
+            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+
+            // load modifications
+            try {
+                ptmFactory.importModifications(new File(DeNovoSequencingHandler.MODIFICATION_FILE), false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            }
+            try {
+                ptmFactory.importModifications(new File(DeNovoSequencingHandler.USER_MODIFICATION_FILE), true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // load the enzymes
+            try {
+                enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.ENZYME_FILE));
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (searchParameters == null) {
+                searchParameters = new SearchParameters();
+                setDefaultParameters(); // label the configs as default
             } else {
-                // unsupported OS version
+                loadModifications(searchParameters);
+                settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
             }
-        }
 
-        // Set the default PepNovo folder
-        if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
-            direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag");
+            File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
+            File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
+            modificationUse = SearchSettingsDialog.loadModificationsUse(modUseFile);
 
-            // OS check
-            if (osName.contains("windows")) {
-                direcTagExecutable = "DirecTag_Windows.exe";
-            } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                direcTagExecutable = "DirecTag_Linux";
-            } else {
-                // unsupported OS version
+            // set the default enzyme to trypsin
+            if (searchParameters.getEnzyme() == null) {
+                searchParameters.setEnzyme(EnzymeFactory.getInstance().getEnzyme("Trypsin"));
             }
+
+            this.searchParameters = searchParameters;
+
+            // set the results folder
+            if (outputFolder != null && outputFolder.exists()) {
+                setOutputFolder(outputFolder);
+            }
+
+            // set the spectrum files
+            if (spectrumFiles != null) {
+                setSpectrumFiles(spectrumFiles);
+            }
+
+            setLocationRelativeTo(null);
+            setVisible(true);
+
+            validateInput(false);
+            this.searchParameters = searchParameters;
         }
-        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
-
-        setUpGUI();
-
-        // set the title
-        this.setTitle("DeNovoGUI " + getVersion());
-
-        // set the title of the frame and add the icon
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
-
-        // load modifications
-        try {
-            ptmFactory.importModifications(new File(DeNovoSequencingHandler.MODIFICATION_FILE), false);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-        }
-        try {
-            ptmFactory.importModifications(new File(DeNovoSequencingHandler.USER_MODIFICATION_FILE), true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        // load the enzymes
-        try {
-            enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.ENZYME_FILE));
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        if (searchParameters == null) {
-            searchParameters = new SearchParameters();
-            setDefaultParameters(); // label the configs as default
-        } else {
-            loadModifications(searchParameters);
-            settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
-        }
-
-        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
-        File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
-        modificationUse = SearchSettingsDialog.loadModificationsUse(modUseFile);
-
-        // set the default enzyme to trypsin
-        if (searchParameters.getEnzyme() == null) {
-            searchParameters.setEnzyme(EnzymeFactory.getInstance().getEnzyme("Trypsin"));
-        }
-
-        this.searchParameters = searchParameters;
-
-        // set the results folder
-        if (outputFolder != null && outputFolder.exists()) {
-            setOutputFolder(outputFolder);
-        }
-
-        // set the spectrum files
-        if (spectrumFiles != null) {
-            setSpectrumFiles(spectrumFiles);
-        }
-
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        validateInput(false);
-        this.searchParameters = searchParameters;
     }
 
     /**
@@ -2178,6 +2190,28 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             Collections.sort(scores, Collections.reverseOrder());
         } else {
             throw new IllegalArgumentException("Sorting order not implemented for algorithm " + advocate + ".");
+        }
+    }
+
+    /**
+     * Check for new version.
+     *
+     * @return true if a new version is to be downloaded
+     */
+    public boolean checkForNewVersion() {
+        try {
+            File jarFile = new File(DeNovoGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            MavenJarFile oldMavenJarFile = new MavenJarFile(jarFile.toURI());
+            URL jarRepository = new URL("http", "genesis.ugent.be", new StringBuilder().append("/maven2/").toString());
+            return CompomicsWrapper.checkForNewDeployedVersion("DeNovoGUI", oldMavenJarFile, jarRepository, "denovogui.ico",
+                    false, true, true, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
