@@ -5,7 +5,7 @@
 
 The command line interface to DeNovoGUI, referred to as DeNovoCLI, makes is easy to use DeNovoGUI in a command line setting, for example as part of a bigger software pipeline.
 
-DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] and [http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/ DirecTag]algorithms to de novo sequence each spectrum according to the given search parameters.
+DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] and [http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/ DirecTag] algorithms to de novo sequence each spectrum according to the given search parameters.
 
 Note that the spectra must be provided in the Mascot Generic File (mgf) format.
 
