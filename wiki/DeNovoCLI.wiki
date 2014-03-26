@@ -5,11 +5,11 @@
 
 The command line interface to DeNovoGUI, referred to as DeNovoCLI, makes is easy to use DeNovoGUI in a command line setting, for example as part of a bigger software pipeline.
 
-DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] algorithm to de novo sequence each spectrum according to the given search parameters.
+DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics.ucsd.edu/Software/PepNovo.html PepNovo+] and [http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/ DirecTag]algorithms to de novo sequence each spectrum according to the given search parameters.
 
 Note that the spectra must be provided in the Mascot Generic File (mgf) format.
 
-The search parameters can be provided as a serialized instance of the [http://compomics-utilities.googlecode.com compomics utilities] com.compomics.util.experiment.identification.SearchParameters object or to set individually using the command line options.
+The recommended way to generate an identification parameters file is via the DeNovoGUI graphical user interface. But the file can also be created using the [http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI IdentificationParametersCLI]. 
 
 *General command line:*
 
@@ -24,51 +24,29 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
                         Example: "file1.mgf, file2.mgf".
 
 -output_folder		The output folder.
+
+-id_params	        A search parameters file. Generated from the GUI 
+                        or using the IdentificationParametersCLI.
 }}}
 
 *Optional common parameters:*
 
 {{{
--search_params	        Serialized com.compomics.util.experiment.identification.SearchParameters 
-                        object created by SearchGUI.
+-pepnovo                Turn the PepNovo+ sequencing on or off. 
+                        (1: on, 0: off, default is '1')
 
--prec_tol		Precursor ion mass tolerance in Dalton [0.0-5.0], default is '0.5' (Da).
-
--frag_tol_da		Fragment ion mass tolerance in Dalton [0.0-0.75], default is '0.5' (Da).
-
--enzyme		        Enzyme, default is 'Trypsin'. Available enzymes
-                        are listed in the GUI. (Names are case sensitive.)
-
--fixed_mods		The fixed (lower case) modifications as a comma separated list. 
-                        Modifications are configured in the GUI.
-                        Example: -fixed_mods "carbamidomethyl c".
-
--variable_mods	        The variable (lower case) modifications as a comma separated list. 
-                        The modifications are configured in the GUI.
-                        Example: -variable_mods "oxidation of m, phosphorylation of s".
-
--pep_novo               The PepNovo+ executable, defaults to the OS dependent versions 
-                        included with DeNovoGUI. (Note that the executable has to 
-                        be in the same folder as PepNovo Models folder.)
+-directag               Turn the DirecTag sequencing on or off. 
+                        (1: on, 0: off, default is '1')
 }}}
 
 
 *Optional advanced parameters:*
 
 {{{
--de_novo_count          Number of de novo solutions per spectrum. Default: '10'. Max: '2000'.
-
--estimate_charge        Estimate the precursor charge, 1: true, 0: false, default is '1'.
-
--correct_precursor      Correct the precursor mass, 1: true, 0: false, default is '1'.
-
--discard_spectra        Discard low quality spectra, 1: true, 0: false, default is '1'.
-
--fragmentation_model    The PepNovo+ fragmentation model. Default is 'CID_IT_TRYP'.
-
--generate_blast         Generate a BLAST query, 1: true, 0: false, default is '0'.
-
 -pep_novo_folder        The folder where PepNovo+ is installed. 
+                        Defaults to the version provided with DeNovoGUI.
+
+-directag_folder        The folder where DirecTag is installed. 
                         Defaults to the version provided with DeNovoGUI.
 
 -threads                The number of threads to use for the processing. 
@@ -94,16 +72,6 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI
 -spectrum_files "C:/my_folder" 
 -output_folder "C:/my_folder/output"
 -search_params "C:/my_folder/DeNovoGUI.parameters" 
-}}}
-
-And here is an example setting the search parameters directly:
-
-{{{
-java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI 
--spectrum_files "C:/my_folder" 
--output_folder "C:/my_folder/output"
--prec_tol 5 -frag_tol 0.7 -enzyme Trypsin
--variable_mods "oxidation of m, phosphorylation of s"
 }}}
 
 _Note that for readability the commands are here split over multiple lines. When used the commands should of course be single lines._
