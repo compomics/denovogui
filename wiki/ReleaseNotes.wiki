@@ -3,6 +3,12 @@
 
 ----
 
+*Changes in DeNovoGUI 1.3.2 (March 27. 2014):*
+
+ * BUG FIX: Fixed a bug where results from both algorithms was tried loaded at the end of the processing even if only one algorithm was used.
+
+----
+
 *Changes in DeNovoGUI 1.3.1 (March 27. 2014):*
 
  * BUG FIX: Fixed a bug in the method for getting all non fixed modifications, used in the export peptides feature.
