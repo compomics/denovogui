@@ -5,7 +5,7 @@
 
 *Changes in DeNovoGUI 1.3.1 (March 27. 2014):*
 
- * BUG FIX: Fixed a bug in the method for getting all non fixes modifications, used in the export peptides feature.
+ * BUG FIX: Fixed a bug in the method for getting all non fixed modifications, used in the export peptides feature.
 
  * LIBRARY UPDATE: Updated utilities to version 3.25.14. 
  
