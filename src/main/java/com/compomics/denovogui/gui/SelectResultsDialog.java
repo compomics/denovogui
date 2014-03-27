@@ -144,6 +144,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         });
 
         outTxt.setEditable(false);
+        outTxt.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         resultsLabel.setText("De Novo Results");
         resultsLabel.setToolTipText("De Novo Sequencing Result Files");
@@ -167,8 +168,10 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         });
 
         mgfTxt.setEditable(false);
+        mgfTxt.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         paramtersTxt.setEditable(false);
+        paramtersTxt.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         javax.swing.GroupLayout outputPanelLayout = new javax.swing.GroupLayout(outputPanel);
         outputPanel.setLayout(outputPanelLayout);
@@ -181,12 +184,12 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                         .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(outputPanelLayout.createSequentialGroup()
                                 .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(outTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(outTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, outputPanelLayout.createSequentialGroup()
                                 .addComponent(settingsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(paramtersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(paramtersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(6, 6, 6)
                         .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(browseOutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -194,7 +197,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                     .addGroup(outputPanelLayout.createSequentialGroup()
                         .addComponent(spectraLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(mgfTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mgfTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(browseMgfButton)))
                 .addContainerGap())
@@ -203,6 +206,8 @@ public class SelectResultsDialog extends javax.swing.JDialog {
         outputPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {browseMgfButton, browseOutButton, browseParametersButton});
 
         outputPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {resultsLabel, settingsLabel, spectraLabel});
+
+        outputPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {mgfTxt, outTxt, paramtersTxt});
 
         outputPanelLayout.setVerticalGroup(
             outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
