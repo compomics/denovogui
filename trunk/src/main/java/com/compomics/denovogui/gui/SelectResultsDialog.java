@@ -24,9 +24,9 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private boolean canceled = true;
     /**
-     * The output files selected.
+     * The result files selected.
      */
-    private ArrayList<File> outFiles = new ArrayList<File>();
+    private ArrayList<File> resultFiles = new ArrayList<File>();
     /**
      * The mgf files selected.
      */
@@ -69,12 +69,12 @@ public class SelectResultsDialog extends javax.swing.JDialog {
     }
 
     /**
-     * Returns the output files selected by the user.
+     * Returns the result files selected by the user.
      *
-     * @return the output files selected by the user
+     * @return the result files selected by the user
      */
-    public ArrayList<File> getOutFiles() {
-        return outFiles;
+    public ArrayList<File> getResultFiles() {
+        return resultFiles;
     }
 
     /**
@@ -327,11 +327,11 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
             if (selectedFiles != null && selectedFiles.length > 0) {
 
-                outFiles = new ArrayList<File>();
+                resultFiles = new ArrayList<File>();
                 ArrayList<File> parameterFiles = new ArrayList<File>();
                 for (File file : selectedFiles) {
                     if (file.exists()) {
-                        outFiles.add(file);
+                        resultFiles.add(file);
                         File tempMgfFile = FileProcessor.getMgfFile(file);
 
                         if (tempMgfFile.exists() && !mgfFiles.contains(tempMgfFile)) {
@@ -346,7 +346,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                         parameterFiles.add(file);
                     }
                 }
-                outTxt.setText(outFiles.size() + " file(s) selected");
+                outTxt.setText(resultFiles.size() + " file(s) selected");
                 if (!mgfFiles.isEmpty()) {
                     mgfTxt.setText(mgfFiles.size() + " file(s) selected");
                 }
@@ -438,7 +438,6 @@ public class SelectResultsDialog extends javax.swing.JDialog {
             mgfTxt.setText(mgfFiles.size() + " file(s) selected.");
             validateInput();
         }
-
     }//GEN-LAST:event_browseMgfButtonActionPerformed
 
     /**

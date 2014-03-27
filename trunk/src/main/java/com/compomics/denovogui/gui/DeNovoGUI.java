@@ -1666,7 +1666,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * @throws Exception
      */
     public void displayResults() throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
-        ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles);
+
+        ArrayList<File> resultFiles;
+
+        if (pepNovoCheckBox.isSelected() && direcTagCheckBox.isSelected()) {
+            resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles);
+        } else if (pepNovoCheckBox.isSelected()) {
+            resultFiles = FileProcessor.getOutFiles(outputFolder, spectrumFiles);
+        } else {
+            resultFiles = FileProcessor.getTagsFiles(outputFolder, spectrumFiles);
+        }
+
         setVisible(false);
         new ResultsFrame(this, resultFiles, searchParameters);
     }

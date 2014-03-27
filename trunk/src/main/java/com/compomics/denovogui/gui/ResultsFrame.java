@@ -1842,12 +1842,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void openNewFile() {
         final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder());
-        if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFiles() != null && selectResultsDialog.getOutFiles() != null && selectResultsDialog.getSearchParameters() != null) {
+        if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFiles() != null && selectResultsDialog.getResultFiles() != null && selectResultsDialog.getSearchParameters() != null) {
             deNovoGUI.setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
             searchParameters = selectResultsDialog.getSearchParameters();
             setVisible(true);
             deNovoGUI.setVisible(false);
-            displayResults(selectResultsDialog.getOutFiles(), selectResultsDialog.getMgfFiles());
+            displayResults(selectResultsDialog.getResultFiles(), selectResultsDialog.getMgfFiles());
         } else {
             dispose();
         }
