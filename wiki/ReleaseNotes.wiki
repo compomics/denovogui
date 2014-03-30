@@ -3,6 +3,14 @@
 
 ----
 
+*Changes in DeNovoGUI 1.3.3 (March 30. 2014):*
+
+ * BUG FIX: Fixed a bug that made it impossible to load DirecTag results without at least one fixed modification in the settings.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.26.3. 
+
+----
+
 *Changes in DeNovoGUI 1.3.2 (March 27. 2014):*
 
  * BUG FIX: Fixed a bug where results from both algorithms was tried loaded at the end of the processing even if only one algorithm was used.
