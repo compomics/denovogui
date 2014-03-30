@@ -302,6 +302,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
 
             this.searchParameters = searchParameters;
+            
+            // check the search parameters for backwards compatibility?
 
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
@@ -1072,16 +1074,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             lastSelectedFolder = fc.getSelectedFile().getAbsolutePath();
 
             File[] files = fc.getSelectedFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    File[] currentFiles = files[i].listFiles();
-                    for (int k = 0; k < currentFiles.length; k++) {
-                        if (fc.getFileFilter().accept(currentFiles[k])) {
-                            tempSpectrumFiles.add(currentFiles[k]);
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    File[] currentFiles = file.listFiles();
+                    for (File currentFile : currentFiles) {
+                        if (fc.getFileFilter().accept(currentFile)) {
+                            tempSpectrumFiles.add(currentFile);
                         }
                     }
                 } else {
-                    tempSpectrumFiles.add(files[i]);
+                    tempSpectrumFiles.add(file);
                 }
             }
             spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
@@ -1905,8 +1907,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             String[] fileNames = deNovoFolder.list();
             int executableCounter = 0;
             int modelFolderCounter = 0;
-            for (int i = 0; i < fileNames.length; i++) {
-                String lFileName = fileNames[i];
+            for (String lFileName : fileNames) {
                 if (lFileName.startsWith("PepNovo")) {
                     executableCounter++;
                 }
@@ -1935,8 +1936,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         if (deNovoFolder != null && deNovoFolder.exists() && deNovoFolder.isDirectory()) {
             String[] fileNames = deNovoFolder.list();
             int executableCounter = 0;
-            for (int i = 0; i < fileNames.length; i++) {
-                String lFileName = fileNames[i];
+            for (String lFileName : fileNames) {
                 if (lFileName.startsWith("DirecTag_Windows")) {
                     executableCounter++;
                 }
@@ -1999,6 +1999,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private boolean validateInput(boolean showMessage) {
 
         boolean valid = true;
+        boolean searchParametersValid = true;
 
         if (!pepNovoCheckBox.isSelected() && !direcTagCheckBox.isSelected()) {
             if (showMessage && valid) {
@@ -2019,13 +2020,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             spectraFilesLabel.setForeground(Color.BLACK);
         }
 
-        if (valid) {
-            valid = validateParametersInput(showMessage);
-            if (!valid) {
-                //feedbackLabel.setText("<html> <a href><font color=red>Something went wrong with the search parameters but no help could be found. Please contact the developers.</font></a> </html>");
-                //feedbackLabel.setVisible(true);
-                // @TODO: show search params dialog
-            }
+        // validate the search parameters
+        if (!validateParametersInput(showMessage)) {
+            valid = false;
+            searchParametersValid = false;
         }
 
         // validate the output folder
@@ -2069,14 +2067,27 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     /**
      * Inspects the parameters validity.
      *
-     * @param showMessage if true an error messages are shown to the users
+     * @param showMessage if true an error message is shown to the users
      * @return a boolean indicating if the parameters are valid
      */
     public boolean validateParametersInput(boolean showMessage) {
 
-        boolean valid = true;
+        SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+        boolean valid = settingsDialog.validateParametersInput(false);
 
-        // @TODO: do we need any validation here??
+        if (!valid) {
+            if (showMessage) {
+                settingsDialog.validateParametersInput(true);
+                settingsDialog.setVisible(true);
+            } else {
+                configurationFileLbl.setForeground(Color.RED);
+                configurationFileLbl.setToolTipText("Please check the search settings");
+            }
+        } else {
+            configurationFileLbl.setToolTipText(null);
+            configurationFileLbl.setForeground(Color.BLACK);
+        }
+
         return valid;
     }
 
