@@ -46,6 +46,7 @@ import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
+import com.compomics.util.gui.JOptionEditorPane;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export.graphics.ExportGraphicsDialog;
@@ -1631,6 +1632,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     } catch (Exception e) {
                         e.printStackTrace();
                         deNovoGUI.catchException(e);
+                    } catch (OutOfMemoryError error) {
+                        progressDialog.setRunCanceled();
+                        System.out.println("DeNovoGUI ran out of memory! See the DeNovoGUI log for details.");
+                        System.err.println("Ran out of memory!");
+                        System.err.println("Memory given to the Java virtual machine: " + Runtime.getRuntime().maxMemory() + ".");
+                        System.err.println("Memory used by the Java virtual machine: " + Runtime.getRuntime().totalMemory() + ".");
+                        System.err.println("Free memory in the Java virtual machine: " + Runtime.getRuntime().freeMemory() + ".");
+                        Runtime.getRuntime().gc();
+
+                        JOptionPane.showMessageDialog(ResultsFrame.this, JOptionEditorPane.getJOptionEditorPane(
+                                "DeNovoGUI used up all the available memory and had to be stopped.<br>"
+                                + "Memory boundaries are changed via the Edit menu (Edit Java Options)<br>. "
+                                + "See also <a href=\"http://code.google.com/p/compomics-utilities/wiki/JavaTroubleShooting\">JavaTroubleShooting</a>."),
+                                "Out Of Memory", JOptionPane.ERROR_MESSAGE);
+
+                        error.printStackTrace();
                     } finally {
                         progressDialog.setRunFinished();
                     }
