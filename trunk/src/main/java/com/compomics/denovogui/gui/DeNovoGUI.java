@@ -12,6 +12,8 @@ import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
+import com.compomics.software.dialogs.JavaOptionsDialog;
+import com.compomics.software.dialogs.JavaOptionsDialogParent;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -26,6 +28,7 @@ import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
@@ -58,7 +61,7 @@ import net.jimmc.jshortcut.JShellLink;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
+public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaOptionsDialogParent {
 
     /**
      * The compomics enzyme factory.
@@ -170,6 +173,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      * and in this order.
      */
     public final static Advocate[] implementedAlgorithms = {Advocate.DirecTag, Advocate.pepnovo};
+    /**
+     * The utilities user preferences.
+     */
+    private UtilitiesUserPreferences utilitiesUserPreferences = null;
 
     /**
      * Creates a new DeNovoGUI.
@@ -292,6 +299,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
                 settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
             }
 
+            // load the utilities user preferences
+            try {
+                utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+
             File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
             File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
             modificationUse = SearchSettingsDialog.loadModificationsUse(modUseFile);
@@ -302,9 +317,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
 
             this.searchParameters = searchParameters;
-            
-            // check the search parameters for backwards compatibility?
 
+            // check the search parameters for backwards compatibility?
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
                 setOutputFolder(outputFolder);
@@ -413,6 +427,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
         modsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         pepNovoMenuItem = new javax.swing.JMenuItem();
+        javaOptionsJMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         jSeparator17 = new javax.swing.JPopupMenu.Separator();
@@ -812,6 +827,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
             }
         });
         editMenu.add(pepNovoMenuItem);
+
+        javaOptionsJMenuItem.setMnemonic('O');
+        javaOptionsJMenuItem.setText("Java Options");
+        javaOptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                javaOptionsJMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(javaOptionsJMenuItem);
 
         menuBar.add(editMenu);
 
@@ -1412,6 +1436,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     }//GEN-LAST:event_direcTagCheckBoxActionPerformed
 
     /**
+     * Open the Java options dialog.
+     *
+     * @param evt
+     */
+    private void javaOptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_javaOptionsJMenuItemActionPerformed
+
+        // reload the user preferences as these may have been changed by other tools
+        try {
+            utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        new JavaOptionsDialog(this, this, null, "DeNovoGUI");
+    }//GEN-LAST:event_javaOptionsJMenuItemActionPerformed
+
+    /**
      * The main method.
      *
      * @param args the command line arguments
@@ -1504,6 +1546,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JMenuItem javaOptionsJMenuItem;
     private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem loadExampleMenuItem;
     private javax.swing.JMenuItem logReportMenu;
@@ -1579,6 +1622,18 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent {
      */
     public DeNovoSequencingHandler getDeNovoSequencingHandler() {
         return deNovoSequencingHandler;
+    }
+
+    @Override
+    public void restart() {
+        dispose();
+        new DeNovoGUIWrapper();
+        System.exit(0); // have to close the current java process (as a new one is started on the line above)
+    }
+
+    @Override
+    public UtilitiesUserPreferences getUtilitiesUserPreferences() {
+        return utilitiesUserPreferences;
     }
 
     @SuppressWarnings("rawtypes")

@@ -209,7 +209,6 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Tag" + separator + "Longest AminoAcid sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
                         + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
