@@ -3,6 +3,17 @@
 
 ----
 
+*Changes in DeNovoGUI 1.3.4 (April 1. 2014):*
+
+ * FEATURE IMPROVEMENT: Implemented memory setting and restart by the user.
+ * FEATURE IMPROVEMENT: Added catching of the out of memory error when mapping to FASTA file.
+
+ * BUG FIX: Fixed a bug in the protein iterator where the last protein was not included.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.26.4. 
+
+----
+
 *Changes in DeNovoGUI 1.3.3 (March 30. 2014):*
 
  * BUG FIX: Fixed a bug that made it impossible to load DirecTag results without at least one fixed modification in the settings.
