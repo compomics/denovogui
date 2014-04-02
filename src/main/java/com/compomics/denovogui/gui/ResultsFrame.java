@@ -2223,7 +2223,22 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                     spectrumJPanel.add(spectrumPanel);
                     Tag tag = tagAssumption.getTag();
-                    updateAnnotationMenus(tagAssumption.getIdentificationCharge().value, tag);
+
+                    // get the modifications for the tag // @TODO: is there an easier way to do this??
+                    ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
+
+                    for (TagComponent tagComponent : tag.getContent()) {
+                        if (tagComponent instanceof AminoAcidPattern) {
+                            AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                            for (int site = 1; site <= aminoAcidPattern.length(); site++) {
+                                for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
+                                    modificationMatches.add(modificationMatch);
+                                }
+                            }
+                        }
+                    }
+
+                    updateAnnotationMenus(tagAssumption.getIdentificationCharge().value, modificationMatches);
 
                     String modifiedSequence = tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true, false);
 
@@ -2326,10 +2341,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     /**
      * Update the annotation menu bar with the current annotation preferences.
      *
-     * @param precursorCharge the identified precursor charge
-     * @param tag the tag currently annotated
+     * @param precursorCharge the precursor charges
+     * @param modificationMatches the modifications
      */
-    public void updateAnnotationMenus(int precursorCharge, Tag tag) {
+    public void updateAnnotationMenus(int precursorCharge, ArrayList<ModificationMatch> modificationMatches) {
 
         aIonCheckBoxMenuItem.setSelected(false);
         bIonCheckBoxMenuItem.setSelected(false);
@@ -2392,17 +2407,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         }
 
         // add the sequence specific neutral losses
-        for (TagComponent tagComponent : tag.getContent()) {
-            if (tagComponent instanceof AminoAcidPattern) {
-                AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
-                for (int i = 1; i <= aminoAcidPattern.length(); i++) {
-                    for (ModificationMatch modMatch : aminoAcidPattern.getModificationsAt(i)) {
-                        PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
-                        for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
-                            neutralLosses.put(neutralLoss.name, neutralLoss);
-                        }
-                    }
-                }
+        for (ModificationMatch modMatch : modificationMatches) {
+            PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
+            for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
+                neutralLosses.put(neutralLoss.name, neutralLoss);
             }
         }
 
