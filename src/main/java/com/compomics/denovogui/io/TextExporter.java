@@ -60,7 +60,7 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) 
+    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler)
             throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
@@ -200,7 +200,7 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler) 
+    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler)
             throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
@@ -236,15 +236,17 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
-                            if (assumptionsMap != null) {
-                                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                                Collections.sort(scores, Collections.reverseOrder());
-                                for (Double score : scores) {
-                                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                        if (assumption instanceof TagAssumption) {
-                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        assumptions.add(tagAssumption);
+                            for (int algorithmId : spectrumMatch.getAdvocates()) {
+                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(algorithmId);
+                                if (assumptionsMap != null) {
+                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                                    Collections.sort(scores, Collections.reverseOrder());
+                                    for (Double score : scores) {
+                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                            if (assumption instanceof TagAssumption) {
+                                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                                assumptions.add(tagAssumption);
+                                            }
                                         }
                                     }
                                 }
@@ -350,16 +352,18 @@ public class TextExporter {
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
+                            for (int algorithmId : spectrumMatch.getAdvocates()) {
+                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(algorithmId);
 
-                            if (assumptionsMap != null) {
-                                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                                Collections.sort(scores, Collections.reverseOrder());
-                                for (Double score : scores) {
-                                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                        if (assumption instanceof TagAssumption) {
-                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        assumptions.add(tagAssumption);
+                                if (assumptionsMap != null) {
+                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                                    Collections.sort(scores, Collections.reverseOrder());
+                                    for (Double score : scores) {
+                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                            if (assumption instanceof TagAssumption) {
+                                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                                assumptions.add(tagAssumption);
+                                            }
                                         }
                                     }
                                 }
