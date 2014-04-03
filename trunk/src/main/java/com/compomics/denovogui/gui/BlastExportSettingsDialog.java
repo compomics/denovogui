@@ -56,6 +56,15 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
     }
 
     /**
+     * Returns true if a greater than threshold is used.
+     *
+     * @return true if a greater than threshold is used.
+     */
+    public boolean isGreaterThenThreshold() {
+        return greaterThanRadioButton.isSelected();
+    }
+
+    /**
      * Returns true of the dialog was canceled by the user.
      *
      * @return true of the dialog was canceled by the user
@@ -73,6 +82,7 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup = new javax.swing.ButtonGroup();
         backgroundPanel = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
@@ -81,6 +91,9 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
         scoreThresholdTextField = new javax.swing.JTextField();
         numberHitsTextField = new javax.swing.JTextField();
         numberHitsLabel = new javax.swing.JLabel();
+        thresholdLabel = new javax.swing.JLabel();
+        greaterThanRadioButton = new javax.swing.JRadioButton();
+        lessThanRadioButton = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("BLAST Export Settings");
@@ -115,6 +128,19 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
         numberHitsLabel.setText("#Matches per Spectrum");
         numberHitsLabel.setToolTipText("Max number of matches to export per spectrum");
 
+        thresholdLabel.setText("Score Threshold Type");
+
+        buttonGroup.add(greaterThanRadioButton);
+        greaterThanRadioButton.setSelected(true);
+        greaterThanRadioButton.setText(">=");
+        greaterThanRadioButton.setIconTextGap(10);
+        greaterThanRadioButton.setOpaque(false);
+
+        buttonGroup.add(lessThanRadioButton);
+        lessThanRadioButton.setText("<=");
+        lessThanRadioButton.setIconTextGap(10);
+        lessThanRadioButton.setOpaque(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -123,12 +149,17 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scoreThresholdLabel)
-                    .addComponent(numberHitsLabel))
+                    .addComponent(numberHitsLabel)
+                    .addComponent(thresholdLabel))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(numberHitsTextField)
-                    .addComponent(scoreThresholdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(scoreThresholdTextField, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(greaterThanRadioButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(lessThanRadioButton))
+                    .addComponent(numberHitsTextField))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -141,7 +172,12 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(scoreThresholdLabel)
                     .addComponent(scoreThresholdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(thresholdLabel)
+                    .addComponent(greaterThanRadioButton)
+                    .addComponent(lessThanRadioButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
@@ -150,14 +186,13 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(backgroundPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         backgroundPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancelButton, okButton});
@@ -165,7 +200,7 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
         backgroundPanelLayout.setVerticalGroup(
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -237,12 +272,16 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.ButtonGroup buttonGroup;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JRadioButton greaterThanRadioButton;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButton lessThanRadioButton;
     private javax.swing.JLabel numberHitsLabel;
     private javax.swing.JTextField numberHitsTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel scoreThresholdLabel;
     private javax.swing.JTextField scoreThresholdTextField;
+    private javax.swing.JLabel thresholdLabel;
     // End of variables declaration//GEN-END:variables
 }

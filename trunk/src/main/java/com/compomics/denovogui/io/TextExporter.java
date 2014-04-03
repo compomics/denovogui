@@ -308,6 +308,7 @@ public class TextExporter {
      * @param waitingHandler waiting handler displaying progress to the user and
      * allowing to cancel the process.
      * @param scoreThreshold de novo score threshold
+     * @param greaterThan use greater than threshold
      * @param aNumberOfMatches the maximum number of matches to export per
      * spectrum
      *
@@ -318,7 +319,7 @@ public class TextExporter {
      * @throws java.lang.InterruptedException
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler,
-            Double scoreThreshold, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         double threshold = 0;
@@ -373,12 +374,24 @@ public class TextExporter {
                             for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
 
                                 TagAssumption tagAssumption = assumptions.get(i);
-                                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
 
-                                if (tagAssumption.getScore() > threshold) {
+                                boolean passesThreshold = false;
+
+                                if (greaterThan) {
+                                    passesThreshold = tagAssumption.getScore() >= threshold;
+                                } else { // less than
+                                    passesThreshold = tagAssumption.getScore() <= threshold;
+                                }
+
+                                if (passesThreshold) {
                                     b.write(spectrumDetails);
-                                    b.write(pepnovoAssumptionDetails.getRankScore() + separator2);
+                                    if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                                        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                        b.write(pepnovoAssumptionDetails.getRankScore() + separator2);
+                                    } else {
+                                        b.write(separator2);
+                                    }
                                     b.write(tagAssumption.getScore() + "");
                                     b.newLine();
                                     b.write(tagAssumption.getTag().getLongestAminoAcidSequence());
