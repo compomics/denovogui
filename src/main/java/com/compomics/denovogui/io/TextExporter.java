@@ -242,8 +242,10 @@ public class TextExporter {
                                 Collections.sort(scores, Collections.reverseOrder());
                                 for (Double score : scores) {
                                     for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                        if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
                                         assumptions.add(tagAssumption);
+                                        }
                                     }
                                 }
                             }
@@ -355,8 +357,10 @@ public class TextExporter {
                                 Collections.sort(scores, Collections.reverseOrder());
                                 for (Double score : scores) {
                                     for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                        if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
                                         assumptions.add(tagAssumption);
+                                        }
                                     }
                                 }
                             }
