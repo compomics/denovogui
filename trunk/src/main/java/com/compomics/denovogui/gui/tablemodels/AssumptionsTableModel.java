@@ -109,8 +109,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 1:
                 return tagAssumption.getAdvocate();
             case 2:
-                String taggedSequence = tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
-                return taggedSequence;
+                return tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
             case 3:
                 return tagAssumption.getTheoreticMz(true, true);
             case 4:
