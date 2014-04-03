@@ -1518,7 +1518,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
         if (selectedFile != null) {
             deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, ExportType.tags, null, null);
+            exportIdentification(selectedFile, ExportType.tags, null, null, null);
         }
     }//GEN-LAST:event_exportTagMatchesMenuItemActionPerformed
 
@@ -1559,7 +1559,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                exportIdentification(selectedFile, ExportType.blast, blastDialog.getThreshold(), blastDialog.getNumberOfPeptides());
+                exportIdentification(selectedFile, ExportType.blast, blastDialog.getThreshold(), blastDialog.isGreaterThenThreshold(), blastDialog.getNumberOfPeptides());
             }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
@@ -2017,10 +2017,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param file the destination file
      * @param exportType the type of export desired
      * @param scoreThreshold score threshold for BLAST-compatible export
+     * @param greaterThan use a greater than threshold for the scores
      * @param numberOfMatches the maximum number of matches to export per
      * spectrum
      */
-    public void exportIdentification(File file, final ExportType exportType, final Double scoreThreshold, final Integer numberOfMatches) {
+    public void exportIdentification(File file, final ExportType exportType, final Double scoreThreshold, final Boolean greaterThan, final Integer numberOfMatches) {
 
         final File finalFile = file;
 
@@ -2052,7 +2053,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
                             break;
                         case blast:
-                            TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold, numberOfMatches);
+                            TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold, greaterThan, numberOfMatches);
                     }
 
                     boolean cancelled = progressDialog.isRunCanceled();
