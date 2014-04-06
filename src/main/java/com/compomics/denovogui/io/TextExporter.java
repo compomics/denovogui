@@ -52,7 +52,11 @@ public class TextExporter {
      * details
      * @param searchParameters the search parameters used for the search
      * @param waitingHandler waiting handler displaying progress to the user and
-     * allowing to cancel the process.
+     * allowing to cancel the process
+     * @param scoreThreshold de novo score threshold
+     * @param greaterThan use greater than threshold
+     * @param aNumberOfMatches the maximum number of matches to export per
+     * spectrum
      *
      * @throws IOException
      * @throws SQLException
@@ -60,10 +64,20 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler)
+    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters,
+            WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
             throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
+
+        double threshold = 0;
+        if (scoreThreshold != null) {
+            threshold = scoreThreshold;
+        }
+        int numberOfMatches = 10;
+        if (aNumberOfMatches != null) {
+            numberOfMatches = aNumberOfMatches;
+        }
 
         try {
             BufferedWriter b = new BufferedWriter(f);
@@ -115,56 +129,70 @@ public class TextExporter {
                                 }
                             }
 
-                            for (PeptideAssumption peptideAssumption : assumptions) {
+                            // export all matches above the score threshold up to the given user selected amount
+                            for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
 
-                                b.write(spectrumDetails);
-                                b.write(peptideAssumption.getRank() + separator);
+                                PeptideAssumption peptideAssumption = assumptions.get(i);
 
-                                Peptide peptide = peptideAssumption.getPeptide();
-                                String proteinText = "";
-                                ArrayList<String> proteins = peptide.getParentProteinsNoRemapping();
-                                Collections.sort(proteins);
-                                for (String accession : proteins) {
-                                    if (!proteinText.equals("")) {
-                                        proteinText += separator2;
+                                boolean passesThreshold = false;
+
+                                if (greaterThan) {
+                                    passesThreshold = peptideAssumption.getScore() >= threshold;
+                                } else { // less than
+                                    passesThreshold = peptideAssumption.getScore() <= threshold;
+                                }
+
+                                if (passesThreshold) {
+
+                                    b.write(spectrumDetails);
+                                    b.write(peptideAssumption.getRank() + separator);
+
+                                    Peptide peptide = peptideAssumption.getPeptide();
+                                    String proteinText = "";
+                                    ArrayList<String> proteins = peptide.getParentProteinsNoRemapping();
+                                    Collections.sort(proteins);
+                                    for (String accession : proteins) {
+                                        if (!proteinText.equals("")) {
+                                            proteinText += separator2;
+                                        }
+                                        proteinText += accession;
                                     }
-                                    proteinText += accession;
-                                }
-                                b.write(proteinText + separator);
+                                    b.write(proteinText + separator);
 
-                                b.write(peptide.getSequence() + separator);
-                                b.write(getPeptideModificationsAsString(peptide) + separator);
-                                b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    b.write(peptide.getSequence() + separator);
+                                    b.write(getPeptideModificationsAsString(peptide) + separator);
+                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
 
-                                TagAssumption tagAssumption = new TagAssumption();
-                                tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
-                                Tag tag = tagAssumption.getTag();
-                                b.write(tag.asSequence() + separator);
-                                b.write(tag.getLongestAminoAcidSequence() + separator);
-                                b.write(getTagModificationsAsString(tag) + separator);
-                                b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
-                                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-                                    PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                    b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                    b.write(tagAssumption.getScore() + separator + separator);
-                                } else {
-                                    b.write(separator + separator + tagAssumption.getScore() + separator);
+                                    TagAssumption tagAssumption = new TagAssumption();
+                                    tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
+                                    Tag tag = tagAssumption.getTag();
+                                    b.write(tag.asSequence() + separator);
+                                    b.write(tag.getLongestAminoAcidSequence() + separator);
+                                    b.write(getTagModificationsAsString(tag) + separator);
+                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                                        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                        b.write(pepnovoAssumptionDetails.getRankScore() + separator);
+                                        b.write(tagAssumption.getScore() + separator + separator);
+                                    } else {
+                                        b.write(separator + separator + tagAssumption.getScore() + separator);
+                                    }
+                                    b.write(tag.getNTerminalGap() + separator);
+                                    b.write(tag.getCTerminalGap() + separator);
+                                    b.write(tag.getMass() + separator);
+                                    b.write(tagAssumption.getIdentificationCharge().value + separator);
+                                    double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false);
+                                    b.write(massDeviation + separator);
+                                    massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true);
+                                    b.write(massDeviation + separator);
+                                    massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false);
+                                    b.write(massDeviation + separator);
+                                    massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true);
+                                    b.write(massDeviation + separator);
+                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz()) + separator);
+                                    b.newLine();
                                 }
-                                b.write(tag.getNTerminalGap() + separator);
-                                b.write(tag.getCTerminalGap() + separator);
-                                b.write(tag.getMass() + separator);
-                                b.write(tagAssumption.getIdentificationCharge().value + separator);
-                                double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false);
-                                b.write(massDeviation + separator);
-                                massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true);
-                                b.write(massDeviation + separator);
-                                massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false);
-                                b.write(massDeviation + separator);
-                                massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true);
-                                b.write(massDeviation + separator);
-                                b.write(peptideAssumption.getIsotopeNumber(precursor.getMz()) + separator);
-                                b.newLine();
                             }
                             if (waitingHandler != null) {
                                 waitingHandler.increaseSecondaryProgressCounter();
@@ -175,7 +203,6 @@ public class TextExporter {
                         }
                     }
                 }
-
             } finally {
                 b.close();
             }
@@ -192,7 +219,11 @@ public class TextExporter {
      * details
      * @param searchParameters the search parameters used for the search
      * @param waitingHandler waiting handler displaying progress to the user and
-     * allowing to cancel the process.
+     * allowing to cancel the process
+     * @param scoreThreshold de novo score threshold
+     * @param greaterThan use greater than threshold
+     * @param aNumberOfMatches the maximum number of matches to export per
+     * spectrum
      *
      * @throws IOException
      * @throws SQLException
@@ -200,10 +231,20 @@ public class TextExporter {
      * @throws MzMLUnmarshallerException
      * @throws java.lang.InterruptedException
      */
-    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler)
+    public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters,
+            WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
             throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
+
+        double threshold = 0;
+        if (scoreThreshold != null) {
+            threshold = scoreThreshold;
+        }
+        int numberOfMatches = 10;
+        if (aNumberOfMatches != null) {
+            numberOfMatches = aNumberOfMatches;
+        }
 
         try {
             BufferedWriter b = new BufferedWriter(f);
@@ -253,27 +294,42 @@ public class TextExporter {
                             }
 
                             int rank = 0;
-                            for (TagAssumption tagAssumption : assumptions) {
-                                Tag tag = tagAssumption.getTag();
-                                b.write(spectrumDetails);
-                                b.write(++rank + separator);
-                                b.write(tag.asSequence() + separator);
-                                b.write(tag.getLongestAminoAcidSequence() + separator);
-                                b.write(getTagModificationsAsString(tag) + separator);
-                                b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
-                                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-                                    PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                    b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                    b.write(tagAssumption.getScore() + separator + separator);
-                                } else {
-                                    b.write(separator + separator + tagAssumption.getScore() + separator);
+
+                            // export all matches above the score threshold up to the given user selected amount
+                            for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
+
+                                TagAssumption tagAssumption = assumptions.get(i);
+
+                                boolean passesThreshold;
+
+                                if (greaterThan) {
+                                    passesThreshold = tagAssumption.getScore() >= threshold;
+                                } else { // less than
+                                    passesThreshold = tagAssumption.getScore() <= threshold;
                                 }
-                                b.write(tag.getNTerminalGap() + separator);
-                                b.write(tag.getCTerminalGap() + separator);
-                                b.write(tag.getMass() + separator);
-                                b.write(tagAssumption.getIdentificationCharge().value + separator);
-                                b.newLine();
+
+                                if (passesThreshold) {
+                                    Tag tag = tagAssumption.getTag();
+                                    b.write(spectrumDetails);
+                                    b.write(++rank + separator);
+                                    b.write(tag.asSequence() + separator);
+                                    b.write(tag.getLongestAminoAcidSequence() + separator);
+                                    b.write(getTagModificationsAsString(tag) + separator);
+                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                                        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                        b.write(pepnovoAssumptionDetails.getRankScore() + separator);
+                                        b.write(tagAssumption.getScore() + separator + separator);
+                                    } else {
+                                        b.write(separator + separator + tagAssumption.getScore() + separator);
+                                    }
+                                    b.write(tag.getNTerminalGap() + separator);
+                                    b.write(tag.getCTerminalGap() + separator);
+                                    b.write(tag.getMass() + separator);
+                                    b.write(tagAssumption.getIdentificationCharge().value + separator);
+                                    b.newLine();
+                                }
                             }
                             if (assumptions.isEmpty()) {
                                 b.newLine(); //This should not happen. Should.
@@ -289,7 +345,6 @@ public class TextExporter {
                         b.newLine();
                     }
                 }
-
             } finally {
                 b.close();
             }

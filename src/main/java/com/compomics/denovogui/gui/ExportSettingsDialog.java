@@ -3,11 +3,11 @@ package com.compomics.denovogui.gui;
 import javax.swing.JOptionPane;
 
 /**
- * Dialog for setting the BLAST export settings.
+ * Dialog for export settings.
  *
  * @author Harald Barsnes
  */
-public class BlastExportSettingsDialog extends javax.swing.JDialog {
+public class ExportSettingsDialog extends javax.swing.JDialog {
 
     /**
      * The maximum number of hits to export per spectrum.
@@ -23,12 +23,12 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
     private boolean canceled = true;
 
     /**
-     * Creates a new BlastExportSettingsDialog.
+     * Creates a new ExportSettingsDialog.
      *
      * @param parent the parent
      * @param modal
      */
-    public BlastExportSettingsDialog(java.awt.Frame parent, boolean modal) {
+    public ExportSettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         numberHitsTextField.setText(String.valueOf(numberOfHits));
@@ -96,7 +96,7 @@ public class BlastExportSettingsDialog extends javax.swing.JDialog {
         lessThanRadioButton = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("BLAST Export Settings");
+        setTitle("Export Settings");
         setResizable(false);
 
         backgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
