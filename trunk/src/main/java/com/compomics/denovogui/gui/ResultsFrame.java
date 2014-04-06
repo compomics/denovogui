@@ -228,6 +228,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * True if both PepNovo and DirecTag results are loaded.
      */
     private boolean pepNovoAndDirecTagLoaded = false;
+    /**
+     * The export settings dialog
+     */
+    private ExportSettingsDialog exportSettingsDialog;
 
     /**
      * Creates a new ResultsPanel.
@@ -1515,10 +1519,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void exportTagMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTagMatchesMenuItemActionPerformed
-        File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
-        if (selectedFile != null) {
-            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-            exportIdentification(selectedFile, ExportType.tags, null, null, null);
+
+        exportSettingsDialog = new ExportSettingsDialog(this, true);
+
+        if (!exportSettingsDialog.canceled()) {
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+            if (selectedFile != null) {
+                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                exportIdentification(selectedFile, ExportType.tags, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
+            }
         }
     }//GEN-LAST:event_exportTagMatchesMenuItemActionPerformed
 
@@ -1553,13 +1562,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void exportBlastMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportBlastMatchesMenuItemActionPerformed
 
-        BlastExportSettingsDialog blastDialog = new BlastExportSettingsDialog(this, true);
+        exportSettingsDialog = new ExportSettingsDialog(this, true);
 
-        if (!blastDialog.canceled()) {
+        if (!exportSettingsDialog.canceled()) {
             File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
             if (selectedFile != null) {
                 deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                exportIdentification(selectedFile, ExportType.blast, blastDialog.getThreshold(), blastDialog.isGreaterThenThreshold(), blastDialog.getNumberOfPeptides());
+                exportIdentification(selectedFile, ExportType.blast, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
             }
         }
     }//GEN-LAST:event_exportBlastMatchesMenuItemActionPerformed
@@ -1580,79 +1589,88 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private void exportPeptideMatchesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportPeptideMatchesMenuItemActionPerformed
 
-        final File selectedFile = Util.getUserSelectedFile(ResultsFrame.this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
-        if (selectedFile != null) {
-            final boolean needMapping = sequenceFactory.getCurrentFastaFile() == null
-                    || JOptionPane.showConfirmDialog(ResultsFrame.this,
-                            "A protein mapping was already found, use the previous results?", "Mapping Already Exists",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION;
-            final ProteinMappingDialog mappingDialog;
-            if (needMapping) {
-                mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
-                if (mappingDialog.isCanceled() || sequenceFactory.getCurrentFastaFile() == null) {
-                    return;
-                }
-            } else {
-                mappingDialog = null;
-            }
+        exportSettingsDialog = new ExportSettingsDialog(this, true);
 
-            progressDialog = new ProgressDialogX(this,
-                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                    true);
-            progressDialog.setPrimaryProgressCounterIndeterminate(true);
-            progressDialog.setTitle("Loading Protein Mapping. Please Wait...");
+        if (!exportSettingsDialog.canceled()) {
 
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        progressDialog.setVisible(true);
-                    } catch (IndexOutOfBoundsException e) {
-                        // ignore
+            final File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+
+            if (selectedFile != null) {
+
+                final boolean needMapping = sequenceFactory.getCurrentFastaFile() == null
+                        || JOptionPane.showConfirmDialog(ResultsFrame.this,
+                                "A protein mapping was already found, use the previous results?", "Mapping Already Exists",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION;
+                final ProteinMappingDialog mappingDialog;
+                if (needMapping) {
+                    mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
+                    if (mappingDialog.isCanceled() || sequenceFactory.getCurrentFastaFile() == null) {
+                        return;
                     }
+                } else {
+                    mappingDialog = null;
                 }
-            }, "ProgressDialog").start();
 
-            new Thread("LoadExampleThread") {
-                @Override
-                public void run() {
+                progressDialog = new ProgressDialogX(this,
+                        Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                        Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                        true);
+                progressDialog.setPrimaryProgressCounterIndeterminate(true);
+                progressDialog.setTitle("Loading Protein Mapping. Please Wait...");
 
-                    try {
-                        if (needMapping) {
-                            matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog);
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            progressDialog.setVisible(true);
+                        } catch (IndexOutOfBoundsException e) {
+                            // ignore
                         }
-                        if (!progressDialog.isRunCanceled()) {
-                            progressDialog.setTitle("Exporting Matches. Please Wait...");
-                            deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                            TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog);
-                            if (!progressDialog.isRunCanceled()) {
-                                JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }, "ProgressDialog").start();
+
+                new Thread("LoadExampleThread") {
+                    @Override
+                    public void run() {
+
+                        try {
+                            if (needMapping) {
+                                matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
+                                        exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                             }
+                            if (!progressDialog.isRunCanceled()) {
+                                progressDialog.setTitle("Exporting Matches. Please Wait...");
+                                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                                TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog,
+                                        exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
+                                if (!progressDialog.isRunCanceled()) {
+                                    JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            deNovoGUI.catchException(e);
+                        } catch (OutOfMemoryError error) {
+                            progressDialog.setRunCanceled();
+                            System.out.println("DeNovoGUI ran out of memory! See the DeNovoGUI log for details.");
+                            System.err.println("Ran out of memory!");
+                            System.err.println("Memory given to the Java virtual machine: " + Runtime.getRuntime().maxMemory() + ".");
+                            System.err.println("Memory used by the Java virtual machine: " + Runtime.getRuntime().totalMemory() + ".");
+                            System.err.println("Free memory in the Java virtual machine: " + Runtime.getRuntime().freeMemory() + ".");
+                            Runtime.getRuntime().gc();
+
+                            JOptionPane.showMessageDialog(ResultsFrame.this, JOptionEditorPane.getJOptionEditorPane(
+                                    "DeNovoGUI used up all the available memory and had to be stopped.<br>"
+                                    + "Memory boundaries are changed via the Edit menu (Edit Java Options)<br>. "
+                                    + "See also <a href=\"http://code.google.com/p/compomics-utilities/wiki/JavaTroubleShooting\">JavaTroubleShooting</a>."),
+                                    "Out Of Memory", JOptionPane.ERROR_MESSAGE);
+
+                            error.printStackTrace();
+                        } finally {
+                            progressDialog.setRunFinished();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        deNovoGUI.catchException(e);
-                    } catch (OutOfMemoryError error) {
-                        progressDialog.setRunCanceled();
-                        System.out.println("DeNovoGUI ran out of memory! See the DeNovoGUI log for details.");
-                        System.err.println("Ran out of memory!");
-                        System.err.println("Memory given to the Java virtual machine: " + Runtime.getRuntime().maxMemory() + ".");
-                        System.err.println("Memory used by the Java virtual machine: " + Runtime.getRuntime().totalMemory() + ".");
-                        System.err.println("Free memory in the Java virtual machine: " + Runtime.getRuntime().freeMemory() + ".");
-                        Runtime.getRuntime().gc();
-
-                        JOptionPane.showMessageDialog(ResultsFrame.this, JOptionEditorPane.getJOptionEditorPane(
-                                "DeNovoGUI used up all the available memory and had to be stopped.<br>"
-                                + "Memory boundaries are changed via the Edit menu (Edit Java Options)<br>. "
-                                + "See also <a href=\"http://code.google.com/p/compomics-utilities/wiki/JavaTroubleShooting\">JavaTroubleShooting</a>."),
-                                "Out Of Memory", JOptionPane.ERROR_MESSAGE);
-
-                        error.printStackTrace();
-                    } finally {
-                        progressDialog.setRunFinished();
                     }
-                }
-            }.start();
+                }.start();
+            }
         }
     }//GEN-LAST:event_exportPeptideMatchesMenuItemActionPerformed
 
@@ -1751,9 +1769,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @throws InterruptedException
      * @throws SQLException
      */
-    private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
+    private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
+            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
 
-        waitingHandler.setWaitingText("Importing FASTA file (Step 1 of 2). Please Wait...");
+        double threshold = 0;
+        if (scoreThreshold != null) {
+            threshold = scoreThreshold;
+        }
+        int numberOfMatches = 10;
+        if (aNumberOfMatches != null) {
+            numberOfMatches = aNumberOfMatches;
+        }
+
+        waitingHandler.setWaitingText("Importing FASTA File (Step 1 of 2). Please Wait...");
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
 
         if (waitingHandler.isRunCanceled()) {
@@ -1813,15 +1841,29 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         for (double score : scores) {
                             ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
-                            for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
-                                if (assumption instanceof TagAssumption) {
-                                    TagAssumption tagAssumption = (TagAssumption) assumption;
-                                    HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
-                                    for (Peptide peptide : proteinMapping.keySet()) {
-                                        peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                        PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                        peptideAssumption.addUrParam(tagAssumption);
-                                        spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+
+                            for (int i = 0; i < tempAssumptions.size() && i < numberOfMatches; i++) {
+
+                                SpectrumIdentificationAssumption assumption = assumptions.get(i);
+
+                                boolean passesThreshold;
+
+                                if (greaterThan) {
+                                    passesThreshold = assumption.getScore() >= threshold;
+                                } else { // less than
+                                    passesThreshold = assumption.getScore() <= threshold;
+                                }
+
+                                if (passesThreshold) {
+                                    if (assumption instanceof TagAssumption) {
+                                        TagAssumption tagAssumption = (TagAssumption) assumption;
+                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
+                                        for (Peptide peptide : proteinMapping.keySet()) {
+                                            peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                            PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                            peptideAssumption.addUrParam(tagAssumption);
+                                            spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                                        }
                                     }
                                 }
                             }
@@ -1829,14 +1871,28 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     }
                     identification.updateSpectrumMatch(spectrumMatch);
                 }
+
                 // free memory if needed
                 if (memoryUsed() > 0.8 && !objectsCache.isEmpty()) {
                     objectsCache.reduceMemoryConsumption(0.5, null);
                 }
                 waitingHandler.increaseSecondaryProgressCounter();
-                waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, spectrum " + ++progress + " of " + total + "). Please Wait...");
+                waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, Spectrum " + ++progress + " of " + total + "). Please Wait...");
+
+                if (waitingHandler.isRunCanceled()) {
+                    break;
+                }
+            }
+
+            if (waitingHandler.isRunCanceled()) {
+                break;
             }
         }
+
+        if (waitingHandler.isRunCanceled()) {
+            return;
+        }
+
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
         waitingHandler.setRunFinished();
     }
@@ -2047,10 +2103,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 try {
                     switch (exportType) {
                         case tags:
-                            TextExporter.exportTags(finalFile, identification, searchParameters, progressDialog);
+                            TextExporter.exportTags(finalFile, identification, searchParameters, progressDialog, scoreThreshold, greaterThan, numberOfMatches);
                             break;
                         case peptides:
-                            TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog);
+                            TextExporter.exportPeptides(finalFile, identification, searchParameters, progressDialog, scoreThreshold, greaterThan, numberOfMatches);
                             break;
                         case blast:
                             TextExporter.exportBlastPSMs(finalFile, identification, searchParameters, progressDialog, scoreThreshold, greaterThan, numberOfMatches);
