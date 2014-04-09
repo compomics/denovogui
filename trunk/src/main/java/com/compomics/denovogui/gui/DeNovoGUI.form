@@ -2,8 +2,6 @@
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Component class="javax.swing.ButtonGroup" name="deNovoButtonGroup">
-    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">
@@ -247,11 +245,7 @@
                       </Group>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="direcTagBetaLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="53" max="32767" attributes="0"/>
@@ -271,7 +265,6 @@
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="direcTagBetaLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -337,16 +330,6 @@
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseEntered"/>
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagLinkLabelMouseExited"/>
               </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="direcTagBetaLabel">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-                  <FontInfo relative="true">
-                    <Font component="direcTagBetaLabel" italic="true" property="font" relativeSize="true" size="0"/>
-                  </FontInfo>
-                </Property>
-                <Property name="text" type="java.lang.String" value="(beta)"/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="direcTagCheckBox">
               <Properties>
