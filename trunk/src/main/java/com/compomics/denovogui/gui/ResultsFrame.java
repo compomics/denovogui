@@ -1628,7 +1628,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     }
                 }, "ProgressDialog").start();
 
-                new Thread("LoadExampleThread") {
+                new Thread("ExportPeptidesThread") {
                     @Override
                     public void run() {
 
@@ -1831,20 +1831,32 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
+
             identification.loadSpectrumMatches(spectrumFile, null);
+
             for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
+
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+
                     int advocateIndex = advocate.getIndex();
                     HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
+
                     if (assumptionsMap != null) {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                        for (double score : scores) {
+                        Collections.sort(scores);
+
+                        if (advocate.getIndex() == Advocate.pepnovo.getIndex()) {
+                            Collections.reverse(scores);
+                        }
+
+                        for (int i = 0; i < scores.size() && i < numberOfMatches; i++) {
+
+                            double score = scores.get(i);
                             ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
 
-                            for (int i = 0; i < tempAssumptions.size() && i < numberOfMatches; i++) {
-
-                                SpectrumIdentificationAssumption assumption = assumptions.get(i);
+                            for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
 
                                 boolean passesThreshold;
 
@@ -1868,8 +1880,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 }
                             }
                         }
+
+                        identification.updateSpectrumMatch(spectrumMatch);
                     }
-                    identification.updateSpectrumMatch(spectrumMatch);
                 }
 
                 // free memory if needed
