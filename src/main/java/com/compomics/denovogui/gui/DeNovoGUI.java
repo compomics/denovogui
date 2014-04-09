@@ -43,6 +43,8 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -389,14 +391,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deNovoButtonGroup = new javax.swing.ButtonGroup();
         backgroundPanel = new javax.swing.JPanel();
         searchEnginesPanel = new javax.swing.JPanel();
         pepNovoLinkLabel = new javax.swing.JLabel();
         pepNovoButton = new javax.swing.JButton();
         direcTagButton = new javax.swing.JButton();
         direcTagLinkLabel = new javax.swing.JLabel();
-        direcTagBetaLabel = new javax.swing.JLabel();
         direcTagCheckBox = new javax.swing.JCheckBox();
         pepNovoCheckBox = new javax.swing.JCheckBox();
         startButton = new javax.swing.JButton();
@@ -515,9 +515,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         });
 
-        direcTagBetaLabel.setFont(direcTagBetaLabel.getFont().deriveFont((direcTagBetaLabel.getFont().getStyle() | java.awt.Font.ITALIC)));
-        direcTagBetaLabel.setText("(beta)");
-
         direcTagCheckBox.setSelected(true);
         direcTagCheckBox.setToolTipText("Enable DirecTag");
         direcTagCheckBox.setOpaque(false);
@@ -551,10 +548,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                        .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(direcTagBetaLabel))
+                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(53, Short.MAX_VALUE))
         );
@@ -570,7 +564,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(direcTagBetaLabel)
                     .addComponent(direcTagCheckBox))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1528,9 +1521,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton clearSpectraButton;
     private javax.swing.JLabel configurationFileLbl;
-    private javax.swing.ButtonGroup deNovoButtonGroup;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;
-    private javax.swing.JLabel direcTagBetaLabel;
     private javax.swing.JButton direcTagButton;
     private javax.swing.JCheckBox direcTagCheckBox;
     private javax.swing.JLabel direcTagLinkLabel;
@@ -1690,6 +1681,29 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("The de novo sequencing is complete.", true, true);
                 waitingHandler.setRunFinished();
+
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh.mm.ss");
+                String fileName = "DeNovoGUI Report " + df.format(new Date()) + ".html";
+                String report = "";
+
+                if (waitingHandler instanceof WaitingDialog) {
+                    report = ((WaitingDialog) waitingHandler).getReport(new File(outputFolder, fileName));
+                }
+
+                // append the search parameters
+                report += searchParameters.toString(true);
+                report = "<html>" + report + "</html>";
+
+                try {
+                    FileWriter fw = new FileWriter(new File(outputFolder, fileName));
+                    fw.write(report);
+                    fw.close();
+                } catch (IOException e) {
+                    if (waitingHandler != null) {
+                        waitingHandler.appendReport("Failed to write to the report file!", true, true);
+                    }
+                    e.printStackTrace();
+                }
 
                 if (displayResults) {
                     try {
