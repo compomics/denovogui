@@ -198,8 +198,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             setPathConfiguration();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
-                    "Failed to load user path configuration, default will be used.\n", "Look and Feel",
+                    "Failed to load user path configurations. Defaults will be used.", "Path Error",
                     JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
         }
         
         enzymeFactory = EnzymeFactory.getInstance();

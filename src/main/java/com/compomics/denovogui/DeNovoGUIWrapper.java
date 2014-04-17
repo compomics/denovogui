@@ -46,7 +46,7 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
         try {
             setPathConfiguration();
         } catch (Exception e) {
-            System.out.println("Impossible to load path configuration, default will be used.");
+            System.out.println("Failed to load path configurations. Defaults will be used.");
         }
 
         launchTool(toolName, jarFile, splash, mainClass, args);
