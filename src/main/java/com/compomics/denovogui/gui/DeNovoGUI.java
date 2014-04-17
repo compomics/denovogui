@@ -10,6 +10,7 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
+import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaOptionsDialog;
@@ -191,6 +192,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
         // set up the ErrorLog
         setUpLogFile();
+        
+        // set path configuration
+        try {
+        setPathConfiguration();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Failed to load user path configuration, default will be used.\n", "Look and Feel",
+                    JOptionPane.WARNING_MESSAGE);
+        }
 
         // check for new version
         boolean newVersion = false;
@@ -273,24 +283,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
             // load modifications
             try {
-                ptmFactory.importModifications(new File(DeNovoSequencingHandler.MODIFICATION_FILE), false);
+                ptmFactory.importModifications(new File(DeNovoSequencingHandler.getDefaultModificationFile()), false);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getDefaultModificationFile() + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
             }
             try {
-                ptmFactory.importModifications(new File(DeNovoSequencingHandler.USER_MODIFICATION_FILE), true);
+                ptmFactory.importModifications(new File(DeNovoSequencingHandler.getUserModificationFile()), true);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.USER_MODIFICATION_FILE + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getUserModificationFile() + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
             }
 
             // load the enzymes
             try {
-                enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.ENZYME_FILE));
+                enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.getEnzymeFile()));
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.ENZYME_FILE + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getEnzymeFile() + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
             }
 
             if (searchParameters == null) {
@@ -336,6 +346,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
             validateInput(false);
             this.searchParameters = searchParameters;
+        }
+    }
+    
+    /**
+     * Sets the path configuration
+     */
+    private void setPathConfiguration() throws IOException {
+        File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        if (pathConfigurationFile.exists()) {
+            DenovoguiPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
     }
 

@@ -49,6 +49,10 @@ public class DeNovoCLIInputBean {
      * Number of threads to use. Defaults to the number of cores available.
      */
     private int nThreads = Runtime.getRuntime().availableProcessors();
+    /**
+     * The path settings
+     */
+    private PathSettingsCLIInputBean pathSettingsCLIInputBean;
 
     /**
      * Takes all the arguments from a command line.
@@ -97,6 +101,9 @@ public class DeNovoCLIInputBean {
             arg = aLine.getOptionValue(DeNovoCLIParams.THREADS.id);
             nThreads = new Integer(arg);
         }
+        
+        
+        pathSettingsCLIInputBean = new PathSettingsCLIInputBean(aLine);
     }
 
     /**
@@ -240,5 +247,14 @@ public class DeNovoCLIInputBean {
         }
 
         return true;
+    }
+    
+    /**
+     * Returns the path settings provided by the user.
+     * 
+     * @return the path settings provided by the user
+     */
+    public PathSettingsCLIInputBean getPathSettingsCLIInputBean() {
+        return pathSettingsCLIInputBean;
     }
 }

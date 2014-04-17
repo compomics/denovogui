@@ -41,17 +41,17 @@ public class IdentificationParametersCLI extends AbstractIdentificationParameter
 
     @Override
     protected File getModificationsFile() {
-        return new File(getJarFilePath(), DeNovoSequencingHandler.MODIFICATION_FILE);
+        return new File(getJarFilePath(), DeNovoSequencingHandler.getDefaultModificationFile());
     }
 
     @Override
     protected File getUserModificationsFile() {
-        return new File(getJarFilePath(), DeNovoSequencingHandler.USER_MODIFICATION_FILE);
+        return new File(getJarFilePath(), DeNovoSequencingHandler.getUserModificationFile());
     }
 
     @Override
     protected File getEnzymeFile() {
-        return new File(getJarFilePath(), DeNovoSequencingHandler.ENZYME_FILE);
+        return new File(getJarFilePath(), DeNovoSequencingHandler.getEnzymeFile());
     }
 
     @Override

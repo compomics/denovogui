@@ -1,5 +1,6 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
@@ -153,9 +154,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private ProgressDialogX progressDialog;
     /**
-     * The location of the folder used for caching.
+     * The name of the folder used for caching.
      */
-    public final static String CACHE_DIRECTORY = "resources/matches";
+    private static String CACHE_DIRECTORY_NAME = "resources";
+    /**
+     * The parent directory of the folder used for caching
+     */
+    private static String CACHE_PARENT_DIRECTORY = "resources";
     /**
      * De novo identification.
      */
@@ -2812,7 +2817,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         tempIdentification.setIsDB(true);
 
         // The cache used whenever the identification becomes too big
-        String dbFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY).getAbsolutePath();
+        String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
         objectsCache.setAutomatedMemoryManagement(true);
         try {
             tempIdentification.establishConnection(dbFolder, true, objectsCache);
@@ -3004,7 +3009,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 //                public void run() {
             try {
                 identification.close();
-                File matchFolder = new File(deNovoGUI.getJarFilePath(), CACHE_DIRECTORY);
+                File matchFolder = getCacheDirectory(getJarFilePath());
                 File[] tempFiles = matchFolder.listFiles();
 
                 if (tempFiles != null) {
@@ -3151,4 +3156,49 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         return knownMassDeltas;
     }
+    
+    /**
+     * Returns the folder used for caching identification objects.
+     * 
+     * @param jarFilePath the path to the jar file
+     * 
+     * @return the cache directory
+     */
+    public static File getCacheDirectory(String jarFilePath) {
+        File parentFolder;
+        if (CACHE_PARENT_DIRECTORY.equals("resources")) {
+            parentFolder = new File(jarFilePath, CACHE_PARENT_DIRECTORY);
+        } else {
+            parentFolder = new File(CACHE_PARENT_DIRECTORY);
+        }
+        return new File(parentFolder, CACHE_DIRECTORY_NAME);
+    }
+
+    /**
+     * Returns the directory used to save identification matches.
+     * 
+     * @return the directory used to save identification matches
+     */
+    public static String getCacheDirectoryParent() {
+        return CACHE_PARENT_DIRECTORY;
+    }
+
+    /**
+     * Sets the directory used to save identification matches.
+     * 
+     * @param cacheDirectory the directory used to save identification matches
+     */
+    public static void setCacheDirectoryParent(String cacheDirectory) {
+        ResultsFrame.CACHE_PARENT_DIRECTORY = cacheDirectory;
+    }
+
+    /**
+     * Returns the path to the jar file.
+     *
+     * @return the path to the jar file
+     */
+    protected String getJarFilePath() {
+        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
+    }
+    
 }

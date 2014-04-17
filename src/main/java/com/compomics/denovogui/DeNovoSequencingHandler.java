@@ -58,15 +58,15 @@ public class DeNovoSequencingHandler {
     /**
      * Modification file.
      */
-    public final static String MODIFICATION_FILE = "resources/conf/denovogui_mods.xml";
+    private static String MODIFICATIONS_FILE = "resources/conf/denovogui_mods.xml";
     /**
      * User modification file.
      */
-    public final static String USER_MODIFICATION_FILE = "resources/conf/denovogui_usermods.xml";
+    private static String USER_MODIFICATIONS_FILE = "resources/conf/denovogui_usermods.xml";
     /**
      * The enzyme file.
      */
-    public final static String ENZYME_FILE = "resources/conf/enzymes.xml";
+    private static String ENZYME_FILE = "resources/conf/enzymes.xml";
     /**
      * The name of the parameters file saved by default.
      */
@@ -352,9 +352,9 @@ public class DeNovoSequencingHandler {
      * @return the modifications file
      */
     public static File getModificationsFile(String jarFolder) {
-        File result = new File(jarFolder, MODIFICATION_FILE);
+        File result = new File(jarFolder, MODIFICATIONS_FILE);
         if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, MODIFICATION_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, MODIFICATIONS_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         return result;
     }
@@ -380,9 +380,9 @@ public class DeNovoSequencingHandler {
      * @return the user defined modifications file
      */
     public static File getUserModificationsFile(String jarFolder) {
-        File result = new File(jarFolder, USER_MODIFICATION_FILE);
+        File result = new File(jarFolder, USER_MODIFICATIONS_FILE);
         if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, USER_MODIFICATION_FILE + " not found.", "User Modification File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, USER_MODIFICATIONS_FILE + " not found.", "User Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         return result;
     }
@@ -404,4 +404,61 @@ public class DeNovoSequencingHandler {
     public void setNThreads(int nThreads) {
         this.nThreads = nThreads;
     }
+
+    /**
+     * Returns the file containing the enzymes.
+     * 
+     * @return the file containing the enzymes
+     */
+    public static String getEnzymeFile() {
+        return ENZYME_FILE;
+    }
+
+    /**
+     * Sets the file containing the enzymes.
+     * 
+     * @param enzymeFile the file containing the enzymes
+     */
+    public static void setEnzymeFile(String enzymeFile) {
+        DeNovoSequencingHandler.ENZYME_FILE = enzymeFile;
+    }
+
+    /**
+     * Returns the file used for default modifications pre-loading.
+     * 
+     * @return the file used for default modifications pre-loading
+     */
+    public static String getDefaultModificationFile() {
+        return MODIFICATIONS_FILE;
+    }
+
+    /**
+     * Sets the file used for default modifications pre-loading.
+     * 
+     * @param modificationFile the file used for default modifications pre-loading
+     */
+    public static void setDefaultModificationFile(String modificationFile) {
+        DeNovoSequencingHandler.MODIFICATIONS_FILE = modificationFile;
+    }
+
+    /**
+     * Returns the file used for user modifications pre-loading.
+     * 
+     * @return the file used for user modifications pre-loading
+     */
+    public static String getUserModificationFile() {
+        return USER_MODIFICATIONS_FILE;
+    }
+
+
+    /**
+     * Sets the file used for user modifications pre-loading.
+     * 
+     * @param modificationFile the file used for user modifications pre-loading
+     */
+    public static void setUserModificationFile(String modificationFile) {
+        DeNovoSequencingHandler.USER_MODIFICATIONS_FILE = modificationFile;
+    }
+    
+    
 }
