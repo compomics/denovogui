@@ -195,7 +195,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         
         // set path configuration
         try {
-        setPathConfiguration();
+            setPathConfiguration();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                     "Failed to load user path configuration, default will be used.\n", "Look and Feel",
@@ -354,7 +354,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     }
     
     /**
-     * Sets the path configuration
+     * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
         File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);

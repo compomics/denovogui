@@ -50,7 +50,7 @@ public class DeNovoCLIInputBean {
      */
     private int nThreads = Runtime.getRuntime().availableProcessors();
     /**
-     * The path settings
+     * The path settings.
      */
     private PathSettingsCLIInputBean pathSettingsCLIInputBean;
 

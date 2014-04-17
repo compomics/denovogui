@@ -1,6 +1,5 @@
 package com.compomics.denovogui.preferences;
 
-import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.gui.ResultsFrame;
 import com.compomics.util.preferences.UtilitiesPathPreferences;
 import java.io.BufferedReader;
@@ -12,32 +11,33 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * This class sets the path preferences for the files to read/write
+ * This class sets the path preferences for the files to read/write.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class DenovoguiPathPreferences {
 
     /**
-     * Default name for the path configuration file
+     * Default name for the path configuration file.
      */
     public static final String configurationFileName = "resources/conf/paths.txt";
+
     /**
-     * Enum of the paths which can be set in DenovoGUI
+     * Enum of the paths which can be set in DenovoGUI.
      */
     public enum DenovoguiPathKey {
 
         /**
          * Directory where identification matches are temporarily saved to
-         * reduce the memory footprint
+         * reduce the memory footprint.
          */
         matchesDirectory("denovogui_matches_directory", "Directory where identification matches are temporarily saved to reduce the memory footprint.", "", true);
         /**
-         * The key used to refer to this path
+         * The key used to refer to this path.
          */
         private String id;
         /**
-         * The description of the path usage
+         * The description of the path usage.
          */
         private String description;
         /**
@@ -46,12 +46,12 @@ public class DenovoguiPathPreferences {
          */
         private String defaultSubDirectory;
         /**
-         * Indicates whether the path should be a folder
+         * Indicates whether the path should be a folder.
          */
         private boolean isDirectory;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param id the id used to refer to this path key
          * @param description the description of the path usage
@@ -126,7 +126,7 @@ public class DenovoguiPathPreferences {
     }
 
     /**
-     * Loads a path to be set from a line
+     * Loads a path to be set from a line.
      *
      * @param line the line where to read the path from
      * @throws java.io.FileNotFoundException
@@ -153,7 +153,7 @@ public class DenovoguiPathPreferences {
     }
 
     /**
-     * Sets the path according to the given key and path
+     * Sets the path according to the given key and path.
      *
      * @param denovoguiPathKey the key of the path
      * @param path the path to be set
@@ -207,7 +207,8 @@ public class DenovoguiPathPreferences {
     }
 
     /**
-     *
+     * Writes the configuration file using the provided buffered writer.
+     * 
      * @param bw the writer to use for writing
      *
      * @throws IOException

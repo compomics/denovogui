@@ -2,7 +2,6 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
-import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.preferences.UtilitiesPathPreferences;
 import java.io.File;
 import java.io.PrintWriter;
@@ -12,19 +11,19 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
 /**
- * Allows the user to set the path settings in command line
+ * Allows the user to set the path settings in command line.
  *
- * @author Marc
+ * @author Marc Vaudel
  */
 public class PathSettingsCLI {
 
     /**
-     * The input bean containing the user parameters
+     * The input bean containing the user parameters.
      */
     private PathSettingsCLIInputBean pathSettingsCLIInputBean;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param pathSettingsCLIInputBean an input bean containing the user
      * parameters
@@ -34,9 +33,7 @@ public class PathSettingsCLI {
     }
 
     public Object call() {
-
         setPathSettings();
-
         return null;
     }
 
@@ -85,7 +82,6 @@ public class PathSettingsCLI {
         }
 
         System.out.println("Path configuration completed.");
-
     }
 
     /**
@@ -98,7 +94,7 @@ public class PathSettingsCLI {
     }
 
     /**
-     * DenovoGUI path settings CLI header message when printing the usage.
+     * DeNovoGUI path settings CLI header message when printing the usage.
      */
     private static String getHeader() {
         return System.getProperty("line.separator")
