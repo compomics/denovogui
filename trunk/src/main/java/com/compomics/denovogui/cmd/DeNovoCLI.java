@@ -1,11 +1,13 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
+import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 import org.apache.commons.cli.*;
@@ -89,6 +91,20 @@ public class DeNovoCLI implements Callable {
      * Calling this method will run the configured DeNovoCLI process.
      */
     public Object call() {
+        
+
+        PathSettingsCLIInputBean pathSettingsCLIInputBean = deNovoCLIInputBean.getPathSettingsCLIInputBean();
+        if (pathSettingsCLIInputBean.hasInput()) {
+            PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
+            pathSettingsCLI.setPathSettings();
+        } else {
+            try {
+                setPathConfiguration();
+            } catch (Exception e) {
+                System.out.println("An error occured when setting path configuration. Default will be used.");
+                e.printStackTrace();
+            }
+        }
 
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
@@ -211,6 +227,16 @@ public class DeNovoCLI implements Callable {
         }
 
         return null;
+    }
+
+    /**
+     * Sets the path configuration
+     */
+    private void setPathConfiguration() throws IOException {
+        File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        if (pathConfigurationFile.exists()) {
+            DenovoguiPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+        }
     }
 
     /**

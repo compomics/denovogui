@@ -168,7 +168,7 @@ public class TextExporter {
                                     Tag tag = tagAssumption.getTag();
                                     b.write(tag.asSequence() + separator);
                                     b.write(tag.getLongestAminoAcidSequence() + separator);
-                                    b.write(getTagModificationsAsString(tag) + separator);
+                                    b.write(Tag.getTagModificationsAsString(tag) + separator);
                                     b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
                                     if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
@@ -314,7 +314,7 @@ public class TextExporter {
                                     b.write(++rank + separator);
                                     b.write(tag.asSequence() + separator);
                                     b.write(tag.getLongestAminoAcidSequence() + separator);
-                                    b.write(getTagModificationsAsString(tag) + separator);
+                                    b.write(Tag.getTagModificationsAsString(tag) + separator);
                                     b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
                                     if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
@@ -498,64 +498,6 @@ public class TextExporter {
         boolean first = true, first2;
         ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
 
-        Collections.sort(mods);
-        for (String mod : mods) {
-            if (first) {
-                first = false;
-            } else {
-                result.append(", ");
-            }
-            first2 = true;
-            result.append(mod);
-            result.append(" (");
-            for (int aa : modMap.get(mod)) {
-                if (first2) {
-                    first2 = false;
-                } else {
-                    result.append(", ");
-                }
-                result.append(aa);
-            }
-            result.append(")");
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * Returns the tag modifications as a string.
-     *
-     * @param tag the tag
-     * @return the peptide modifications as a string
-     */
-    public static String getTagModificationsAsString(Tag tag) {
-
-        HashMap<String, ArrayList<Integer>> modMap = new HashMap<String, ArrayList<Integer>>();
-        int offset = 0;
-        for (TagComponent tagComponent : tag.getContent()) {
-            if (tagComponent instanceof MassGap) {
-                offset++;
-            } else if (tagComponent instanceof AminoAcidPattern) {
-                AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
-                for (int i = 1; i <= aminoAcidPattern.length(); i++) {
-                    for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(i)) {
-                        if (modificationMatch.isVariable()) {
-                            if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
-                                modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
-                            }
-                            modMap.get(modificationMatch.getTheoreticPtm()).add(i + offset);
-                        }
-                    }
-                }
-                offset += aminoAcidPattern.length();
-            } else {
-                throw new IllegalArgumentException("Modification summary not implemented for TagComponent " + tagComponent.getClass() + ".");
-            }
-        }
-
-        StringBuilder result = new StringBuilder();
-        boolean first = true, first2;
-        ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
         Collections.sort(mods);
         for (String mod : mods) {
             if (first) {

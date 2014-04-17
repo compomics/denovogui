@@ -60,6 +60,9 @@ public enum DeNovoCLIParams {
         for (DeNovoCLIParams identificationParametersCLIParams : values()) {
             aOptions.addOption(identificationParametersCLIParams.id, true, identificationParametersCLIParams.description);
         }
+        
+        // Path setup
+        aOptions.addOption(PathSettingsCLIParams.ALL.id, true, PathSettingsCLIParams.ALL.description);
     }
 
     /**
@@ -85,6 +88,9 @@ public enum DeNovoCLIParams {
         output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + PEPNOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + DIRECTAG_LOCATION.description + "\n";
         output += "-" + String.format(formatter, THREADS.id) + THREADS.description + "\n";
+
+        output += "\n\nOptional temporary folder:\n\n";
+        output += "-" + String.format(formatter, PathSettingsCLIParams.ALL.id) + PathSettingsCLIParams.ALL.description + "\n";
 
         return output;
     }
