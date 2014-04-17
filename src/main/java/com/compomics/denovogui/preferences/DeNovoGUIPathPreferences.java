@@ -15,7 +15,7 @@ import java.io.IOException;
  *
  * @author Marc Vaudel
  */
-public class DenovoguiPathPreferences {
+public class DeNovoGUIPathPreferences {
 
     /**
      * Default name for the path configuration file.
@@ -23,9 +23,9 @@ public class DenovoguiPathPreferences {
     public static final String configurationFileName = "resources/conf/paths.txt";
 
     /**
-     * Enum of the paths which can be set in DenovoGUI.
+     * Enum of the paths which can be set in DeNovoGUI.
      */
-    public enum DenovoguiPathKey {
+    public enum DeNovoGUIPathKey {
 
         /**
          * Directory where identification matches are temporarily saved to
@@ -59,7 +59,7 @@ public class DenovoguiPathPreferences {
          * should be included in a single directory
          * @param isDirectory boolean indicating whether a folder is expected
          */
-        private DenovoguiPathKey(String id, String description, String defaultSubDirectory, boolean isDirectory) {
+        private DeNovoGUIPathKey(String id, String description, String defaultSubDirectory, boolean isDirectory) {
             this.id = id;
             this.description = description;
             this.defaultSubDirectory = defaultSubDirectory;
@@ -73,8 +73,8 @@ public class DenovoguiPathPreferences {
          *
          * @return the key of interest
          */
-        public static DenovoguiPathKey getKeyFromId(String id) {
-            for (DenovoguiPathKey pathKey : values()) {
+        public static DeNovoGUIPathKey getKeyFromId(String id) {
+            for (DeNovoGUIPathKey pathKey : values()) {
                 if (pathKey.id.equals(id)) {
                     return pathKey;
                 }
@@ -136,7 +136,7 @@ public class DenovoguiPathPreferences {
         if (id.equals("")) {
             throw new IllegalArgumentException("Impossible to parse path in " + line + ".");
         }
-        DenovoguiPathKey denovoguiPathKey = DenovoguiPathKey.getKeyFromId(id);
+        DeNovoGUIPathKey denovoguiPathKey = DeNovoGUIPathKey.getKeyFromId(id);
         if (denovoguiPathKey == null) {
             UtilitiesPathPreferences.loadPathPreferenceFromLine(line);
         } else {
@@ -155,16 +155,16 @@ public class DenovoguiPathPreferences {
     /**
      * Sets the path according to the given key and path.
      *
-     * @param denovoguiPathKey the key of the path
+     * @param deNovoGuiPathKey the key of the path
      * @param path the path to be set
      */
-    public static void setPathPreference(DenovoguiPathKey denovoguiPathKey, String path) {
-        switch (denovoguiPathKey) {
+    public static void setPathPreference(DeNovoGUIPathKey deNovoGuiPathKey, String path) {
+        switch (deNovoGuiPathKey) {
             case matchesDirectory:
                 ResultsFrame.setCacheDirectoryParent(path);
                 return;
             default:
-                throw new UnsupportedOperationException("Path " + denovoguiPathKey.id + " not implemented.");
+                throw new UnsupportedOperationException("Path " + deNovoGuiPathKey.id + " not implemented.");
         }
     }
 
@@ -176,7 +176,7 @@ public class DenovoguiPathPreferences {
      * @throws FileNotFoundException
      */
     public static void setAllPathsIn(String path) throws FileNotFoundException {
-        for (DenovoguiPathKey denovoguiPathKey : DenovoguiPathKey.values()) {
+        for (DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathKey.values()) {
             String subDirectory = denovoguiPathKey.defaultSubDirectory;
             File newFile = new File(path, subDirectory);
             if (!newFile.exists()) {
@@ -214,7 +214,7 @@ public class DenovoguiPathPreferences {
      * @throws IOException
      */
     public static void writeConfigurationToFile(BufferedWriter bw) throws IOException {
-        for (DenovoguiPathKey pathKey : DenovoguiPathKey.values()) {
+        for (DeNovoGUIPathKey pathKey : DeNovoGUIPathKey.values()) {
             writePathToFile(bw, pathKey);
         }
         UtilitiesPathPreferences.writeConfigurationToFile(bw);
@@ -228,7 +228,7 @@ public class DenovoguiPathPreferences {
      *
      * @throws IOException
      */
-    public static void writePathToFile(BufferedWriter bw, DenovoguiPathKey pathKey) throws IOException {
+    public static void writePathToFile(BufferedWriter bw, DeNovoGUIPathKey pathKey) throws IOException {
         bw.write(pathKey.id + UtilitiesPathPreferences.separator);
         switch (pathKey) {
             case matchesDirectory:

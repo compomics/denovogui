@@ -1,6 +1,6 @@
 package com.compomics.denovogui;
 
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import java.io.File;
@@ -75,9 +75,9 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
-            DenovoguiPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+            DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
     }
 }

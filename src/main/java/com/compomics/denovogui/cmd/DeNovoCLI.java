@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -232,9 +232,9 @@ public class DeNovoCLI implements Callable {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
-            DenovoguiPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+            DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
     }
 

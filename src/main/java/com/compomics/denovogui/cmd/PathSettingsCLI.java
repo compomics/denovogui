@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoGUIWrapper;
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.util.preferences.UtilitiesPathPreferences;
 import java.io.File;
 import java.io.PrintWriter;
@@ -45,7 +45,7 @@ public class PathSettingsCLI {
         String path = pathSettingsCLIInputBean.getTempFolder();
         if (!path.equals("")) {
             try {
-                DenovoguiPathPreferences.setAllPathsIn(path);
+                DeNovoGUIPathPreferences.setAllPathsIn(path);
             } catch (Exception e) {
                 System.out.println("An error occurred when setting the temporary folder path.");
                 e.printStackTrace();
@@ -55,7 +55,7 @@ public class PathSettingsCLI {
         HashMap<String, String> pathInput = pathSettingsCLIInputBean.getPaths();
         for (String id : pathInput.keySet()) {
             try {
-                DenovoguiPathPreferences.DenovoguiPathKey denovoguiPathKey = DenovoguiPathPreferences.DenovoguiPathKey.getKeyFromId(id);
+                DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey = DeNovoGUIPathPreferences.DeNovoGUIPathKey.getKeyFromId(id);
                 if (denovoguiPathKey == null) {
                     UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey = UtilitiesPathPreferences.UtilitiesPathKey.getKeyFromId(id);
                     if (utilitiesPathKey == null) {
@@ -64,7 +64,7 @@ public class PathSettingsCLI {
                         UtilitiesPathPreferences.setPathPreference(utilitiesPathKey, path);
                     }
                 } else {
-                    DenovoguiPathPreferences.setPathPreference(denovoguiPathKey, path);
+                    DeNovoGUIPathPreferences.setPathPreference(denovoguiPathKey, path);
                 }
             } catch (Exception e) {
                 System.out.println("An error occurred when setting the path " + id + ".");
@@ -73,9 +73,9 @@ public class PathSettingsCLI {
         }
 
         // Write path file preference
-        File destinationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        File destinationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
         try {
-            DenovoguiPathPreferences.writeConfigurationToFile(destinationFile);
+            DeNovoGUIPathPreferences.writeConfigurationToFile(destinationFile);
         } catch (Exception e) {
             System.out.println("An error occurred when saving the path preference to " + destinationFile.getAbsolutePath() + ".");
             e.printStackTrace();
@@ -98,9 +98,9 @@ public class PathSettingsCLI {
      */
     private static String getHeader() {
         return System.getProperty("line.separator")
-                + "The DenovoGUI path settings command line allows setting the path of every configuration file created by DenovoGUI or set a temporary folder where all files will be stored." + System.getProperty("line.separator")
+                + "The DeNovoGUI path settings command line allows setting the path of every configuration file created by DeNovoGUI or set a temporary folder where all files will be stored." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
-                + "For further help see http://denovogui.googlecode.com and http://code.google.com/p/denovogui/wiki/DenovoGUICLI." + System.getProperty("line.separator")
+                + "For further help see http://denovogui.googlecode.com and http://code.google.com/p/denovogui/wiki/DeNovoCLI." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "Or contact the developers at https://groups.google.com/group/denovogui." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
@@ -129,7 +129,7 @@ public class PathSettingsCLI {
             if (args.length == 0) {
                 PrintWriter lPrintWriter = new PrintWriter(System.out);
                 lPrintWriter.print(System.getProperty("line.separator") + "========================================" + System.getProperty("line.separator"));
-                lPrintWriter.print("DenovoGUI Path Settings - Command Line" + System.getProperty("line.separator"));
+                lPrintWriter.print("DeNovoGUI Path Settings - Command Line" + System.getProperty("line.separator"));
                 lPrintWriter.print("========================================" + System.getProperty("line.separator"));
                 lPrintWriter.print(getHeader());
                 lPrintWriter.print(PathSettingsCLIParams.getOptionsAsString());
@@ -143,14 +143,14 @@ public class PathSettingsCLI {
                 pathSettingsCLI.call();
             }
         } catch (OutOfMemoryError e) {
-            System.out.println("DenovoGUI used up all the memory and had to be stopped. See the DenovoGUI log for details.");
+            System.out.println("DeNovoGUI used up all the memory and had to be stopped. See the DeNovoGUI log for details.");
             System.err.println("Ran out of memory!");
             System.err.println("Memory given to the Java virtual machine: " + Runtime.getRuntime().maxMemory() + ".");
             System.err.println("Memory used by the Java virtual machine: " + Runtime.getRuntime().totalMemory() + ".");
             System.err.println("Free memory in the Java virtual machine: " + Runtime.getRuntime().freeMemory() + ".");
             e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("DenovoGUI processing failed. See the DenovoGUI log for details.");
+            System.out.println("DeNovoGUI processing failed. See the DeNovoGUI log for details.");
             e.printStackTrace();
         }
     }
