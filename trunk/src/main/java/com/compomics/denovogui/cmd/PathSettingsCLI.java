@@ -94,7 +94,7 @@ public class PathSettingsCLI {
      * @return the path to the jar file
      */
     protected String getJarFilePath() {
-        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
+        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("PathSettingsCLI.class").getPath(), DeNovoGUIWrapper.toolName);
     }
 
     /**

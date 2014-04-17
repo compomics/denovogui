@@ -37,16 +37,7 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
 
         // get the version number set in the pom file
         String jarFileName = toolName + "-" + new Properties().getVersion() + ".jar";
-        String path = this.getClass().getResource("DeNovoGUIWrapper.class").getPath();
-        // remove starting 'file:' tag if there
-        if (path.startsWith("file:")) {
-            path = path.substring("file:".length(), path.indexOf(jarFileName));
-        } else {
-            path = path.substring(0, path.indexOf(jarFileName));
-        }
-        path = path.replace("%20", " ");
-        path = path.replace("%5b", "[");
-        path = path.replace("%5d", "]");
+        String path = getJarFilePath();
         File jarFile = new File(path, jarFileName);
         // get the splash 
         String splash = "denovogui-splash.png";
@@ -77,7 +68,7 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
      * @return the path to the jar file
      */
     protected String getJarFilePath() {
-        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
+        return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUIWrapper.class").getPath(), DeNovoGUIWrapper.toolName);
     }
     
     /**
