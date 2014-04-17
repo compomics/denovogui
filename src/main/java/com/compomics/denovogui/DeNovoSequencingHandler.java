@@ -407,7 +407,7 @@ public class DeNovoSequencingHandler {
 
     /**
      * Returns the file containing the enzymes.
-     * 
+     *
      * @return the file containing the enzymes
      */
     public static String getEnzymeFile() {
@@ -416,7 +416,7 @@ public class DeNovoSequencingHandler {
 
     /**
      * Sets the file containing the enzymes.
-     * 
+     *
      * @param enzymeFile the file containing the enzymes
      */
     public static void setEnzymeFile(String enzymeFile) {
@@ -425,7 +425,7 @@ public class DeNovoSequencingHandler {
 
     /**
      * Returns the file used for default modifications pre-loading.
-     * 
+     *
      * @return the file used for default modifications pre-loading
      */
     public static String getDefaultModificationFile() {
@@ -434,8 +434,9 @@ public class DeNovoSequencingHandler {
 
     /**
      * Sets the file used for default modifications pre-loading.
-     * 
-     * @param modificationFile the file used for default modifications pre-loading
+     *
+     * @param modificationFile the file used for default modifications
+     * pre-loading
      */
     public static void setDefaultModificationFile(String modificationFile) {
         DeNovoSequencingHandler.MODIFICATIONS_FILE = modificationFile;
@@ -443,22 +444,19 @@ public class DeNovoSequencingHandler {
 
     /**
      * Returns the file used for user modifications pre-loading.
-     * 
+     *
      * @return the file used for user modifications pre-loading
      */
     public static String getUserModificationFile() {
         return USER_MODIFICATIONS_FILE;
     }
 
-
     /**
      * Sets the file used for user modifications pre-loading.
-     * 
+     *
      * @param modificationFile the file used for user modifications pre-loading
      */
     public static void setUserModificationFile(String modificationFile) {
         DeNovoSequencingHandler.USER_MODIFICATIONS_FILE = modificationFile;
     }
-    
-    
 }

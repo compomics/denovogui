@@ -158,7 +158,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private static String CACHE_DIRECTORY_NAME = "resources";
     /**
-     * The parent directory of the folder used for caching
+     * The parent directory of the folder used for caching.
      */
     private static String CACHE_PARENT_DIRECTORY = "resources";
     /**
@@ -2405,6 +2405,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     if (identification != null) {
                         displayResults();
                     }
+                    
+                    // @TODO: catch out of memory...
+                    
                 } catch (Exception e) {
                     deNovoGUI.catchException(e);
                     progressDialog.setRunFinished();

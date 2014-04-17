@@ -44,7 +44,7 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
         String mainClass = "com.compomics.denovogui.gui.DeNovoGUI";
         // Set path for utilities preferences
         try {
-        setPathConfiguration();
+            setPathConfiguration();
         } catch (Exception e) {
             System.out.println("Impossible to load path configuration, default will be used.");
         }
@@ -70,9 +70,9 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
     protected String getJarFilePath() {
         return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUIWrapper.class").getPath(), DeNovoGUIWrapper.toolName);
     }
-    
+
     /**
-     * Sets the path configuration
+     * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
         File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);

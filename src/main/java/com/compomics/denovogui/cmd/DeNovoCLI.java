@@ -91,7 +91,6 @@ public class DeNovoCLI implements Callable {
      * Calling this method will run the configured DeNovoCLI process.
      */
     public Object call() {
-        
 
         PathSettingsCLIInputBean pathSettingsCLIInputBean = deNovoCLIInputBean.getPathSettingsCLIInputBean();
         if (pathSettingsCLIInputBean.hasInput()) {
@@ -230,7 +229,7 @@ public class DeNovoCLI implements Callable {
     }
 
     /**
-     * Sets the path configuration
+     * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
         File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
