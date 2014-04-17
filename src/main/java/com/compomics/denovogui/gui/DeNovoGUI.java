@@ -69,15 +69,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     /**
      * The compomics enzyme factory.
      */
-    private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+    private EnzymeFactory enzymeFactory;
     /**
      * The spectrum factory.
      */
-    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance(1000);
+    private SpectrumFactory spectrumFactory;
     /**
      * The factory used to handle the modifications.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private PTMFactory ptmFactory;
     /**
      * The search handler.
      */
@@ -201,6 +201,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     "Failed to load user path configuration, default will be used.\n", "Look and Feel",
                     JOptionPane.WARNING_MESSAGE);
         }
+        
+        enzymeFactory = EnzymeFactory.getInstance();
+        spectrumFactory = SpectrumFactory.getInstance(1000);
+        ptmFactory = PTMFactory.getInstance();
 
         // check for new version
         boolean newVersion = false;
