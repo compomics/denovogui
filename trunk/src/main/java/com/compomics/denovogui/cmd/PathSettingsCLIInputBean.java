@@ -1,6 +1,6 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.util.preferences.UtilitiesPathPreferences;
 import java.util.HashMap;
 import org.apache.commons.cli.CommandLine;
@@ -32,7 +32,7 @@ public class PathSettingsCLIInputBean {
             tempFolder = aLine.getOptionValue(PathSettingsCLIParams.ALL.id);
         }
 
-        for (DenovoguiPathPreferences.DenovoguiPathKey denovoguiPathKey : DenovoguiPathPreferences.DenovoguiPathKey.values()) {
+        for (DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathPreferences.DeNovoGUIPathKey.values()) {
             String id = denovoguiPathKey.getId();
             if (aLine.hasOption(id)) {
                 paths.put(id, aLine.getOptionValue(id));

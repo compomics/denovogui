@@ -1808,7 +1808,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (availableCachSize > nSequences) {
             availableCachSize = nSequences;
         } else {
-            waitingHandler.appendReport("Warning: DenovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
+            waitingHandler.appendReport("Warning: DeNovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
                     + "Note that using large large databases also increases the number of false positives. "
                     + "Try to either (i) use a smaller database, (ii) increase the memory provided to PeptideShaker, or (iii) improve the reading speed by using an SSD disc. "
                     + "(See also <a href=\"https://code.google.com/p/compomics-utilities/wiki/ProteinInference\">Protein Inference</a>).", true, true);
@@ -2826,7 +2826,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             tempIdentification.establishConnection(dbFolder, true, objectsCache);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. "
-                    + "Please make sure that no other instance of DenovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
+                    + "Please make sure that no other instance of DeNovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             return null;
         }

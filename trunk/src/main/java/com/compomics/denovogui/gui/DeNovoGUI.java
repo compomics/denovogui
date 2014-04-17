@@ -10,7 +10,7 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaOptionsDialog;
@@ -357,9 +357,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DenovoguiPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
-            DenovoguiPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+            DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
     }
 

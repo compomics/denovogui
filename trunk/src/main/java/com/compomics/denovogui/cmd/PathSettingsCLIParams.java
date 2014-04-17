@@ -1,6 +1,6 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.denovogui.preferences.DenovoguiPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.util.preferences.UtilitiesPathPreferences;
 import org.apache.commons.cli.Options;
 
@@ -42,7 +42,7 @@ public enum PathSettingsCLIParams {
         for (PathSettingsCLIParams pathSettingsCLIParam : values()) {
             aOptions.addOption(pathSettingsCLIParam.id, true, pathSettingsCLIParam.description);
         }
-        for (DenovoguiPathPreferences.DenovoguiPathKey denovoguiPathKey : DenovoguiPathPreferences.DenovoguiPathKey.values()) {
+        for (DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathPreferences.DeNovoGUIPathKey.values()) {
             aOptions.addOption(denovoguiPathKey.getId(), true, denovoguiPathKey.getDescription());
         }
         for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
@@ -64,7 +64,7 @@ public enum PathSettingsCLIParams {
         output += "-" + String.format(formatter, ALL.id) + ALL.description + "\n";
 
         output += "\n\nSpecific path setting:\n\n";
-        for (DenovoguiPathPreferences.DenovoguiPathKey denovoguiPathKey : DenovoguiPathPreferences.DenovoguiPathKey.values()) {
+        for (DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathPreferences.DeNovoGUIPathKey.values()) {
             output += "-" + String.format(formatter, denovoguiPathKey.getId()) + denovoguiPathKey.getDescription() + System.getProperty("line.separator");
         }
         for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
