@@ -12,6 +12,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="openMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="79"/>
                 <Property name="text" type="java.lang.String" value="Open..."/>
                 <Property name="toolTipText" type="java.lang.String" value="Open existing de novo results"/>
               </Properties>
@@ -23,6 +24,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="loadExampleMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="69"/>
                 <Property name="text" type="java.lang.String" value="Load Example"/>
               </Properties>
               <Events>
@@ -61,6 +63,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="modsMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="77"/>
                 <Property name="text" type="java.lang.String" value="Modifications"/>
               </Properties>
               <Events>
@@ -71,7 +74,8 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="pepNovoMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Algorithms Locations"/>
+                <Property name="mnemonic" type="int" value="65"/>
+                <Property name="text" type="java.lang.String" value="Algorithm Locations"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoMenuItemActionPerformed"/>
@@ -90,6 +94,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="privacyMenuItem">
               <Properties>
+                <Property name="mnemonic" type="int" value="80"/>
                 <Property name="text" type="java.lang.String" value="Privacy Settings"/>
               </Properties>
               <Events>
