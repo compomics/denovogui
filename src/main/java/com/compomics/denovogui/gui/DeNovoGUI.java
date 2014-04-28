@@ -789,6 +789,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
 
+        openMenuItem.setMnemonic('O');
         openMenuItem.setText("Open...");
         openMenuItem.setToolTipText("Open existing de novo results");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -799,6 +800,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         fileMenu.add(openMenuItem);
         fileMenu.add(jSeparator4);
 
+        loadExampleMenuItem.setMnemonic('E');
         loadExampleMenuItem.setText("Load Example");
         loadExampleMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -832,6 +834,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         editMenu.add(settingsMenuItem);
         editMenu.add(jSeparator2);
 
+        modsMenuItem.setMnemonic('M');
         modsMenuItem.setText("Modifications");
         modsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -841,7 +844,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         editMenu.add(modsMenuItem);
         editMenu.add(jSeparator1);
 
-        pepNovoMenuItem.setText("Algorithms Locations");
+        pepNovoMenuItem.setMnemonic('A');
+        pepNovoMenuItem.setText("Algorithm Locations");
         pepNovoMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pepNovoMenuItemActionPerformed(evt);
@@ -859,6 +863,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         });
         editMenu.add(javaOptionsJMenuItem);
 
+        privacyMenuItem.setMnemonic('P');
         privacyMenuItem.setText("Privacy Settings");
         privacyMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1483,6 +1488,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         new JavaOptionsDialog(this, this, null, "DeNovoGUI");
     }//GEN-LAST:event_javaOptionsJMenuItemActionPerformed
 
+    /**
+     * Open the PrivacySettingsDialog.
+     * 
+     * @param evt 
+     */
     private void privacyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privacyMenuItemActionPerformed
         new PrivacySettingsDialog(this, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
     }//GEN-LAST:event_privacyMenuItemActionPerformed
