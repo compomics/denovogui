@@ -1503,7 +1503,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void bugReportMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bugReportMenuActionPerformed
-        new BugReport(this, deNovoGUI.getLastSelectedFolder(), "DeNovoGUI", "denovogui", deNovoGUI.getVersion(), new File(deNovoGUI.getJarFilePath() + "/resources/DeNovoGUI.log"));
+        new BugReport(this, deNovoGUI.getLastSelectedFolder(), "DeNovoGUI", "denovogui", deNovoGUI.getVersion(), 
+                "denovogui", "DeNovoGUI", new File(deNovoGUI.getJarFilePath() + "/resources/DeNovoGUI.log"));
     }//GEN-LAST:event_bugReportMenuActionPerformed
 
     /**

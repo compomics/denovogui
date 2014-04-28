@@ -12,6 +12,8 @@
             <excludes>
                 <exclude>${project.basedir}/resources/PepNovo/PepNovo_Linux</exclude>
                 <exclude>${project.basedir}/resources/PepNovo/PepNovo_Mac</exclude> 
+                <exclude>${project.basedir}/resources/DirecTag/linux_32bit/**</exclude> 
+                <exclude>${project.basedir}/resources/DirecTag/linux_64bit/**</exclude> 
             </excludes>
         </fileSet>
     </fileSets>

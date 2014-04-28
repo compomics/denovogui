@@ -215,7 +215,7 @@ public class LocationDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void direcTagLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direcTagLocationBrowseButtonActionPerformed
-        browsePepNovoExecutable();
+        browseDirecTagExecutable();
     }//GEN-LAST:event_direcTagLocationBrowseButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
