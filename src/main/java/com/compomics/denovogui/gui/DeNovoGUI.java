@@ -19,6 +19,7 @@ import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
+import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
@@ -207,9 +208,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         spectrumFactory = SpectrumFactory.getInstance(1000);
         ptmFactory = PTMFactory.getInstance();
 
+            // load the utilities user preferences
+            try {
+                utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+
         // check for new version
         boolean newVersion = false;
-        if (!getJarFilePath().equalsIgnoreCase(".")) {
+        if (!getJarFilePath().equalsIgnoreCase(".") && utilitiesUserPreferences.isAutoUpdate()) {
             newVersion = checkForNewVersion();
         }
 
@@ -314,14 +323,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             } else {
                 loadModifications(searchParameters);
                 settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
-            }
-
-            // load the utilities user preferences
-            try {
-                utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
 
             File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
@@ -452,7 +453,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         modsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         pepNovoMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         javaOptionsJMenuItem = new javax.swing.JMenuItem();
+        privacyMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         jSeparator17 = new javax.swing.JPopupMenu.Separator();
@@ -838,13 +841,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         editMenu.add(modsMenuItem);
         editMenu.add(jSeparator1);
 
-        pepNovoMenuItem.setText("Locations");
+        pepNovoMenuItem.setText("Algorithms Locations");
         pepNovoMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pepNovoMenuItemActionPerformed(evt);
             }
         });
         editMenu.add(pepNovoMenuItem);
+        editMenu.add(jSeparator5);
 
         javaOptionsJMenuItem.setMnemonic('O');
         javaOptionsJMenuItem.setText("Java Options");
@@ -854,6 +858,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         });
         editMenu.add(javaOptionsJMenuItem);
+
+        privacyMenuItem.setText("Privacy Settings");
+        privacyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                privacyMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(privacyMenuItem);
 
         menuBar.add(editMenu);
 
@@ -1471,6 +1483,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         new JavaOptionsDialog(this, this, null, "DeNovoGUI");
     }//GEN-LAST:event_javaOptionsJMenuItemActionPerformed
 
+    private void privacyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privacyMenuItemActionPerformed
+        new PrivacySettingsDialog(this, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+    }//GEN-LAST:event_privacyMenuItemActionPerformed
+
     /**
      * The main method.
      *
@@ -1562,6 +1578,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JMenuItem javaOptionsJMenuItem;
     private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem loadExampleMenuItem;
@@ -1574,6 +1591,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JCheckBox pepNovoCheckBox;
     private javax.swing.JLabel pepNovoLinkLabel;
     private javax.swing.JMenuItem pepNovoMenuItem;
+    private javax.swing.JMenuItem privacyMenuItem;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
     private javax.swing.JPanel searchEnginesPanel;

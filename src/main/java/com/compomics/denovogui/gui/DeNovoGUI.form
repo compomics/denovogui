@@ -71,11 +71,13 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="pepNovoMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Locations"/>
+                <Property name="text" type="java.lang.String" value="Algorithms Locations"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoMenuItemActionPerformed"/>
               </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="javaOptionsJMenuItem">
               <Properties>
@@ -84,6 +86,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="javaOptionsJMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="privacyMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Privacy Settings"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="privacyMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
