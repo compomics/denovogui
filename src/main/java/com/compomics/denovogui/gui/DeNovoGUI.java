@@ -193,7 +193,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
         // set up the ErrorLog
         setUpLogFile();
-        
+
         // set path configuration
         try {
             setPathConfiguration();
@@ -203,18 +203,18 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
         }
-        
+
         enzymeFactory = EnzymeFactory.getInstance();
         spectrumFactory = SpectrumFactory.getInstance(1000);
         ptmFactory = PTMFactory.getInstance();
 
-            // load the utilities user preferences
-            try {
-                utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
+        // load the utilities user preferences
+        try {
+            utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
 
         // check for new version
         boolean newVersion = false;
@@ -225,6 +225,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         if (!newVersion) {
 
             String osName = System.getProperty("os.name").toLowerCase();
+            String arch = System.getProperty("os.arch").toLowerCase();
 
             // add desktop shortcut?
             if (!getJarFilePath().equalsIgnoreCase(".")
@@ -272,19 +273,35 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 }
             }
 
-            // Set the default PepNovo folder
+            // Set the default DirecTag folder
             if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
-                direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag");
 
                 // OS check
                 if (osName.contains("windows")) {
-                    direcTagExecutable = "DirecTag_Windows.exe";
+                    if (arch.lastIndexOf("64") != -1) {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_64bits");
+                    } else {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_32bits");
+                    }
+                    direcTagExecutable = "directag.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                    direcTagExecutable = "DirecTag_Linux";
+                    if (arch.lastIndexOf("64") != -1) {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_64bit");
+                    } else {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_32bit");
+                    }
+                    direcTagExecutable = "directag";
+                } else if (osName.contains("mac os")) {
+
+                    // try the linux version..?
+                    direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_32bit");
+                    direcTagExecutable = "directag";
+
                 } else {
                     // unsupported OS version
                 }
             }
+
             deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
 
             setUpGUI();
@@ -354,7 +371,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             this.searchParameters = searchParameters;
         }
     }
-    
+
     /**
      * Sets the path configuration.
      */
@@ -966,11 +983,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * @param evt
      */
     private void logReportMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logReportMenuActionPerformed
-        new BugReport(this, lastSelectedFolder, "DeNovoGUI", "denovogui", getVersion(), new File(getJarFilePath() + "/resources/DeNovoGUI.log"));
+        new BugReport(this, lastSelectedFolder, "DeNovoGUI", "denovogui", getVersion(),
+                "denovogui", "DeNovoGUI", new File(getJarFilePath() + "/resources/DeNovoGUI.log"));
     }//GEN-LAST:event_logReportMenuActionPerformed
 
     /**
-     * Edit the PepNovo location.
+     * Edit the algorithm locations.
      *
      * @param evt
      */
@@ -1490,8 +1508,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
     /**
      * Open the PrivacySettingsDialog.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void privacyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privacyMenuItemActionPerformed
         new PrivacySettingsDialog(this, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
@@ -1509,6 +1527,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         try {
             numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
         } catch (Exception e) {
+            // ignore, use default look and feel
         }
 
         if (!numbusLookAndFeelSet) {
@@ -2059,7 +2078,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             String[] fileNames = deNovoFolder.list();
             int executableCounter = 0;
             for (String lFileName : fileNames) {
-                if (lFileName.startsWith("DirecTag_Windows")) {
+                if (lFileName.startsWith("directag")) {
                     executableCounter++;
                 }
             }

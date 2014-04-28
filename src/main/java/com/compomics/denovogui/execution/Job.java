@@ -61,7 +61,7 @@ public abstract class Job implements Executable, Runnable {
      */
     protected static Logger log = Logger.getLogger(Job.class);
     /**
-     * Waiting handler displaying feedback to the user
+     * Waiting handler displaying feedback to the user.
      */
     protected WaitingHandler waitingHandler;
 
@@ -77,7 +77,7 @@ public abstract class Job implements Executable, Runnable {
         } catch (IOException ioe) {
             setStatus(JobStatus.ERROR);
             setError(ioe.getMessage());
-            waitingHandler.appendReport("Could not start PepNovo!", true, true);
+            waitingHandler.appendReport("Could not start " + getDescription() + "!", true, true);
             waitingHandler.appendReportEndLine();
             waitingHandler.setRunCanceled();
             ioe.printStackTrace();

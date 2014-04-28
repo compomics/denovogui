@@ -118,6 +118,10 @@ public class DeNovoCLI implements Callable {
             String pepNovoExecutableTitle = null;
             String direcTagExecutableTitle = null;
 
+            // OS check
+            String osName = System.getProperty("os.name").toLowerCase();
+            String arch = System.getProperty("os.arch").toLowerCase();
+
             if (pepNovoExecutable != null) {
                 pepNovoExecutableTitle = pepNovoExecutable.getName();
                 pepNovoFolder = pepNovoExecutable.getParentFile();
@@ -125,9 +129,6 @@ public class DeNovoCLI implements Callable {
 
                 // use the default PepNovo folder if not set by user
                 pepNovoFolder = new File(getJarFilePath() + "/resources/PepNovo");
-
-                // OS check
-                String osName = System.getProperty("os.name").toLowerCase();
 
                 if (osName.contains("mac os")) {
                     pepNovoExecutableTitle = "PepNovo_Mac";
@@ -139,24 +140,33 @@ public class DeNovoCLI implements Callable {
                     // unsupported OS version
                 }
             }
-            
-             if (direcTagExecutable != null) {
+
+            if (direcTagExecutable != null) {
                 direcTagExecutableTitle = direcTagExecutable.getName();
                 direcTagFolder = direcTagExecutable.getParentFile();
             } else if (new File(getJarFilePath() + "/resources/DirecTag").exists()) {
 
                 // use the default DirecTag folder if not set by user
-                pepNovoFolder = new File(getJarFilePath() + "/resources/DirecTag");
-
-                // OS check
-                String osName = System.getProperty("os.name").toLowerCase();
-
-//                if (osName.contains("mac os")) {
-//                    executableTitle = "PepNovo_Mac"; // @TODO: is Mac supported via the linux option?
                 if (osName.contains("windows")) {
-                    direcTagExecutableTitle = "DirecTag_Windows.exe";
+                    if (arch.lastIndexOf("64") != -1) {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_64bits");
+                    } else {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_32bits");
+                    }
+                    direcTagExecutableTitle = "directag.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                    direcTagExecutableTitle = "DirecTag_Linux";
+                    if (arch.lastIndexOf("64") != -1) {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_64bit");
+                    } else {
+                        direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_32bit");
+                    }
+                    direcTagExecutableTitle = "directag";
+                } else if (osName.contains("mac os")) {
+
+                    // try the linux version..?
+                    direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_32bit");
+                    direcTagExecutableTitle = "directag";
+
                 } else {
                     // unsupported OS version
                 }
@@ -173,7 +183,7 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-            
+
             // check if the DirecTag folder is set
             if (direcTagFolder == null && runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag location not set! Sequencing canceled.", false, true);
@@ -185,17 +195,16 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-            
+
             if (!runPepNovo && !runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nNeither PepNovo+ or DirecTag is selected! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-            
+
 //            if (runPepNovo && runDirecTag) {
 //                waitingHandlerCLIImpl.appendReport("\nPepNovo+ and DirecTag cannot be selected at the same time! Sequencing canceled.", false, true);
 //                System.exit(0);
 //            }
-
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (deNovoCLIInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
