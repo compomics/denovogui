@@ -267,9 +267,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 } else if (osName.contains("windows")) {
                     pepNovoExecutable = "PepNovo_Windows.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
-                    pepNovoExecutable = "PepNovo_Linux";
+                    if (arch.lastIndexOf("64") != -1) {
+                        pepNovoExecutable = "PepNovo_Linux";
+                    } else {
+                        // linux 32 bit is not supported
+                        pepNovoCheckBox.setSelected(false);
+                        pepNovoCheckBox.setEnabled(false);
+                    }
                 } else {
                     // unsupported OS version
+                    pepNovoCheckBox.setSelected(false);
+                    pepNovoCheckBox.setEnabled(false);
                 }
             }
 
@@ -292,13 +300,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     }
                     direcTagExecutable = "directag";
                 } else if (osName.contains("mac os")) {
-
-                    // try the linux version..?
-                    direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_32bit");
-                    direcTagExecutable = "directag";
-
+                    // mac os x not supported
+                    direcTagCheckBox.setSelected(false);
+                    direcTagCheckBox.setEnabled(false);
                 } else {
                     // unsupported OS version
+                    direcTagCheckBox.setSelected(false);
+                    direcTagCheckBox.setEnabled(false);
                 }
             }
 
@@ -2061,6 +2069,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         }
 
+        pepNovoCheckBox.setEnabled(result);
+
         return result;
     }
 
@@ -2086,6 +2096,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 result = true;
             }
         }
+
+        direcTagCheckBox.setEnabled(result);
 
         return result;
     }
