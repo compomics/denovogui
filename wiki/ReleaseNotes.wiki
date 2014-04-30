@@ -5,9 +5,10 @@
 
 *Changes in DeNovoGUI 1.4.0 (April 30. 2014):*
 
- * NEW FEATURE: Added Linux support for DirecTag (64 bit only).
+ * NEW FEATURE: Added Linux support for DirecTag (32 and 64 bit).
  * NEW FEATURE: Added 32 bit and 64 bit versions of DirecTag for Windows.
  * NEW FEATURE: DirecTag is now disabled on Mac (as a Mac build is not yet available).
+ * NEW FEATURE: PepNovo is now disabled on Linux 32 bit (as a 32 bit build is not available).
  * NEW FEATURE: Added new command line options for path configuration.
 
  * FEATURE IMPROVEMENT: Added the possibility for the user to turn the auto update on and off.
