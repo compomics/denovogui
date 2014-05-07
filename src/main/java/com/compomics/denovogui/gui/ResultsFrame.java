@@ -156,7 +156,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     /**
      * The name of the folder used for caching.
      */
-    private static String CACHE_DIRECTORY_NAME = "resources";
+    private static String CACHE_DIRECTORY_NAME = "matches";
     /**
      * The parent directory of the folder used for caching.
      */
@@ -1503,7 +1503,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void bugReportMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bugReportMenuActionPerformed
-        new BugReport(this, deNovoGUI.getLastSelectedFolder(), "DeNovoGUI", "denovogui", deNovoGUI.getVersion(), 
+        new BugReport(this, deNovoGUI.getLastSelectedFolder(), "DeNovoGUI", "denovogui", deNovoGUI.getVersion(),
                 "denovogui", "DeNovoGUI", new File(deNovoGUI.getJarFilePath() + "/resources/DeNovoGUI.log"));
     }//GEN-LAST:event_bugReportMenuActionPerformed
 
@@ -1822,7 +1822,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         try {
             proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler);
         } catch (SQLException e) {
-            waitingHandler.appendReport("Database" + sequenceFactory.getCurrentFastaFile().getName() + "could not be accessed, make sure that the file is not used by another program.", true, true);
+            waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
             waitingHandler.setRunCanceled();
             return;
@@ -2406,9 +2406,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     if (identification != null) {
                         displayResults();
                     }
-                    
+
                     // @TODO: catch out of memory...
-                    
                 } catch (Exception e) {
                     deNovoGUI.catchException(e);
                     progressDialog.setRunFinished();
@@ -3160,12 +3159,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         return knownMassDeltas;
     }
-    
+
     /**
      * Returns the folder used for caching identification objects.
-     * 
+     *
      * @param jarFilePath the path to the jar file
-     * 
+     *
      * @return the cache directory
      */
     public static File getCacheDirectory(String jarFilePath) {
@@ -3180,7 +3179,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Returns the directory used to save identification matches.
-     * 
+     *
      * @return the directory used to save identification matches
      */
     public static String getCacheDirectoryParent() {
@@ -3189,7 +3188,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Sets the directory used to save identification matches.
-     * 
+     *
      * @param cacheDirectory the directory used to save identification matches
      */
     public static void setCacheDirectoryParent(String cacheDirectory) {
@@ -3204,5 +3203,4 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     protected String getJarFilePath() {
         return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
     }
-    
 }
