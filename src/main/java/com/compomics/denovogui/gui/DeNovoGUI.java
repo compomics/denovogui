@@ -13,8 +13,8 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
-import com.compomics.software.dialogs.JavaOptionsDialog;
-import com.compomics.software.dialogs.JavaOptionsDialogParent;
+import com.compomics.software.dialogs.JavaMemoryDialogParent;
+import com.compomics.software.dialogs.JavaSettingsDialog;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -65,7 +65,7 @@ import net.jimmc.jshortcut.JShellLink;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaOptionsDialogParent {
+public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaMemoryDialogParent {
 
     /**
      * The compomics enzyme factory.
@@ -479,7 +479,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         pepNovoMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
-        javaOptionsJMenuItem = new javax.swing.JMenuItem();
+        javaSettingsJMenuItem = new javax.swing.JMenuItem();
         privacyMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
@@ -879,14 +879,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         editMenu.add(pepNovoMenuItem);
         editMenu.add(jSeparator5);
 
-        javaOptionsJMenuItem.setMnemonic('O');
-        javaOptionsJMenuItem.setText("Java Options");
-        javaOptionsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        javaSettingsJMenuItem.setMnemonic('O');
+        javaSettingsJMenuItem.setText("Java Settings");
+        javaSettingsJMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                javaOptionsJMenuItemActionPerformed(evt);
+                javaSettingsJMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(javaOptionsJMenuItem);
+        editMenu.add(javaSettingsJMenuItem);
 
         privacyMenuItem.setMnemonic('P');
         privacyMenuItem.setText("Privacy Settings");
@@ -1497,22 +1497,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     }//GEN-LAST:event_direcTagCheckBoxActionPerformed
 
     /**
-     * Open the Java options dialog.
+     * Open the Java settings dialog.
      *
      * @param evt
      */
-    private void javaOptionsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_javaOptionsJMenuItemActionPerformed
-
-        // reload the user preferences as these may have been changed by other tools
-        try {
-            utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-        new JavaOptionsDialog(this, this, null, "DeNovoGUI");
-    }//GEN-LAST:event_javaOptionsJMenuItemActionPerformed
+    private void javaSettingsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_javaSettingsJMenuItemActionPerformed
+        new JavaSettingsDialog(this, this, null, "DeNovoGUI", true);
+    }//GEN-LAST:event_javaSettingsJMenuItemActionPerformed
 
     /**
      * Open the PrivacySettingsDialog.
@@ -1616,7 +1607,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
-    private javax.swing.JMenuItem javaOptionsJMenuItem;
+    private javax.swing.JMenuItem javaSettingsJMenuItem;
     private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem loadExampleMenuItem;
     private javax.swing.JMenuItem logReportMenu;
