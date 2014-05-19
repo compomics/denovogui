@@ -9,7 +9,7 @@
 
  * BUG FIX: Fixed a bug in the Peptide Matches export where the database connection was dropped.
 
- * LIBRARY UPDATE: Updated utilities to version 3.26.36. 
+ * LIBRARY UPDATE: Updated utilities to version 3.26.38. 
 
 ----
 
