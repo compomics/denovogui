@@ -3,6 +3,16 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.1 (May 19. 2014):*
+
+ * FEATURE IMPROVEMENT: Updated the Java Settings dialogs.
+
+ * BUG FIX: Fixed a bug in the Peptide Matches export where the database connection was dropped.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.26.36. 
+
+----
+
 *Changes in DeNovoGUI 1.4.0 (April 30. 2014):*
 
  * NEW FEATURE: Added Linux support for DirecTag (32 and 64 bit).
