@@ -1649,6 +1649,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                                 if (!progressDialog.isRunCanceled()) {
+                                    progressDialog.setRunFinished();
                                     JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             }
@@ -1825,6 +1826,18 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
             waitingHandler.setRunCanceled();
+            return;
+        }
+
+        // reconnect to the database
+        String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
+        objectsCache.setAutomatedMemoryManagement(true);
+        try {
+            identification.establishConnection(dbFolder, false, objectsCache);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. "
+                    + "Please make sure that no other instance of DeNovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
             return;
         }
 
@@ -2915,7 +2928,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 }
                             }
 
-                            // Set GUI max/min values
+                            // Set GUI min/max values
                             double mz = tagAssumption.getTheoreticMz();
                             if (mz > maxIdentificationMz) {
                                 maxIdentificationMz = mz;
