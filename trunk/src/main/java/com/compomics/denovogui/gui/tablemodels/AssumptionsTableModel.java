@@ -131,7 +131,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
                 }
                 return null;
             case 9:
-                if (tagAssumption.getAdvocate() == Advocate.DirecTag.getIndex()) {
+                if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
                     return tagAssumption.getScore();
                 }
                 return null;

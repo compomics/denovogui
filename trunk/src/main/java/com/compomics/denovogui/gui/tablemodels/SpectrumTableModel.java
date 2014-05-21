@@ -209,7 +209,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.DirecTag.getIndex());
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.direcTag.getIndex());
                         if (hitMap != null) {
                             double bestScore = 0;
                             for (double score : hitMap.keySet()) {

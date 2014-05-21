@@ -176,7 +176,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * The implemented algorithms. The matches of these will be displayed only
      * and in this order.
      */
-    public final static Advocate[] implementedAlgorithms = {Advocate.DirecTag, Advocate.pepnovo};
+    public final static Advocate[] implementedAlgorithms = {Advocate.direcTag, Advocate.pepnovo};
     /**
      * The utilities user preferences.
      */
@@ -2327,7 +2327,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     public static double getBestScore(Advocate advocate, Set<Double> scores) {
         double bestScore = 0.0;
         for (double score : scores) {
-            if (advocate == Advocate.DirecTag) {
+            if (advocate == Advocate.direcTag) {
                 if (bestScore == 0.0 || score < bestScore) {
                     bestScore = score;
                 }
@@ -2349,7 +2349,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * @param scores the scores to sort
      */
     public static void sortScores(Advocate advocate, ArrayList<Double> scores) {
-        if (advocate == Advocate.DirecTag) {
+        if (advocate == Advocate.direcTag) {
             Collections.sort(scores);
         } else if (advocate == Advocate.pepnovo) {
             Collections.sort(scores, Collections.reverseOrder());
