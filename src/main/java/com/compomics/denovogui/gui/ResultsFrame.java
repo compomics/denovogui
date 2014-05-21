@@ -349,7 +349,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set up the search engines color map
         sequencingSoftwareColorMap = new HashMap<Integer, java.awt.Color>();
         sequencingSoftwareColorMap.put(Advocate.pepnovo.getIndex(), new java.awt.Color(153, 255, 255));
-        sequencingSoftwareColorMap.put(Advocate.DirecTag.getIndex(), new java.awt.Color(205, 92, 92));
+        sequencingSoftwareColorMap.put(Advocate.direcTag.getIndex(), new java.awt.Color(205, 92, 92));
     }
 
     /**
@@ -467,7 +467,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set up the search engines tooltip map
         HashMap<Integer, String> sequencingSoftwareTooltipMap = new HashMap<Integer, String>();
         sequencingSoftwareTooltipMap.put(Advocate.pepnovo.getIndex(), Advocate.pepnovo.getName());
-        sequencingSoftwareTooltipMap.put(Advocate.DirecTag.getIndex(), Advocate.DirecTag.getName());
+        sequencingSoftwareTooltipMap.put(Advocate.direcTag.getIndex(), Advocate.direcTag.getName());
 
         deNovoMatchesTable.getColumn("SA").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, sequencingSoftwareColorMap, sequencingSoftwareTooltipMap));
     }
@@ -2869,7 +2869,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                     if (advocate == Advocate.pepnovo.getIndex()) {
                         pepNovoDataLoaded = true;
-                    } else if (advocate == Advocate.DirecTag.getIndex()) {
+                    } else if (advocate == Advocate.direcTag.getIndex()) {
                         direcTagDataLoaded = true;
                     }
 
@@ -2901,7 +2901,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                         throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                     }
                                                     modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                } else if (advocate == Advocate.DirecTag.getIndex()) {
+                                                } else if (advocate == Advocate.direcTag.getIndex()) {
                                                     Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
                                                     String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
                                                     if (utilitiesPtmName == null) {
@@ -2958,7 +2958,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 if (score > maxPepnovoScore) {
                                     maxPepnovoScore = score;
                                 }
-                            } else if (advocate == Advocate.DirecTag.getIndex()) {
+                            } else if (advocate == Advocate.direcTag.getIndex()) {
                                 if (score > maxDirectTagEvalue) {
                                     maxDirectTagEvalue = score;
                                 }

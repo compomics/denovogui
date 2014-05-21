@@ -171,24 +171,24 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             parametersFile = searchParameters.getParametersFile();
         }
 
-        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()) == null) {
-            searchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), new OmssaParameters());
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
         }
-        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()) == null) {
-            searchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), new XtandemParameters());
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), new XtandemParameters());
         }
-        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()) == null) {
-            searchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), new MsgfParameters());
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
         }
         if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
             searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
         }
-        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex()) == null) {
-            searchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), new DirecTagParameters());
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
         }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
-        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
 
         // the general parameters
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
@@ -2006,28 +2006,28 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     public SearchParameters getSearchParametersFromGUI() {
 
         SearchParameters tempSearchParameters = new SearchParameters();
-        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()));
-        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()));
-        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()));
 
-        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex()) == null) {
-            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.OMSSA.getIndex(), new OmssaParameters());
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
         }
-        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.XTandem.getIndex()) == null) {
-            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.XTandem.getIndex(), new XtandemParameters());
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), new XtandemParameters());
         }
-        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.MSGF.getIndex()) == null) {
-            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.MSGF.getIndex(), new MsgfParameters());
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
         }
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
         }
-        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex()) == null) {
-            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), new DirecTagParameters());
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
         }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
-        DirecTagParameters direcTagParameters = (DirecTagParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
 
         Enzyme enzyme = enzymeFactory.getEnzyme("Trypsin"); // only trypsin is supported by pepnovo anyway...
         tempSearchParameters.setEnzyme(enzyme);
@@ -2091,7 +2091,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
 
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), pepNovoParameters);
-        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex(), direcTagParameters);
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), direcTagParameters);
 
         return tempSearchParameters;
     }

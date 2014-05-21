@@ -82,7 +82,7 @@ public class DirecTagJob extends Job {
         try {
 
             // get the DirecTag specific parameters
-            DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.DirecTag.getIndex());
+            DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
 
             // full path to executable
             procCommands.add(exeFolder.getAbsolutePath() + File.separator + exeTitle);
