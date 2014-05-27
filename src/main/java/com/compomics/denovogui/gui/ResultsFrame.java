@@ -226,10 +226,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private ObjectsCache objectsCache = new ObjectsCache();
     /**
-     * The sequencing software color map.
-     */
-    private HashMap<Integer, java.awt.Color> sequencingSoftwareColorMap;
-    /**
      * True if both PepNovo and DirecTag results are loaded.
      */
     private boolean pepNovoAndDirecTagLoaded = false;
@@ -345,11 +341,6 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
-
-        // set up the search engines color map
-        sequencingSoftwareColorMap = new HashMap<Integer, java.awt.Color>();
-        sequencingSoftwareColorMap.put(Advocate.pepnovo.getIndex(), new java.awt.Color(153, 255, 255));
-        sequencingSoftwareColorMap.put(Advocate.direcTag.getIndex(), new java.awt.Color(205, 92, 92));
     }
 
     /**
@@ -464,12 +455,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 null,
                 "Click to BLAST tag sequence", null));
 
-        // set up the search engines tooltip map
-        HashMap<Integer, String> sequencingSoftwareTooltipMap = new HashMap<Integer, String>();
-        sequencingSoftwareTooltipMap.put(Advocate.pepnovo.getIndex(), Advocate.pepnovo.getName());
-        sequencingSoftwareTooltipMap.put(Advocate.direcTag.getIndex(), Advocate.direcTag.getName());
-
-        deNovoMatchesTable.getColumn("SA").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, sequencingSoftwareColorMap, sequencingSoftwareTooltipMap));
+        deNovoMatchesTable.getColumn("SA").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, Advocate.getAdvocateColorMap(), Advocate.getAdvocateToolTipMap()));
     }
 
     /**
