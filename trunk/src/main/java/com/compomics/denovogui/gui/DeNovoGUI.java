@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -2371,6 +2372,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             return CompomicsWrapper.checkForNewDeployedVersion("DeNovoGUI", oldMavenJarFile, jarRepository, "denovogui.ico",
                     false, true, true, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), true);
+        } catch (UnknownHostException ex) {
+            // no internet connection
+            System.out.println("Checking for new version failed. No internet connection.");
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
