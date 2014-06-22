@@ -1799,7 +1799,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             waitingHandler.appendReport("Warning: DeNovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
                     + "Note that using large large databases also increases the number of false positives. "
                     + "Try to either (i) use a smaller database, (ii) increase the memory provided to PeptideShaker, or (iii) improve the reading speed by using an SSD disc. "
-                    + "(See also <a href=\"https://code.google.com/p/compomics-utilities/wiki/ProteinInference\">Protein Inference</a>).", true, true);
+                    + "(See also http://code.google.com/p/compomics-utilities/wiki/ProteinInference.)", true, true);
 
         }
         int cacheSize = (int) availableCachSize;
