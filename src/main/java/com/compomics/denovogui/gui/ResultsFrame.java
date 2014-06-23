@@ -6,6 +6,7 @@ import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
 import com.compomics.denovogui.io.ExportType;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.util.Util;
+import com.compomics.util.db.DerbyUtil;
 import com.compomics.util.db.ObjectsCache;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.MsExperiment;
@@ -3011,6 +3012,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 //                public void run() {
             try {
                 identification.close();
+                DerbyUtil.closeConnection();
                 File matchFolder = getCacheDirectory(getJarFilePath());
                 File[] tempFiles = matchFolder.listFiles();
 
