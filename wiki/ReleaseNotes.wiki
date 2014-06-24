@@ -9,7 +9,7 @@
  * FEATURE IMPROVEMENT: Improved the speed of the Waiting Dialog.
  * FEATURE IMPROVEMENT: Cleaned up the closing of internal database connection.
 
- * LIBRARY UPDATE: Updated utilities to version 3.28.29. 
+ * LIBRARY UPDATE: Updated utilities to version 3.28.30. 
 
 ----
 
