@@ -1816,6 +1816,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             return;
         }
 
+        // disconnect from the database 
+        identification.close(); // @TODO: should not be needed?
+
         // reconnect to the database
         String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
         objectsCache.setAutomatedMemoryManagement(true);
