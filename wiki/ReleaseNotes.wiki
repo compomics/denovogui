@@ -3,7 +3,7 @@
 
 ----
 
-*Changes in DeNovoGUI 1.4.2 (Coming soon...):*
+*Changes in DeNovoGUI 1.4.2 (June 25. 2014):*
 
  * FEATURE IMPROVEMENT: If there is no internet connection the check for new version no longer prints an error log to the log file.
  * FEATURE IMPROVEMENT: Improved the speed of the Waiting Dialog.
