@@ -99,7 +99,10 @@ public class DirecTagJob extends Job {
             String fixedModsAsString = "";
             ArrayList<String> fixedPtms = searchParameters.getModificationProfile().getFixedModifications();
             for (String ptmName : fixedPtms) {
-                fixedModsAsString += getFixedPtmFormattedForDirecTag(ptmName);
+                PTM ptm = ptmFactory.getPTM(ptmName);
+                if (ptm.getType() == PTM.MODAA) {
+                    fixedModsAsString += getFixedPtmFormattedForDirecTag(ptmName);
+                }
             }
             fixedModsAsString = fixedModsAsString.trim();
             if (!fixedModsAsString.isEmpty()) {
@@ -112,7 +115,10 @@ public class DirecTagJob extends Job {
             String variableModsAsString = "";
             ArrayList<String> variablePtms = searchParameters.getModificationProfile().getVariableModifications();
             for (String ptmName : variablePtms) {
-                variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, modCounter++);
+                PTM ptm = ptmFactory.getPTM(ptmName);
+                if (ptm.getType() == PTM.MODAA) {
+                    variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, modCounter++);
+                }
             }
             variableModsAsString = variableModsAsString.trim();
             if (!variableModsAsString.isEmpty()) {
@@ -137,11 +143,16 @@ public class DirecTagJob extends Job {
             procCommands.add(String.valueOf(direcTagParameters.getMaxTagCount()));
 
             // maximum peak count
-//        procCommands.add("-MaxPeakCount");
+            procCommands.add("-MaxPeakCount");
+            procCommands.add("100");
 //        procCommands.add(String.valueOf(direcTagParameters.getMaxPeakCount())); // @TODO: figure out why adding this parameter seems to make DirecTag very slow, even when the default value is used
             // number of intensity classes
             procCommands.add("-NumIntensityClasses");
             procCommands.add(String.valueOf(direcTagParameters.getNumIntensityClasses()));
+
+            // adjust precursor mass
+            procCommands.add("-TicCutoffPercentage");
+            procCommands.add(String.valueOf(direcTagParameters.getTicCutoffPercentage() / 100));
 
             // adjust precursor mass
             procCommands.add("-AdjustPrecursorMass");
