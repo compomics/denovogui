@@ -205,8 +205,8 @@
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Component id="aboutButton" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                          <Component id="deNovoGuiWebPageJLabel" pref="343" max="32767" attributes="0"/>
-                          <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
+                          <Component id="deNovoGuiWebPageJLabel" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="startButton" min="-2" pref="162" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
                       </Group>
@@ -260,10 +260,18 @@
                       </Group>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="direcTagLinkLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="direcTagPlatformsButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="pepNovoLinkLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="108" max="32767" attributes="0"/>
+                              <Component id="pepNovoPlatformsButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace pref="53" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -272,17 +280,19 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="pepNovoCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="pepNovoCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="direcTagCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="direcTagCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="direcTagPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="17" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -290,7 +300,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="pepNovoLinkLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;De Novo Peptide Sequencing via Probabilistic Network Modeling - &lt;a href=&quot;http://proteomics.ucsd.edu/Software/PepNovo.html&quot;&gt;PepNovo+ web page&lt;/a&gt;&lt;/html&gt; "/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;PepNovo+ for De Novo Peptide Sequencing - &lt;a href=&quot;http://proteomics.ucsd.edu/Software/PepNovo.html&quot;&gt;PepNovo+ web page&lt;/a&gt;&lt;/html&gt; "/>
                 <Property name="toolTipText" type="java.lang.String" value="Open the PepNovo+ web page"/>
               </Properties>
               <Events>
@@ -337,7 +347,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="direcTagLinkLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;DirecTag for MS-MS Sequence Tagging - &lt;a href=&quot;http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/&quot;&gt;DirecTag web page&lt;/a&gt;&lt;/html&gt; "/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;DirecTag for MS/MS Sequence Tagging - &lt;a href=&quot;http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/&quot;&gt;DirecTag web page&lt;/a&gt;&lt;/html&gt; "/>
                 <Property name="toolTipText" type="java.lang.String" value="Open the DirecTag web page"/>
               </Properties>
               <Events>
@@ -365,6 +375,32 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoCheckBoxActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="direcTagPlatformsButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/windows_and_linux_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Supported on Windows and Linux"/>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/windows_and_linux.png"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="pepNovoPlatformsButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/all_platforms_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Supported on Windows, Apple and Linux&lt;br&gt;&#xa;(Note: requires Linux 64 bit)&#xa;&lt;/html&gt;"/>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/all_platforms.png"/>
+                </Property>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
@@ -565,8 +601,8 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="0" red="0" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;u&gt;&lt;i&gt;For additional information see http://denovogui.googlecode.com&lt;/i&gt;&lt;/u&gt;&lt;/html&gt;"/>
-            <Property name="toolTipText" type="java.lang.String" value="Open the DeNovoGUI web page"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Please cite DeNovoGUI as &lt;a href=&quot;http://www.ncbi.nlm.nih.gov/pubmed/24295440&quot;&gt;Muth &lt;i&gt;et al.&lt;/i&gt;: J Proteome Res. 2014 Feb 7;13(2):1143-6&lt;/a&gt;.&lt;/html&gt;"/>
+            <Property name="toolTipText" type="java.lang.String" value="Open the DeNovoGUI publication"/>
           </Properties>
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoGuiWebPageJLabelMouseClicked"/>

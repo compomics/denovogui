@@ -451,6 +451,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         direcTagLinkLabel = new javax.swing.JLabel();
         direcTagCheckBox = new javax.swing.JCheckBox();
         pepNovoCheckBox = new javax.swing.JCheckBox();
+        direcTagPlatformsButton = new javax.swing.JButton();
+        pepNovoPlatformsButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -503,7 +505,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         searchEnginesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Sequencing Methods"));
         searchEnginesPanel.setOpaque(false);
 
-        pepNovoLinkLabel.setText("<html>De Novo Peptide Sequencing via Probabilistic Network Modeling - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo+ web page</a></html> ");
+        pepNovoLinkLabel.setText("<html>PepNovo+ for De Novo Peptide Sequencing - <a href=\"http://proteomics.ucsd.edu/Software/PepNovo.html\">PepNovo+ web page</a></html> ");
         pepNovoLinkLabel.setToolTipText("Open the PepNovo+ web page");
         pepNovoLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -555,7 +557,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         });
 
-        direcTagLinkLabel.setText("<html>DirecTag for MS-MS Sequence Tagging - <a href=\"http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/\">DirecTag web page</a></html> ");
+        direcTagLinkLabel.setText("<html>DirecTag for MS/MS Sequence Tagging - <a href=\"http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/\">DirecTag web page</a></html> ");
         direcTagLinkLabel.setToolTipText("Open the DirecTag web page");
         direcTagLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -587,6 +589,18 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         });
 
+        direcTagPlatformsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/windows_and_linux_gray.png"))); // NOI18N
+        direcTagPlatformsButton.setToolTipText("Supported on Windows and Linux");
+        direcTagPlatformsButton.setBorderPainted(false);
+        direcTagPlatformsButton.setContentAreaFilled(false);
+        direcTagPlatformsButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/windows_and_linux.png"))); // NOI18N
+
+        pepNovoPlatformsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/all_platforms_gray.png"))); // NOI18N
+        pepNovoPlatformsButton.setToolTipText("<html>\nSupported on Windows, Apple and Linux<br>\n(Note: requires Linux 64 bit)\n</html>");
+        pepNovoPlatformsButton.setBorderPainted(false);
+        pepNovoPlatformsButton.setContentAreaFilled(false);
+        pepNovoPlatformsButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/all_platforms.png"))); // NOI18N
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -602,24 +616,32 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(53, Short.MAX_VALUE))
+                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                        .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(direcTagPlatformsButton))
+                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                        .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                        .addComponent(pepNovoPlatformsButton)))
+                .addGap(36, 36, 36))
         );
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(pepNovoCheckBox)
                     .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pepNovoCheckBox))
+                    .addComponent(pepNovoPlatformsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(direcTagCheckBox)
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(direcTagCheckBox))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(direcTagPlatformsButton))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         startButton.setBackground(new java.awt.Color(0, 153, 0));
@@ -764,8 +786,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         });
 
         deNovoGuiWebPageJLabel.setForeground(new java.awt.Color(0, 0, 255));
-        deNovoGuiWebPageJLabel.setText("<html><u><i>For additional information see http://denovogui.googlecode.com</i></u></html>");
-        deNovoGuiWebPageJLabel.setToolTipText("Open the DeNovoGUI web page");
+        deNovoGuiWebPageJLabel.setText("<html>Please cite DeNovoGUI as <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/24295440\">Muth <i>et al.</i>: J Proteome Res. 2014 Feb 7;13(2):1143-6</a>.</html>");
+        deNovoGuiWebPageJLabel.setToolTipText("Open the DeNovoGUI publication");
         deNovoGuiWebPageJLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 deNovoGuiWebPageJLabelMouseClicked(evt);
@@ -791,8 +813,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                         .addGap(10, 10, 10)
                         .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
-                        .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
-                        .addGap(80, 80, 80)
+                        .addComponent(deNovoGuiWebPageJLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11)))
                 .addContainerGap())
@@ -1321,13 +1343,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     }//GEN-LAST:event_aboutButtonActionPerformed
 
     /**
-     * Open the DeNovoGUI web page.
+     * Open the DeNovoGUI publication.
      *
      * @param evt
      */
     private void deNovoGuiWebPageJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deNovoGuiWebPageJLabelMouseClicked
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        BareBonesBrowserLaunch.openURL("http://denovogui.googlecode.com");
+        BareBonesBrowserLaunch.openURL("http://www.ncbi.nlm.nih.gov/pubmed/24295440");
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_deNovoGuiWebPageJLabelMouseClicked
 
@@ -1595,6 +1617,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JButton direcTagButton;
     private javax.swing.JCheckBox direcTagCheckBox;
     private javax.swing.JLabel direcTagLinkLabel;
+    private javax.swing.JButton direcTagPlatformsButton;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
@@ -1620,6 +1643,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JCheckBox pepNovoCheckBox;
     private javax.swing.JLabel pepNovoLinkLabel;
     private javax.swing.JMenuItem pepNovoMenuItem;
+    private javax.swing.JButton pepNovoPlatformsButton;
     private javax.swing.JMenuItem privacyMenuItem;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
