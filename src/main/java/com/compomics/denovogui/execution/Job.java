@@ -95,13 +95,13 @@ public abstract class Job implements Executable, Runnable {
             int spectrumCount = 1000;
             if (totalSpectrumCount <= 1000) {
                 spectrumCount = 100;
-            } 
+            }
             if (totalSpectrumCount <= 100) {
                 spectrumCount = 10;
             }
 
             // Get input from scanner and send to stdout
-            while (scan.hasNextLine()&& !waitingHandler.isRunCanceled()) {
+            while (scan.hasNextLine() && !waitingHandler.isRunCanceled()) {
                 String temp = scan.nextLine();
                 writer.write(temp);
                 writer.newLine();
@@ -205,9 +205,9 @@ public abstract class Job implements Executable, Runnable {
     public void setFilename(String filename) {
         this.filename = filename;
     }
-    
+
     /**
-     * Writes the command executed to the out stream
+     * Writes the command executed to the out stream.
      */
     public abstract void writeCommand();
 
