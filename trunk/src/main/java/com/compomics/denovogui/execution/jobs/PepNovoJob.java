@@ -39,6 +39,10 @@ public class PepNovoJob extends Job {
      * The output path.
      */
     private File outputFolder;
+    /**
+     * the command executed
+     */
+    private String command = "";
 
     /**
      * Constructor for the PepnovoJob.
@@ -127,12 +131,13 @@ public class PepNovoJob extends Job {
             outputFile = FileProcessor.getOutFile(outputFolder, spectrumFile);
             procCommands.trimToSize();
 
-            // print the command to the log file
-            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: ");
-            for (int i = 0; i < procCommands.size(); i++) {
-                System.out.print(procCommands.get(i) + " ");
+            // save command line
+            for (String commandComponent : procCommands) {
+                if (!command.equals("")) {
+                    command += " ";
+                }
+                command += commandComponent;
             }
-            System.out.println(System.getProperty("line.separator"));
 
             // Set the description - yet not used
             setDescription("PepNovo+");
@@ -163,5 +168,10 @@ public class PepNovoJob extends Job {
     @Override
     public void run() {
         super.run();
+    }
+
+    @Override
+    public void writeCommand() {
+            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
     }
 }
