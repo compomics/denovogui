@@ -40,7 +40,7 @@ public class PepNovoJob extends Job {
      */
     private File outputFolder;
     /**
-     * the command executed
+     * The command executed.
      */
     private String command = "";
 
@@ -70,7 +70,6 @@ public class PepNovoJob extends Job {
     private void initJob() {
 
         try {
-
             // get the PepNovo specific parameters
             PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
 
@@ -172,6 +171,6 @@ public class PepNovoJob extends Job {
 
     @Override
     public void writeCommand() {
-            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
+        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
     }
 }

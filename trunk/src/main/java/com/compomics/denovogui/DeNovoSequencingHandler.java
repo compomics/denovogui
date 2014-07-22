@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -238,7 +237,7 @@ public class DeNovoSequencingHandler {
             for (File chunkFile : chunkFiles) {
                 if (!chunkFile.exists()) {
                     chunksuccess = false;
-                    waitingHandler.appendReport("Processing of the spectra failed, only one thread will be used for pepnovo.", true, true);
+                    waitingHandler.appendReport("Processing of the spectra failed. Only one thread will be used for PepNovo+.", true, true);
                 }
             }
 

@@ -52,7 +52,7 @@ public class DirecTagJob extends Job {
      */
     private int nThreads;
     /**
-     * the command executed
+     * The command executed.
      */
     private String command = "";
 
@@ -322,6 +322,6 @@ public class DirecTagJob extends Job {
 
     @Override
     public void writeCommand() {
-            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
+        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "DirecTag command: " + command + System.getProperty("line.separator"));
     }
 }
