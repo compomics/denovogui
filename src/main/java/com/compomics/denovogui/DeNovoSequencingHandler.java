@@ -233,10 +233,31 @@ public class DeNovoSequencingHandler {
                 waitingHandler.setSecondaryProgressCounterIndeterminate(true);
             }
 
+            // Verify that the file is chunked and use the entire if not
+            boolean chunksuccess = true;
+            for (File chunkFile : chunkFiles) {
+                if (!chunkFile.exists()) {
+                    chunksuccess = false;
+                    waitingHandler.appendReport("Processing of the spectra failed, only one thread will be used for pepnovo.", true, true);
+                }
+            }
+
+            if (!chunksuccess || enableDirecTag) {
+                if (!spectrumFile.exists()) {
+                    waitingHandler.appendReport("Spectrum file not found.", true, true);
+                    return;
+                }
+            }
+
             // Distribute the chunked spectra to the different PepNovo+ jobs.
             if (enablePepNovo) {
-                for (File chunkFile : chunkFiles) {
-                    PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                if (chunksuccess) {
+                    for (File chunkFile : chunkFiles) {
+                        PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                        jobs.add(pepNovoJob);
+                    }
+                } else {
+                    PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, spectrumFile, outputFolder, searchParameters, waitingHandler);
                     jobs.add(pepNovoJob);
                 }
             }
@@ -264,9 +285,8 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReportEndLine();
 
         // Execute the jobs from the queue.
-        Iterator<Job> iterator = jobs.iterator();
-        while (iterator.hasNext()) {
-            Job job = iterator.next();
+        for (Job job : jobs) {
+            job.writeCommand();
             threadExecutor.execute(job);
             if (waitingHandler.isRunCanceled()) {
                 return;
@@ -275,6 +295,7 @@ public class DeNovoSequencingHandler {
 
         // Wait for executor service to shutdown.      
         threadExecutor.shutdown();
+
         try {
             threadExecutor.awaitTermination(12, TimeUnit.HOURS);
         } catch (InterruptedException ex) {
@@ -289,8 +310,10 @@ public class DeNovoSequencingHandler {
         }
 
         waitingHandler.appendReportEndLine();
+
         waitingHandler.appendReport("Sequencing of " + spectrumFile.getName() + " finished.", true, true);
         waitingHandler.appendReportEndLine();
+
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         if (enablePepNovo) {

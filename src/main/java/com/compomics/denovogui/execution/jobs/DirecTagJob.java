@@ -51,6 +51,10 @@ public class DirecTagJob extends Job {
      * The number of threads.
      */
     private int nThreads;
+    /**
+     * the command executed
+     */
+    private String command = "";
 
     /**
      * Constructor for the DirecTag algorithm job.
@@ -224,12 +228,13 @@ public class DirecTagJob extends Job {
 
             outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + "_directag.log");
 
-            // print the command to the log file
-            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "DirecTag command: ");
-            for (int i = 0; i < procCommands.size(); i++) {
-                System.out.print(procCommands.get(i) + " ");
+            // save command line
+            for (String commandComponent : procCommands) {
+                if (!command.equals("")) {
+                    command += " ";
+                }
+                command += commandComponent;
             }
-            System.out.println(System.getProperty("line.separator"));
 
             // set the description
             setDescription("DirecTag");
@@ -313,5 +318,10 @@ public class DirecTagJob extends Job {
 
         // return the ptm
         return ptmAsString;
+    }
+
+    @Override
+    public void writeCommand() {
+            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
     }
 }

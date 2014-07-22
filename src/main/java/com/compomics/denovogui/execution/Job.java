@@ -146,9 +146,7 @@ public abstract class Job implements Executable, Runnable {
         }
     }
 
-    /**
-     * Returns the error message of the job.
-     */
+    @Override
     public String getError() {
         return error;
     }
@@ -162,11 +160,7 @@ public abstract class Job implements Executable, Runnable {
         this.error = error;
     }
 
-    /**
-     * Returns the status of the job.
-     *
-     * @return The status of this job
-     */
+    @Override
     public final JobStatus getStatus() {
         return this.status;
     }
@@ -180,11 +174,7 @@ public abstract class Job implements Executable, Runnable {
         this.status = status;
     }
 
-    /**
-     * Returns the description of the job.
-     *
-     * @return the description
-     */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -215,10 +205,13 @@ public abstract class Job implements Executable, Runnable {
     public void setFilename(String filename) {
         this.filename = filename;
     }
-
+    
     /**
-     * Cancels the job by destroying the process.
+     * Writes the command executed to the out stream
      */
+    public abstract void writeCommand();
+
+    @Override
     public void cancel() {
         if (proc != null) {
             proc.destroy();
