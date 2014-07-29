@@ -224,8 +224,9 @@ public class FileProcessor {
      *
      * @param outFile the out file
      * @return the corresponding mgf file
+     * @throws IllegalArgumentException
      */
-    public static File getMgfFile(File outFile) {
+    public static File getMgfFile(File outFile) throws IllegalArgumentException {
         String fileName = Util.getFileName(outFile);
         if (fileName.endsWith(".out")) {
             String mgfName = fileName.substring(0, fileName.lastIndexOf("."));
