@@ -332,10 +332,14 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                 for (File file : selectedFiles) {
                     if (file.exists()) {
                         resultFiles.add(file);
-                        File tempMgfFile = FileProcessor.getMgfFile(file);
-
-                        if (tempMgfFile.exists() && !mgfFiles.contains(tempMgfFile)) {
-                            mgfFiles.add(tempMgfFile);
+                        try {
+                            // see if the mgf file can be found
+                            File tempMgfFile = FileProcessor.getMgfFile(file);
+                            if (tempMgfFile.exists() && !mgfFiles.contains(tempMgfFile)) {
+                                mgfFiles.add(tempMgfFile);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // ignore, just means the given mgf file does not exist
                         }
                         lastSelectedFolder = file.getParent();
                     }
@@ -382,7 +386,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                     }
                 }
 
-                if (parameterFile.exists()) {
+                if (parameterFile != null && parameterFile.exists()) {
                     try {
                         searchParameters = SearchParameters.getIdentificationParameters(parameterFile);
                         paramtersTxt.setText(parameterFile.getName());
