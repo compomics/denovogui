@@ -3,6 +3,18 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.3 (July 29. 2014):*
+
+ * NEW FEATURE: Added indicators of the supported platforms for each search engine.
+
+ * FEATURE IMPROVEMENT: Added the TIC cut-off in the DirecTag command line.
+ * FEATURE IMPROVEMENT: Made sure that closing a dialog is always considered the same as using the cancel button.
+
+ * LIBRARY UPDATE: Updated jsparklines to version 0.8.0.
+ * LIBRARY UPDATE: Updated utilities to version 3.29.7. 
+
+----
+
 *Changes in DeNovoGUI 1.4.2 (June 25. 2014):*
 
  * FEATURE IMPROVEMENT: If there is no internet connection the check for new version no longer prints an error log to the log file.
