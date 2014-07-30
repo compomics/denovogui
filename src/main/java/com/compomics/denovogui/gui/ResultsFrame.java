@@ -14,6 +14,7 @@ import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
+import com.compomics.util.experiment.biology.AminoAcidSequence;
 import com.compomics.util.experiment.biology.Ion;
 import com.compomics.util.experiment.biology.IonFactory;
 import com.compomics.util.experiment.biology.NeutralLoss;
@@ -41,6 +42,7 @@ import com.compomics.util.experiment.identification.protein_inference.proteintre
 import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.identification.tags.TagComponent;
+import com.compomics.util.experiment.identification.tags.tagcomponents.MassGap;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
@@ -2303,10 +2305,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumJPanel.add(spectrumPanel);
                     Tag tag = tagAssumption.getTag();
 
-                    // get the modifications for the tag // @TODO: is there an easier way to do this??
+                    // get the modifications for the tag
                     ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
 
-                    for (TagComponent tagComponent : tag.getContent()) {
+                    for (TagComponent tagComponent : tagAssumption.getTag().getContent()) {
                         if (tagComponent instanceof AminoAcidPattern) {
                             AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
                             for (int site = 1; site <= aminoAcidPattern.length(); site++) {
@@ -2314,6 +2316,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                     modificationMatches.add(modificationMatch);
                                 }
                             }
+                        } else if (tagComponent instanceof AminoAcidSequence) {
+                            AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                            for (int site = 1; site <= aminoAcidSequence.length(); site++) {
+                                for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
+                                    modificationMatches.add(modificationMatch);
+                                }
+                            }
+                        } else if (tagComponent instanceof MassGap) {
+                            // Nothing to do here
+                        } else {
+                            throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
                         }
                     }
 
@@ -2776,6 +2789,23 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 + ": " + modName + "<br>";
                     }
                 }
+            } else if (tagComponent instanceof AminoAcidSequence) {
+                AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                for (int site = 1; site <= aminoAcidSequence.length(); site++) {
+                    for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
+                        char affectedResidue = aminoAcidSequence.charAt(site - 1);
+                        String modName = modificationMatch.getTheoreticPtm();
+                        Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
+                        tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                + affectedResidue
+                                + "</span>"
+                                + ": " + modName + "<br>";
+                    }
+                }
+            } else if (tagComponent instanceof MassGap) {
+                // Nothing to do here
+            } else {
+                throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
             }
         }
 
@@ -2915,6 +2945,49 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                             }
                                         }
                                     }
+                                } else if (tagComponent instanceof AminoAcidSequence) {
+
+                                    AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+
+                                    for (int aa : aminoAcidSequence.getModificationIndexes()) {
+                                        for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(aa)) {
+                                            if (modificationMatch.isVariable()) {
+                                                if (advocate == Advocate.pepnovo.getIndex()) {
+                                                    String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                    PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                    String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                    if (utilitiesPtmName == null) {
+                                                        throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                    }
+                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                } else if (advocate == Advocate.direcTag.getIndex()) {
+                                                    Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
+                                                    String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
+                                                    if (utilitiesPtmName == null) {
+                                                        throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                    }
+                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
+                                                    ArrayList<AminoAcid> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                    if (aaAtTarget.size() > 1) {
+                                                        throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                    }
+                                                    int aaIndex = aa - 1;
+                                                    aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0).singleLetterCode.charAt(0));
+                                                } else {
+                                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                    if (notImplemented == null) {
+                                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                    }
+                                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (tagComponent instanceof MassGap) {
+                                    // Nothing to do here
+                                } else {
+                                    throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
                                 }
                             }
 
