@@ -595,7 +595,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         direcTagPlatformsButton.setContentAreaFilled(false);
 
         pepNovoPlatformsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/all_platforms_gray.png"))); // NOI18N
-        pepNovoPlatformsButton.setToolTipText("<html>\nSupported on Windows, Apple and Linux<br>\n(Note: requires Linux 64 bit)\n</html>");
+        pepNovoPlatformsButton.setToolTipText("<html>\nSupported on Windows, Mac and Linux<br>\n(Note: requires Linux 64 bit)\n</html>");
         pepNovoPlatformsButton.setBorderPainted(false);
         pepNovoPlatformsButton.setContentAreaFilled(false);
 
@@ -618,9 +618,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(pepNovoPlatformsButton))
                 .addGap(31, 31, 31)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                        .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33))
+                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
