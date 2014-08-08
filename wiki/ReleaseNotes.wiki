@@ -3,7 +3,15 @@
 
 ----
 
-*Changes in DeNovoGUI 1.4.3 (July 31. 2014):*
+*Changes in DeNovoGUI 1.4.5 (August 8. 2014):*
+
+ * BUG FIX: Fixed a bug in the spectrum annotation of tags.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.31.2. 
+
+----
+
+*Changes in DeNovoGUI 1.4.4 (July 31. 2014):*
 
  * FEATURE IMPROVEMENT: Improved the tag to protein mapping.
 
