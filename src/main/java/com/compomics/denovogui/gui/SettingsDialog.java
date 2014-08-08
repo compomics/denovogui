@@ -15,6 +15,7 @@ import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.preferences.SequenceMatchingPreferences;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;

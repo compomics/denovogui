@@ -1387,7 +1387,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         if (automaticAnnotationCheckBoxMenuItem.isSelected()) {
             adaptCheckBoxMenuItem.setSelected(true);
             try {
-                annotationPreferences.resetAutomaticAnnotation(DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                annotationPreferences.resetAutomaticAnnotation(deNovoGUI.getSequenceMatchingPreferences());
             } catch (Exception e) {
                 deNovoGUI.catchException(e);
             }
@@ -1880,7 +1880,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 if (passesThreshold) {
                                     if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true, true);
+                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
                                         for (Peptide peptide : proteinMapping.keySet()) {
                                             peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
                                             PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
@@ -2267,7 +2267,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                     spectrumPanel.setBorder(null);
 
                     // add the annotations
-                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), deNovoGUI.getSequenceMatchingPreferences());
 
                     TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
 
@@ -2902,7 +2902,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             Tag tag = tagAssumption.getTag();
 
                             // add the fixed PTMs
-                            ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, DeNovoGUI.MATCHING_TYPE, searchParameters.getFragmentIonAccuracy());
+                            ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, deNovoGUI.getSequenceMatchingPreferences());
 
                             // rename the variable modifications
                             for (TagComponent tagComponent : tag.getContent()) {

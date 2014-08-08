@@ -30,6 +30,7 @@ import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
+import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -170,10 +171,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      */
     private ProgressDialogX progressDialog;
     /**
-     * The type of matching used for peptide to protein matching.
-     */
-    public final static AminoAcidPattern.MatchingType MATCHING_TYPE = AminoAcidPattern.MatchingType.indistiguishibleAminoAcids;
-    /**
      * The implemented algorithms. The matches of these will be displayed only
      * and in this order.
      */
@@ -182,6 +179,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * The utilities user preferences.
      */
     private UtilitiesUserPreferences utilitiesUserPreferences = null;
+    /**
+     * The sequence matching preferences
+     */
+    private SequenceMatchingPreferences sequenceMatchingPreferences;
 
     /**
      * Creates a new DeNovoGUI.
@@ -2127,6 +2128,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         } else {
             settingsFileJTextField.setText(userSettingsTxt);
         }
+        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
         validateInput(false);
     }
 
@@ -2404,4 +2406,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             return false;
         }
     }
+
+    /**
+     * Returns the sequence matching preferences.
+     * 
+     * @return the sequence matching preferences
+     */
+    public SequenceMatchingPreferences getSequenceMatchingPreferences() {
+        return sequenceMatchingPreferences;
+    }
+
+    /**
+     * Sets the sequence matching preferences.
+     * 
+     * @param sequenceMatchingPreferences the sequence matching preferences
+     */
+    public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
+        this.sequenceMatchingPreferences = sequenceMatchingPreferences;
+    }
+    
+    
 }
