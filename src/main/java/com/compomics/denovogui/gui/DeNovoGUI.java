@@ -15,7 +15,6 @@ import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaMemoryDialogParent;
 import com.compomics.software.dialogs.JavaSettingsDialog;
-import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.general.ExceptionHandler;
@@ -180,7 +179,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      */
     private UtilitiesUserPreferences utilitiesUserPreferences = null;
     /**
-     * The sequence matching preferences
+     * The sequence matching preferences.
      */
     private SequenceMatchingPreferences sequenceMatchingPreferences;
 
@@ -544,6 +543,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         direcTagButton.setBorder(null);
         direcTagButton.setBorderPainted(false);
         direcTagButton.setContentAreaFilled(false);
+        direcTagButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         direcTagButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 direcTagButtonMouseEntered(evt);
@@ -623,6 +623,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        searchEnginesPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {direcTagButton, pepNovoButton});
+
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
@@ -2409,7 +2412,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
     /**
      * Returns the sequence matching preferences.
-     * 
+     *
      * @return the sequence matching preferences
      */
     public SequenceMatchingPreferences getSequenceMatchingPreferences() {
@@ -2418,12 +2421,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
     /**
      * Sets the sequence matching preferences.
-     * 
+     *
      * @param sequenceMatchingPreferences the sequence matching preferences
      */
     public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
         this.sequenceMatchingPreferences = sequenceMatchingPreferences;
     }
-    
-    
+
 }
