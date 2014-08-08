@@ -255,8 +255,8 @@
                       </Group>
                       <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="pepNovoButton" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
-                          <Component id="direcTagButton" alignment="0" min="-2" pref="88" max="-2" attributes="0"/>
+                          <Component id="pepNovoButton" linkSize="4" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
+                          <Component id="direcTagButton" linkSize="4" alignment="0" min="-2" pref="88" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -335,6 +335,7 @@
                 </Property>
                 <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="horizontalAlignment" type="int" value="4"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="direcTagButtonMouseEntered"/>
