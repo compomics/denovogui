@@ -78,6 +78,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -2880,7 +2881,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             progressDialog.setTitle(loadingText);
 
             IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile);
-            HashSet<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+            LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
             progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
             // remap the ptms and set GUI min/max values
@@ -3041,7 +3042,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
 
             // put the matches in the identification object
-            tempIdentification.addSpectrumMatch(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
+            tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
 
             idfileReader.close();
 
