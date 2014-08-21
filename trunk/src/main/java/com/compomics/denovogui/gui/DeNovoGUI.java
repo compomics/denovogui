@@ -2391,7 +2391,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      */
     public boolean checkForNewVersion() {
         try {
-            File jarFile = new File(DeNovoGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File jarFile = new File(DeNovoGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             MavenJarFile oldMavenJarFile = new MavenJarFile(jarFile.toURI());
             URL jarRepository = new URL("http", "genesis.ugent.be", new StringBuilder().append("/maven2/").toString());
             return CompomicsWrapper.checkForNewDeployedVersion("DeNovoGUI", oldMavenJarFile, jarRepository, "denovogui.ico",
