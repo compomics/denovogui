@@ -2,6 +2,7 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
+import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
@@ -15,7 +16,6 @@ import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
-import com.compomics.util.preferences.SequenceMatchingPreferences;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -68,6 +68,19 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      * The modification table column header tooltips.
      */
     private ArrayList<String> modificationTableToolTips;
+    /**
+     * Counts the number of times the users has pressed a key on the keyboard in
+     * the search field.
+     */
+    private int keyPressedCounter = 0;
+    /**
+     * The current PTM search string.
+     */
+    private String currentPtmSearchString = "";
+    /**
+     * The time to wait between keys typed before updating the search.
+     */
+    private int waitingTime = 500;
 
     /**
      * Creates a new SettingsDialog.
@@ -500,11 +513,11 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
         fixedModsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                fixedModsTableMouseReleased(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 fixedModsTableMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                fixedModsTableMouseReleased(evt);
             }
         });
         fixedModsTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -594,11 +607,11 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
         variableModsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                variableModsTableMouseReleased(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 variableModsTableMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                variableModsTableMouseReleased(evt);
             }
         });
         variableModsTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -673,16 +686,21 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
             }
         });
         modificationsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                modificationsTableMouseReleased(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 modificationsTableMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                modificationsTableMouseReleased(evt);
             }
         });
         modificationsTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 modificationsTableMouseMoved(evt);
+            }
+        });
+        modificationsTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                modificationsTableKeyReleased(evt);
             }
         });
         modificationsJScrollPane.setViewportView(modificationsTable);
@@ -1295,7 +1313,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                     }
 
                     boolean fileSaved = true;
-                    
+
                     if (userSelectFile) {
                         fileSaved = saveAsPressed();
                         tempSearchParameters = getSearchParametersFromGUI(); // see if the settings have changed
@@ -1468,11 +1486,17 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         int column = fixedModsTable.columnAtPoint(evt.getPoint());
 
         if (row != -1) {
+            String ptmName = (String) fixedModsTable.getValueAt(row, fixedModsTable.getColumn("Name").getModelIndex());
+            PTM ptm = ptmFactory.getPTM(ptmName);
+            fixedModsTable.setToolTipText(ptm.getHtmlTooltip());
+
             if (column == fixedModsTable.getColumn(" ").getModelIndex()) {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
             }
+        } else {
+            fixedModsTable.setToolTipText(null);
         }
     }//GEN-LAST:event_fixedModsTableMouseMoved
 
@@ -1611,11 +1635,17 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         int column = variableModsTable.columnAtPoint(evt.getPoint());
 
         if (row != -1) {
+            String ptmName = (String) variableModsTable.getValueAt(row, variableModsTable.getColumn("Name").getModelIndex());
+            PTM ptm = ptmFactory.getPTM(ptmName);
+            variableModsTable.setToolTipText(ptm.getHtmlTooltip());
+
             if (column == variableModsTable.getColumn(" ").getModelIndex()) {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
             }
+        } else {
+            variableModsTable.setToolTipText(null);
         }
     }//GEN-LAST:event_variableModsTableMouseMoved
 
@@ -1714,11 +1744,17 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         int column = modificationsTable.columnAtPoint(evt.getPoint());
 
         if (row != -1) {
+            String ptmName = (String) modificationsTable.getValueAt(row, modificationsTable.getColumn("Name").getModelIndex());
+            PTM ptm = ptmFactory.getPTM(ptmName);
+            modificationsTable.setToolTipText(ptm.getHtmlTooltip());
+
             if (column == modificationsTable.getColumn(" ").getModelIndex()) {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             } else {
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
             }
+        } else {
+            modificationsTable.setToolTipText(null);
         }
     }//GEN-LAST:event_modificationsTableMouseMoved
 
@@ -1925,6 +1961,65 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         validateParametersInput(false);
     }//GEN-LAST:event_complementScoreWeightTextFieldKeyReleased
 
+    /**
+     * Jump to the row with the PTM starting with the typed letters.
+     *
+     * @param evt
+     */
+    private void modificationsTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_modificationsTableKeyReleased
+
+        char currentChar = evt.getKeyChar();
+
+        if (Character.isLetterOrDigit(currentChar) || Character.isWhitespace(currentChar)) {
+
+            keyPressedCounter++;
+            currentPtmSearchString += currentChar;
+
+            new Thread("FindThread") {
+                @Override
+                public synchronized void run() {
+
+                    try {
+                        wait(waitingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        // see if the gui is to be updated or not
+                        if (keyPressedCounter == 1) {
+
+                            // search in the ptm table
+                            for (int i = 0; i < modificationsTable.getRowCount(); i++) {
+
+                                String currentPtmName = ((String) modificationsTable.getValueAt(i, modificationsTable.getColumn("Name").getModelIndex())).toLowerCase();
+
+                                if (currentPtmName.startsWith(currentPtmSearchString.toLowerCase())) {
+                                    modificationsTable.scrollRectToVisible(modificationsTable.getCellRect(i, i, false));
+                                    modificationsTable.repaint();
+                                    modificationsTable.setRowSelectionInterval(i, i);
+                                    modificationsTable.repaint();
+                                    break;
+                                }
+                            }
+
+                            // gui updated, reset the counter
+                            keyPressedCounter = 0;
+                            currentPtmSearchString = "";
+                        } else {
+                            // gui not updated, decrease the counter
+                            keyPressedCounter--;
+                        }
+                    } catch (Exception e) {
+                        keyPressedCounter = 0;
+                        currentPtmSearchString = "";
+                        modificationsTable.repaint();
+                    }
+                }
+            }.start();
+        }
+    }//GEN-LAST:event_modificationsTableKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
@@ -2129,7 +2224,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * This method is called when the user clicks the 'Save' button.
-     * 
+     *
      * @return true of the file was saved
      */
     public boolean savePressed() {
@@ -2153,7 +2248,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
     /**
      * This method is called when the user clicks the 'Save As' button.
-     * 
+     *
      * @return true of the file was saved
      */
     public boolean saveAsPressed() {
@@ -2343,6 +2438,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         if (modificationsTable.getRowCount() > 0) {
             modificationsTable.setRowSelectionInterval(0, 0);
+            modificationsTable.scrollRectToVisible(modificationsTable.getCellRect(0, 0, false));
+            modificationsTable.requestFocus();
         }
 
         // enable/disable the add/remove ptm buttons
