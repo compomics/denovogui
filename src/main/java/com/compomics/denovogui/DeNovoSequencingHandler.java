@@ -234,10 +234,12 @@ public class DeNovoSequencingHandler {
 
             // Verify that the file is chunked and use the entire if not
             boolean chunksuccess = true;
-            for (File chunkFile : chunkFiles) {
-                if (!chunkFile.exists()) {
-                    chunksuccess = false;
-                    waitingHandler.appendReport("Processing of the spectra failed. Only one thread will be used for PepNovo+.", true, true);
+            if (enablePepNovo) {
+                for (File chunkFile : chunkFiles) {
+                    if (!chunkFile.exists()) {
+                        chunksuccess = false;
+                        waitingHandler.appendReport("Processing of the spectra failed. Only one thread will be used for PepNovo+.", true, true);
+                    }
                 }
             }
 
