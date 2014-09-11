@@ -3,6 +3,15 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.9 (September 11. 2014):*
+
+ * BUG FIX: Fixed a bug where the export of peptide matches was broken.
+ 
+ * LIBRARY UPDATE: Updated jsparklines to version 1.0.4.
+ * LIBRARY UPDATE: Updated utilities to version 3.37.1.
+
+----
+
 *Changes in DeNovoGUI 1.4.8 (August 29. 2014):*
 
  * NEW FEATURE: Added "type to find" in the PTM table in the Search Settings dialog.
