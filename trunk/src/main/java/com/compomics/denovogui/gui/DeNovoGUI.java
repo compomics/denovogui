@@ -1378,6 +1378,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * @param evt
      */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        if (sequenceMatchingPreferences == null) {
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+        }
         new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
 
@@ -1422,6 +1425,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
                     progressDialog.setRunFinished();
                     setVisible(false);
+                    if (sequenceMatchingPreferences == null) {
+                        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+                    }
                     new ResultsFrame(DeNovoGUI.this, outFiles, searchParameters);
                 } catch (ClassNotFoundException e) {
                     progressDialog.setRunFinished();
@@ -1846,6 +1852,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         }
 
         setVisible(false);
+        if (sequenceMatchingPreferences == null) {
+           sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters); 
+        }
         new ResultsFrame(this, resultFiles, searchParameters);
     }
 
