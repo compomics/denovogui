@@ -3,6 +3,12 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.10 (September 12. 2014):*
+
+ * BUG FIX: Fixed more bugs where the export of peptide matches was broken.
+
+----
+
 *Changes in DeNovoGUI 1.4.9 (September 11. 2014):*
 
  * BUG FIX: Fixed a bug where the export of peptide matches was broken.
