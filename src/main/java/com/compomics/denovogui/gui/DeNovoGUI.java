@@ -1039,6 +1039,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             searchParameters = new SearchParameters();
         }
 
+        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
         saveModificationUsage(); // save the ptms usage
 
         waitingDialog = new WaitingDialog(this,
@@ -2427,5 +2428,4 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
         this.sequenceMatchingPreferences = sequenceMatchingPreferences;
     }
-
 }
