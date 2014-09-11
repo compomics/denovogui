@@ -440,6 +440,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoMatchesTable.getColumn("  ").setMaxWidth(30);
         deNovoMatchesTable.getColumn("  ").setMinWidth(30);
 
+        if (minRankScore > maxRankScore) {
+            minRankScore = maxRankScore;
+        }
+
         deNovoMatchesTable.getColumn("Rank Score (P)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, minRankScore, maxRankScore, Color.BLUE, Color.RED));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Rank Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
