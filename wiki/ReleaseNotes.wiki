@@ -3,6 +3,14 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.11 (September 17. 2014):*
+
+ * FEATURE IMPROVEMENT: Fixed an issue with indexing mgf files with empty charge tags.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.37.3.
+
+----
+
 *Changes in DeNovoGUI 1.4.10 (September 12. 2014):*
 
  * BUG FIX: Fixed more bugs where the export of peptide matches was broken.
