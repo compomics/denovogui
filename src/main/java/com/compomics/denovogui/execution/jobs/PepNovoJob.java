@@ -11,9 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * <b>PepNovoJob</b>
- * <p>
- * This job class runs the PepNovo+ software in wrapper mode. </p>
+ * This job class runs the PepNovo+ software in wrapper mode.
  *
  * @author Thilo Muth
  */

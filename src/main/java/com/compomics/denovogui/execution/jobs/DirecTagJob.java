@@ -14,9 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * <b>DirecTagJob</b>
- * <p>
- * This job class runs DirecTag for tag-based de novo sequencing</p>
+ * This job class runs DirecTag for tag-based de novo sequencing.
  *
  * @author Thilo Muth
  * @author Harald Barsnes

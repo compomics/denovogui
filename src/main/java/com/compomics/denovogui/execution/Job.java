@@ -10,10 +10,8 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 /**
- * <b>Job</b>
- * <p>
  * Abstract class of a job to be executed. Implements the interface Executable
- * which provides the specification of a Job. </p>
+ * which provides the specification of a Job.
  *
  * @author Thilo Muth
  * @author Harald Barsnes
