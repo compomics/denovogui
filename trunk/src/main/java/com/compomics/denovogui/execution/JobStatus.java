@@ -1,7 +1,9 @@
 package com.compomics.denovogui.execution;
 
 /**
- * <b>JobStatus</b> <p> Possible values for the job status are:
+ * The status of a job. 
+ * <p> 
+ * Possible values for the job status are:
  * <p/>
  * WAITING - job is waiting for processing thread.
  * <p/>
@@ -17,5 +19,24 @@ package com.compomics.denovogui.execution;
  */
 public enum JobStatus {
 
-    WAITING, RUNNING, FINISHED, ERROR, CANCELED
+    /**
+     * Job is waiting for processing thread.
+     */
+    WAITING, 
+    /**
+     * Job is running.
+     */
+    RUNNING, 
+    /**
+     * Job is finished.
+     */
+    FINISHED, 
+    /**
+     * Job gave an error.
+     */
+    ERROR, 
+    /**
+     * Job was canceled.
+     */
+    CANCELED
 }

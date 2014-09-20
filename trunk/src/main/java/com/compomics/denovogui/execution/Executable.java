@@ -1,7 +1,7 @@
 package com.compomics.denovogui.execution;
 
 /**
- * <b>Executable</b> <p> Executable-Interface implemented by the Job class. </p>
+ * Executable-Interface implemented by the Job class.
  *
  * @author Thilo Muth
  */
