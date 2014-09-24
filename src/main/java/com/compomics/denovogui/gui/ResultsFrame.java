@@ -2777,6 +2777,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public String getTagModificationTooltipAsHtml(Tag tag) {
 
+        // @TODO: update to use the ptm scores
+        // @TODO: merge with getTagModificationTooltipAsHtml in DeNovoGUI and move to utilities
         String tooltip = "<html>";
 
         for (TagComponent tagComponent : tag.getContent()) {
@@ -2787,10 +2789,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         String affectedResidue = aminoAcidPattern.asSequence(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
                         Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
-                        tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                        if (modificationMatch.isConfident()) {
+                            tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                 + affectedResidue
                                 + "</span>"
                                 + ": " + modName + "<br>";
+                        } else {
+                            tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
+                                + affectedResidue
+                                + "</span>"
+                                + ": " + modName + "<br>";
+                        }
                     }
                 }
             } else if (tagComponent instanceof AminoAcidSequence) {
@@ -2800,10 +2809,17 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         char affectedResidue = aminoAcidSequence.charAt(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
                         Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
-                        tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                        if (modificationMatch.isConfident()) {
+                            tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                 + affectedResidue
                                 + "</span>"
                                 + ": " + modName + "<br>";
+                        } else {
+                            tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
+                                + affectedResidue
+                                + "</span>"
+                                + ": " + modName + "<br>";
+                        }
                     }
                 }
             } else if (tagComponent instanceof MassGap) {
