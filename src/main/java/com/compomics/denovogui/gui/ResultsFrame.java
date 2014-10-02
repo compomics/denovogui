@@ -2791,14 +2791,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
                         if (modificationMatch.isConfident()) {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
-                                + affectedResidue
-                                + "</span>"
-                                + ": " + modName + "<br>";
+                                    + affectedResidue
+                                    + "</span>"
+                                    + ": " + modName + " (confident)<br>";
                         } else {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
-                                + affectedResidue
-                                + "</span>"
-                                + ": " + modName + "<br>";
+                                    + affectedResidue
+                                    + "</span>"
+                                    + ": " + modName + " (not confident)<br>";
                         }
                     }
                 }
@@ -2811,14 +2811,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
                         if (modificationMatch.isConfident()) {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
-                                + affectedResidue
-                                + "</span>"
-                                + ": " + modName + "<br>";
+                                    + affectedResidue
+                                    + "</span>"
+                                    + ": " + modName + " (confident)<br>";
                         } else {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
-                                + affectedResidue
-                                + "</span>"
-                                + ": " + modName + "<br>";
+                                    + affectedResidue
+                                    + "</span>"
+                                    + ": " + modName + " (not confident)<br>";
                         }
                     }
                 }
