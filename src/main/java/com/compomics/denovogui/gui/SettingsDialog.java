@@ -6,8 +6,11 @@ import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.CometParameters;
 import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MsAmandaParameters;
 import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MyriMatchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
@@ -2105,6 +2108,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()));
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()));
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.comet.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.comet.getIndex()));
 
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
@@ -2114,6 +2120,15 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex(), new MsAmandaParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex(), new MyriMatchParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.comet.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.comet.getIndex(), new CometParameters());
         }
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
