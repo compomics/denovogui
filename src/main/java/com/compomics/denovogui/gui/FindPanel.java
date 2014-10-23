@@ -330,7 +330,7 @@ public class FindPanel extends javax.swing.JPanel {
                         keyPressedCounter--;
                     }
                 } catch (Exception e) {
-                    resultsFrame.getDeNovoGUI().catchException(e);
+                    resultsFrame.catchException(e);
                 }
             }
         }.start();

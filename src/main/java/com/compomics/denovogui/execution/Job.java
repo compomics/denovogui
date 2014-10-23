@@ -1,5 +1,6 @@
 package com.compomics.denovogui.execution;
 
+import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -62,6 +63,10 @@ public abstract class Job implements Executable, Runnable {
      * Waiting handler displaying feedback to the user.
      */
     protected WaitingHandler waitingHandler;
+    /**
+     * An exception handler
+     */
+    protected ExceptionHandler exceptionHandler;
 
     /**
      * Executes a job.
@@ -78,7 +83,7 @@ public abstract class Job implements Executable, Runnable {
             waitingHandler.appendReport("Could not start " + getDescription() + "!", true, true);
             waitingHandler.appendReportEndLine();
             waitingHandler.setRunCanceled();
-            ioe.printStackTrace();
+            exceptionHandler.catchException(ioe);
         }
 
         // Retrieve input stream from process.
@@ -123,7 +128,7 @@ public abstract class Job implements Executable, Runnable {
             writer.flush();
             writer.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            exceptionHandler.catchException(ex);
         }
         scan.close();
 
@@ -134,7 +139,7 @@ public abstract class Job implements Executable, Runnable {
             if (!waitingHandler.isRunCanceled()) {
                 setError(e.getMessage());
                 setStatus(JobStatus.ERROR);
-                e.printStackTrace();
+                exceptionHandler.catchException(e);
                 if (proc != null) {
                     log.warn("SUBPROCESS KILLED!");
                     proc.destroy();

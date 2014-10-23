@@ -15,9 +15,10 @@ import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaMemoryDialogParent;
 import com.compomics.software.dialogs.JavaSettingsDialog;
+import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
+import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.general.ExceptionHandler;
 import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
@@ -164,7 +165,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     /**
      * The exception handler.
      */
-    private ExceptionHandler exceptionHandler = new ExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
+    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
     /**
      * The progress dialog.
      */
@@ -1138,7 +1139,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         try {
             spectrumFactory.closeFiles();
         } catch (IOException e) {
-            e.printStackTrace();
             catchException(e);
         }
         spectrumFilesTextField.setText(getSpectrumFiles().size() + " file(s) selected");
@@ -1431,11 +1431,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     new ResultsFrame(DeNovoGUI.this, outFiles, searchParameters);
                 } catch (ClassNotFoundException e) {
                     progressDialog.setRunFinished();
-                    e.printStackTrace();
                     catchException(e);
                 } catch (IOException e) {
                     progressDialog.setRunFinished();
-                    e.printStackTrace();
                     catchException(e);
                 }
             }
@@ -1746,6 +1744,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
          * done.
          */
         private boolean displayResults = true;
+        /**
+         * Exception handler making use of the waiting dialog
+         */
+        private WaitingDialogExceptionHandler workerExceptionHandler;
 
         /**
          * Constructor.
@@ -1754,6 +1756,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
          */
         public SequencingWorker(WaitingHandler waitingHandler, boolean displayResults) {
             this.waitingHandler = waitingHandler;
+            this.workerExceptionHandler = new WaitingDialogExceptionHandler(waitingDialog, "http://code.google.com/p/denovogui/issues/list");
             this.displayResults = displayResults;
         }
 
@@ -1769,9 +1772,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
                 deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable,
-                        pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), waitingHandler);
+                        pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), waitingHandler, exceptionHandler);
             } catch (Exception e) {
-                catchException(e);
+                workerExceptionHandler.catchException(e);
             }
             return 0;
         }
@@ -1805,7 +1808,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     if (waitingHandler != null) {
                         waitingHandler.appendReport("Failed to write to the report file!", true, true);
                     }
-                    e.printStackTrace();
+                    catchException(e);
                 }
 
                 if (displayResults) {
@@ -1853,7 +1856,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
         setVisible(false);
         if (sequenceMatchingPreferences == null) {
-           sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters); 
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
         }
         new ResultsFrame(this, resultFiles, searchParameters);
     }
@@ -2179,7 +2182,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private boolean validateInput(boolean showMessage) {
 
         boolean valid = true;
-        boolean searchParametersValid = true;
 
         if (!pepNovoCheckBox.isSelected() && !direcTagCheckBox.isSelected()) {
             if (showMessage && valid) {
@@ -2203,7 +2205,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         // validate the search parameters
         if (!validateParametersInput(showMessage)) {
             valid = false;
-            searchParametersValid = false;
         }
 
         // validate the output folder
@@ -2292,7 +2293,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      *
      * @param e the exception caught
      */
-    public void catchException(Exception e) {
+    private void catchException(Exception e) {
         exceptionHandler.catchException(e);
     }
 
