@@ -3,6 +3,17 @@
 
 ----
 
+*Changes in DeNovoGUI 1.4.12 (October 23. 2014):*
+
+ * FEATURE IMPROVEMENT: PTM tooltips now include "confident" or "not confident" in addition to the color coding.
+ * FEATURE IMPROVEMENT: Renamed "no enzyme" to the more understandable "unspecific".
+
+ * BUG FIX: Fixed issues with using search parameter settings files from SearchGUI.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.40.0.
+
+----
+
 *Changes in DeNovoGUI 1.4.11 (September 17. 2014):*
 
  * FEATURE IMPROVEMENT: Fixed an issue with indexing mgf files with empty charge tags.
