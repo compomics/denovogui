@@ -7,6 +7,7 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
+import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
@@ -90,6 +91,10 @@ public class DeNovoSequencingHandler {
      * The job queue.
      */
     private Deque<Job> jobs;
+    /**
+     * An exception handler
+     */
+    private ExceptionHandler exceptionHandler;
 
     /**
      * Constructor.
@@ -114,14 +119,18 @@ public class DeNovoSequencingHandler {
      * @param enablePepNovo run PepNovo?
      * @param enableDirecTag run DirecTag?
      * @param waitingHandler the waiting handler
+     * @param exceptionHandler the exception handler to use when an exception is
+     * caught
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle,
-            boolean enablePepNovo, boolean enableDirecTag, WaitingHandler waitingHandler) throws IOException, ClassNotFoundException {
+            boolean enablePepNovo, boolean enableDirecTag, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
 
         this.enablePepNovo = enablePepNovo;
         this.enableDirecTag = enableDirecTag;
+        this.exceptionHandler = exceptionHandler;
 
         long startTime = System.nanoTime();
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
@@ -141,7 +150,7 @@ public class DeNovoSequencingHandler {
             ModificationFile.writeFile(folder, searchParameters.getModificationProfile());
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
             waitingHandler.setRunCanceled();
             return;
         }
@@ -151,7 +160,7 @@ public class DeNovoSequencingHandler {
             SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the sequencing parameters: " + e.getMessage(), true, true);
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
             waitingHandler.setRunCanceled();
             return;
         }
@@ -254,26 +263,26 @@ public class DeNovoSequencingHandler {
             if (enablePepNovo) {
                 if (chunksuccess) {
                     for (File chunkFile : chunkFiles) {
-                        PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler);
+                        PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, chunkFile, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                         jobs.add(pepNovoJob);
                     }
                 } else {
-                    PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, spectrumFile, outputFolder, searchParameters, waitingHandler);
+                    PepNovoJob pepNovoJob = new PepNovoJob(pepNovoFolder, pepNovoExeTitle, spectrumFile, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                     jobs.add(pepNovoJob);
                 }
             }
 
             // Add the DirecTag job only once - multithreading is done in the application itself!
             if (enableDirecTag) {
-                DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler);
+                DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(direcTagJob);
             }
 
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
+            exceptionHandler.catchException(ex);
             return;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            exceptionHandler.catchException(ex);
             return;
         }
 
@@ -302,7 +311,7 @@ public class DeNovoSequencingHandler {
         } catch (InterruptedException ex) {
             if (!waitingHandler.isRunCanceled()) {
                 threadExecutor.shutdownNow();
-                ex.printStackTrace();
+                exceptionHandler.catchException(ex);
             }
         }
 

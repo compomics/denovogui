@@ -3,6 +3,7 @@ package com.compomics.denovogui.cmd;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
@@ -32,6 +33,10 @@ public class DeNovoCLI implements Callable {
      * The enzyme factory.
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+    /**
+     * An exception handler for the command line process
+     */
+    private CommandLineExceptionHandler exceptionHandler = new CommandLineExceptionHandler();
 
     /**
      * Construct a new SearchCLI runnable from a SearchCLI Bean. When
@@ -48,19 +53,19 @@ public class DeNovoCLI implements Callable {
                 ptmFactory.importModifications(DeNovoSequencingHandler.getModificationsFile(getJarFilePath()), false);
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the modifications.");
-                e.printStackTrace();
+                exceptionHandler.catchException(e);
             }
             try {
                 ptmFactory.importModifications(DeNovoSequencingHandler.getUserModificationsFile(getJarFilePath()), true);
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the user modifications.");
-                e.printStackTrace();
+                exceptionHandler.catchException(e);
             }
             try {
                 enzymeFactory.importEnzymes(DeNovoSequencingHandler.getEnzymesFile(getJarFilePath()));
             } catch (Exception e) {
                 System.out.println("An error occurred while loading the enzymes.");
-                e.printStackTrace();
+                exceptionHandler.catchException(e);
             }
             Options lOptions = new Options();
             DeNovoCLIParams.createOptionsCLI(lOptions);
@@ -83,7 +88,7 @@ public class DeNovoCLI implements Callable {
                 call();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
         }
     }
 
@@ -101,7 +106,7 @@ public class DeNovoCLI implements Callable {
                 setPathConfiguration();
             } catch (Exception e) {
                 System.out.println("An error occured when setting path configuration. Default will be used.");
-                e.printStackTrace();
+                exceptionHandler.catchException(e);
             }
         }
 
@@ -229,9 +234,10 @@ public class DeNovoCLI implements Callable {
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, runPepNovo, runDirecTag, waitingHandlerCLIImpl);
+                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle,
+                    runPepNovo, runDirecTag, waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
         }
 
         return null;

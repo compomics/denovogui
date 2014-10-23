@@ -9,6 +9,7 @@ import com.compomics.util.Util;
 import com.compomics.util.db.DerbyUtil;
 import com.compomics.util.db.ObjectsCache;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
+import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.experiment.MsExperiment;
 import com.compomics.util.experiment.ProteomicAnalysis;
 import com.compomics.util.experiment.SampleAnalysisSet;
@@ -236,6 +237,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * The export settings dialog
      */
     private ExportSettingsDialog exportSettingsDialog;
+    /**
+     * Exception handler
+     */
+    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
 
     /**
      * Creates a new ResultsPanel.
@@ -1252,8 +1257,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
                         deNovoMatchesTable.setToolTipText(tooltip);
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        deNovoGUI.catchException(e);
+                        catchException(e);
                     }
                 } else {
                     deNovoMatchesTable.setToolTipText(null);
@@ -1393,7 +1397,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             try {
                 annotationPreferences.resetAutomaticAnnotation(deNovoGUI.getSequenceMatchingPreferences());
             } catch (Exception e) {
-                deNovoGUI.catchException(e);
+                catchException(e);
             }
 
             for (int availableCharge : chargeMenus.keySet()) {
@@ -1647,8 +1651,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 }
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            deNovoGUI.catchException(e);
+                            catchException(e);
                         } catch (OutOfMemoryError error) {
                             progressDialog.setRunCanceled();
                             System.out.println("DeNovoGUI ran out of memory! See the DeNovoGUI log for details.");
@@ -2240,7 +2243,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
 
         } catch (Exception e) {
-            deNovoGUI.catchException(e);
+            catchException(e);
         }
     }
 
@@ -2357,7 +2360,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 currentSpectrumKey = spectrumKey;
 
             } catch (Exception e) {
-                deNovoGUI.catchException(e);
+                catchException(e);
             }
         }
 
@@ -2429,7 +2432,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
                     // @TODO: catch out of memory...
                 } catch (Exception e) {
-                    deNovoGUI.catchException(e);
+                    catchException(e);
                     progressDialog.setRunFinished();
                 }
             }
@@ -3290,6 +3293,15 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     public static void setCacheDirectoryParent(String cacheDirectory) {
         ResultsFrame.CACHE_PARENT_DIRECTORY = cacheDirectory;
+    }
+
+    /**
+     * Method called whenever an exception is caught.
+     *
+     * @param e the exception caught
+     */
+    public void catchException(Exception e) {
+        exceptionHandler.catchException(e);
     }
 
     /**

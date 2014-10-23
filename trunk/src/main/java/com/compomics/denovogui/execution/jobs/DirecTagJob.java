@@ -3,6 +3,7 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.software.CommandLineUtils;
 import com.compomics.util.Util;
+import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
@@ -64,8 +65,9 @@ public class DirecTagJob extends Job {
      * @param outputFolder The output folder.
      * @param searchParameters The search parameters.
      * @param waitingHandler the waiting handler
+     * @param exceptionHandler the exception handler
      */
-    public DirecTagJob(File exeFolder, String exeTitle, File spectrumFile, int nThreads, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
+    public DirecTagJob(File exeFolder, String exeTitle, File spectrumFile, int nThreads, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) {
         this.exeFolder = exeFolder;
         this.exeTitle = exeTitle;
         this.spectrumFile = spectrumFile;
@@ -73,6 +75,7 @@ public class DirecTagJob extends Job {
         this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
         this.waitingHandler = waitingHandler;
+        this.exceptionHandler = exceptionHandler;
         initJob();
     }
 
@@ -244,7 +247,7 @@ public class DirecTagJob extends Job {
             procBuilder.redirectErrorStream(true);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
             waitingHandler.appendReport("An error occured running DirecTag. See error log for details. " + e.getMessage(), true, true);
             waitingHandler.setRunCanceled();
         }

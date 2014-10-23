@@ -3,6 +3,7 @@ package com.compomics.denovogui.execution.jobs;
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
@@ -51,14 +52,16 @@ public class PepNovoJob extends Job {
      * @param outputFolder The output folder.
      * @param searchParameters The search parameters.
      * @param waitingHandler the waiting handler
+     * @param exceptionHandler the exception handler
      */
-    public PepNovoJob(File pepNovoFolder, String exeTitle, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler) {
+    public PepNovoJob(File pepNovoFolder, String exeTitle, File mgfFile, File outputFolder, SearchParameters searchParameters, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) {
         this.pepNovoFolder = pepNovoFolder;
         this.exeTitle = exeTitle;
         this.spectrumFile = mgfFile;
         this.outputFolder = outputFolder;
         this.searchParameters = searchParameters;
         this.waitingHandler = waitingHandler;
+        this.exceptionHandler = exceptionHandler;
         initJob();
     }
 
@@ -145,7 +148,7 @@ public class PepNovoJob extends Job {
             procBuilder.redirectErrorStream(true);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            exceptionHandler.catchException(e);
             waitingHandler.appendReport("An error occured running PepNovo+. See error log for details. " + e.getMessage(), true, true);
             waitingHandler.setRunCanceled();
         }
