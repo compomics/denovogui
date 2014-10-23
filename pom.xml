@@ -5,7 +5,7 @@
     <groupId>com.compomics.denovogui</groupId>
     <artifactId>DeNovoGUI</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.11</version>
+    <version>1.4.12</version>
     <name>DeNovoGUI</name>
     <url>http://denovogui.googlecode.com</url>
 
