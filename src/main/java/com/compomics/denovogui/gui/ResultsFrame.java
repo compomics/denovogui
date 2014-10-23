@@ -234,11 +234,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private boolean pepNovoAndDirecTagLoaded = false;
     /**
-     * The export settings dialog
+     * The export settings dialog.
      */
     private ExportSettingsDialog exportSettingsDialog;
     /**
-     * Exception handler
+     * Exception handler.
      */
     private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
 

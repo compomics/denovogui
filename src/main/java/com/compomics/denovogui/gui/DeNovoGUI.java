@@ -1745,7 +1745,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
          */
         private boolean displayResults = true;
         /**
-         * Exception handler making use of the waiting dialog
+         * Exception handler making use of the waiting dialog.
          */
         private WaitingDialogExceptionHandler workerExceptionHandler;
 
