@@ -92,7 +92,7 @@ public class DeNovoSequencingHandler {
      */
     private Deque<Job> jobs;
     /**
-     * An exception handler
+     * The exception handler.
      */
     private ExceptionHandler exceptionHandler;
 

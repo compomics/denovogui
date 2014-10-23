@@ -34,7 +34,7 @@ public class DeNovoCLI implements Callable {
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
     /**
-     * An exception handler for the command line process
+     * The exception handler for the command line process.
      */
     private CommandLineExceptionHandler exceptionHandler = new CommandLineExceptionHandler();
 

@@ -64,7 +64,7 @@ public abstract class Job implements Executable, Runnable {
      */
     protected WaitingHandler waitingHandler;
     /**
-     * An exception handler
+     * The exception handler.
      */
     protected ExceptionHandler exceptionHandler;
 
