@@ -282,8 +282,8 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
-        for (AminoAcid aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-            ptmAsString += " " + aa.singleLetterCode + " " + modIndex + " " + ptmMass;
+        for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
+            ptmAsString += " " + aa + " " + modIndex + " " + ptmMass;
         }
         if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
@@ -308,8 +308,8 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
-        for (AminoAcid aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-            ptmAsString += " " + aa.singleLetterCode + " " + ptmMass;
+        for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
+            ptmAsString += " " + aa + " " + ptmMass;
         }
         if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (String aminoAcid : AminoAcid.getAminoAcidsList()) {

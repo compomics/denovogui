@@ -142,31 +142,31 @@ public class ModificationFile {
                 }
             } else {
 
-                for (AminoAcid residue : ptm.getPattern().getAminoAcidsAtTarget()) {
+                for (Character residue : ptm.getPattern().getAminoAcidsAtTarget()) {
 
                     if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(residue + SEP);
                         writer.append(Double.toString(ptm.getMass()) + SPACE);
                         writer.append(variable + SPACE);
                         writer.append("+1" + SPACE);
-                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        writer.append(residue + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(residue + SEP);
                         writer.append(Double.toString(ptm.getMass()) + SPACE);
                         writer.append(variable + SPACE);
                         writer.append("-1" + SPACE);
-                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        writer.append(residue + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     } else {
-                        writer.append(residue.singleLetterCode + SEP);
+                        writer.append(residue + SEP);
                         writer.append(Double.toString(ptm.getMass()) + SPACE);
                         writer.append(variable + SPACE);
                         writer.append(ALL_LOCATIONS + SPACE);
-                        writer.append(residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        writer.append(residue + connector + Long.toString(Math.round(ptm.getMass())) + SPACE);
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     }
 
                     writer.append(ptm.getName().toUpperCase());
@@ -210,15 +210,15 @@ public class ModificationFile {
                 }
 
             } else {
-                for (AminoAcid residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
+                for (Character residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
                     if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
                             || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     } else {
-                        modIdMap.put(ptm.getName(), residue.singleLetterCode + connector + Long.toString(Math.round(ptm.getMass())));
+                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptm.getMass())));
                     }
                 }
             }

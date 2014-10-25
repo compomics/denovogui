@@ -2952,7 +2952,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                     }
                                                     modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                    ArrayList<AminoAcid> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                    ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
                                                     if (aaAtTarget.size() > 1) {
                                                         throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
                                                     }
@@ -2991,12 +2991,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                     }
                                                     modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                    ArrayList<AminoAcid> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                    ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
                                                     if (aaAtTarget.size() > 1) {
                                                         throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
                                                     }
                                                     int aaIndex = aa - 1;
-                                                    aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0).singleLetterCode.charAt(0));
+                                                    aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
                                                 } else {
                                                     Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                     if (notImplemented == null) {
@@ -3245,10 +3245,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 double mass = ptm.getMass();
 
                 if (ptm.getType() == PTM.MODAA) {
-                    for (AminoAcid aa : ptmPattern.getAminoAcidsAtTarget()) {
-                        if (!knownMassDeltas.containsValue((String) aa.singleLetterCode + "<" + shortName + ">")) {
-                            knownMassDeltas.put(mass + aa.monoisotopicMass,
-                                    (String) aa.singleLetterCode + "<" + shortName + ">");
+                    for (Character aa : ptmPattern.getAminoAcidsAtTarget()) {
+                        if (!knownMassDeltas.containsValue(aa + "<" + shortName + ">")) {
+                            AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
+                            knownMassDeltas.put(mass + aminoAcid.monoisotopicMass,
+                                    aa + "<" + shortName + ">");
                         }
                     }
                 }
