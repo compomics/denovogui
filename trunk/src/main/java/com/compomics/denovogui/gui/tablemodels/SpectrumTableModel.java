@@ -74,7 +74,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 11;
+        return 12;
     }
 
     @Override
@@ -101,6 +101,8 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 9:
                 return "Score (D)";
             case 10:
+                return "Score (p)";
+            case 11:
                 return "  ";
             default:
                 return "";
@@ -226,6 +228,28 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 10:
+                try {
+                    spectrumTitle = orderedSpectrumTitles.get(row);
+                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                    if (update && identification.matchExists(spectrumKey)) {
+                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.pNovo.getIndex());
+                        if (hitMap != null) {
+                            double bestScore = 0;
+                            for (double score : hitMap.keySet()) {
+                                if (score > bestScore) {
+                                    bestScore = score;
+                                }
+                            }
+                            return bestScore;
+                        }
+                    }
+                    return null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            case 11:
                 spectrumTitle = orderedSpectrumTitles.get(row);
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 return identification.matchExists(spectrumKey);

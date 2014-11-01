@@ -115,7 +115,10 @@ public abstract class Job implements Executable, Runnable {
                 } else {
                     if (temp.startsWith(">>")) {
                         int progressCounter = waitingHandler.getPrimaryProgressCounter();
-                        if (progressCounter % spectrumCount == 0) {
+                        if (progressCounter % spectrumCount == 0 || progressCounter == 1) {
+                            if (progressCounter == 1) {
+                                progressCounter = 0;
+                            }
                             waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
                                     + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
                                     + " of " + totalSpectrumCount + ".", true, true);

@@ -199,6 +199,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private double maxDirectTagEvalue = Double.MIN_VALUE;
     /**
+     * The minimal pNovo score.
+     */
+    private double minPNovoScore = Double.MAX_VALUE;
+    /**
+     * The maximal pNovo score.
+     */
+    private double maxPNovoScore = Double.MIN_VALUE;
+    /**
      * The maximal n gap.
      */
     private double maxNGap = 0;
@@ -231,9 +239,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private ObjectsCache objectsCache = new ObjectsCache();
     /**
-     * True if both PepNovo and DirecTag results are loaded.
+     * True if multiple advocates are loaded.
      */
-    private boolean pepNovoAndDirecTagLoaded = false;
+    private boolean multipleAdvocatesLoaded = false;
     /**
      * The export settings dialog.
      */
@@ -333,6 +341,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         querySpectraTableToolTips.add("Number of Peaks");
         querySpectraTableToolTips.add("Max PepNovo+ Score");
         querySpectraTableToolTips.add("Min DirecTag E-Value");
+        querySpectraTableToolTips.add("Max pNovo+ Score");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
@@ -346,6 +355,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         deNovoPeptidesTableToolTips.add("PepNovo+ Rank Score");
         deNovoPeptidesTableToolTips.add("PepNovo+ Score");
         deNovoPeptidesTableToolTips.add("DirecTag E-Value");
+        deNovoPeptidesTableToolTips.add("pNovo+ Score");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
@@ -370,7 +380,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set up the id column color map and tooltips
         HashMap<Integer, Color> idColorMap = new HashMap<Integer, Color>();
         HashMap<Integer, String> idTooltipMap = new HashMap<Integer, String>();
-        if (pepNovoAndDirecTagLoaded) {
+        if (multipleAdvocatesLoaded) {
             idColorMap.put(0, Color.LIGHT_GRAY);
             idColorMap.put(1, Color.YELLOW);
             idColorMap.put(2, sparklineColor);
@@ -407,6 +417,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score (D)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxDirectTagEvalue, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (p)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPNovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
         // make sure that the user is made aware that the tool is doing something during sorting of the query table
         querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
@@ -455,6 +467,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("Score (P)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPepnovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (p)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPNovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
@@ -485,7 +499,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      *
      * @return the de novo identifications
      */
-    public Identification getPepNovoIdentifications() {
+    public Identification getIdentifications() {
         return identification;
     }
 
@@ -1867,7 +1881,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores);
 
-                        if (advocate.getIndex() == Advocate.pepnovo.getIndex()) {
+                        if (advocate.getIndex() == Advocate.pepnovo.getIndex() || advocate.getIndex() == Advocate.pNovo.getIndex()) {
                             Collections.reverse(scores);
                         }
 
@@ -2040,10 +2054,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
     /**
      * Returns a list of the spectrum titles of the selected mgf file ordered by
-     * max PepNovo score.
+     * max score.
      *
      * @return a list of the spectrum titles of the selected mgf file ordered by
-     * max PepMovo score
+     * max score
      * @throws SQLException
      * @throws IOException
      * @throws ClassNotFoundException
@@ -2846,8 +2860,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     }
 
     /**
-     * Imports the PepNovo and DirecTag results from the given files and puts
-     * all matches in the identification.
+     * Imports the de novo results from the given files and puts all matches in
+     * the identification.
      *
      * @param resultFiles the result files
      * @param searchParameters the search parameters
@@ -2891,9 +2905,10 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             return null;
         }
 
-        pepNovoAndDirecTagLoaded = false;
+        multipleAdvocatesLoaded = false;
         boolean pepNovoDataLoaded = false;
         boolean direcTagDataLoaded = false;
+        boolean pNovoDataLoaded = false;
 
         for (int i = 0; i < resultFiles.size(); i++) {
 
@@ -2906,7 +2921,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
             progressDialog.setTitle(loadingText);
 
-            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile); // @TODO: add file reader for pNovo+
+            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile);
 
             if (idfileReader != null) {
 
@@ -2921,6 +2936,8 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             pepNovoDataLoaded = true;
                         } else if (advocate == Advocate.direcTag.getIndex()) {
                             direcTagDataLoaded = true;
+                        } else if (advocate == Advocate.pNovo.getIndex()) {
+                            pNovoDataLoaded = true;
                         }
 
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
@@ -2948,7 +2965,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                         String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                         if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            throw new IllegalArgumentException("PepNovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else if (advocate == Advocate.direcTag.getIndex()) {
@@ -2965,6 +2982,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                         }
                                                         int aaIndex = aa - 1;
                                                         aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
+                                                    } else if (advocate == Advocate.pNovo.getIndex()) { // @TODO: map the modifications
+                                                        // String pNovoPtmName = modificationMatch.getTheoreticPtm();
+                                                        // PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                        // String utilitiesPtmName = pNovoParameters.getUtilitiesPtmName(pNovoPtmName);
+                                                        // if (utilitiesPtmName == null) {
+                                                        //      throw new IllegalArgumentException("pNovo ptm " + pNovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        // }
+                                                        // modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                         if (notImplemented == null) {
@@ -3004,6 +3029,14 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                         }
                                                         int aaIndex = aa - 1;
                                                         aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
+                                                    } else if (advocate == Advocate.pNovo.getIndex()) { // @TODO: map the modifications
+                                                        // String pNovoPtmName = modificationMatch.getTheoreticPtm();
+                                                        // PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                        // String utilitiesPtmName = pNovoParameters.getUtilitiesPtmName(pNovoPtmName);
+                                                        // if (utilitiesPtmName == null) {
+                                                        //      throw new IllegalArgumentException("pNovo ptm " + pNovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        // }
+                                                        // modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                         if (notImplemented == null) {
@@ -3058,6 +3091,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                     if (score < minDirectTagEvalue) {
                                         minDirectTagEvalue = score;
                                     }
+                                } else if (advocate == Advocate.pNovo.getIndex()) {
+                                    if (score > maxPNovoScore) {
+                                        maxPNovoScore = score;
+                                    }
+                                    if (score < minPNovoScore) {
+                                        minPNovoScore = score;
+                                    }
                                 } else {
                                     Advocate notImplemented = Advocate.getAdvocate(advocate);
                                     if (notImplemented == null) {
@@ -3071,7 +3111,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 }
 
                 // put the matches in the identification object
-                tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
+                tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out") || idfileReader.getExtension().equalsIgnoreCase(".txt"));
 
                 idfileReader.close();
 
@@ -3084,7 +3124,18 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             progressDialog.setTitle(loadingText);
         }
 
-        pepNovoAndDirecTagLoaded = pepNovoDataLoaded && direcTagDataLoaded;
+        int numberOfAdvocateLoaded = 0;
+        if (pepNovoDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+        if (direcTagDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+        if (pNovoDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+
+        multipleAdvocatesLoaded = numberOfAdvocateLoaded > 1;
 
         return tempIdentification;
     }

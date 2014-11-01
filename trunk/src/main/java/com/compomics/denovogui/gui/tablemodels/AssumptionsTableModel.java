@@ -67,7 +67,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 11;
+        return 12;
     }
 
     @Override
@@ -94,6 +94,8 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 9:
                 return "Score (D)";
             case 10:
+                return "Score (p)";
+            case 11:
                 return "  ";
             default:
                 return "";
@@ -136,6 +138,11 @@ public class AssumptionsTableModel extends DefaultTableModel {
                 }
                 return null;
             case 10:
+                if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                    return tagAssumption.getScore();
+                }
+                return null;
+            case 11:
                 return true;
             default:
                 return "";

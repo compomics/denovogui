@@ -261,9 +261,9 @@ public class FindPanel extends javax.swing.JPanel {
 
                                         String psmKey = Spectrum.getSpectrumKey(spectrumFileName, spectrumTitle);
 
-                                        if (resultsFrame.getPepNovoIdentifications().matchExists(psmKey)) {
+                                        if (resultsFrame.getIdentifications().matchExists(psmKey)) {
 
-                                            SpectrumMatch spectrumMatch = resultsFrame.getPepNovoIdentifications().getSpectrumMatch(psmKey);
+                                            SpectrumMatch spectrumMatch = resultsFrame.getIdentifications().getSpectrumMatch(psmKey);
                                             HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
 
                                             if (assumptionsMap != null) {

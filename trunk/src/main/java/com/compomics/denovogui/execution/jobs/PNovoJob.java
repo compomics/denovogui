@@ -1,7 +1,7 @@
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
-import com.compomics.denovogui.io.FileProcessor;
+import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.Enzyme;
@@ -113,8 +113,8 @@ public class PNovoJob extends Job {
                 }
                 command += commandComponent;
             }
-            
-            outputFile = FileProcessor.getPNovoResultFile(outputFolder, spectrumFile);
+
+            outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + ".txt");
 
             // Set the description - yet not used
             setDescription("pNovo+");
@@ -149,7 +149,7 @@ public class PNovoJob extends Job {
 
     @Override
     public void writeCommand() {
-        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "PepNovo+ command: " + command + System.getProperty("line.separator"));
+        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "pNovo+ command: " + command + System.getProperty("line.separator"));
     }
 
     /**
@@ -203,12 +203,12 @@ public class PNovoJob extends Job {
             //
             /////////////////////////////////////////////////////
             //
-            
+
             FileWriter r = new FileWriter(pNovoFolder.getAbsolutePath() + File.separator + parameterFileName);
             BufferedWriter br = new BufferedWriter(r);
 
             br.write("[meta]" + System.getProperty("line.separator"));
-            
+
             Character[] variableModificationsLetters = {'B', 'J', 'O', 'U', 'X', 'Z'}; // @TODO: is it possible to add more characters..?
             int variableModCount = 0;
 
@@ -309,7 +309,7 @@ public class PNovoJob extends Job {
             } else {
                 br.write("frag_tol_type_ppm=1" + System.getProperty("line.separator"));
             }
-            
+
             br.write(System.getProperty("line.separator") + System.getProperty("line.separator") + "[file]" + System.getProperty("line.separator"));
 
             // set the spectrum type (DTA, MS2 or MGF)
