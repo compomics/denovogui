@@ -330,7 +330,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     pNovoCheckBox.setEnabled(false);
                 } else if (osName.contains("windows")) {
                     pNovoFolder = new File(getJarFilePath() + "/resources/pNovo/windows");
-                    pepNovoExecutable = "pNovoplus.exe";
+                    pNovoExecutable = "pNovoplus.exe";
                 } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
                     if (arch.lastIndexOf("64") != -1) {
                         // linux 64 bit is not supported

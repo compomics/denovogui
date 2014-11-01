@@ -215,7 +215,8 @@ public class FileProcessor {
      * @return the corresponding out file
      */
     public static File getPNovoResultFile(File outFolder, File spectrumFile) {
-        return new File(outFolder, Util.getFileName(spectrumFile) + ".txt");
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".txt");
     }
 
     /**
