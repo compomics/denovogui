@@ -2,6 +2,7 @@ package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.execution.jobs.DirecTagJob;
+import com.compomics.denovogui.execution.jobs.PNovoJob;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.ModificationFile;
@@ -44,6 +45,10 @@ public class DeNovoSequencingHandler {
      */
     private File direcTagFolder;
     /**
+     * The pNovo folder.
+     */
+    private File pNovoFolder;
+    /**
      * If true, PepNovo will be run.
      */
     private boolean enablePepNovo = true;
@@ -51,6 +56,10 @@ public class DeNovoSequencingHandler {
      * If true, DirecTag will be used.
      */
     private boolean enableDirecTag = true;
+    /**
+     * If true, pNovo will be run.
+     */
+    private boolean enablePNovo = true;
     /**
      * Default PTM selection.
      */
@@ -80,7 +89,7 @@ public class DeNovoSequencingHandler {
      */
     private int nThreads = Runtime.getRuntime().availableProcessors(); // @TODO: should be moved to user preferences?
     /**
-     * The thread executor
+     * The thread executor.
      */
     private ExecutorService threadExecutor = null;
     /**
@@ -99,12 +108,14 @@ public class DeNovoSequencingHandler {
     /**
      * Constructor.
      *
-     * @param pepNovoFolder the PepNovo+ folder.
-     * @param direcTagFolder the DirecTag folder.
+     * @param pepNovoFolder the PepNovo+ folder
+     * @param direcTagFolder the DirecTag folder
+     * @param pNovoFolder the pNovo folder
      */
-    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder) {
+    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder) {
         this.pepNovoFolder = pepNovoFolder;
         this.direcTagFolder = direcTagFolder;
+        this.pNovoFolder = pNovoFolder;
     }
 
     /**
@@ -116,8 +127,10 @@ public class DeNovoSequencingHandler {
      * @param outputFolder the output folder
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
+     * @param pNovoExeTitle the name of the pNovo+ executable
      * @param enablePepNovo run PepNovo?
      * @param enableDirecTag run DirecTag?
+     * @param enablePNovo run pNovo?
      * @param waitingHandler the waiting handler
      * @param exceptionHandler the exception handler to use when an exception is
      * caught
@@ -125,11 +138,12 @@ public class DeNovoSequencingHandler {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle,
-            boolean enablePepNovo, boolean enableDirecTag, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle,
+            boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
 
         this.enablePepNovo = enablePepNovo;
         this.enableDirecTag = enableDirecTag;
+        this.enablePNovo = enablePNovo;
         this.exceptionHandler = exceptionHandler;
 
         long startTime = System.nanoTime();
@@ -180,7 +194,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.increasePrimaryProgressCounter();
 
         for (File spectrumFile : spectrumFiles) {
-            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, waitingHandler, spectrumFiles.size() > 1);
+            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, waitingHandler, spectrumFiles.size() > 1);
             if (waitingHandler.isRunCanceled()) {
                 break;
             }
@@ -201,11 +215,13 @@ public class DeNovoSequencingHandler {
      * @param outputFolder the output folder
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
+     * @param pNovoExeTitle the name of the pNovo+ executable
      * @param waitingHandler the waiting handler
      * @param secondaryProgress if true the progress on the given file will be
      * displayed
      */
-    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
+    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, 
+            String direcTagExeTitle, String pNovoExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
         // Start a fixed thread pool
         threadExecutor = Executors.newFixedThreadPool(nThreads);
@@ -272,10 +288,16 @@ public class DeNovoSequencingHandler {
                 }
             }
 
-            // Add the DirecTag job only once - multithreading is done in the application itself!
+            // Add the DirecTag job only once - multithreading is done in the application itself
             if (enableDirecTag) {
                 DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(direcTagJob);
+            }
+            
+            // Add the pNovo+ job only once - multithreading is done in the application itself
+            if (enablePNovo) {
+                PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
+                jobs.add(pNovoJob);
             }
 
         } catch (FileNotFoundException ex) {

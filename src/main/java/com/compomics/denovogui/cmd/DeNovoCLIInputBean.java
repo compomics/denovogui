@@ -38,6 +38,10 @@ public class DeNovoCLIInputBean {
      */
     private boolean direcTagEnabled = true;
     /**
+     * If true, pNovo+ is enabled.
+     */
+    private boolean pNovoEnabled = true;
+    /**
      * The PepNovo executable. Full path.
      */
     private File pepNovoExecutable = null;
@@ -45,6 +49,10 @@ public class DeNovoCLIInputBean {
      * The DirecTag executable. Full path.
      */
     private File direcTagExecutable = null;
+    /**
+     * The pNovo executable. Full path.
+     */
+    private File pNovoExecutable = null;
     /**
      * Number of threads to use. Defaults to the number of cores available.
      */
@@ -85,6 +93,12 @@ public class DeNovoCLIInputBean {
                 direcTagEnabled = false;
             }
         }
+        if (aLine.hasOption(DeNovoCLIParams.PNOVO.id)) {
+            String pNovoOption = aLine.getOptionValue(DeNovoCLIParams.PNOVO.id);
+            if (pNovoOption.trim().equals("0")) {
+                pNovoEnabled = false;
+            }
+        }
 
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
@@ -95,14 +109,17 @@ public class DeNovoCLIInputBean {
             String tempDirecTagExecutable = aLine.getOptionValue(DeNovoCLIParams.DIRECTAG_LOCATION.id);
             this.direcTagExecutable = new File(tempDirecTagExecutable);
         }
+        if (aLine.hasOption(DeNovoCLIParams.PNOVO_LOCATION.id)) {
+            String tempPNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PNOVO_LOCATION.id);
+            this.pNovoExecutable = new File(tempPNovoExecutable);
+        }
 
         // get the number of threads
         if (aLine.hasOption(DeNovoCLIParams.THREADS.id)) {
             arg = aLine.getOptionValue(DeNovoCLIParams.THREADS.id);
             nThreads = new Integer(arg);
         }
-        
-        
+
         pathSettingsCLIInputBean = new PathSettingsCLIInputBean(aLine);
     }
 
@@ -165,23 +182,41 @@ public class DeNovoCLIInputBean {
     public File getDirecTagExecutable() {
         return direcTagExecutable;
     }
-    
+
+    /**
+     * Returns the pNovo+ executable. Null if not set.
+     *
+     * @return the pNovo+ executable
+     */
+    public File getPNovoExecutable() {
+        return pNovoExecutable;
+    }
+
     /**
      * Returns if PepNovo+ is to be run or not.
-     * 
+     *
      * @return if PepNovo+ is to be run or not
      */
     public boolean enablePepNovo() {
         return pepNovoEnabled;
     }
-    
+
     /**
      * Returns if DirecTag is to be run or not.
-     * 
+     *
      * @return if DirecTag is to be run or not
      */
     public boolean enableDirecTag() {
         return direcTagEnabled;
+    }
+
+    /**
+     * Returns if pNovo+ is to be run or not.
+     *
+     * @return if pNovo+ is to be run or not
+     */
+    public boolean enablePNovo() {
+        return pNovoEnabled;
     }
 
     /**
@@ -248,10 +283,10 @@ public class DeNovoCLIInputBean {
 
         return true;
     }
-    
+
     /**
      * Returns the path settings provided by the user.
-     * 
+     *
      * @return the path settings provided by the user
      */
     public PathSettingsCLIInputBean getPathSettingsCLIInputBean() {

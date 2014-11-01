@@ -58,12 +58,12 @@ public class DirecTagJob extends Job {
     /**
      * Constructor for the DirecTag algorithm job.
      *
-     * @param exeFolder The path to the algorithm executable.
-     * @param exeTitle Title of the algorithm executable.
-     * @param spectrumFile The spectrum file.
-     * @param nThreads The number of threads.
-     * @param outputFolder The output folder.
-     * @param searchParameters The search parameters.
+     * @param exeFolder the path to the algorithm executable
+     * @param exeTitle title of the algorithm executable
+     * @param spectrumFile the spectrum file
+     * @param nThreads the number of threads
+     * @param outputFolder the output folder
+     * @param searchParameters the search parameters
      * @param waitingHandler the waiting handler
      * @param exceptionHandler the exception handler
      */
@@ -150,7 +150,7 @@ public class DirecTagJob extends Job {
             // maximum peak count
             procCommands.add("-MaxPeakCount");
             procCommands.add("100");
-//        procCommands.add(String.valueOf(direcTagParameters.getMaxPeakCount())); // @TODO: figure out why adding this parameter seems to make DirecTag very slow, even when the default value is used
+            // procCommands.add(String.valueOf(direcTagParameters.getMaxPeakCount())); // @TODO: figure out why adding this parameter seems to make DirecTag very slow, even when the default value is used
             // number of intensity classes
             procCommands.add("-NumIntensityClasses");
             procCommands.add(String.valueOf(direcTagParameters.getNumIntensityClasses()));

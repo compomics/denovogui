@@ -205,6 +205,18 @@ public class FileProcessor {
     public static File getOutFile(File outFolder, File spectrumFile) {
         return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
     }
+    
+    /**
+     * Returns the pNovo result file corresponding to the given spectrum file
+     * and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding out file
+     */
+    public static File getPNovoResultFile(File outFolder, File spectrumFile) {
+        return new File(outFolder, Util.getFileName(spectrumFile) + ".txt");
+    }
 
     /**
      * Returns the DirectTag result file corresponding to the given spectrum
@@ -242,7 +254,7 @@ public class FileProcessor {
      * Returns a list of PepNovo out files expected from a list of spectrum
      * files.
      *
-     * @param outFolder the out folder
+     * @param outFolder the output folder
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
@@ -258,7 +270,7 @@ public class FileProcessor {
      * Returns a list of DirecTag tags files expected from a list of spectrum
      * files.
      *
-     * @param outFolder the out folder
+     * @param outFolder the output folder
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
@@ -266,6 +278,22 @@ public class FileProcessor {
         ArrayList<File> outFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
             outFiles.add(getTagsFile(outFolder, file));
+        }
+        return outFiles;
+    }
+    
+    /**
+     * Returns a list of pNovo result files expected from a list of spectrum
+     * files.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getPNovoResultFiles(File outFolder, ArrayList<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            outFiles.add(getPNovoResultFile(outFolder, file));
         }
         return outFiles;
     }

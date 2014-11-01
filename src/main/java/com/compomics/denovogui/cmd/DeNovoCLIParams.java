@@ -20,8 +20,10 @@ public enum DeNovoCLIParams {
     THREADS("threads", "The number of threads to use for the processing. Default is the number of cores available.", false),
     PEPNOVO("pepnovo", "Turn the PepNovo+ sequencing on or off (1: on, 0: off, default is '1'). (At least one sequencing method has to be enabled.)", false),
     DIRECT_TAG("directag", "Turn the DirecTag sequencing on or off (1: on, 0: off, default is '1'). (At least one sequencing method has to be enabled.)", false),
+    PNOVO("pnovo", "Turn the pNovo+ sequencing on or off (1: on, 0: off, default is '1'). (At least one sequencing method has to be enabled.)", false),
     PEPNOVO_LOCATION("pepnovo_folder", "The PepNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
-    DIRECTAG_LOCATION("directag_folder", "The DirecTag executable, defaults to the OS dependent versions included with DeNovoGUI.", false);
+    DIRECTAG_LOCATION("directag_folder", "The DirecTag executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
+    PNOVO_LOCATION("pnovo_folder", "The pNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false);
 
     /**
      * Short Id for the CLI parameter.
@@ -83,10 +85,12 @@ public enum DeNovoCLIParams {
         output += "\n\nOptional parameters:\n\n";
         output += "-" + String.format(formatter, PEPNOVO.id) + PEPNOVO.description + "\n";
         output += "-" + String.format(formatter, DIRECT_TAG.id) + DIRECT_TAG.description + "\n";
+        output += "-" + String.format(formatter, PNOVO.id) + PNOVO.description + "\n";
 
         output += "\n\nOptional advanced parameters:\n\n";
         output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + PEPNOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + DIRECTAG_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, PNOVO_LOCATION.id) + PNOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, THREADS.id) + THREADS.description + "\n";
 
         output += "\n\nOptional temporary folder:\n\n";

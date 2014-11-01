@@ -12,6 +12,7 @@
             <excludes>
                 <exclude>${project.basedir}/resources/PepNovo/PepNovo_Windows.exe</exclude> 
                 <exclude>${project.basedir}/resources/DirecTag/windows*/**</exclude>
+                <exclude>${project.basedir}/resources/pNovo/windows*/**</exclude>
             </excludes>
             <fileMode>0755</fileMode>
         </fileSet>

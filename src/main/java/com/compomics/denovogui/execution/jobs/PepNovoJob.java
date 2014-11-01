@@ -44,13 +44,13 @@ public class PepNovoJob extends Job {
     private String command = "";
 
     /**
-     * Constructor for the PepnovoJob.
+     * Constructor for the PepNovoJob.
      *
-     * @param pepNovoFolder The path to the PepNovo executable.
-     * @param exeTitle Title of the PepNovo executable.
-     * @param mgfFile The spectrum MGF file.
-     * @param outputFolder The output folder.
-     * @param searchParameters The search parameters.
+     * @param pepNovoFolder The path to the PepNovo executable
+     * @param exeTitle Title of the PepNovo executable
+     * @param mgfFile The spectrum MGF file
+     * @param outputFolder The output folder
+     * @param searchParameters The search parameters
      * @param waitingHandler the waiting handler
      * @param exceptionHandler the exception handler
      */

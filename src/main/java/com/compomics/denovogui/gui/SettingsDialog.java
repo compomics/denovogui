@@ -12,6 +12,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Ms
 import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
 import com.compomics.util.experiment.identification.identification_parameters.MyriMatchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PNovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
 import com.compomics.util.gui.GuiUtilities;
@@ -128,6 +129,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         duplicateSpectraPerChargeCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
         adjustPrecursorCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
         useSpectrumChargeCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
+        activationTypeCmb.setRenderer(new com.compomics.util.gui.renderers.AlignedListCellRenderer(SwingConstants.CENTER));
 
         fixedModsJScrollPane.getViewport().setOpaque(false);
         variableModsJScrollPane.getViewport().setOpaque(false);
@@ -197,15 +199,28 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
             searchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
         }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.comet.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.comet.getIndex(), new CometParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex(), new MsAmandaParameters());
+        }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex(), new MyriMatchParameters());
+        }
         if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
             searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
         }
         if (searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
             searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
         }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
+        }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
+        PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex());
 
         // the general parameters
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
@@ -245,6 +260,11 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         intensityScoreWeightTextField.setText(String.valueOf(direcTagParameters.getIntensityScoreWeight()));
         mzFidelityScoreWeightTextField.setText(String.valueOf(direcTagParameters.getMzFidelityScoreWeight()));
         complementScoreWeightTextField.setText(String.valueOf(direcTagParameters.getComplementScoreWeight()));
+        
+        // pNovo specific parameters
+        minPrecursorMassTextField.setText(String.valueOf(pNovoParameters.getLowerPrecursorMass()));
+        maxPrecursorMassTextField.setText(String.valueOf(pNovoParameters.getUpperPrecursorMass()));
+        activationTypeCmb.setSelectedItem(pNovoParameters.getActicationType());
 
         // add the modifications
         ArrayList<String> missingPtms = new ArrayList<String>();
@@ -433,6 +453,13 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         adjustPrecursorCmb = new javax.swing.JComboBox();
         useSpectrumChargeStageLabel = new javax.swing.JLabel();
         useSpectrumChargeCmb = new javax.swing.JComboBox();
+        pNovoPanel = new javax.swing.JPanel();
+        activationTypeLabel = new javax.swing.JLabel();
+        minPrecursorMassLabel = new javax.swing.JLabel();
+        minPrecursorMassTextField = new javax.swing.JTextField();
+        maxPrecursorMassLabel = new javax.swing.JLabel();
+        maxPrecursorMassTextField = new javax.swing.JTextField();
+        activationTypeCmb = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("De Novo Settings");
@@ -557,7 +584,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                         .addComponent(addFixedModification)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeFixedModification)
-                        .addContainerGap(78, Short.MAX_VALUE))
+                        .addContainerGap(74, Short.MAX_VALUE))
                     .addComponent(fixedModsJScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -1222,23 +1249,88 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        pNovoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("pNovo Settings"));
+        pNovoPanel.setOpaque(false);
+
+        activationTypeLabel.setText("Activation Type");
+
+        minPrecursorMassLabel.setText("Min Precusor Mass (Da)");
+
+        minPrecursorMassTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        minPrecursorMassTextField.setText("300");
+        minPrecursorMassTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                minPrecursorMassTextFieldKeyReleased(evt);
+            }
+        });
+
+        maxPrecursorMassLabel.setText("Max Precursor Mass (Da)");
+
+        maxPrecursorMassTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        maxPrecursorMassTextField.setText("5000");
+        maxPrecursorMassTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                maxPrecursorMassTextFieldKeyReleased(evt);
+            }
+        });
+
+        activationTypeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HCD", "CID", "ETD" }));
+
+        javax.swing.GroupLayout pNovoPanelLayout = new javax.swing.GroupLayout(pNovoPanel);
+        pNovoPanel.setLayout(pNovoPanelLayout);
+        pNovoPanelLayout.setHorizontalGroup(
+            pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pNovoPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(activationTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(activationTypeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(minPrecursorMassLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(minPrecursorMassTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(maxPrecursorMassLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(maxPrecursorMassTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pNovoPanelLayout.setVerticalGroup(
+            pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pNovoPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(maxPrecursorMassLabel)
+                        .addComponent(maxPrecursorMassTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(minPrecursorMassTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(minPrecursorMassLabel))
+                    .addGroup(pNovoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(activationTypeLabel)
+                        .addComponent(activationTypeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
         backgroundPanel.setLayout(backgroundPanelLayout);
         backgroundPanelLayout.setHorizontalGroup(
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(backgroundPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(directTagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(generalPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(backgroundPanelLayout.createSequentialGroup()
+                .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(pNovoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(directTagPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(generalPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(modificationsPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, backgroundPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(openDialogHelpJButton)
                         .addGap(863, 863, 863)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton)))
+                        .addComponent(cancelButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1251,6 +1343,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 .addComponent(generalPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(directTagPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pNovoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modificationsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1269,7 +1363,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -2023,7 +2117,27 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
     }//GEN-LAST:event_modificationsTableKeyReleased
 
+    /**
+     * Validate the input parameters.
+     *
+     * @param evt
+     */
+    private void minPrecursorMassTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_minPrecursorMassTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_minPrecursorMassTextFieldKeyReleased
+
+    /**
+     * Validate the input parameters.
+     *
+     * @param evt
+     */
+    private void maxPrecursorMassTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_maxPrecursorMassTextFieldKeyReleased
+        validateParametersInput(false);
+    }//GEN-LAST:event_maxPrecursorMassTextFieldKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox activationTypeCmb;
+    private javax.swing.JLabel activationTypeLabel;
     private javax.swing.JButton addFixedModification;
     private javax.swing.JButton addVariableModification;
     private javax.swing.JComboBox adjustPrecursorCmb;
@@ -2056,8 +2170,12 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private javax.swing.JTextField maxPeakCountTextField;
     private javax.swing.JLabel maxPrecursorAdjustmentLabel;
     private javax.swing.JTextField maxPrecursorAdjustmentTextField;
+    private javax.swing.JLabel maxPrecursorMassLabel;
+    private javax.swing.JTextField maxPrecursorMassTextField;
     private javax.swing.JLabel minPrecursorAdjustmentLabel;
     private javax.swing.JTextField minPrecursorAdjustmentTextField;
+    private javax.swing.JLabel minPrecursorMassLabel;
+    private javax.swing.JTextField minPrecursorMassTextField;
     private javax.swing.JSplitPane modificationTypesSplitPane;
     private javax.swing.JScrollPane modificationsJScrollPane;
     private javax.swing.JComboBox modificationsListCombo;
@@ -2080,6 +2198,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
     private javax.swing.JButton openModificationSettingsJButton;
     private javax.swing.JLabel outputSuffixLabel;
     private javax.swing.JTextField outputSuffixTextField;
+    private javax.swing.JPanel pNovoPanel;
     private javax.swing.JLabel precursorAdjustmentStepLabel;
     private javax.swing.JTextField precursorAdjustmentStepTextField;
     private javax.swing.JLabel precursorMassToleranceLabel;
@@ -2136,11 +2255,15 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
         }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
+        }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         DirecTagParameters direcTagParameters = (DirecTagParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
+        PNovoParameters pNovoParameters = (PNovoParameters) tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex());
 
-        Enzyme enzyme = enzymeFactory.getEnzyme("Trypsin"); // only trypsin is supported by pepnovo anyway...
+        Enzyme enzyme = enzymeFactory.getEnzyme("Trypsin"); // only trypsin is supported by pepnovo anyway... // @TODO: but pNovo supports other enzymes...
         tempSearchParameters.setEnzyme(enzyme);
 
         // general parameters
@@ -2178,6 +2301,12 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         direcTagParameters.setIntensityScoreWeight(Double.parseDouble(intensityScoreWeightTextField.getText()));
         direcTagParameters.setMzFidelityScoreWeight(Double.parseDouble(mzFidelityScoreWeightTextField.getText()));
         direcTagParameters.setComplementScoreWeight(Double.parseDouble(complementScoreWeightTextField.getText()));
+        
+        // pNovo parameters
+        pNovoParameters.setNumberOfPeptides(maxHitListLength);
+        pNovoParameters.setLowerPrecursorMass(Integer.parseInt(minPrecursorMassTextField.getText()));
+        pNovoParameters.setUpperPrecursorMass(Integer.parseInt(maxPrecursorMassTextField.getText()));
+        pNovoParameters.setActicationType((String) activationTypeCmb.getSelectedItem());
 
         // set the modifications
         ModificationProfile modificationProfile = new ModificationProfile();
@@ -2194,7 +2323,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
         tempSearchParameters.setModificationProfile(modificationProfile);
 
-        // Set omssa indexes
+        // set omssa indexes
         ptmFactory.setSearchedOMSSAIndexes(tempSearchParameters.getModificationProfile());
 
         if (searchParameters.getParametersFile() != null && searchParameters.getParametersFile().exists()) {
@@ -2203,6 +2332,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), pepNovoParameters);
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), direcTagParameters);
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), pNovoParameters);
 
         return tempSearchParameters;
     }
@@ -2232,6 +2362,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         valid = GuiUtilities.validateDoubleInput(this, intensityScoreWeightLabel, intensityScoreWeightTextField, "intensity score weight", "Intensity Score Waight Error", true, showMessage, valid);
         valid = GuiUtilities.validateDoubleInput(this, mzFidelityScoreWeightLabel, mzFidelityScoreWeightTextField, "mz fidelity score weight", "MZ Fidelity Score Weight Error", true, showMessage, valid);
         valid = GuiUtilities.validateDoubleInput(this, complementScoreWeightLabel, complementScoreWeightTextField, "complement score weight", "Complement Score Weight Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, minPrecursorMassLabel, minPrecursorMassTextField, "minimum precursor mass", "Minimum Precursor Mass Error", true, showMessage, valid);
+        valid = GuiUtilities.validateIntegerInput(this, maxPrecursorMassLabel, maxPrecursorMassTextField, "maximum precursor mass", "Maximum Precursor Mass Error", true, showMessage, valid);
 
         okButton.setEnabled(valid);
         return valid;

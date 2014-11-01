@@ -115,18 +115,23 @@ public class DeNovoCLI implements Callable {
 
             boolean runPepNovo = deNovoCLIInputBean.enablePepNovo();
             boolean runDirecTag = deNovoCLIInputBean.enableDirecTag();
+            boolean runPNovo = deNovoCLIInputBean.enablePNovo();
 
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
+            File pNovoExecutable = deNovoCLIInputBean.getPNovoExecutable();
             File pepNovoFolder = null;
             File direcTagFolder = null;
+            File pNovoFolder = null;
             String pepNovoExecutableTitle = null;
             String direcTagExecutableTitle = null;
+            String pNovoExecutableTitle = null;
 
             // OS check
             String osName = System.getProperty("os.name").toLowerCase();
             String arch = System.getProperty("os.arch").toLowerCase();
 
+            // pepNovo
             if (pepNovoExecutable != null) {
                 pepNovoExecutableTitle = pepNovoExecutable.getName();
                 pepNovoFolder = pepNovoExecutable.getParentFile();
@@ -146,6 +151,7 @@ public class DeNovoCLI implements Callable {
                 }
             }
 
+            // direcTag
             if (direcTagExecutable != null) {
                 direcTagExecutableTitle = direcTagExecutable.getName();
                 direcTagFolder = direcTagExecutable.getParentFile();
@@ -176,6 +182,26 @@ public class DeNovoCLI implements Callable {
                     // unsupported OS version
                 }
             }
+            
+            // pNovo
+            if (pNovoExecutable != null) {
+                pNovoExecutableTitle = pNovoExecutable.getName();
+                pNovoFolder = pNovoExecutable.getParentFile();
+            } else if (new File(getJarFilePath() + "/resources/pNovo").exists()) {
+
+                // use the default pNovo folder if not set by user
+                pNovoFolder = new File(getJarFilePath() + "/resources/pNovo");
+
+                if (osName.contains("mac os")) {
+                    // unsupported OS version
+                } else if (osName.contains("windows")) {
+                    pNovoExecutableTitle = "pNovoplus.exe";
+                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                    // unsupported OS version
+                } else {
+                    // unsupported OS version
+                }
+            }
 
             // check if the PepNovo folder is set
             if (pepNovoFolder == null && runPepNovo) {
@@ -200,16 +226,24 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-
-            if (!runPepNovo && !runDirecTag) {
-                waitingHandlerCLIImpl.appendReport("\nNeither PepNovo+ or DirecTag is selected! Sequencing canceled.", false, true);
+            
+            // check if the pNovo folder is set
+            if (pNovoFolder == null && runPNovo) {
+                waitingHandlerCLIImpl.appendReport("\npNovo+ location not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
 
-//            if (runPepNovo && runDirecTag) {
-//                waitingHandlerCLIImpl.appendReport("\nPepNovo+ and DirecTag cannot be selected at the same time! Sequencing canceled.", false, true);
-//                System.exit(0);
-//            }
+            // check of the pNovo executable is set
+            if (pNovoExecutableTitle == null && runPNovo) {
+                waitingHandlerCLIImpl.appendReport("\npNovo+ executable not set! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+
+            if (!runPepNovo && !runDirecTag && !runPNovo) {
+                waitingHandlerCLIImpl.appendReport("\nNo sequencing algorithms selected! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (deNovoCLIInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
@@ -225,17 +259,17 @@ public class DeNovoCLI implements Callable {
             SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             waitingHandlerCLIImpl.appendReport("Loading the spectra.", true, true);
             for (File spectrumFile : deNovoCLIInputBean.getSpectrumFiles()) {
-                spectrumFactory.addSpectra(spectrumFile);
+                spectrumFactory.addSpectra(spectrumFile, waitingHandlerCLIImpl);
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
             // start the sequencing
-            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle,
-                    runPepNovo, runDirecTag, waitingHandlerCLIImpl, exceptionHandler);
+                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle,
+                    runPepNovo, runDirecTag, runPNovo, waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
             exceptionHandler.catchException(e);
         }
@@ -258,7 +292,7 @@ public class DeNovoCLI implements Callable {
      */
     private static String getHeader() {
         return System.getProperty("line.separator")
-                + "DeNovoCLI performs de novo sequencing using the PepNovo+ algoritm." + System.getProperty("line.separator")
+                + "DeNovoCLI performs de novo sequencing using the PepNovo+, DirecTag and pNovo+ algoritms." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "Spectra must be provided in the Mascot Generic File (mgf) format." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
