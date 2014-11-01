@@ -109,8 +109,9 @@ public abstract class Job implements Executable, Runnable {
                 writer.write(temp);
                 writer.newLine();
 
-                if (description.equalsIgnoreCase("DirecTag")) {
+                if (description.equalsIgnoreCase("DirecTag") || description.equalsIgnoreCase("pNovo+")) {
                     waitingHandler.appendReport(temp, false, true);
+                    // @TODO: better processing of pNovo progress output
                 } else {
                     if (temp.startsWith(">>")) {
                         int progressCounter = waitingHandler.getPrimaryProgressCounter();
@@ -130,6 +131,7 @@ public abstract class Job implements Executable, Runnable {
         } catch (IOException ex) {
             exceptionHandler.catchException(ex);
         }
+
         scan.close();
 
         try {

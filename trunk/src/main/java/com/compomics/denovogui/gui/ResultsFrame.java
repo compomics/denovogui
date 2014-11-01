@@ -43,6 +43,7 @@ import com.compomics.util.experiment.identification.protein_inference.proteintre
 import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.identification.tags.TagComponent;
+import com.compomics.util.experiment.identification.tags.matchers.TagMatcher;
 import com.compomics.util.experiment.identification.tags.tagcomponents.MassGap;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
@@ -1846,6 +1847,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         int total = identification.getSpectrumIdentificationSize();
         waitingHandler.setMaxSecondaryProgressCounter(total);
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); //@TODO: remove when the objectDB is stable
+        TagMatcher tagMatcher = new TagMatcher(fixedModifications, searchParameters.getModificationProfile().getAllNotFixedModifications());
 
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
@@ -1887,10 +1889,12 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                 if (passesThreshold) {
                                     if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(tagAssumption.getTag(), deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy(), fixedModifications, variableModifications, true);
+                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
+                                                tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy(), true);
                                         for (Peptide peptide : proteinMapping.keySet()) {
                                             peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                            PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(), advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                            PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
+                                                    advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
                                             peptideAssumption.addUrParam(tagAssumption);
                                             spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
                                         }
@@ -2902,175 +2906,179 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             }
             progressDialog.setTitle(loadingText);
 
-            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile);
-            LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
-            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+            IdfileReader idfileReader = IdfileReaderFactory.getInstance().getFileReader(resultFile); // @TODO: add file reader for pNovo+
 
-            // remap the ptms and set GUI min/max values
-            for (SpectrumMatch spectrumMatch : spectrumMatches) {
-                for (int advocate : spectrumMatch.getAdvocates()) {
+            if (idfileReader != null) {
 
-                    if (advocate == Advocate.pepnovo.getIndex()) {
-                        pepNovoDataLoaded = true;
-                    } else if (advocate == Advocate.direcTag.getIndex()) {
-                        direcTagDataLoaded = true;
-                    }
+                LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+                progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
+                // remap the ptms and set GUI min/max values
+                for (SpectrumMatch spectrumMatch : spectrumMatches) {
+                    for (int advocate : spectrumMatch.getAdvocates()) {
 
-                    for (double score : tempAssumptions.keySet()) {
-                        for (SpectrumIdentificationAssumption assumption : tempAssumptions.get(score)) {
+                        if (advocate == Advocate.pepnovo.getIndex()) {
+                            pepNovoDataLoaded = true;
+                        } else if (advocate == Advocate.direcTag.getIndex()) {
+                            direcTagDataLoaded = true;
+                        }
 
-                            TagAssumption tagAssumption = (TagAssumption) assumption;
-                            Tag tag = tagAssumption.getTag();
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
 
-                            // add the fixed PTMs
-                            ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, deNovoGUI.getSequenceMatchingPreferences());
+                        for (double score : tempAssumptions.keySet()) {
+                            for (SpectrumIdentificationAssumption assumption : tempAssumptions.get(score)) {
 
-                            // rename the variable modifications
-                            for (TagComponent tagComponent : tag.getContent()) {
-                                if (tagComponent instanceof AminoAcidPattern) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                Tag tag = tagAssumption.getTag();
 
-                                    AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                                // add the fixed PTMs
+                                ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, deNovoGUI.getSequenceMatchingPreferences());
 
-                                    for (int aa : aminoAcidPattern.getModificationIndexes()) {
-                                        for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
-                                            if (modificationMatch.isVariable()) {
-                                                if (advocate == Advocate.pepnovo.getIndex()) {
-                                                    String pepnovoPtmName = modificationMatch.getTheoreticPtm();
-                                                    PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                    String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
-                                                    if (utilitiesPtmName == null) {
-                                                        throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                // rename the variable modifications
+                                for (TagComponent tagComponent : tag.getContent()) {
+                                    if (tagComponent instanceof AminoAcidPattern) {
+
+                                        AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+
+                                        for (int aa : aminoAcidPattern.getModificationIndexes()) {
+                                            for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
+                                                if (modificationMatch.isVariable()) {
+                                                    if (advocate == Advocate.pepnovo.getIndex()) {
+                                                        String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                        String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                        if (utilitiesPtmName == null) {
+                                                            throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        }
+                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    } else if (advocate == Advocate.direcTag.getIndex()) {
+                                                        Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
+                                                        String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
+                                                        if (utilitiesPtmName == null) {
+                                                            throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        }
+                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                        PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
+                                                        ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                        if (aaAtTarget.size() > 1) {
+                                                            throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                        }
+                                                        int aaIndex = aa - 1;
+                                                        aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
+                                                    } else {
+                                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                        if (notImplemented == null) {
+                                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                        }
+                                                        throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                     }
-                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                    Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                    String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
-                                                    if (utilitiesPtmName == null) {
-                                                        throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                    }
-                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                    PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                    ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                    if (aaAtTarget.size() > 1) {
-                                                        throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
-                                                    }
-                                                    int aaIndex = aa - 1;
-                                                    aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
-                                                } else {
-                                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                                    if (notImplemented == null) {
-                                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                                    }
-                                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                 }
                                             }
                                         }
-                                    }
-                                } else if (tagComponent instanceof AminoAcidSequence) {
+                                    } else if (tagComponent instanceof AminoAcidSequence) {
 
-                                    AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                                        AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
 
-                                    for (int aa : aminoAcidSequence.getModificationIndexes()) {
-                                        for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(aa)) {
-                                            if (modificationMatch.isVariable()) {
-                                                if (advocate == Advocate.pepnovo.getIndex()) {
-                                                    String pepnovoPtmName = modificationMatch.getTheoreticPtm();
-                                                    PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                    String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
-                                                    if (utilitiesPtmName == null) {
-                                                        throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                        for (int aa : aminoAcidSequence.getModificationIndexes()) {
+                                            for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(aa)) {
+                                                if (modificationMatch.isVariable()) {
+                                                    if (advocate == Advocate.pepnovo.getIndex()) {
+                                                        String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                        String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                        if (utilitiesPtmName == null) {
+                                                            throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        }
+                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    } else if (advocate == Advocate.direcTag.getIndex()) {
+                                                        Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
+                                                        String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
+                                                        if (utilitiesPtmName == null) {
+                                                            throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                        }
+                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                        PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
+                                                        ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                        if (aaAtTarget.size() > 1) {
+                                                            throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                        }
+                                                        int aaIndex = aa - 1;
+                                                        aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
+                                                    } else {
+                                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                        if (notImplemented == null) {
+                                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                        }
+                                                        throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                     }
-                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                    Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                    String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
-                                                    if (utilitiesPtmName == null) {
-                                                        throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                    }
-                                                    modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                    PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                    ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                    if (aaAtTarget.size() > 1) {
-                                                        throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
-                                                    }
-                                                    int aaIndex = aa - 1;
-                                                    aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
-                                                } else {
-                                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                                    if (notImplemented == null) {
-                                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                                    }
-                                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                 }
                                             }
                                         }
+                                    } else if (tagComponent instanceof MassGap) {
+                                        // Nothing to do here
+                                    } else {
+                                        throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
                                     }
-                                } else if (tagComponent instanceof MassGap) {
-                                    // Nothing to do here
+                                }
+
+                                // Set GUI min/max values
+                                double mz = tagAssumption.getTheoreticMz();
+                                if (mz > maxIdentificationMz) {
+                                    maxIdentificationMz = mz;
+                                }
+                                if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
+                                    maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
+                                }
+                                double nGap = tag.getNTerminalGap();
+                                if (nGap > maxNGap) {
+                                    maxNGap = nGap;
+                                }
+                                double cGap = tag.getCTerminalGap();
+                                if (cGap > maxCGap) {
+                                    maxCGap = cGap;
+                                }
+
+                                if (advocate == Advocate.pepnovo.getIndex()) {
+                                    PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                    double rankScore = pepnovoAssumptionDetails.getRankScore();
+                                    if (rankScore < minRankScore) {
+                                        minRankScore = rankScore;
+                                    }
+                                    if (rankScore > maxRankScore) {
+                                        maxRankScore = rankScore;
+                                    }
+                                    if (score > maxPepnovoScore) {
+                                        maxPepnovoScore = score;
+                                    }
+                                } else if (advocate == Advocate.direcTag.getIndex()) {
+                                    if (score > maxDirectTagEvalue) {
+                                        maxDirectTagEvalue = score;
+                                    }
+                                    if (score < minDirectTagEvalue) {
+                                        minDirectTagEvalue = score;
+                                    }
                                 } else {
-                                    throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
+                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                    if (notImplemented == null) {
+                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                    }
+                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                 }
-                            }
-
-                            // Set GUI min/max values
-                            double mz = tagAssumption.getTheoreticMz();
-                            if (mz > maxIdentificationMz) {
-                                maxIdentificationMz = mz;
-                            }
-                            if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
-                                maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
-                            }
-                            double nGap = tag.getNTerminalGap();
-                            if (nGap > maxNGap) {
-                                maxNGap = nGap;
-                            }
-                            double cGap = tag.getCTerminalGap();
-                            if (cGap > maxCGap) {
-                                maxCGap = cGap;
-                            }
-
-                            if (advocate == Advocate.pepnovo.getIndex()) {
-                                PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                double rankScore = pepnovoAssumptionDetails.getRankScore();
-                                if (rankScore < minRankScore) {
-                                    minRankScore = rankScore;
-                                }
-                                if (rankScore > maxRankScore) {
-                                    maxRankScore = rankScore;
-                                }
-                                if (score > maxPepnovoScore) {
-                                    maxPepnovoScore = score;
-                                }
-                            } else if (advocate == Advocate.direcTag.getIndex()) {
-                                if (score > maxDirectTagEvalue) {
-                                    maxDirectTagEvalue = score;
-                                }
-                                if (score < minDirectTagEvalue) {
-                                    minDirectTagEvalue = score;
-                                }
-                            } else {
-                                Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                if (notImplemented == null) {
-                                    throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                }
-                                throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                             }
                         }
                     }
                 }
-            }
 
-            // put the matches in the identification object
-            tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
+                // put the matches in the identification object
+                tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out"));
 
-            idfileReader.close();
+                idfileReader.close();
 
-            loadingText = "Loading Results. Loading Matches. Please Wait...";
-            if (resultFiles.size() > 1) {
-                loadingText += " (" + (i + 1) + "/" + resultFiles.size() + ")";
+                loadingText = "Loading Results. Loading Matches. Please Wait...";
+                if (resultFiles.size() > 1) {
+                    loadingText += " (" + (i + 1) + "/" + resultFiles.size() + ")";
+                }
             }
 
             progressDialog.setTitle(loadingText);
