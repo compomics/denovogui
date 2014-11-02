@@ -239,9 +239,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      */
     private ObjectsCache objectsCache = new ObjectsCache();
     /**
-     * True if multiple advocates are loaded.
+     * The number of advocate types loaded.
      */
-    private boolean multipleAdvocatesLoaded = false;
+    private int numAdvocatesLoaded = 0;
     /**
      * The export settings dialog.
      */
@@ -380,13 +380,19 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         // set up the id column color map and tooltips
         HashMap<Integer, Color> idColorMap = new HashMap<Integer, Color>();
         HashMap<Integer, String> idTooltipMap = new HashMap<Integer, String>();
-        if (multipleAdvocatesLoaded) {
+        if (numAdvocatesLoaded > 1) {
             idColorMap.put(0, Color.LIGHT_GRAY);
-            idColorMap.put(1, Color.YELLOW);
-            idColorMap.put(2, sparklineColor);
             idTooltipMap.put(0, "No de novo solutions");
-            idTooltipMap.put(1, "One de novo algorithm missing");
-            idTooltipMap.put(2, "Found de novo solutions for both algorithms");
+            for (int i = 1; i < numAdvocatesLoaded; i++) {
+                idColorMap.put(i, Color.YELLOW);
+                idTooltipMap.put(i, "One or more de novo algorithm missing");
+            }
+            idColorMap.put(numAdvocatesLoaded, sparklineColor);
+            if (numAdvocatesLoaded == 2) {
+                idTooltipMap.put(numAdvocatesLoaded, "Found de novo solutions for both algorithms");
+            } else {
+                idTooltipMap.put(numAdvocatesLoaded, "Found de novo solutions for all algorithms");
+            }
         } else {
             idColorMap.put(0, Color.LIGHT_GRAY);
             idColorMap.put(1, sparklineColor);
@@ -2905,7 +2911,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             return null;
         }
 
-        multipleAdvocatesLoaded = false;
+        numAdvocatesLoaded = 0;
         boolean pepNovoDataLoaded = false;
         boolean direcTagDataLoaded = false;
         boolean pNovoDataLoaded = false;
@@ -3135,7 +3141,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
             numberOfAdvocateLoaded++;
         }
 
-        multipleAdvocatesLoaded = numberOfAdvocateLoaded > 1;
+        numAdvocatesLoaded = numberOfAdvocateLoaded;
 
         return tempIdentification;
     }
