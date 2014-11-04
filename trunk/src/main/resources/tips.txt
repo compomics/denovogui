@@ -6,7 +6,7 @@ How did you generate your mgf file?<br><br>Processing of the raw data can have d
 Need more help?<br><br>Look for the question marks.<br><br>We will also be happy to answer your questions on our <a href="http://groups.google.com/group/peptide-shaker">mailing list</a>.
 Too many/too few peak annotations?<br><br>Change the minimum peak intensity threshold or change the m/z accuracy via the <i>Spectrum Annotation</i> option in the <i>Edit</i> menu.
 Export results to Excel?<br><br>See the export options on the <i>Export</i> menu in the Results window.
-Find our tools useful?<br><br>Then please cite them in your papers!<br><br><b>DeNovoGUI</b>: <a href="http://denovogui.googlecode.com">http://denovogui.googlecode.com</a>.
+Find our tools useful?<br><br>Then please cite them in your papers!<br><br><b>DeNovoGUI</b>: <a href="http://www.ncbi.nlm.nih.gov/pubmed/24295440">Muth et al.: J Proteome Res. 2014 Feb 7;13(2):1143-6.</a>.
 Need high quality graphics for you manuscript?<br><br>Export the spectrum in either high resolution or as vector graphics.<br><br>See the export option under the spectrum.
 Surprisingly large spectrum files?<br><br>Be sure that the data is in centroided mode and not in profile mode!<br><br>More information on peak-picking available in our <a href="http://compomics.com/bioinformatics-for-proteomics/identification/">free tutorials</a>.
 Teaching bioinformatics?<br><br>Check out our <a href="http://compomics.com/bioinformatics-for-proteomics/">free tutorials</a>!
