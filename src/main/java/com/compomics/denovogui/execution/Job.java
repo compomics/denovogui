@@ -24,7 +24,7 @@ public abstract class Job implements Executable, Runnable {
      */
     protected int id;
     /**
-     * Default setting for the error --> NULL.
+     * Default setting for the error.
      */
     protected String error = null;
     /**

@@ -224,7 +224,7 @@ public class PNovoJob extends Job {
                     if (!ptm.isCTerm() && !ptm.isNTerm()) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
                             br.write(variableModificationsLetters[variableModCount++] + "="
-                                    + AminoAcid.getAminoAcid(target.charValue()).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
+                                    + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
                             if (variableModCount > variableModificationsLetters.length) {
                                 System.out.println("The number of variable PTM targets have to be smaller than " + variableModificationsLetters.length + "!"); // @TODO: handle this better!
                                 break;
@@ -254,7 +254,7 @@ public class PNovoJob extends Job {
                 for (String fixedModification : searchParameters.getModificationProfile().getFixedModifications()) {
                     PTM ptm = ptmFactory.getPTM(fixedModification);
                     for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
-                        br.write(target + "=" + AminoAcid.getAminoAcid(target.charValue()).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
+                        br.write(target + "=" + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
                     }
                 }
             }
