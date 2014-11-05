@@ -20,7 +20,7 @@ public class LocationDialog extends javax.swing.JDialog {
      * Creates a new PepNovoLocationDialog.
      *
      * @param deNovoGUI the DeNovoGUI main frame
-     * @param modal
+     * @param modal if the dialog is to be modal
      */
     public LocationDialog(DeNovoGUI deNovoGUI, boolean modal) {
         super(deNovoGUI, modal);

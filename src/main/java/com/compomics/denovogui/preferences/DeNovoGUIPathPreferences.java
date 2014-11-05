@@ -107,8 +107,8 @@ public class DeNovoGUIPathPreferences {
      *
      * @param inputFile the file to load the path preferences from
      *
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @throws FileNotFoundException thrown if the file is not found
+     * @throws IOException thrown if there are errors accessing the file
      */
     public static void loadPathPreferencesFromFile(File inputFile) throws FileNotFoundException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(inputFile));
@@ -129,7 +129,7 @@ public class DeNovoGUIPathPreferences {
      * Loads a path to be set from a line.
      *
      * @param line the line where to read the path from
-     * @throws java.io.FileNotFoundException
+     * @throws FileNotFoundException thrown if the file cannot be found
      */
     public static void loadPathPreferenceFromLine(String line) throws FileNotFoundException {
         String id = UtilitiesPathPreferences.getPathID(line);
@@ -173,7 +173,7 @@ public class DeNovoGUIPathPreferences {
      *
      * @param path the path of the folder where to redirect all paths.
      *
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException thrown if one of the files cannot be found
      */
     public static void setAllPathsIn(String path) throws FileNotFoundException {
         for (DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathKey.values()) {
@@ -195,7 +195,8 @@ public class DeNovoGUIPathPreferences {
      *
      * @param file the destination file
      *
-     * @throws IOException
+     * @throws IOException thrown if there are issues writing to or closing the
+     * configuration file
      */
     public static void writeConfigurationToFile(File file) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
@@ -208,10 +209,11 @@ public class DeNovoGUIPathPreferences {
 
     /**
      * Writes the configuration file using the provided buffered writer.
-     * 
+     *
      * @param bw the writer to use for writing
      *
-     * @throws IOException
+     * @throws IOException thrown if there are issues writing to or closing the
+     * configuration file
      */
     public static void writeConfigurationToFile(BufferedWriter bw) throws IOException {
         for (DeNovoGUIPathKey pathKey : DeNovoGUIPathKey.values()) {
@@ -226,7 +228,7 @@ public class DeNovoGUIPathPreferences {
      * @param bw the writer to use for writing
      * @param pathKey the key of the path of interest
      *
-     * @throws IOException
+     * @throws IOException thrown if there are issues writing
      */
     public static void writePathToFile(BufferedWriter bw, DeNovoGUIPathKey pathKey) throws IOException {
         bw.write(pathKey.id + UtilitiesPathPreferences.separator);

@@ -31,7 +31,8 @@ public class FileProcessor {
      * allowing the user to cancel the progress
      *
      * @return the chunk files.
-     * @throws IOException
+     * @throws IOException thrown if there are problems with the random access
+     * file
      */
     public static ArrayList<File> chunkFile(File file, int chunkSize, int remaining, int nSpectra, WaitingHandler waitingHandler) throws IOException {
 
@@ -74,7 +75,7 @@ public class FileProcessor {
                         bos.write(line);
                         bos.newLine();
                     }
-                    if (line.indexOf("END IONS") >= 0) {
+                    if (line.contains("END IONS")) {
                         // Increment the spectrumCounter by one.
                         spectrumCounter++;
 
@@ -132,7 +133,7 @@ public class FileProcessor {
      *
      * @param mgfFiles the mgf file chunks.
      * @param waitingHandler the waiting handler
-     * @throws IOException
+     * @throws IOException thrown if a file cannot be deleted
      */
     public static void deleteChunkFiles(List<File> mgfFiles, WaitingHandler waitingHandler) throws IOException {
 
@@ -151,7 +152,8 @@ public class FileProcessor {
      * Merges and deletes the (split) output files.
      *
      * @param outFiles The output files to be merged.
-     * @throws IOException
+     * @throws IOException thrown if there are problems with the reading/writing
+     * to the file
      */
     public static void mergeAndDeleteOutputFiles(List<File> outFiles) throws IOException {
 
@@ -205,7 +207,7 @@ public class FileProcessor {
     public static File getOutFile(File outFolder, File spectrumFile) {
         return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
     }
-    
+
     /**
      * Returns the pNovo result file corresponding to the given spectrum file
      * and output folder.
@@ -237,7 +239,8 @@ public class FileProcessor {
      *
      * @param outFile the out file
      * @return the corresponding mgf file
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException thrown if the file format is not
+     * recognized
      */
     public static File getMgfFile(File outFile) throws IllegalArgumentException {
         String fileName = Util.getFileName(outFile);
@@ -282,7 +285,7 @@ public class FileProcessor {
         }
         return outFiles;
     }
-    
+
     /**
      * Returns a list of pNovo result files expected from a list of spectrum
      * files.

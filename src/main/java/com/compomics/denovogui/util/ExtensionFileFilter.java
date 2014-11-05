@@ -95,8 +95,8 @@ public class ExtensionFileFilter extends javax.swing.filechooser.FileFilter {
     /**
      * Appends a file extension, if not already present.
      *
-     * @param aFileName
-     * @param aExtWithDot
+     * @param aFileName the file name
+     * @param aExtWithDot the extention with dot, e.g., .txt
      * @return the new file name
      */
     public static String addFileExtension(String aFileName, String aExtWithDot) {

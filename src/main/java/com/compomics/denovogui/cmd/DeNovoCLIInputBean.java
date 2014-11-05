@@ -66,9 +66,12 @@ public class DeNovoCLIInputBean {
      * Takes all the arguments from a command line.
      *
      * @param aLine the command line
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws FileNotFoundException thrown if a spectrum or search parameter
+     * file cannot be found
+     * @throws IOException thrown if there are problems accessing a spectrum or
+     * search parameter file
+     * @throws ClassNotFoundException thrown if the search parameters cannot be
+     * processed
      */
     public DeNovoCLIInputBean(CommandLine aLine) throws FileNotFoundException, IOException, ClassNotFoundException {
 
@@ -235,9 +238,9 @@ public class DeNovoCLIInputBean {
      *
      * @return true if the startup was valid
      *
-     * @throws IOException
+     * @throws FileNotFoundException thrown if a spectrum file cannot be found
      */
-    public static boolean isValidStartup(CommandLine aLine) throws IOException {
+    public static boolean isValidStartup(CommandLine aLine) throws FileNotFoundException {
 
         if (aLine.getOptions().length == 0) {
             return false;
@@ -278,7 +281,6 @@ public class DeNovoCLIInputBean {
                 e.printStackTrace();
                 return false;
             }
-
         }
 
         return true;

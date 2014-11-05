@@ -77,7 +77,7 @@ public class FindPanel extends javax.swing.JPanel {
     /**
      * Set the color for the hits.
      *
-     * @param color
+     * @param color the color of the hits
      */
     public void setColor(Color color) {
         indexLabel.setForeground(color);

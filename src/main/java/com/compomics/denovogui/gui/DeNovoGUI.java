@@ -46,7 +46,6 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -276,7 +275,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     pepNovoExecutable = "PepNovo_Mac";
                 } else if (osName.contains("windows")) {
                     pepNovoExecutable = "PepNovo_Windows.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     if (arch.lastIndexOf("64") != -1) {
                         pepNovoExecutable = "PepNovo_Linux";
                     } else {
@@ -302,7 +301,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                         direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_32bits");
                     }
                     direcTagExecutable = "directag.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     if (arch.lastIndexOf("64") != -1) {
                         direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_64bit");
                     } else {
@@ -331,7 +330,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 } else if (osName.contains("windows")) {
                     pNovoFolder = new File(getJarFilePath() + "/resources/pNovo/windows");
                     pNovoExecutable = "pNovoplus.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     if (arch.lastIndexOf("64") != -1) {
                         // linux 64 bit is not supported
                         pNovoCheckBox.setSelected(false);
@@ -2008,14 +2007,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * Loads the results of the given spectrum files and loads everything in the
      * identification.
      *
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws ClassNotFoundException
-     * @throws Exception
+     * @throws Exception thrown if an exception occurs
      */
-    public void displayResults() throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public void displayResults() throws Exception {
 
         ArrayList<File> resultFiles = new ArrayList<File>();
 

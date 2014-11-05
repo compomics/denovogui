@@ -176,7 +176,7 @@ public abstract class Job implements Executable, Runnable {
     /**
      * This method sets the status.
      *
-     * @param status
+     * @param status the status to set
      */
     public void setStatus(JobStatus status) {
         this.status = status;
@@ -208,7 +208,7 @@ public abstract class Job implements Executable, Runnable {
     /**
      * Sets the filename for a job specific file.
      *
-     * @param filename
+     * @param filename the filename to set
      */
     public void setFilename(String filename) {
         this.filename = filename;
