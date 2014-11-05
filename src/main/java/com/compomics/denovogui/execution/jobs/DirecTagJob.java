@@ -248,7 +248,7 @@ public class DirecTagJob extends Job {
 
         } catch (Exception e) {
             exceptionHandler.catchException(e);
-            waitingHandler.appendReport("An error occured running DirecTag. See error log for details. " + e.getMessage(), true, true);
+            waitingHandler.appendReport("An error occurred running DirecTag. See error log for details. " + e.getMessage(), true, true);
             waitingHandler.setRunCanceled();
         }
     }

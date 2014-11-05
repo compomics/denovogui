@@ -1475,7 +1475,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             "File Saved", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "An error occured while saving " + selectedFile.getPath() + ".\n"
+                    JOptionPane.showMessageDialog(this, "An error occurred while saving " + selectedFile.getPath() + ".\n"
                             + "See resources/DeNovoGUI.log for details.", "Save Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -2782,13 +2782,13 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 return spectraAsMgf.toString();
             } catch (IOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
             } catch (MzMLUnmarshallerException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occured when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -3181,7 +3181,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(ResultsFrame.this, "An error occured when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred when closing the identification database.", "File Error", JOptionPane.ERROR_MESSAGE);
             }
 //                    finally {
 //                        progressDialog.setRunFinished();
