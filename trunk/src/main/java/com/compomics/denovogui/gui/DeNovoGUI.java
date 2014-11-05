@@ -221,7 +221,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         try {
             utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "An error occured when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "An error occurred when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
 
@@ -463,7 +463,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 System.out.println("\n\n" + new Date() + ": DeNovoGUI version " + getVersion() + ".\n");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(
-                        null, "An error occured when trying to create the DeNovoGUI log file.",
+                        null, "An error occurred when trying to create the DeNovoGUI log file.",
                         "Error Creating Log File", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
@@ -1367,7 +1367,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error occured while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error occurred while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
                 SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
                 settingsDialog.setVisible(true);
             }

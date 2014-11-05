@@ -149,7 +149,7 @@ public class PepNovoJob extends Job {
 
         } catch (Exception e) {
             exceptionHandler.catchException(e);
-            waitingHandler.appendReport("An error occured running PepNovo+. See error log for details. " + e.getMessage(), true, true);
+            waitingHandler.appendReport("An error occurred running PepNovo+. See error log for details. " + e.getMessage(), true, true);
             waitingHandler.setRunCanceled();
         }
     }

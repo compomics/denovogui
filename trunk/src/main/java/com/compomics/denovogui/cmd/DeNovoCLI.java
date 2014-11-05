@@ -105,7 +105,7 @@ public class DeNovoCLI implements Callable {
             try {
                 setPathConfiguration();
             } catch (Exception e) {
-                System.out.println("An error occured when setting path configuration. Default will be used.");
+                System.out.println("An error occurred when setting path configuration. Default will be used.");
                 exceptionHandler.catchException(e);
             }
         }
@@ -144,7 +144,7 @@ public class DeNovoCLI implements Callable {
                     pepNovoExecutableTitle = "PepNovo_Mac";
                 } else if (osName.contains("windows")) {
                     pepNovoExecutableTitle = "PepNovo_Windows.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     pepNovoExecutableTitle = "PepNovo_Linux";
                 } else {
                     // unsupported OS version
@@ -165,7 +165,7 @@ public class DeNovoCLI implements Callable {
                         direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/windows_32bits");
                     }
                     direcTagExecutableTitle = "directag.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     if (arch.lastIndexOf("64") != -1) {
                         direcTagFolder = new File(getJarFilePath() + "/resources/DirecTag/linux_64bit");
                     } else {
@@ -196,7 +196,7 @@ public class DeNovoCLI implements Callable {
                     // unsupported OS version
                 } else if (osName.contains("windows")) {
                     pNovoExecutableTitle = "pNovoplus.exe";
-                } else if (osName.indexOf("nix") != -1 || osName.indexOf("nux") != -1) {
+                } else if (osName.contains("nix") || osName.contains("nux")) {
                     // unsupported OS version
                 } else {
                     // unsupported OS version
