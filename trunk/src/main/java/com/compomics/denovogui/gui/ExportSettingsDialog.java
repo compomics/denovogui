@@ -26,7 +26,7 @@ public class ExportSettingsDialog extends javax.swing.JDialog {
      * Creates a new ExportSettingsDialog.
      *
      * @param parent the parent
-     * @param modal
+     * @param modal if the dialog is to be modal
      */
     public ExportSettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);

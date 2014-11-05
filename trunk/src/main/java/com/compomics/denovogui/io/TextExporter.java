@@ -1,6 +1,5 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
@@ -11,8 +10,6 @@ import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.tags.Tag;
-import com.compomics.util.experiment.identification.tags.TagComponent;
-import com.compomics.util.experiment.identification.tags.tagcomponents.MassGap;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -58,11 +55,12 @@ public class TextExporter {
      * @param aNumberOfMatches the maximum number of matches to export per
      * spectrum
      *
-     * @throws IOException
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws MzMLUnmarshallerException
-     * @throws java.lang.InterruptedException
+     * @throws IOException thrown if an IO exception occurs
+     * @throws SQLException thrown if an SQL exception occurs
+     * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
+     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * extracted from a spectrum
+     * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
@@ -134,7 +132,7 @@ public class TextExporter {
 
                                 PeptideAssumption peptideAssumption = assumptions.get(i);
 
-                                boolean passesThreshold = false;
+                                boolean passesThreshold;
 
                                 if (greaterThan) {
                                     passesThreshold = peptideAssumption.getScore() >= threshold;
@@ -225,11 +223,12 @@ public class TextExporter {
      * @param aNumberOfMatches the maximum number of matches to export per
      * spectrum
      *
-     * @throws IOException
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws MzMLUnmarshallerException
-     * @throws java.lang.InterruptedException
+     * @throws IOException thrown if an IO exception occurs
+     * @throws SQLException thrown if an SQL exception occurs
+     * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
+     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * extracted from a spectrum
+     * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
@@ -367,11 +366,12 @@ public class TextExporter {
      * @param aNumberOfMatches the maximum number of matches to export per
      * spectrum
      *
-     * @throws IOException
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws MzMLUnmarshallerException
-     * @throws java.lang.InterruptedException
+     * @throws IOException thrown if an IO exception occurs
+     * @throws SQLException thrown if an SQL exception occurs
+     * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
+     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * extracted from a spectrum
+     * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler,
             Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
@@ -430,7 +430,7 @@ public class TextExporter {
 
                                 TagAssumption tagAssumption = assumptions.get(i);
 
-                                boolean passesThreshold = false;
+                                boolean passesThreshold;
 
                                 if (greaterThan) {
                                     passesThreshold = tagAssumption.getScore() >= threshold;

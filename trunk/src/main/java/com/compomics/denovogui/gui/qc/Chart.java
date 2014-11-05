@@ -38,10 +38,10 @@ public abstract class Chart {
      * Show the result data in the chart.
      *
      * @param identification the identification containing all results
-     * @throws IOException
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws InterruptedException  
+     * @throws IOException thrown if an IO exception occurs
+     * @throws SQLException thrown if an SQL exception occurs 
+     * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
+     * @throws InterruptedException thrown if an InterruptedException occurs
      */
     protected abstract void process(Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException;
 

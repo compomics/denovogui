@@ -135,8 +135,9 @@ public class DeNovoSequencingHandler {
      * @param exceptionHandler the exception handler to use when an exception is
      * caught
      *
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException thrown if there is an IO issue
+     * @throws ClassNotFoundException thrown if the search parameters cannot be
+     * processed from file
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle,
             boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
@@ -220,7 +221,7 @@ public class DeNovoSequencingHandler {
      * @param secondaryProgress if true the progress on the given file will be
      * displayed
      */
-    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, 
+    private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle,
             String direcTagExeTitle, String pNovoExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
         // Start a fixed thread pool
@@ -293,7 +294,7 @@ public class DeNovoSequencingHandler {
                 DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(direcTagJob);
             }
-            
+
             // Add the pNovo+ job only once - multithreading is done in the application itself
             if (enablePNovo) {
                 PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
@@ -361,7 +362,7 @@ public class DeNovoSequencingHandler {
      *
      * @param outputFolder the output folder
      * @param waitingHandler the waiting handler
-     * @throws IOException
+     * @throws IOException thrown if the deletion of the chunk files fail
      */
     public void cancelSequencing(File outputFolder, WaitingHandler waitingHandler) throws IOException {
         if (jobs != null) {

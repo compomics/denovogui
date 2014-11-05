@@ -90,9 +90,9 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      * Creates a new SettingsDialog.
      *
      * @param deNovoGUI references to the main DeNovoGUI
-     * @param searchParameters
-     * @param setVisible
-     * @param modal
+     * @param searchParameters the search parameters
+     * @param setVisible if the dialog is to be visible
+     * @param modal if the dialog is to be modal
      */
     public SettingsDialog(DeNovoGUI deNovoGUI, SearchParameters searchParameters, boolean setVisible, boolean modal) {
         super(deNovoGUI, modal);

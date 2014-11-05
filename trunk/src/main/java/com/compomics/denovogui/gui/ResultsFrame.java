@@ -1272,7 +1272,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                 // check if we ought to show a tooltip with mod details
                 String sequence = (String) deNovoMatchesTable.getValueAt(row, column);
 
-                if (sequence.indexOf("<span") != -1) {
+                if (sequence.contains("<span")) {
                     try {
                         TagAssumption tagAssumption = assumptions.get(row);
                         String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
@@ -1867,7 +1867,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         int total = identification.getSpectrumIdentificationSize();
         waitingHandler.setMaxSecondaryProgressCounter(total);
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); //@TODO: remove when the objectDB is stable
-        TagMatcher tagMatcher = new TagMatcher(fixedModifications, searchParameters.getModificationProfile().getAllNotFixedModifications());
+        TagMatcher tagMatcher = new TagMatcher(fixedModifications, searchParameters.getModificationProfile().getAllNotFixedModifications(), deNovoGUI.getSequenceMatchingPreferences());
 
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
@@ -1910,7 +1910,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                     if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
                                         HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
-                                                tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy(), true);
+                                                tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
                                         for (Peptide peptide : proteinMapping.keySet()) {
                                             peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
                                             PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
@@ -2873,15 +2873,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param searchParameters the search parameters
      * @param waitingHandler the waiting handler
      * @return the Identification object
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws ClassNotFoundException
-     * @throws Exception
+     * @throws Exception thrown if an exception occurs
      */
-    public Identification importDeNovoResults(ArrayList<File> resultFiles, SearchParameters searchParameters, WaitingHandler waitingHandler)
-            throws SQLException, FileNotFoundException, IOException, IllegalArgumentException, ClassNotFoundException, Exception {
+    public Identification importDeNovoResults(ArrayList<File> resultFiles, SearchParameters searchParameters, WaitingHandler waitingHandler) throws Exception {
 
         // @TODO: let the user reference his project
         String projectReference = "DeNovoGUI";
@@ -3241,7 +3235,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
     /**
      * Set the annotation preferences.
      *
-     * @param annotationPreferences
+     * @param annotationPreferences the annotation preferences
      */
     public void setAnnotationPreferences(AnnotationPreferences annotationPreferences) {
         this.annotationPreferences = annotationPreferences;
