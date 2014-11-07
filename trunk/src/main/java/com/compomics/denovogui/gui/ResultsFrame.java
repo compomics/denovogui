@@ -3012,7 +3012,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                                                         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                         String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                         if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("Pepnovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            throw new IllegalArgumentException("PepNovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else if (advocate == Advocate.direcTag.getIndex()) {

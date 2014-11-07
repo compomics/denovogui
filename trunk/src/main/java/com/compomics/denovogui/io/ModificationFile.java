@@ -1,6 +1,5 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.preferences.ModificationProfile;
@@ -208,7 +207,6 @@ public class ModificationFile {
                         || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
                     modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptm.getMass())));
                 }
-
             } else {
                 for (Character residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
                     if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA

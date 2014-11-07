@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 /**
@@ -209,7 +210,7 @@ public class PNovoJob extends Job {
 
             br.write("[meta]" + System.getProperty("line.separator"));
 
-            Character[] variableModificationsLetters = {'B', 'J', 'O', 'U', 'X', 'Z'}; // @TODO: is it possible to add more characters..?
+            Character[] variableModificationsCharacters = {'B', 'J', 'O', 'U', 'X', 'Z'}; // @TODO: is it possible to add more characters..?
             int variableModCount = 0;
 
             // add the variable modifications
@@ -217,22 +218,33 @@ public class PNovoJob extends Job {
                 br.write("#variable modifications" + System.getProperty("line.separator"));
             }
 
+            // create maps for mapping back to the ptms used
+            HashMap<Character, String> modificationLetterToPtmMap = new HashMap<Character, String>();
+            HashMap<Character, Character> modificationLetterToResidueMap = new HashMap<Character, Character>();
+
             // variable modifications targetting specific amino acids
             if (!searchParameters.getModificationProfile().getVariableModifications().isEmpty()) {
                 for (String variableModification : searchParameters.getModificationProfile().getVariableModifications()) {
                     PTM ptm = ptmFactory.getPTM(variableModification);
                     if (!ptm.isCTerm() && !ptm.isNTerm()) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
-                            br.write(variableModificationsLetters[variableModCount++] + "="
-                                    + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
-                            if (variableModCount > variableModificationsLetters.length) {
-                                System.out.println("The number of variable PTM targets have to be smaller than " + variableModificationsLetters.length + "!"); // @TODO: handle this better!
+
+                            if (variableModCount > variableModificationsCharacters.length) {
+                                System.out.println("The number of variable PTM targets have to be smaller than " + variableModificationsCharacters.length + "!"); // @TODO: handle this better!
                                 break;
                             }
+
+                            char currentModLetter = variableModificationsCharacters[variableModCount++];
+                            modificationLetterToPtmMap.put(currentModLetter, variableModification);
+                            modificationLetterToResidueMap.put(currentModLetter, target);
+                            br.write(currentModLetter + "=" + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
                         }
                     }
                 }
             }
+            
+            pNovoParameters.setPNovoPtmMap(modificationLetterToPtmMap);
+            pNovoParameters.setPNovoPtmResiduesMap(modificationLetterToResidueMap);
 
             // variable modifications targetting the n or c term
             if (!searchParameters.getModificationProfile().getVariableModifications().isEmpty()) {
@@ -244,6 +256,7 @@ public class PNovoJob extends Job {
                         br.write("c-term=" + ptm.getMass() + System.getProperty("line.separator"));
                     }
                 }
+                // @TODO: how to parse terminal ptms from the output? as they do not seem to be annotated...
                 // @TODO: what about terminal ptms at specific amino acids?
             }
 
@@ -257,6 +270,8 @@ public class PNovoJob extends Job {
                         br.write(target + "=" + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
                     }
                 }
+                
+                // @TODO: what about fixed terminal ptms without a specific amino acid target?
             }
 
             // add the ion types
