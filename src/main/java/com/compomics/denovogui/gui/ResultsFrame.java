@@ -2327,7 +2327,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             annotationPreferences.getDeNovoCharge(),
                             annotationPreferences.showForwardIonDeNovoTags(),
                             annotationPreferences.showRewindIonDeNovoTags(),
-                            0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected());
+                            0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
 
                     // show all or just the annotated peaks
                     spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
