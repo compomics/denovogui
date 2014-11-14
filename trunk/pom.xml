@@ -144,7 +144,7 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <mainClass>com.compomics.denovogui.DeNovoGUIWrapper</mainClass>
+                            <mainClass>com.compomics.denovogui.DeNovoGUIZipFileChecker</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                         </manifest>
