@@ -255,7 +255,7 @@
                 </executions>
             </plugin>
             
-             <!-- Assembly plugin -->
+            <!-- Assembly plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -326,7 +326,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.43.10</version>
+            <version>3.43.13</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
