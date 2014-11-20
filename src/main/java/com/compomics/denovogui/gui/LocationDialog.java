@@ -284,7 +284,7 @@ public class LocationDialog extends javax.swing.JDialog {
             File pepNovoExecutable = fc.getSelectedFile();
 
             if (deNovoGUI.checkPepNovoFolder(pepNovoExecutable.getParentFile())) {
-                deNovoGUI.setLastSelectedFolder(pepNovoExecutable.getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(pepNovoExecutable.getAbsolutePath());
                 deNovoGUI.setPepNovoFolder(pepNovoExecutable.getParentFile());
                 deNovoGUI.setPepNovoExecutable(pepNovoExecutable.getName());
                 pepNovoLocationTextField.setText(pepNovoExecutable.getAbsolutePath());
@@ -312,7 +312,7 @@ public class LocationDialog extends javax.swing.JDialog {
             File direcTagExecutable = fc.getSelectedFile();
 
             if (deNovoGUI.checkDirecTagFolder(direcTagExecutable.getParentFile())) {
-                deNovoGUI.setLastSelectedFolder(direcTagExecutable.getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(direcTagExecutable.getAbsolutePath());
                 deNovoGUI.setDirecTagFolder(direcTagExecutable.getParentFile());
                 deNovoGUI.setDirecTagExecutable(direcTagExecutable.getName());
                 direcTagLocationTextField.setText(direcTagExecutable.getAbsolutePath());
@@ -340,7 +340,7 @@ public class LocationDialog extends javax.swing.JDialog {
             File pNovoExecutable = fc.getSelectedFile();
 
             if (deNovoGUI.checkPNovoFolder(pNovoExecutable.getParentFile())) {
-                deNovoGUI.setLastSelectedFolder(pNovoExecutable.getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(pNovoExecutable.getAbsolutePath());
                 deNovoGUI.setPNovoFolder(pNovoExecutable.getParentFile());
                 deNovoGUI.setPNovoExecutable(pNovoExecutable.getName());
                 pNovoLocationTextField.setText(pNovoExecutable.getAbsolutePath());

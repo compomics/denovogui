@@ -56,7 +56,6 @@ import com.compomics.util.gui.JOptionEditorPane;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.export.graphics.ExportGraphicsDialog;
-import com.compomics.util.gui.export.graphics.ExportGraphicsDialogParent;
 import com.compomics.util.gui.renderers.AlignedListCellRenderer;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import com.compomics.util.waiting.WaitingHandler;
@@ -108,7 +107,7 @@ import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
  *
  * @author Harald Barsnes
  */
-public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDialogParent {
+public class ResultsFrame extends javax.swing.JFrame {
 
     /**
      * A references to the main frame.
@@ -1444,7 +1443,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * @param evt
      */
     private void exportSpectrumGraphicsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSpectrumGraphicsJMenuItemActionPerformed
-        new ExportGraphicsDialog(deNovoGUI, this, true, (Component) spectrumJPanel);
+        new ExportGraphicsDialog(deNovoGUI, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true, (Component) spectrumJPanel, deNovoGUI.getLastSelectedFolder());
     }//GEN-LAST:event_exportSpectrumGraphicsJMenuItemActionPerformed
 
     /**
@@ -1458,11 +1459,11 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         if (spectrumAsMgf != null) {
 
-            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder(), "Save As...", false);
+            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), "Save As...", false);
 
             if (selectedFile != null) {
 
-                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
 
                 try {
                     FileWriter w = new FileWriter(selectedFile);
@@ -1547,9 +1548,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportSettingsDialog = new ExportSettingsDialog(this, true);
 
         if (!exportSettingsDialog.canceled()) {
-            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
             if (selectedFile != null) {
-                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
                 exportIdentification(selectedFile, ExportType.tags, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
             }
         }
@@ -1589,9 +1590,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         exportSettingsDialog = new ExportSettingsDialog(this, true);
 
         if (!exportSettingsDialog.canceled()) {
-            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
             if (selectedFile != null) {
-                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
                 exportIdentification(selectedFile, ExportType.blast, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
             }
         }
@@ -1617,7 +1618,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
 
         if (!exportSettingsDialog.canceled()) {
 
-            final File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder(), false);
+            final File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
 
             if (selectedFile != null) {
 
@@ -1663,7 +1664,7 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
                             }
                             if (!progressDialog.isRunCanceled()) {
                                 progressDialog.setTitle("Exporting Matches. Please Wait...");
-                                deNovoGUI.setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
                                 TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                                 if (!progressDialog.isRunCanceled()) {
@@ -1969,9 +1970,9 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
      * the results.
      */
     private void openNewFile() {
-        final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder());
+        final SelectResultsDialog selectResultsDialog = new SelectResultsDialog(this, deNovoGUI.getLastSelectedFolder().getLastSelectedFolder());
         if (!selectResultsDialog.isCanceled() && selectResultsDialog.getMgfFiles() != null && selectResultsDialog.getResultFiles() != null && selectResultsDialog.getSearchParameters() != null) {
-            deNovoGUI.setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
+            deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectResultsDialog.getLastSelectedFolder());
             searchParameters = selectResultsDialog.getSearchParameters();
             setVisible(true);
             deNovoGUI.setVisible(false);
@@ -2725,40 +2726,20 @@ public class ResultsFrame extends javax.swing.JFrame implements ExportGraphicsDi
         return reporterIonsSubtypes;
     }
 
-    @Override
-    public void setSelectedExportFolder(String selectedFolder) {
-        deNovoGUI.setLastSelectedFolder(selectedFolder);
-    }
-
-    @Override
-    public String getDefaultExportFolder() {
-        return deNovoGUI.getLastSelectedFolder();
-    }
-
     /**
-     * Returns the last selected folder.
+     * Returns the normal icon.
      *
-     * @return the last selected folder
+     * @return the normal icon.
      */
-    public String getLastSelectedFolder() {
-        return deNovoGUI.getLastSelectedFolder();
-    }
-
-    /**
-     * Sets the last selected folder.
-     *
-     * @param lastSelectedFolder the last selected folder
-     */
-    public void setLastSelectedFolder(String lastSelectedFolder) {
-        deNovoGUI.setLastSelectedFolder(lastSelectedFolder);
-    }
-
-    @Override
     public Image getNormalIcon() {
         return Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png"));
     }
 
-    @Override
+    /**
+     * Returns the waiting icon.
+     *
+     * @return the waiting icon
+     */
     public Image getWaitingIcon() {
         return Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png"));
     }
