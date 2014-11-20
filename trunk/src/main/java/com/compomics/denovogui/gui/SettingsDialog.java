@@ -2404,7 +2404,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
             // First check whether a file has already been selected.
             // If so, start from that file's parent.
-            File startLocation = new File(deNovoGUI.getLastSelectedFolder());
+            File startLocation = new File(deNovoGUI.getLastSelectedFolder().getLastSelectedFolder());
 
             if (searchParameters.getParametersFile() != null) {
                 startLocation = searchParameters.getParametersFile();
@@ -2430,7 +2430,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
 
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selected = fc.getSelectedFile();
-                    deNovoGUI.setLastSelectedFolder(selected.getAbsolutePath());
+                    deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selected.getAbsolutePath());
                     // Make sure the file is appended with '.parameters'
                     if (!selected.getName().toLowerCase().endsWith(".parameters")) {
                         selected = new File(selected.getParentFile(), selected.getName() + ".parameters");

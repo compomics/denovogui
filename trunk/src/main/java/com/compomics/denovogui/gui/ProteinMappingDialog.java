@@ -5,7 +5,6 @@ import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.gui.protein.SequenceDbDetailsDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
-import com.compomics.util.gui.searchsettings.SearchSettingsDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import no.uib.jsparklines.extra.NimbusCheckBoxRenderer;
@@ -98,7 +96,6 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
      */
     private void setUpGUI() {
 
-        ((TitledBorder) dataBasePanelSettings.getBorder()).setTitle(SearchSettingsDialogParent.TITLED_BORDER_HORIZONTAL_PADDING + "Database" + SearchSettingsDialogParent.TITLED_BORDER_HORIZONTAL_PADDING);
         if (sequenceFactory.getCurrentFastaFile() != null) {
             databaseSettingsTxt.setText(sequenceFactory.getCurrentFastaFile().getAbsolutePath());
         }
@@ -503,7 +500,8 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
             }
         }
 
-        SequenceDbDetailsDialog sequenceDbDetailsDialog = new SequenceDbDetailsDialog(resultsFrame, resultsFrame.getLastSelectedFolder(), true, resultsFrame.getNormalIcon(), resultsFrame.getWaitingIcon());
+        SequenceDbDetailsDialog sequenceDbDetailsDialog = new SequenceDbDetailsDialog(resultsFrame, 
+                resultsFrame.getDeNovoGUI().getLastSelectedFolder(), true, resultsFrame.getNormalIcon(), resultsFrame.getWaitingIcon());
 
         boolean success = sequenceDbDetailsDialog.selectDB(true);
         if (success) {

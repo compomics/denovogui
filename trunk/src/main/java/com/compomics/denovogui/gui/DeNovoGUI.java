@@ -30,6 +30,8 @@ import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
+import com.compomics.util.io.ConfigurationFile;
+import com.compomics.util.preferences.LastSelectedFolder;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
@@ -95,7 +97,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     /**
      * The last folder opened by the user. Defaults to user.home.
      */
-    private String lastSelectedFolder = "example_dataset";
+    private LastSelectedFolder lastSelectedFolder = new LastSelectedFolder("example_dataset");
     /**
      * The example mgf file.
      */
@@ -389,7 +391,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
             File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
             File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
-            modificationUse = SearchSettingsDialog.loadModificationsUse(modUseFile);
+            ConfigurationFile configFile = new ConfigurationFile(modUseFile); // @TODO: standardize the use of the ConfigurationFile
+            try {
+                modificationUse = SearchSettingsDialog.loadModificationsUse(configFile);
+            } catch (IOException e) {
+
+            }
 
             // set the default enzyme to trypsin
             if (searchParameters.getEnzyme() == null) {
@@ -1256,7 +1263,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         // First check whether a file has already been selected.
         // If so, start from that file's parent.
 
-        File startLocation = new File(lastSelectedFolder);
+        File startLocation = new File(lastSelectedFolder.getLastSelectedFolder());
         ArrayList<File> tempSpectrumFiles = getSpectrumFiles();
         if (tempSpectrumFiles.size() > 0) {
             File temp = tempSpectrumFiles.get(0);
@@ -1282,7 +1289,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
 
-            lastSelectedFolder = fc.getSelectedFile().getAbsolutePath();
+            lastSelectedFolder.setLastSelectedFolder(fc.getSelectedFile().getAbsolutePath());
 
             File[] files = fc.getSelectedFiles();
             for (File file : files) {
@@ -1324,7 +1331,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
         // First check whether a file has already been selected.
         // If so, start from that file's parent.
-        File startLocation = new File(lastSelectedFolder);
+        File startLocation = new File(lastSelectedFolder.getLastSelectedFolder());
         if (searchParameters.getParametersFile() != null && !settingsFileJTextField.getText().trim().equals("")
                 && !settingsFileJTextField.getText().trim().equals(defaultSettingsTxt)
                 && !settingsFileJTextField.getText().trim().equals(userSettingsTxt)) {
@@ -1350,7 +1357,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         int result = fc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            lastSelectedFolder = file.getAbsolutePath();
+            lastSelectedFolder.setLastSelectedFolder(file.getAbsolutePath());
             try {
                 searchParameters = SearchParameters.getIdentificationParameters(file);
                 loadModifications(searchParameters);
@@ -1384,7 +1391,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private void resultFolderBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resultFolderBrowseButtonActionPerformed
 
         // TODO: Setup default start location here!
-        File startLocation = new File(lastSelectedFolder);
+        File startLocation = new File(lastSelectedFolder.getLastSelectedFolder());
         if (outputFolderTextField.getText() != null && !outputFolderTextField.getText().trim().equals("")) {
             File temp = new File(outputFolderTextField.getText());
             if (temp.isDirectory()) {
@@ -1400,7 +1407,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         if (result == JFileChooser.APPROVE_OPTION) {
             File tempOutputFolder = fc.getSelectedFile();
             outputFolderTextField.setText(tempOutputFolder.getAbsolutePath());
-            lastSelectedFolder = tempOutputFolder.getAbsolutePath();
+            lastSelectedFolder.setLastSelectedFolder(tempOutputFolder.getAbsolutePath());
             setOutputFolder(tempOutputFolder);
         }
 
@@ -2092,7 +2099,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      *
      * @return the last selected folder
      */
-    public String getLastSelectedFolder() {
+    public LastSelectedFolder getLastSelectedFolder() {
+        if (lastSelectedFolder == null) {
+            lastSelectedFolder = new LastSelectedFolder();
+            utilitiesUserPreferences.setLastSelectedFolder(lastSelectedFolder);
+        }
         return lastSelectedFolder;
     }
 
@@ -2101,7 +2112,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      *
      * @param lastSelectedFolder the folder to set
      */
-    public void setLastSelectedFolder(String lastSelectedFolder) {
+    public void setLastSelectedFolder(LastSelectedFolder lastSelectedFolder) {
         this.lastSelectedFolder = lastSelectedFolder;
     }
 
