@@ -783,16 +783,16 @@
                           <TableColumnModel selectionModel="0"/>
                         </Property>
                         <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
-                          <JTableSelectionModel selectionMode="0"/>
+                          <JTableSelectionModel selectionMode="2"/>
                         </Property>
                         <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                           <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseReleased"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseExited"/>
                         <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseMoved"/>
+                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseExited"/>
+                        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deNovoMatchesTableMouseReleased"/>
                         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="deNovoMatchesTableKeyReleased"/>
                       </Events>
                       <AuxValues>
