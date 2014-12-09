@@ -66,6 +66,8 @@ import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
 import static java.awt.Frame.MAXIMIZED_BOTH;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -83,6 +85,7 @@ import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -988,18 +991,18 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoMatchesPanel.setOpaque(false);
 
         deNovoMatchesTable.setModel(new com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel());
-        deNovoMatchesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        deNovoMatchesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                deNovoMatchesTableMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                deNovoMatchesTableMouseExited(evt);
-            }
-        });
+        deNovoMatchesTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         deNovoMatchesTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 deNovoMatchesTableMouseMoved(evt);
+            }
+        });
+        deNovoMatchesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                deNovoMatchesTableMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                deNovoMatchesTableMouseReleased(evt);
             }
         });
         deNovoMatchesTable.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2278,120 +2281,187 @@ public class ResultsFrame extends javax.swing.JFrame {
     private void updateSpectrum() {
 
         spectrumJPanel.removeAll();
-        String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
         ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle("Spectrum Viewer");
         spectrumViewerPanel.repaint();
 
-        if (spectrumFactory.spectrumLoaded(spectrumKey)) {
-            try {
-                MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
+        exportSpectrumValuesJMenuItem.setVisible(deNovoMatchesTable.getSelectedRowCount() < 2);
 
-                // add the data to the spectrum panel
-                Precursor precursor = currentSpectrum.getPrecursor();
-                if (deNovoMatchesTable.getSelectedRow() != -1) {
-                    TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
+        if (deNovoMatchesTable.getSelectedRowCount() > 2) {
+            JPanel tempPanel = new JPanel();
+            tempPanel.setOpaque(false);
+            JLabel tempLabel = new JLabel("Please select maximum two PSMs at the same time...");
+            tempLabel.setFont(tempLabel.getFont().deriveFont(tempLabel.getFont().getStyle() | java.awt.Font.BOLD));
+            tempPanel.setLayout(new GridBagLayout());
+            tempPanel.add(tempLabel, new GridBagConstraints());
+            spectrumJPanel.add(tempPanel);
+        } else {
 
-                    SpectrumPanel spectrumPanel = new SpectrumPanel(
-                            currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
-                            precursor.getMz(), tagAssumption.getIdentificationCharge().toString(),
-                            "", 40, false, false, false, 2, false);
-                    spectrumPanel.setBorder(null);
+            String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
 
-                    // add the annotations
-                    annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), deNovoGUI.getSequenceMatchingPreferences());
+            if (spectrumFactory.spectrumLoaded(spectrumKey)) {
+                try {
+                    MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
 
-                    TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
+                    // add the data to the spectrum panel
+                    Precursor precursor = currentSpectrum.getPrecursor();
+                    if (deNovoMatchesTable.getSelectedRow() != -1) {
 
-                    ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
-                            annotationPreferences.getNeutralLosses(),
-                            annotationPreferences.getValidatedCharges(),
-                            tagAssumption.getIdentificationCharge().value,
-                            currentSpectrum, tagAssumption.getTag(),
-                            currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
-                            annotationPreferences.getFragmentIonAccuracy(),
-                            false, annotationPreferences.isHighResolutionAnnotation());
-                    spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
-                    spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
-                    spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
+                        double[] intensitiesAsArray = currentSpectrum.getIntensityValuesAsArray();
 
-                    if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
-                        if (annotationPreferences.useAutomaticAnnotation()) {
-                            annotationPreferences.setNeutralLossesSequenceDependant(true);
+                        if (deNovoMatchesTable.getSelectedRowCount() == 2) {
+                            intensitiesAsArray = currentSpectrum.getIntensityValuesNormalizedAsArray();
                         }
-                    }
 
-                    // add de novo sequencing
-                    spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
-                            TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                            TagFragmentIon.Y_ION,
-                            annotationPreferences.getDeNovoCharge(),
-                            annotationPreferences.showForwardIonDeNovoTags(),
-                            annotationPreferences.showRewindIonDeNovoTags(),
-                            0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
+                        SpectrumPanel spectrumPanel = new SpectrumPanel(
+                                currentSpectrum.getMzValuesAsArray(), intensitiesAsArray,
+                                precursor.getMz(), "",
+                                "", 40, false, false, false, 2, false);
+                        spectrumPanel.setBorder(null);
 
-                    // show all or just the annotated peaks
-                    spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
-                    spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());
+                        spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
+                        spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
 
-                    spectrumJPanel.add(spectrumPanel);
-                    Tag tag = tagAssumption.getTag();
+                        if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
+                            if (annotationPreferences.useAutomaticAnnotation()) {
+                                annotationPreferences.setNeutralLossesSequenceDependant(true);
+                            }
+                        }
 
-                    // get the modifications for the tag
-                    ArrayList<ModificationMatch> modificationMatches = new ArrayList<ModificationMatch>();
+                        // show all or just the annotated peaks
+                        spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
+                        spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());
 
-                    for (TagComponent tagComponent : tagAssumption.getTag().getContent()) {
-                        if (tagComponent instanceof AminoAcidPattern) {
-                            AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
-                            for (int site = 1; site <= aminoAcidPattern.length(); site++) {
-                                for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
-                                    modificationMatches.add(modificationMatch);
+                        // add the mirrored spectrum
+                        if (deNovoMatchesTable.getSelectedRowCount() == 2) {
+                            spectrumPanel.addMirroredSpectrum(
+                                    currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesNormalizedAsArray(), precursor.getMz(),
+                                    "", "", false,
+                                    Color.BLUE, Color.BLUE); // @TODO: remove hardcoded colors!
+                        }
+
+                        String modifiedSequence = "";
+                        int maxPrecursorCharge = 1;
+                        ArrayList<ModificationMatch> allModifications = new ArrayList<ModificationMatch>();
+
+                        // add the spectrum annotations
+                        for (int i = 0; i < deNovoMatchesTable.getSelectedRowCount(); i++) {
+
+                            TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
+                            annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), deNovoGUI.getSequenceMatchingPreferences());
+
+                            TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
+
+                            ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
+                                    annotationPreferences.getNeutralLosses(),
+                                    annotationPreferences.getValidatedCharges(),
+                                    tagAssumption.getIdentificationCharge().value,
+                                    currentSpectrum, tagAssumption.getTag(),
+                                    currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
+                                    annotationPreferences.getFragmentIonAccuracy(),
+                                    false, annotationPreferences.isHighResolutionAnnotation());
+
+                            if (i == 0) {
+                                spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+
+                                // add de novo sequencing
+                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                        TagFragmentIon.Y_ION,
+                                        annotationPreferences.getDeNovoCharge(),
+                                        annotationPreferences.showForwardIonDeNovoTags(),
+                                        annotationPreferences.showRewindIonDeNovoTags(),
+                                        0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
+                            } else {
+                                spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+
+                                // add de novo sequencing
+                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                        TagFragmentIon.Y_ION,
+                                        annotationPreferences.getDeNovoCharge(),
+                                        annotationPreferences.showForwardIonDeNovoTags(),
+                                        annotationPreferences.showRewindIonDeNovoTags(),
+                                        0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), true);
+                            }
+
+                            spectrumJPanel.add(spectrumPanel);
+                            Tag tag = tagAssumption.getTag();
+
+                            // get the modifications for the tag
+                            for (TagComponent tagComponent : tagAssumption.getTag().getContent()) {
+                                if (tagComponent instanceof AminoAcidPattern) {
+                                    AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                                    for (int site = 1; site <= aminoAcidPattern.length(); site++) {
+                                        for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
+                                            allModifications.add(modificationMatch);
+                                        }
+                                    }
+                                } else if (tagComponent instanceof AminoAcidSequence) {
+                                    AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                                    for (int site = 1; site <= aminoAcidSequence.length(); site++) {
+                                        for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
+                                            allModifications.add(modificationMatch);
+                                        }
+                                    }
+                                } else if (tagComponent instanceof MassGap) {
+                                    // Nothing to do here
+                                } else {
+                                    throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
                                 }
                             }
-                        } else if (tagComponent instanceof AminoAcidSequence) {
-                            AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
-                            for (int site = 1; site <= aminoAcidSequence.length(); site++) {
-                                for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
-                                    modificationMatches.add(modificationMatch);
-                                }
+
+                            if (!modifiedSequence.isEmpty()) {
+                                modifiedSequence += " vs. ";
                             }
-                        } else if (tagComponent instanceof MassGap) {
-                            // Nothing to do here
-                        } else {
-                            throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
+
+                            modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true, false);
+
+                            if (tagAssumption.getIdentificationCharge().value > maxPrecursorCharge) {
+                                maxPrecursorCharge = tagAssumption.getIdentificationCharge().value;
+                            }
                         }
+
+                        updateAnnotationMenus(maxPrecursorCharge, allModifications);
+
+                        spectrumPanel.rescale(0.0, spectrumPanel.getMaxXAxisValue());
+
+                        // update the spectrum title
+                        if (deNovoMatchesTable.getSelectedRowCount() == 1) {
+                            ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
+                                    "Spectrum Viewer (" + modifiedSequence
+                                    + "   " + maxPrecursorCharge + "   "
+                                    + Util.roundDouble(assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow())).getTheoreticMz(true, true), 2) + " m/z)");
+                        } else if (deNovoMatchesTable.getSelectedRowCount() == 2) {
+                            ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
+                                    "Spectrum Viewer (" + modifiedSequence + ")");
+                        } else if (deNovoMatchesTable.getSelectedRowCount() > 2) {
+                            ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
+                                    "Spectrum Viewer (" + deNovoMatchesTable.getSelectedRowCount() + " PSMs)");
+                        }
+
+                        spectrumViewerPanel.repaint();
+                    } else {
+                        // Show spectrum without identification.
+                        SpectrumPanel spectrumPanel = new SpectrumPanel(
+                                currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
+                                precursor.getMz(), "",
+                                "", 40, false, false, false, 2, false);
+                        spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
+                        spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
+                        spectrumPanel.setBorder(null);
+                        spectrumJPanel.add(spectrumPanel);
                     }
+                    currentSpectrumKey = spectrumKey;
 
-                    updateAnnotationMenus(tagAssumption.getIdentificationCharge().value, modificationMatches);
-
-                    String modifiedSequence = tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true, false);
-
-                    ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
-                            "Spectrum Viewer (" + modifiedSequence
-                            + "   " + tagAssumption.getIdentificationCharge().toString() + "   "
-                            + Util.roundDouble(tagAssumption.getTheoreticMz(true, true), 2) + " m/z)");
-                    spectrumViewerPanel.repaint();
-                } else {
-                    // Show spectrum without identification.
-                    SpectrumPanel spectrumPanel = new SpectrumPanel(
-                            currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(),
-                            precursor.getMz(), "",
-                            "", 40, false, false, false, 2, false);
-                    spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
-                    spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
-                    spectrumPanel.setBorder(null);
-                    spectrumJPanel.add(spectrumPanel);
+                } catch (Exception e) {
+                    catchException(e);
                 }
-                currentSpectrumKey = spectrumKey;
-
-            } catch (Exception e) {
-                catchException(e);
             }
         }
 
         spectrumJPanel.revalidate();
         spectrumJPanel.repaint();
-
     }
 
     /**
