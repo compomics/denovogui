@@ -2,13 +2,13 @@ package com.compomics.denovogui.gui.qc;
 
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.PeptideAssumption;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.PlotOrientation;
@@ -45,8 +45,9 @@ public class ScoreHistogram extends Chart {
             for (String spectrumTitle : identification.getSpectrumIdentification(spectrumFile)) {
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                SpectrumIdentificationAssumption assumption = spectrumMatch.getFirstHit(Advocate.pepnovo.getIndex());
-                scores.add(assumption.getScore());
+                ArrayList<Double> matchScores = new ArrayList<Double>(spectrumMatch.getAssumptionsMap().get(Advocate.pepnovo.getIndex()).keySet());
+                Collections.sort(matchScores);
+                scores.add(matchScores.get(0));
             }
         }
 
@@ -72,7 +73,6 @@ public class ScoreHistogram extends Chart {
                 true,
                 true,
                 false);
-
 
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundAlpha(0f);
