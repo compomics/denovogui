@@ -2981,7 +2981,10 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                 // remap the ptms and set GUI min/max values
                 for (SpectrumMatch spectrumMatch : spectrumMatches) {
-                    for (int advocate : spectrumMatch.getAdvocates()) {
+                    
+                    HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+                    
+                    for (int advocate : assumptionsMap.keySet()) {
 
                         if (advocate == Advocate.pepnovo.getIndex()) {
                             pepNovoDataLoaded = true;
@@ -2991,7 +2994,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                             pNovoDataLoaded = true;
                         }
 
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = spectrumMatch.getAllAssumptions(advocate);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = assumptionsMap.get(advocate);
 
                         for (double score : tempAssumptions.keySet()) {
                             for (SpectrumIdentificationAssumption assumption : tempAssumptions.get(score)) {
@@ -3162,7 +3165,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 }
 
                 // put the matches in the identification object
-                tempIdentification.addSpectrumMatches(spectrumMatches, idfileReader.getExtension().equalsIgnoreCase(".out") || idfileReader.getExtension().equalsIgnoreCase(".txt"));
+                tempIdentification.addSpectrumMatches(spectrumMatches);
 
                 idfileReader.close();
 

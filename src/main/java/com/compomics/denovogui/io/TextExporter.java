@@ -111,13 +111,16 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
-                            for (int algorithmId : spectrumMatch.getAdvocates()) {
-                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(algorithmId);
-                                if (assumptionsMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+
+                            for (int algorithmId : assumptionsMap.keySet()) {
+                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
+                                if (advocateMap != null) {
+                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
-                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                        for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
                                             if (assumption instanceof PeptideAssumption) {
                                                 PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                                 assumptions.add(peptideAssumption);
@@ -276,13 +279,16 @@ public class TextExporter {
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            for (int algorithmId : spectrumMatch.getAdvocates()) {
-                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(algorithmId);
-                                if (assumptionsMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+
+                            for (int algorithmId : assumptionsMap.keySet()) {
+                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
+                                if (advocateMap != null) {
+                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
-                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                        for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
                                             if (assumption instanceof TagAssumption) {
                                                 TagAssumption tagAssumption = (TagAssumption) assumption;
                                                 assumptions.add(tagAssumption);
@@ -408,14 +414,16 @@ public class TextExporter {
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-                            for (int algorithmId : spectrumMatch.getAdvocates()) {
-                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(algorithmId);
 
-                                if (assumptionsMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+
+                            for (int algorithmId : assumptionsMap.keySet()) {
+                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
+                                if (advocateMap != null) {
+                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
-                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                        for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
                                             if (assumption instanceof TagAssumption) {
                                                 TagAssumption tagAssumption = (TagAssumption) assumption;
                                                 assumptions.add(tagAssumption);

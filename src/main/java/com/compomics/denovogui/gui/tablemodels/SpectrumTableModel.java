@@ -10,6 +10,7 @@ import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -120,7 +121,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        ArrayList<Integer> allAdvocates = spectrumMatch.getAdvocates();
+                        Set<Integer> allAdvocates = spectrumMatch.getAssumptionsMap().keySet();
                         return allAdvocates.size();
                     }
                     return 0; // no match found
