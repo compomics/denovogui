@@ -210,7 +210,7 @@ public class PNovoJob extends Job {
 
             br.write("[meta]" + System.getProperty("line.separator"));
 
-            Character[] variableModificationsCharacters = {'B', 'J', 'O', 'U', 'X', 'Z'}; // @TODO: is it possible to add more characters..?
+            Character[] variableModificationsCharacters = {'B', 'J', 'O', 'U', 'X', 'Z'}; // @TODO: is it possible to add more/other characters..?
             int variableModCount = 0;
 
             // add the variable modifications
@@ -256,8 +256,8 @@ public class PNovoJob extends Job {
                         br.write("c-term=" + ptm.getMass() + System.getProperty("line.separator"));
                     }
                 }
-                // @TODO: how to parse terminal ptms from the output? as they do not seem to be annotated...
-                // @TODO: what about terminal ptms at specific amino acids?
+                // @TODO: how to parse terminal ptms from the output? seems to be annotated using 'n' or 'c' at the start/end of the sequence. but if more than one terminal ptm which do they refer to..?
+                // @TODO: what about terminal ptms at specific amino acids? not supported?
             }
 
             // add the fixed modifications
@@ -271,6 +271,7 @@ public class PNovoJob extends Job {
                     }
                 }
                 
+                // @TODO: what about fixed terminal ptms at specific amino acids? not supported?
                 // @TODO: what about fixed terminal ptms without a specific amino acid target?
             }
 
@@ -329,7 +330,7 @@ public class PNovoJob extends Job {
 
             // set the spectrum type (DTA, MS2 or MGF)
             br.write(System.getProperty("line.separator") + "#spectrum file type" + System.getProperty("line.separator"));
-            br.write("spec_type=MGF" + System.getProperty("line.separator")); // @TODO: make this editable?
+            br.write("spec_type=MGF" + System.getProperty("line.separator"));
             br.write("spec_path=1" + System.getProperty("line.separator"));
             br.write("spec_path1=" + spectrumFile.getAbsolutePath() + System.getProperty("line.separator"));
             br.write("folder=no" + System.getProperty("line.separator"));
