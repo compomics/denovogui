@@ -567,10 +567,6 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoChargeButtonGroup = new javax.swing.ButtonGroup();
         bcakgroundPanel = new javax.swing.JPanel();
         debovoResultsPanel = new javax.swing.JPanel();
-        spectrumViewerPanel = new javax.swing.JPanel();
-        spectrumJPanel = new javax.swing.JPanel();
-        spectrumJToolBar = new javax.swing.JToolBar();
-        spectrumAnnotationMenuPanel = new javax.swing.JPanel();
         querySpectraPanel = new javax.swing.JPanel();
         querySpectraTableScrollPane = new javax.swing.JScrollPane();
         querySpectraTable = new JTable() {
@@ -603,6 +599,10 @@ public class ResultsFrame extends javax.swing.JFrame {
                 };
             }
         };
+        spectrumViewerPanel = new javax.swing.JPanel();
+        spectrumJPanel = new javax.swing.JPanel();
+        spectrumJToolBar = new javax.swing.JToolBar();
+        spectrumAnnotationMenuPanel = new javax.swing.JPanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -888,6 +888,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("De Novo Results");
+        setMinimumSize(new java.awt.Dimension(800, 900));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -897,41 +898,6 @@ public class ResultsFrame extends javax.swing.JFrame {
         bcakgroundPanel.setBackground(new java.awt.Color(230, 230, 230));
 
         debovoResultsPanel.setBackground(new java.awt.Color(255, 255, 255));
-
-        spectrumViewerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Spectrum Viewer"));
-        spectrumViewerPanel.setOpaque(false);
-
-        spectrumJPanel.setBackground(new java.awt.Color(255, 255, 255));
-        spectrumJPanel.setLayout(new javax.swing.BoxLayout(spectrumJPanel, javax.swing.BoxLayout.LINE_AXIS));
-
-        spectrumJToolBar.setBackground(new java.awt.Color(255, 255, 255));
-        spectrumJToolBar.setBorder(null);
-        spectrumJToolBar.setFloatable(false);
-        spectrumJToolBar.setRollover(true);
-        spectrumJToolBar.setBorderPainted(false);
-
-        spectrumAnnotationMenuPanel.setLayout(new javax.swing.BoxLayout(spectrumAnnotationMenuPanel, javax.swing.BoxLayout.LINE_AXIS));
-        spectrumJToolBar.add(spectrumAnnotationMenuPanel);
-
-        javax.swing.GroupLayout spectrumViewerPanelLayout = new javax.swing.GroupLayout(spectrumViewerPanel);
-        spectrumViewerPanel.setLayout(spectrumViewerPanelLayout);
-        spectrumViewerPanelLayout.setHorizontalGroup(
-            spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
-                    .addComponent(spectrumJToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        spectrumViewerPanelLayout.setVerticalGroup(
-            spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-                .addGap(0, 0, 0)
-                .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
 
         querySpectraPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Query Spectra"));
         querySpectraPanel.setOpaque(false);
@@ -967,7 +933,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 .addGroup(querySpectraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE))
+                        .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1013, Short.MAX_VALUE))
                     .addGroup(querySpectraPanelLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(spectrumFileLabel)
@@ -983,7 +949,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     .addComponent(spectrumFileLabel)
                     .addComponent(spectrumFileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                .addComponent(querySpectraTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1018,15 +984,50 @@ public class ResultsFrame extends javax.swing.JFrame {
             deNovoMatchesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoMatchesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 956, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1013, Short.MAX_VALUE)
                 .addContainerGap())
         );
         deNovoMatchesPanelLayout.setVerticalGroup(
             deNovoMatchesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(deNovoMatchesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                .addComponent(deNovoPeptidesTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
                 .addContainerGap())
+        );
+
+        spectrumViewerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Spectrum Viewer"));
+        spectrumViewerPanel.setOpaque(false);
+
+        spectrumJPanel.setBackground(new java.awt.Color(255, 255, 255));
+        spectrumJPanel.setLayout(new javax.swing.BoxLayout(spectrumJPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        spectrumJToolBar.setBackground(new java.awt.Color(255, 255, 255));
+        spectrumJToolBar.setBorder(null);
+        spectrumJToolBar.setFloatable(false);
+        spectrumJToolBar.setRollover(true);
+        spectrumJToolBar.setBorderPainted(false);
+
+        spectrumAnnotationMenuPanel.setLayout(new javax.swing.BoxLayout(spectrumAnnotationMenuPanel, javax.swing.BoxLayout.LINE_AXIS));
+        spectrumJToolBar.add(spectrumAnnotationMenuPanel);
+
+        javax.swing.GroupLayout spectrumViewerPanelLayout = new javax.swing.GroupLayout(spectrumViewerPanel);
+        spectrumViewerPanel.setLayout(spectrumViewerPanelLayout);
+        spectrumViewerPanelLayout.setHorizontalGroup(
+            spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1013, Short.MAX_VALUE)
+                    .addComponent(spectrumJToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        spectrumViewerPanelLayout.setVerticalGroup(
+            spectrumViewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(spectrumViewerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(spectrumJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addComponent(spectrumJToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout debovoResultsPanelLayout = new javax.swing.GroupLayout(debovoResultsPanel);
@@ -1045,9 +1046,9 @@ public class ResultsFrame extends javax.swing.JFrame {
             debovoResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(debovoResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(querySpectraPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(querySpectraPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deNovoMatchesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(deNovoMatchesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(spectrumViewerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -1183,13 +1184,13 @@ public class ResultsFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1008, Short.MAX_VALUE)
+            .addGap(0, 1065, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 766, Short.MAX_VALUE)
+            .addGap(0, 831, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(bcakgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -2976,7 +2977,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             if (idfileReader != null) {
 
-                LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler);
+                LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler, searchParameters);
                 progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
                 // remap the ptms and set GUI min/max values
