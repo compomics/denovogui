@@ -13,7 +13,7 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
-import com.compomics.software.dialogs.JavaMemoryDialogParent;
+import com.compomics.software.dialogs.JavaHomeOrMemoryDialogParent;
 import com.compomics.software.dialogs.JavaSettingsDialog;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
@@ -68,7 +68,7 @@ import net.jimmc.jshortcut.JShellLink;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaMemoryDialogParent {
+public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaHomeOrMemoryDialogParent {
 
     /**
      * The compomics enzyme factory.
