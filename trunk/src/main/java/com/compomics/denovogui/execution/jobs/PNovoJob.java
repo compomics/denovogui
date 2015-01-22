@@ -115,7 +115,7 @@ public class PNovoJob extends Job {
                 command += commandComponent;
             }
 
-            outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + ".txt");
+            outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + ".pnovo.txt");
 
             // Set the description - yet not used
             setDescription("pNovo+");
