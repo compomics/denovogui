@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
-import com.compomics.util.preferences.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathPreferences;
 import java.util.HashMap;
 import org.apache.commons.cli.CommandLine;
 
