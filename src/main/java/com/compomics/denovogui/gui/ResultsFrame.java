@@ -1886,7 +1886,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
 
                     int advocateIndex = advocate.getIndex();
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateIndex);
+                    HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocateIndex);
 
                     if (assumptionsMap != null) {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
@@ -2079,22 +2080,30 @@ public class ResultsFrame extends javax.swing.JFrame {
         progressDialog.setPrimaryProgressCounterIndeterminate(false);
         progressDialog.resetPrimaryProgressCounter();
         progressDialog.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra(spectrumFile));
+
         // score to title map: advocate -> score -> titles
         HashMap<Integer, HashMap<Double, ArrayList<String>>> titlesMap = new HashMap<Integer, HashMap<Double, ArrayList<String>>>();
         ArrayList<String> noId = new ArrayList<String>();
 
         for (String spectrumTitle : spectrumFactory.getSpectrumTitles(spectrumFile)) {
+
             String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+
             if (identification.matchExists(spectrumKey)) {
-                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
+
                     int advocateId = advocate.getIndex();
+
                     HashMap<Double, ArrayList<String>> advocateMap = titlesMap.get(advocateId);
                     if (advocateMap == null) {
                         advocateMap = new HashMap<Double, ArrayList<String>>();
                         titlesMap.put(advocateId, advocateMap);
                     }
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocateId);
+
+                    HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocateId);
+
                     if (assumptionsMap != null) {
                         double bestScore = DeNovoGUI.getBestScore(advocate, assumptionsMap.keySet());
                         ArrayList<String> titles = advocateMap.get(bestScore);
@@ -2109,6 +2118,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             } else {
                 noId.add(spectrumTitle);
             }
+
             progressDialog.increasePrimaryProgressCounter();
         }
 
@@ -2123,6 +2133,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 }
             }
         }
+
         orderedTitles.addAll(noId);
         return orderedTitles;
     }
@@ -2227,11 +2238,10 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                 if (identification.matchExists(psmKey)) {
 
-                    SpectrumMatch spectrumMatch = identification.getSpectrumMatch(psmKey);
-
                     for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
 
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = spectrumMatch.getAllAssumptions(advocate.getIndex());
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(psmKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocate.getIndex());
 
                         if (assumptionsMap != null) {
 
@@ -2982,9 +2992,9 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                 // remap the ptms and set GUI min/max values
                 for (SpectrumMatch spectrumMatch : spectrumMatches) {
-                    
+
                     HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
-                    
+
                     for (int advocate : assumptionsMap.keySet()) {
 
                         if (advocate == Advocate.pepnovo.getIndex()) {

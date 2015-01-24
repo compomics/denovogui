@@ -3,14 +3,12 @@ package com.compomics.denovogui.gui.tablemodels;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
-import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -120,9 +118,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                     String spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
-                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        Set<Integer> allAdvocates = spectrumMatch.getAssumptionsMap().keySet();
-                        return allAdvocates.size();
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                        return allAssumptions.keySet().size();
                     }
                     return 0; // no match found
                 } catch (Exception e) {
@@ -189,8 +186,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
-                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.pepnovo.getIndex());
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.pepnovo.getIndex());
                         if (hitMap != null) {
                             double bestScore = 0;
                             for (double score : hitMap.keySet()) {
@@ -211,8 +208,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
-                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.direcTag.getIndex());
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.direcTag.getIndex());
                         if (hitMap != null) {
                             double bestScore = 0;
                             for (double score : hitMap.keySet()) {
@@ -233,8 +230,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                     spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
-                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = spectrumMatch.getAllAssumptions(Advocate.pNovo.getIndex());
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.pNovo.getIndex());
                         if (hitMap != null) {
                             double bestScore = 0;
                             for (double score : hitMap.keySet()) {
