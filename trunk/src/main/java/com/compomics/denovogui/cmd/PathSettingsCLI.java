@@ -2,7 +2,7 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
-import com.compomics.util.preferences.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathPreferences;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;

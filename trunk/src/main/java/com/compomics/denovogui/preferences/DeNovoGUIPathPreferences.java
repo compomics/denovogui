@@ -1,7 +1,7 @@
 package com.compomics.denovogui.preferences;
 
 import com.compomics.denovogui.gui.ResultsFrame;
-import com.compomics.util.preferences.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathPreferences;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
