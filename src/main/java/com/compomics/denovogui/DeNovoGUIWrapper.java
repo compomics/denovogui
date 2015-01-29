@@ -3,8 +3,11 @@ package com.compomics.denovogui;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.software.settings.PathKey;
+import com.compomics.software.settings.UtilitiesPathPreferences;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Wrapper to start the tool.
@@ -48,6 +51,17 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
         } catch (Exception e) {
             System.out.println("Failed to load path configurations. Defaults will be used.");
         }
+        try {
+            ArrayList<PathKey> errorKeys = DeNovoGUIPathPreferences.getErrorKeys();
+            if (!errorKeys.isEmpty()) {
+                System.out.println("Impossible to write in the following configuration folders, please edit the configuration paths.");
+                for (PathKey pathKey : errorKeys) {
+                    System.out.println(pathKey.getId() + ": " + pathKey.getDescription());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Impossible to load path configuration, default will be used.");
+        }
 
         launchTool(toolName, jarFile, splash, mainClass, args);
     }
@@ -75,7 +89,7 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
             DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }

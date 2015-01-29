@@ -3,6 +3,8 @@ package com.compomics.denovogui.cmd;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.CompomicsWrapper;
+import com.compomics.software.settings.PathKey;
+import com.compomics.software.settings.UtilitiesPathPreferences;
 import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -10,6 +12,7 @@ import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import org.apache.commons.cli.*;
 
@@ -108,6 +111,17 @@ public class DeNovoCLI implements Callable {
                 System.out.println("An error occurred when setting path configuration. Default will be used.");
                 exceptionHandler.catchException(e);
             }
+        }
+        try {
+            ArrayList<PathKey> errorKeys = DeNovoGUIPathPreferences.getErrorKeys();
+            if (!errorKeys.isEmpty()) {
+                System.out.println("Impossible to write in the following configuration folders, please use a temporary folder, the path configuration command line, or edit the configuration paths from the graphical interface.");
+                for (PathKey pathKey : errorKeys) {
+                    System.out.println(pathKey.getId() + ": " + pathKey.getDescription());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Impossible to load path configuration, default will be used.");
         }
 
         try {
@@ -281,7 +295,7 @@ public class DeNovoCLI implements Callable {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
             DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
