@@ -11,10 +11,14 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences.DeNovoGUIPathKey;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaHomeOrMemoryDialogParent;
 import com.compomics.software.dialogs.JavaSettingsDialog;
+import com.compomics.software.settings.PathKey;
+import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.software.settings.gui.PathSettingsDialog;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
@@ -53,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JFileChooser;
@@ -209,10 +214,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         try {
             setPathConfiguration();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null,
-                    "Failed to load user path configurations. Defaults will be used.", "Path Error",
-                    JOptionPane.WARNING_MESSAGE);
-            e.printStackTrace();
+            // Will be taken care of next 
+        }
+        try {
+            if (!DeNovoGUIPathPreferences.getErrorKeys().isEmpty()) {
+                editPathSettings();
+            }
+        } catch (Exception e) {
+            editPathSettings();
         }
 
         enzymeFactory = EnzymeFactory.getInstance();
@@ -428,7 +437,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), DeNovoGUIPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
         if (pathConfigurationFile.exists()) {
             DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }
@@ -2682,5 +2691,40 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      */
     public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
         this.sequenceMatchingPreferences = sequenceMatchingPreferences;
+    }
+    /**
+     * Opens a dialog allowing the setting of paths.
+     *
+     */
+    public void editPathSettings() {
+        try {
+            HashMap<PathKey, String> pathSettings = new HashMap<PathKey, String>();
+            for (DeNovoGUIPathKey deNovoGUIPathKey : DeNovoGUIPathKey.values()) {
+                pathSettings.put(deNovoGUIPathKey, DeNovoGUIPathPreferences.getPathPreference(deNovoGUIPathKey));
+            }
+            for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
+                pathSettings.put(utilitiesPathKey, UtilitiesPathPreferences.getPathPreference(utilitiesPathKey));
+            }
+            PathSettingsDialog pathSettingsDialog = new PathSettingsDialog(this, "DenovoGUI", pathSettings);
+            if (!pathSettingsDialog.isCanceled()) {
+                HashMap<PathKey, String> newSettings = pathSettingsDialog.getKeyToPathMap();
+                for (PathKey pathKey : pathSettings.keySet()) {
+                    String newPath = newSettings.get(pathKey);
+                    if (!pathSettings.get(pathKey).equals(newPath)) {
+                        DeNovoGUIPathPreferences.setPathPreference(pathKey, newPath);
+                    }
+                }
+                // write path file preference
+                File destinationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+                try {
+                    DeNovoGUIPathPreferences.writeConfigurationToFile(destinationFile);
+                    restart();
+                } catch (Exception e) {
+                    catchException(e);
+                }
+            }
+        } catch (Exception e) {
+            catchException(e);
+        }
     }
 }

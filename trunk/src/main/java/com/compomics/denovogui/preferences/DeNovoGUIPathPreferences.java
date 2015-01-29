@@ -1,6 +1,8 @@
 package com.compomics.denovogui.preferences;
 
+import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.gui.ResultsFrame;
+import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,23 +11,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * This class sets the path preferences for the files to read/write.
  *
  * @author Marc Vaudel
  */
-public class DeNovoGUIPathPreferences {
-
-    /**
-     * Default name for the path configuration file.
-     */
-    public static final String configurationFileName = "resources/conf/paths.txt";
+public class DeNovoGUIPathPreferences  {
 
     /**
      * Enum of the paths which can be set in DeNovoGUI.
      */
-    public enum DeNovoGUIPathKey {
+    public enum DeNovoGUIPathKey implements PathKey {
 
         /**
          * Directory where identification matches are temporarily saved to
@@ -82,20 +80,12 @@ public class DeNovoGUIPathPreferences {
             return null;
         }
 
-        /**
-         * Returns the id of the path.
-         *
-         * @return the id of the path
-         */
+        @Override
         public String getId() {
             return id;
         }
 
-        /**
-         * Returns the description of the path.
-         *
-         * @return the description of the path
-         */
+        @Override
         public String getDescription() {
             return description;
         }
@@ -156,6 +146,24 @@ public class DeNovoGUIPathPreferences {
      * Sets the path according to the given key and path.
      *
      * @param deNovoGuiPathKey the key of the path
+     *
+     * @return returns the path used
+     *
+     * @throws FileNotFoundException thrown if an FileNotFoundException occurs
+     */
+    public static String getPathPreference(DeNovoGUIPathKey deNovoGuiPathKey) throws IOException {
+        switch (deNovoGuiPathKey) {
+            case matchesDirectory:
+                return ResultsFrame.getCacheDirectoryParent();
+            default:
+                throw new UnsupportedOperationException("Path " + deNovoGuiPathKey.id + " not implemented.");
+        }
+    }
+
+    /**
+     * Sets the path according to the given key and path.
+     *
+     * @param deNovoGuiPathKey the key of the path
      * @param path the path to be set
      */
     public static void setPathPreference(DeNovoGUIPathKey deNovoGuiPathKey, String path) {
@@ -165,6 +173,26 @@ public class DeNovoGUIPathPreferences {
                 return;
             default:
                 throw new UnsupportedOperationException("Path " + deNovoGuiPathKey.id + " not implemented.");
+        }
+    }
+
+    /**
+     * Sets the path according to the given key and path.
+     *
+     * @param pathKey the key of the path
+     * @param path the path to be set
+     *
+     * @throws FileNotFoundException thrown if an FileNotFoundException occurs
+     */
+    public static void setPathPreference(PathKey pathKey, String path) throws IOException {
+        if (pathKey instanceof DeNovoGUIPathKey) {
+            DeNovoGUIPathKey peptideShakerPathKey = (DeNovoGUIPathKey) pathKey;
+            DeNovoGUIPathPreferences.setPathPreference(peptideShakerPathKey, path);
+        } else if (pathKey instanceof UtilitiesPathPreferences.UtilitiesPathKey) {
+            UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey = (UtilitiesPathPreferences.UtilitiesPathKey) pathKey;
+            UtilitiesPathPreferences.setPathPreference(utilitiesPathKey, path);
+        } else {
+            throw new UnsupportedOperationException("Path " + pathKey.getId() + " not implemented.");
         }
     }
 
@@ -240,5 +268,27 @@ public class DeNovoGUIPathPreferences {
                 throw new UnsupportedOperationException("Path " + pathKey.id + " not implemented.");
         }
         bw.newLine();
+    }
+
+    /**
+     * Returns a list containing the keys of the paths where the tool is not
+     * able to write.
+     *
+     * @return a list containing the keys of the paths where the tool is not
+     * able to write
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * loading the path configuration
+     */
+    public static ArrayList<PathKey> getErrorKeys() throws IOException {
+        ArrayList<PathKey> result = new ArrayList<PathKey>();
+        for (DeNovoGUIPathKey deNovoGUIPathKey : DeNovoGUIPathKey.values()) {
+            String folder = DeNovoGUIPathPreferences.getPathPreference(deNovoGUIPathKey);
+            if (!UtilitiesPathPreferences.testPath(folder)) {
+                result.add(deNovoGUIPathKey);
+            }
+        }
+        result.addAll(UtilitiesPathPreferences.getErrorKeys());
+        return result;
     }
 }
