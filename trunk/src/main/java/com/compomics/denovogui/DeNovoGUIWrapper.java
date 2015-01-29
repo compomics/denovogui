@@ -49,18 +49,18 @@ public class DeNovoGUIWrapper extends CompomicsWrapper {
         try {
             setPathConfiguration();
         } catch (Exception e) {
-            System.out.println("Failed to load path configurations. Defaults will be used.");
+            System.out.println("Failed to load path configurations. Defaults paths will be used.");
         }
         try {
             ArrayList<PathKey> errorKeys = DeNovoGUIPathPreferences.getErrorKeys();
             if (!errorKeys.isEmpty()) {
-                System.out.println("Impossible to write in the following configuration folders, please edit the configuration paths.");
+                System.out.println("Unable to write in the following configuration folders. Please edit the configuration paths.");
                 for (PathKey pathKey : errorKeys) {
                     System.out.println(pathKey.getId() + ": " + pathKey.getDescription());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Impossible to load path configuration, default will be used.");
+            System.out.println("Unable to load the path configurations. Default paths will be used.");
         }
 
         launchTool(toolName, jarFile, splash, mainClass, args);
