@@ -2705,7 +2705,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
                 pathSettings.put(utilitiesPathKey, UtilitiesPathPreferences.getPathPreference(utilitiesPathKey));
             }
-            PathSettingsDialog pathSettingsDialog = new PathSettingsDialog(this, "DenovoGUI", pathSettings);
+            PathSettingsDialog pathSettingsDialog = new PathSettingsDialog(this, "DeNovoGUI", pathSettings);
             if (!pathSettingsDialog.isCanceled()) {
                 HashMap<PathKey, String> newSettings = pathSettingsDialog.getKeyToPathMap();
                 for (PathKey pathKey : pathSettings.keySet()) {
