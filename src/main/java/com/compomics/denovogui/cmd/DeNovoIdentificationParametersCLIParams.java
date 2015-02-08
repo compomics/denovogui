@@ -10,7 +10,7 @@ import org.apache.commons.cli.Options;
  * @author Marc Vaudel
  */
 public class DeNovoIdentificationParametersCLIParams {
-    
+
     /**
      * Creates the options for the command line interface based on the possible
      * values.
@@ -41,7 +41,7 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-        
+
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.id, true, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.id, true, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.description);
@@ -62,11 +62,15 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id, true, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id, true, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id, true, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description);
-        
+
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.id, true, IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.description);
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id, true, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description);
+
+        aOptions.addOption(IdentificationParametersCLIParams.USAGE.id, false, IdentificationParametersCLIParams.USAGE.description);
+        aOptions.addOption(IdentificationParametersCLIParams.USAGE_2.id, false, IdentificationParametersCLIParams.USAGE_2.description);
+        aOptions.addOption(IdentificationParametersCLIParams.USAGE_3.id, false, IdentificationParametersCLIParams.USAGE_3.description);
     }
 
     /**
@@ -101,7 +105,7 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id) + IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id) + IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id) + IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.description + "\n";
-        
+
         output += "\n\nDirecTag advanced parameters:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.id) + IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.description + "\n";
@@ -123,12 +127,16 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id) + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.DIRECTAG_TAG_LENGTH + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id) + IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id) + IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description + "\n";
-        
+
         output += "\n\npNovo+ advanced parameters:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.id) + IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id) + IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description + "\n";
+
+        output += "\n\nHelp:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MODS.id) + IdentificationParametersCLIParams.MODS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.USAGE.id) + IdentificationParametersCLIParams.USAGE.description + "\n";
 
         return output;
     }
