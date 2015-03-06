@@ -131,6 +131,7 @@ public class DeNovoGUIPathPreferences  {
             UtilitiesPathPreferences.loadPathPreferenceFromLine(line);
         } else {
             String path = UtilitiesPathPreferences.getPath(line);
+            if (!path.equals(UtilitiesPathPreferences.defaultPath)) {
             File file = new File(path);
             if (!file.exists()) {
                 throw new FileNotFoundException("File " + path + " not found.");
@@ -139,6 +140,7 @@ public class DeNovoGUIPathPreferences  {
                 throw new FileNotFoundException("Found a file when expecting a directory for " + denovoguiPathKey.id + ".");
             }
             setPathPreference(denovoguiPathKey, path);
+            }
         }
     }
 
@@ -262,7 +264,11 @@ public class DeNovoGUIPathPreferences  {
         bw.write(pathKey.id + UtilitiesPathPreferences.separator);
         switch (pathKey) {
             case matchesDirectory:
-                bw.write(ResultsFrame.getCacheDirectoryParent());
+                String toWrite = ResultsFrame.getCacheDirectoryParent();
+                if (toWrite == null) {
+                    toWrite = UtilitiesPathPreferences.defaultPath;
+                }
+                bw.write(toWrite);
                 break;
             default:
                 throw new UnsupportedOperationException("Path " + pathKey.id + " not implemented.");
@@ -284,7 +290,7 @@ public class DeNovoGUIPathPreferences  {
         ArrayList<PathKey> result = new ArrayList<PathKey>();
         for (DeNovoGUIPathKey deNovoGUIPathKey : DeNovoGUIPathKey.values()) {
             String folder = DeNovoGUIPathPreferences.getPathPreference(deNovoGUIPathKey);
-            if (!UtilitiesPathPreferences.testPath(folder)) {
+            if (folder != null && !UtilitiesPathPreferences.testPath(folder)) {
                 result.add(deNovoGUIPathKey);
             }
         }
