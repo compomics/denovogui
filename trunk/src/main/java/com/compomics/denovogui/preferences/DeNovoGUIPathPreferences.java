@@ -1,6 +1,5 @@
 package com.compomics.denovogui.preferences;
 
-import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.gui.ResultsFrame;
 import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
  *
  * @author Marc Vaudel
  */
-public class DeNovoGUIPathPreferences  {
+public class DeNovoGUIPathPreferences {
 
     /**
      * Enum of the paths which can be set in DeNovoGUI.
@@ -132,14 +131,14 @@ public class DeNovoGUIPathPreferences  {
         } else {
             String path = UtilitiesPathPreferences.getPath(line);
             if (!path.equals(UtilitiesPathPreferences.defaultPath)) {
-            File file = new File(path);
-            if (!file.exists()) {
-                throw new FileNotFoundException("File " + path + " not found.");
-            }
-            if (denovoguiPathKey.isDirectory && !file.isDirectory()) {
-                throw new FileNotFoundException("Found a file when expecting a directory for " + denovoguiPathKey.id + ".");
-            }
-            setPathPreference(denovoguiPathKey, path);
+                File file = new File(path);
+                if (!file.exists()) {
+                    throw new FileNotFoundException("File " + path + " not found.");
+                }
+                if (denovoguiPathKey.isDirectory && !file.isDirectory()) {
+                    throw new FileNotFoundException("Found a file when expecting a directory for " + denovoguiPathKey.id + ".");
+                }
+                setPathPreference(denovoguiPathKey, path);
             }
         }
     }
