@@ -62,6 +62,8 @@ import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.preferences.AnnotationPreferences;
 import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.preferences.SequenceMatchingPreferences;
+import com.compomics.util.preferences.SpecificAnnotationPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
@@ -129,9 +131,9 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private AnnotationPreferences annotationPreferences = new AnnotationPreferences();
     /**
-     * The current spectrum key.
+     * The specific annotation preferences.
      */
-    private String currentSpectrumKey = "";
+    private SpecificAnnotationPreferences specificAnnotationPreferences;
     /**
      * The charge menus.
      */
@@ -252,6 +254,10 @@ public class ResultsFrame extends javax.swing.JFrame {
      * Exception handler.
      */
     private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
+    /**
+     * The spectrum annotator to use.
+     */
+    private TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
 
     /**
      * Creates a new ResultsPanel.
@@ -264,8 +270,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         initComponents();
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
+        annotationPreferences.setPreferencesFromSearchParameters(searchParameters);
         annotationPreferences.setAnnotationLevel(0.0); // annotate all peaks by default
-        annotationPreferences.setFragmentIonAccuracy(deNovoGUI.getSearchParameters().getFragmentIonAccuracy()); // set the default fragment ion accuracy
         setLocationRelativeTo(null);
         setExtendedState(MAXIMIZED_BOTH);
         // set the title of the frame and add the icon
@@ -302,12 +308,9 @@ public class ResultsFrame extends javax.swing.JFrame {
         spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
 
         // Add default neutral losses to display
-        //IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O); // @TODO: uncomment to add neutral losses. but results in rather messy spectra without a lower annotation intensity threshold...
-        //IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
-        annotationPreferences.setNeutralLossesSequenceDependant(true);
-
+        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O);
+        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
         spectrumAnnotationMenuPanel.add(annotationMenuBar);
-        updateAnnotationPreferences();
 
         // make sure that the scroll panes are see-through
         querySpectraTableScrollPane.getViewport().setOpaque(false);
@@ -362,6 +365,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
+
     }
 
     /**
@@ -1308,128 +1312,125 @@ public class ResultsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_deNovoMatchesTableKeyReleased
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void aIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_aIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void bIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_bIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void cIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_cIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void xIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_xIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void yIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_yIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void zIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zIonCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_zIonCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void precursorCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_precursorCheckMenuActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_precursorCheckMenuActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void immoniumIonsCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_immoniumIonsCheckMenuActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_immoniumIonsCheckMenuActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void reporterIonsCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporterIonsCheckMenuActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_reporterIonsCheckMenuActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void adaptCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adaptCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        deselectAutomaticAnnotationMenu();
+        updateSpectrum();
     }//GEN-LAST:event_adaptCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void forwardIonsDeNovoCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardIonsDeNovoCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_forwardIonsDeNovoCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void rewindIonsDeNovoCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rewindIonsDeNovoCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_rewindIonsDeNovoCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void deNovoChargeOneJRadioButtonMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deNovoChargeOneJRadioButtonMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_deNovoChargeOneJRadioButtonMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void deNovoChargeTwoJRadioButtonMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deNovoChargeTwoJRadioButtonMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_deNovoChargeTwoJRadioButtonMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void allCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_allCheckBoxMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void automaticAnnotationCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticAnnotationCheckBoxMenuItemActionPerformed
-        if (automaticAnnotationCheckBoxMenuItem.isSelected()) {
-            adaptCheckBoxMenuItem.setSelected(true);
-            try {
-                annotationPreferences.resetAutomaticAnnotation(deNovoGUI.getSequenceMatchingPreferences());
-            } catch (Exception e) {
-                catchException(e);
-            }
-
-            for (int availableCharge : chargeMenus.keySet()) {
-                chargeMenus.get(availableCharge).setSelected(annotationPreferences.getValidatedCharges().contains(availableCharge));
-            }
-        }
-
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_automaticAnnotationCheckBoxMenuItemActionPerformed
 
     /**
@@ -1704,10 +1705,10 @@ public class ResultsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exportPeptideMatchesMenuItemActionPerformed
 
     /**
-     * @see #updateAnnotationPreferences()
+     * @see #updateSpectrum()
      */
     private void highResAnnotationCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highResAnnotationCheckBoxMenuItemActionPerformed
-        updateAnnotationPreferences();
+        updateSpectrum();
     }//GEN-LAST:event_highResAnnotationCheckBoxMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2024,7 +2025,6 @@ public class ResultsFrame extends javax.swing.JFrame {
                 progressDialog.setPrimaryProgressCounterIndeterminate(true);
                 progressDialog.setTitle("Updating Display. Please Wait...");
 
-                setSpectrumTableProperties();
                 TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
                 querySpectraTable.setModel(tableModel);
                 setSpectrumTableProperties();
@@ -2289,7 +2289,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * Update the spectrum and annotations.
      */
-    private void updateSpectrum() {
+    public void updateSpectrum() {
 
         spectrumJPanel.removeAll();
 
@@ -2312,6 +2312,9 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             if (spectrumFactory.spectrumLoaded(spectrumKey)) {
                 try {
+                    int maxPrecursorCharge = 1;
+                    ArrayList<ModificationMatch> allModifications = new ArrayList<ModificationMatch>();
+
                     MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
 
                     // add the data to the spectrum panel
@@ -2330,14 +2333,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 "", 40, false, false, false, 2, false);
                         spectrumPanel.setBorder(null);
 
-                        spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
+                        SpectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
                         spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
-
-                        if (!currentSpectrumKey.equalsIgnoreCase(spectrumKey)) {
-                            if (annotationPreferences.useAutomaticAnnotation()) {
-                                annotationPreferences.setNeutralLossesSequenceDependant(true);
-                            }
-                        }
 
                         // show all or just the annotated peaks
                         spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
@@ -2352,25 +2349,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                         }
 
                         String modifiedSequence = "";
-                        int maxPrecursorCharge = 1;
-                        ArrayList<ModificationMatch> allModifications = new ArrayList<ModificationMatch>();
 
                         // add the spectrum annotations
                         for (int i = 0; i < deNovoMatchesTable.getSelectedRowCount(); i++) {
 
                             TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
-                            annotationPreferences.setCurrentSettings(tagAssumption, !currentSpectrumKey.equalsIgnoreCase(spectrumKey), deNovoGUI.getSequenceMatchingPreferences());
-
-                            TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
-
-                            ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences.getIonTypes(),
-                                    annotationPreferences.getNeutralLosses(),
-                                    annotationPreferences.getValidatedCharges(),
-                                    tagAssumption.getIdentificationCharge().value,
-                                    currentSpectrum, tagAssumption.getTag(),
-                                    currentSpectrum.getIntensityLimit(annotationPreferences.getAnnotationIntensityLimit()),
-                                    annotationPreferences.getFragmentIonAccuracy(),
-                                    false, annotationPreferences.isHighResolutionAnnotation());
+                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, tagAssumption, SequenceMatchingPreferences.defaultStringMatching);
+                            updateAnnotationPreferences();
+                            ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, tagAssumption.getTag());
 
                             if (i == 0) {
                                 spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
@@ -2433,8 +2419,6 @@ public class ResultsFrame extends javax.swing.JFrame {
                             }
                         }
 
-                        updateAnnotationMenus(maxPrecursorCharge, allModifications);
-
                         spectrumPanel.rescale(0.0, spectrumPanel.getMaxXAxisValue());
 
                         // update the spectrum title
@@ -2459,11 +2443,12 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 precursor.getMz(), "",
                                 "", 40, false, false, false, 2, false);
                         spectrumPanel.setDeltaMassWindow(annotationPreferences.getFragmentIonAccuracy());
-                        spectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
+                        SpectrumPanel.setKnownMassDeltas(getCurrentMassDeltas());
                         spectrumPanel.setBorder(null);
                         spectrumJPanel.add(spectrumPanel);
                     }
-                    currentSpectrumKey = spectrumKey;
+
+                    updateAnnotationMenus(maxPrecursorCharge, allModifications);
 
                 } catch (Exception e) {
                     catchException(e);
@@ -2563,7 +2548,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         immoniumIonsCheckMenu.setSelected(false);
         reporterIonsCheckMenu.setSelected(false);
 
-        for (Ion.IonType ionType : annotationPreferences.getIonTypes().keySet()) {
+        for (Ion.IonType ionType : specificAnnotationPreferences.getIonTypes().keySet()) {
             if (ionType == Ion.IonType.IMMONIUM_ION) {
                 immoniumIonsCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.PRECURSOR_ION) {
@@ -2571,7 +2556,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             } else if (ionType == Ion.IonType.REPORTER_ION) {
                 reporterIonsCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.TAG_FRAGMENT_ION) {
-                for (int subtype : annotationPreferences.getIonTypes().get(ionType)) {
+                for (int subtype : specificAnnotationPreferences.getIonTypes().get(ionType)) {
                     if (subtype == TagFragmentIon.A_ION) {
                         aIonCheckBoxMenuItem.setSelected(true);
                     } else if (subtype == TagFragmentIon.B_ION) {
@@ -2589,19 +2574,9 @@ public class ResultsFrame extends javax.swing.JFrame {
             }
         }
 
-        boolean selected;
-
-        ArrayList<String> selectedLosses = new ArrayList<String>();
-
         for (JCheckBoxMenuItem lossMenuItem : lossMenus.values()) {
-
-            if (lossMenuItem.isSelected()) {
-                selectedLosses.add(lossMenuItem.getText());
-            }
-
             lossMenu.remove(lossMenuItem);
         }
-
         lossMenu.setVisible(true);
         lossSplitter.setVisible(true);
         lossMenus.clear();
@@ -2624,75 +2599,57 @@ public class ResultsFrame extends javax.swing.JFrame {
         ArrayList<String> names = new ArrayList<String>(neutralLosses.keySet());
         Collections.sort(names);
 
-        ArrayList<String> finalSelectedLosses = selectedLosses;
-
-        if (names.isEmpty()) {
+        if (neutralLosses.isEmpty()) {
             lossMenu.setVisible(false);
             lossSplitter.setVisible(false);
         } else {
+
             for (int i = 0; i < names.size(); i++) {
 
-                if (annotationPreferences.areNeutralLossesSequenceDependant()) {
-                    selected = false;
-                    for (NeutralLoss neutralLoss : annotationPreferences.getNeutralLosses().getAccountedNeutralLosses()) {
-                        if (neutralLoss.isSameAs(neutralLoss)) {
-                            selected = true;
-                            break;
-                        }
+                String neutralLossName = names.get(i);
+                NeutralLoss neutralLoss = neutralLosses.get(neutralLossName);
+
+                boolean selected = false;
+                for (NeutralLoss specificNeutralLoss : specificAnnotationPreferences.getNeutralLossesMap().getAccountedNeutralLosses()) {
+                    if (neutralLoss.isSameAs(specificNeutralLoss)) {
+                        selected = true;
+                        break;
                     }
-                } else {
-                    selected = finalSelectedLosses.contains(names.get(i));
                 }
 
-                JCheckBoxMenuItem lossMenuItem = new JCheckBoxMenuItem(names.get(i));
+                JCheckBoxMenuItem lossMenuItem = new JCheckBoxMenuItem(neutralLossName);
                 lossMenuItem.setSelected(selected);
+                lossMenuItem.setEnabled(!specificAnnotationPreferences.isNeutralLossesAuto());
                 lossMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                    @Override
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        annotationPreferences.useAutomaticAnnotation(false);
-                        annotationPreferences.setNeutralLossesSequenceDependant(false);
-                        updateAnnotationPreferences();
+                        deselectAutomaticAnnotationMenu();
+                        updateSpectrum();
                     }
                 });
-                lossMenus.put(neutralLosses.get(names.get(i)), lossMenuItem);
+                lossMenus.put(neutralLosses.get(neutralLossName), lossMenuItem);
                 lossMenu.add(lossMenuItem, i);
             }
-        }
-
-        ArrayList<String> selectedCharges = new ArrayList<String>();
-
-        for (JCheckBoxMenuItem chargeMenuItem : chargeMenus.values()) {
-            if (chargeMenuItem.isSelected()) {
-                selectedCharges.add(chargeMenuItem.getText());
-            }
-            chargeMenu.remove(chargeMenuItem);
+            adaptCheckBoxMenuItem.setSelected(specificAnnotationPreferences.isNeutralLossesAuto());
         }
 
         chargeMenus.clear();
+        chargeMenu.removeAll();
 
         if (precursorCharge == 1) {
             precursorCharge = 2;
         }
 
-        final ArrayList<String> finalSelectedCharges = selectedCharges;
+        for (Integer charge = 1; charge < precursorCharge; charge++) {
 
-        for (int charge = 1; charge < precursorCharge; charge++) {
+            final JCheckBoxMenuItem chargeMenuItem = new JCheckBoxMenuItem(charge + "+");
 
-            JCheckBoxMenuItem chargeMenuItem = new JCheckBoxMenuItem(charge + "+");
-
-            if (annotationPreferences.useAutomaticAnnotation()) {
-                chargeMenuItem.setSelected(annotationPreferences.getValidatedCharges().contains(charge));
-            } else {
-                if (finalSelectedCharges.contains(charge + "+")) {
-                    chargeMenuItem.setSelected(true);
-                } else {
-                    chargeMenuItem.setSelected(false);
-                }
-            }
-
+            chargeMenuItem.setSelected(specificAnnotationPreferences.getSelectedCharges().contains(charge));
             chargeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    annotationPreferences.useAutomaticAnnotation(false);
-                    updateAnnotationPreferences();
+                    deselectAutomaticAnnotationMenu();
+                    updateSpectrum();
                 }
             });
 
@@ -2700,15 +2657,8 @@ public class ResultsFrame extends javax.swing.JFrame {
             chargeMenu.add(chargeMenuItem);
         }
 
-        automaticAnnotationCheckBoxMenuItem.setSelected(annotationPreferences.useAutomaticAnnotation());
-        adaptCheckBoxMenuItem.setSelected(annotationPreferences.areNeutralLossesSequenceDependant());
-        highResAnnotationCheckBoxMenuItem.setSelected(getAnnotationPreferences().isHighResolutionAnnotation());
-
-        // disable/enable the neutral loss options
-        for (JCheckBoxMenuItem lossMenuItem : lossMenus.values()) {
-            lossMenuItem.setEnabled(!annotationPreferences.areNeutralLossesSequenceDependant());
-        }
-
+        // General annotation settings
+        highResAnnotationCheckBoxMenuItem.setSelected(annotationPreferences.isHighResolutionAnnotation());
         allCheckBoxMenuItem.setSelected(annotationPreferences.showAllPeaks());
     }
 
@@ -2717,59 +2667,65 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     public void updateAnnotationPreferences() {
 
-        annotationPreferences.clearIonTypes();
-        if (aIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.A_ION);
-        }
-        if (bIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.B_ION);
-        }
-        if (cIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.C_ION);
-        }
-        if (xIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.X_ION);
-        }
-        if (yIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Y_ION);
-        }
-        if (zIonCheckBoxMenuItem.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Z_ION);
-        }
-        if (precursorCheckMenu.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.PRECURSOR_ION);
-        }
-        if (immoniumIonsCheckMenu.isSelected()) {
-            annotationPreferences.addIonType(Ion.IonType.IMMONIUM_ION);
-        }
-        if (reporterIonsCheckMenu.isSelected()) {
-            for (int subtype : getReporterIons()) {
-                annotationPreferences.addIonType(Ion.IonType.REPORTER_ION, subtype);
+        if (!automaticAnnotationCheckBoxMenuItem.isSelected()) {
+
+            specificAnnotationPreferences.clearIonTypes();
+            if (aIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.A_ION);
             }
-        }
-
-        annotationPreferences.clearNeutralLosses();
-
-        for (NeutralLoss neutralLoss : lossMenus.keySet()) {
-            if (lossMenus.get(neutralLoss).isSelected()) {
-                annotationPreferences.addNeutralLoss(neutralLoss);
+            if (bIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.B_ION);
             }
-        }
-
-        annotationPreferences.clearCharges();
-
-        for (int charge : chargeMenus.keySet()) {
-            if (chargeMenus.get(charge).isSelected()) {
-                annotationPreferences.addSelectedCharge(charge);
+            if (cIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.C_ION);
             }
+            if (xIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.X_ION);
+            }
+            if (yIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Y_ION);
+            }
+            if (zIonCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Z_ION);
+            }
+            if (precursorCheckMenu.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.PRECURSOR_ION);
+            }
+            if (immoniumIonsCheckMenu.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.IMMONIUM_ION);
+            }
+            if (reporterIonsCheckMenu.isSelected()) {
+                for (int subtype : getReporterIons()) {
+                    specificAnnotationPreferences.addIonType(Ion.IonType.REPORTER_ION, subtype);
+                }
+            }
+
+            if (!adaptCheckBoxMenuItem.isSelected()) {
+                specificAnnotationPreferences.setNeutralLossesAuto(false);
+                specificAnnotationPreferences.clearNeutralLosses();
+                for (NeutralLoss neutralLoss : lossMenus.keySet()) {
+                    if (lossMenus.get(neutralLoss).isSelected()) {
+                        specificAnnotationPreferences.addNeutralLoss(neutralLoss);
+                    }
+                }
+            } else {
+                specificAnnotationPreferences.clearNeutralLosses(); // Neutral losses are turned off by default in denovogui
+            }
+
+            specificAnnotationPreferences.clearCharges();
+            for (int charge : chargeMenus.keySet()) {
+                if (chargeMenus.get(charge).isSelected()) {
+                    specificAnnotationPreferences.addSelectedCharge(charge);
+                }
+            }
+
+        } else {
+            specificAnnotationPreferences.clearNeutralLosses(); // Neutral losses are turned off by default in denovogui
         }
 
-        annotationPreferences.useAutomaticAnnotation(automaticAnnotationCheckBoxMenuItem.isSelected());
-        annotationPreferences.setNeutralLossesSequenceDependant(adaptCheckBoxMenuItem.isSelected());
+        // The following preferences are kept for all spectra
         annotationPreferences.setHighResolutionAnnotation(highResAnnotationCheckBoxMenuItem.isSelected());
-
         annotationPreferences.setShowAllPeaks(allCheckBoxMenuItem.isSelected());
-
         annotationPreferences.setShowForwardIonDeNovoTags(forwardIonsDeNovoCheckBoxMenuItem.isSelected());
         annotationPreferences.setShowRewindIonDeNovoTags(rewindIonsDeNovoCheckBoxMenuItem.isSelected());
 
@@ -2777,10 +2733,6 @@ public class ResultsFrame extends javax.swing.JFrame {
             annotationPreferences.setDeNovoCharge(1);
         } else {
             annotationPreferences.setDeNovoCharge(2);
-        }
-
-        if (deNovoMatchesTable.getSelectedRow() != -1) {
-            updateSpectrum();
         }
     }
 
@@ -3307,13 +3259,6 @@ public class ResultsFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Update the spectrum annotations.
-     */
-    public void updateSpectrumAnnotations() {
-        updateSpectrum();
-    }
-
-    /**
      * Get the current delta masses for use when annotating the spectra.
      *
      * @return the current delta masses
@@ -3436,5 +3381,20 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     protected String getJarFilePath() {
         return DeNovoGUIWrapper.getJarFilePath(this.getClass().getResource("DeNovoGUI.class").getPath(), DeNovoGUIWrapper.toolName);
+    }
+
+    /**
+     * Selects the automatic annotation menu and changes the text accordingly.
+     */
+    private void selectAutomaticAnnotationMenu() {
+//        automaticAnnotationCheckBoxMenuItem.setText("Automatic Annotation");
+    }
+
+    /**
+     * Deselects the automatic annotation menu and changes the text accordingly.
+     */
+    private void deselectAutomaticAnnotationMenu() {
+        automaticAnnotationCheckBoxMenuItem.setSelected(false);
+//        automaticAnnotationCheckBoxMenuItem.setText("Restaure Default");
     }
 }
