@@ -328,6 +328,15 @@
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="resetAnnotationMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;a href&gt;Reset Annotation&lt;/a&gt;&lt;/html&gt;"/>
+            <Property name="focusable" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="resetAnnotationMenuMenuSelected"/>
+          </Events>
+        </Menu>
       </SubComponents>
     </Container>
     <Component class="javax.swing.ButtonGroup" name="deNovoChargeButtonGroup">

@@ -567,6 +567,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         helpJMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         splitterMenu7 = new javax.swing.JMenu();
+        resetAnnotationMenu = new javax.swing.JMenu();
         deNovoChargeButtonGroup = new javax.swing.ButtonGroup();
         bcakgroundPanel = new javax.swing.JPanel();
         debovoResultsPanel = new javax.swing.JPanel();
@@ -888,6 +889,19 @@ public class ResultsFrame extends javax.swing.JFrame {
         splitterMenu7.setText("|");
         splitterMenu7.setEnabled(false);
         annotationMenuBar.add(splitterMenu7);
+
+        resetAnnotationMenu.setText("<html><a href>Reset Annotation</a></html>");
+        resetAnnotationMenu.setFocusable(false);
+        resetAnnotationMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                resetAnnotationMenuMenuSelected(evt);
+            }
+        });
+        annotationMenuBar.add(resetAnnotationMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("De Novo Results");
@@ -1710,6 +1724,16 @@ public class ResultsFrame extends javax.swing.JFrame {
         updateSpectrum();
     }//GEN-LAST:event_highResAnnotationCheckBoxMenuItemActionPerformed
 
+    /**
+     * Reset the annotation to the default annotation.
+     * 
+     * @param evt 
+     */
+    private void resetAnnotationMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_resetAnnotationMenuMenuSelected
+        defaultAnnotationCheckBoxMenuItem.setSelected(true);
+        defaultAnnotationCheckBoxMenuItemActionPerformed(null);
+    }//GEN-LAST:event_resetAnnotationMenuMenuSelected
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1767,6 +1791,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     private javax.swing.JTable querySpectraTable;
     private javax.swing.JScrollPane querySpectraTableScrollPane;
     private javax.swing.JCheckBoxMenuItem reporterIonsCheckMenu;
+    private javax.swing.JMenu resetAnnotationMenu;
     private javax.swing.JCheckBoxMenuItem rewindIonsDeNovoCheckBoxMenuItem;
     private javax.swing.JMenu settingsMenu;
     private javax.swing.JPanel spectrumAnnotationMenuPanel;
@@ -2720,6 +2745,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         } else {
             specificAnnotationPreferences.clearNeutralLosses(); // Neutral losses are turned off by default in denovogui
+            selectDefaultAnnotationMenuItem();
         }
 
         // The following preferences are kept for all spectra
@@ -3383,9 +3409,18 @@ public class ResultsFrame extends javax.swing.JFrame {
     }
 
     /**
+     * Selects the default annotation menu item.
+     */
+    private void selectDefaultAnnotationMenuItem() {
+        defaultAnnotationCheckBoxMenuItem.setSelected(true);
+        resetAnnotationMenu.setVisible(false);
+    }
+
+    /**
      * Deselects the default annotation menu item.
      */
     private void deselectDefaultAnnotationMenuItem() {
         defaultAnnotationCheckBoxMenuItem.setSelected(false);
+        resetAnnotationMenu.setVisible(true);
     }
 }
