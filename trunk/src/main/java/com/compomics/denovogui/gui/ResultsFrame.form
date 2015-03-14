@@ -250,14 +250,14 @@
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="automaticAnnotationCheckBoxMenuItem">
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="defaultAnnotationCheckBoxMenuItem">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Automatic Annotation"/>
-                <Property name="toolTipText" type="java.lang.String" value="Use automatic annotation"/>
+                <Property name="text" type="java.lang.String" value="Default Annotation"/>
+                <Property name="toolTipText" type="java.lang.String" value="Use default annotation"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="automaticAnnotationCheckBoxMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="defaultAnnotationCheckBoxMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator14">

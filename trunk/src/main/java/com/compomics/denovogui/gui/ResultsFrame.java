@@ -365,7 +365,6 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         // set the title
         this.setTitle("DeNovoGUI " + deNovoGUI.getVersion());
-
     }
 
     /**
@@ -557,7 +556,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         allCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         highResAnnotationCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
-        automaticAnnotationCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        defaultAnnotationCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator14 = new javax.swing.JPopupMenu.Separator();
         annotationColorsJMenuItem = new javax.swing.JMenuItem();
         splitterMenu4 = new javax.swing.JMenu();
@@ -825,15 +824,15 @@ public class ResultsFrame extends javax.swing.JFrame {
         settingsMenu.add(highResAnnotationCheckBoxMenuItem);
         settingsMenu.add(jSeparator5);
 
-        automaticAnnotationCheckBoxMenuItem.setSelected(true);
-        automaticAnnotationCheckBoxMenuItem.setText("Automatic Annotation");
-        automaticAnnotationCheckBoxMenuItem.setToolTipText("Use automatic annotation");
-        automaticAnnotationCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        defaultAnnotationCheckBoxMenuItem.setSelected(true);
+        defaultAnnotationCheckBoxMenuItem.setText("Default Annotation");
+        defaultAnnotationCheckBoxMenuItem.setToolTipText("Use default annotation");
+        defaultAnnotationCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                automaticAnnotationCheckBoxMenuItemActionPerformed(evt);
+                defaultAnnotationCheckBoxMenuItemActionPerformed(evt);
             }
         });
-        settingsMenu.add(automaticAnnotationCheckBoxMenuItem);
+        settingsMenu.add(defaultAnnotationCheckBoxMenuItem);
         settingsMenu.add(jSeparator14);
 
         annotationColorsJMenuItem.setText("Annotation Colors");
@@ -1315,7 +1314,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void aIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_aIonCheckBoxMenuItemActionPerformed
 
@@ -1323,7 +1322,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void bIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_bIonCheckBoxMenuItemActionPerformed
 
@@ -1331,7 +1330,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void cIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_cIonCheckBoxMenuItemActionPerformed
 
@@ -1339,7 +1338,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void xIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_xIonCheckBoxMenuItemActionPerformed
 
@@ -1347,7 +1346,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void yIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_yIonCheckBoxMenuItemActionPerformed
 
@@ -1355,7 +1354,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void zIonCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zIonCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_zIonCheckBoxMenuItemActionPerformed
 
@@ -1363,7 +1362,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void precursorCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_precursorCheckMenuActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_precursorCheckMenuActionPerformed
 
@@ -1371,7 +1370,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void immoniumIonsCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_immoniumIonsCheckMenuActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_immoniumIonsCheckMenuActionPerformed
 
@@ -1379,7 +1378,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void reporterIonsCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporterIonsCheckMenuActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_reporterIonsCheckMenuActionPerformed
 
@@ -1387,7 +1386,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void adaptCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adaptCheckBoxMenuItemActionPerformed
-        deselectAutomaticAnnotationMenu();
+        deselectDefaultAnnotationMenuItem();
         updateSpectrum();
     }//GEN-LAST:event_adaptCheckBoxMenuItemActionPerformed
 
@@ -1429,9 +1428,9 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * @see #updateSpectrum()
      */
-    private void automaticAnnotationCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticAnnotationCheckBoxMenuItemActionPerformed
+    private void defaultAnnotationCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultAnnotationCheckBoxMenuItemActionPerformed
         updateSpectrum();
-    }//GEN-LAST:event_automaticAnnotationCheckBoxMenuItemActionPerformed
+    }//GEN-LAST:event_defaultAnnotationCheckBoxMenuItemActionPerformed
 
     /**
      * Update the spectrum colors.
@@ -1719,7 +1718,6 @@ public class ResultsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem annotationColorsJMenuItem;
     private javax.swing.JMenuBar annotationMenuBar;
     private javax.swing.JMenuItem annotationsMenuItem;
-    private javax.swing.JCheckBoxMenuItem automaticAnnotationCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem bIonCheckBoxMenuItem;
     private javax.swing.JPanel bcakgroundPanel;
     private javax.swing.JMenuItem bugReportMenu;
@@ -1733,6 +1731,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     private javax.swing.JMenu deNovoMenu;
     private javax.swing.JScrollPane deNovoPeptidesTableScrollPane;
     private javax.swing.JPanel debovoResultsPanel;
+    private javax.swing.JCheckBoxMenuItem defaultAnnotationCheckBoxMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportBlastMatchesMenuItem;
@@ -2623,7 +2622,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 lossMenuItem.addActionListener(new java.awt.event.ActionListener() {
                     @Override
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        deselectAutomaticAnnotationMenu();
+                        deselectDefaultAnnotationMenuItem();
                         updateSpectrum();
                     }
                 });
@@ -2648,7 +2647,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             chargeMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    deselectAutomaticAnnotationMenu();
+                    deselectDefaultAnnotationMenuItem();
                     updateSpectrum();
                 }
             });
@@ -2667,7 +2666,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     public void updateAnnotationPreferences() {
 
-        if (!automaticAnnotationCheckBoxMenuItem.isSelected()) {
+        if (!defaultAnnotationCheckBoxMenuItem.isSelected()) {
 
             specificAnnotationPreferences.clearIonTypes();
             if (aIonCheckBoxMenuItem.isSelected()) {
@@ -3384,17 +3383,9 @@ public class ResultsFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Selects the automatic annotation menu and changes the text accordingly.
+     * Deselects the default annotation menu item.
      */
-    private void selectAutomaticAnnotationMenu() {
-//        automaticAnnotationCheckBoxMenuItem.setText("Automatic Annotation");
-    }
-
-    /**
-     * Deselects the automatic annotation menu and changes the text accordingly.
-     */
-    private void deselectAutomaticAnnotationMenu() {
-        automaticAnnotationCheckBoxMenuItem.setSelected(false);
-//        automaticAnnotationCheckBoxMenuItem.setText("Restaure Default");
+    private void deselectDefaultAnnotationMenuItem() {
+        defaultAnnotationCheckBoxMenuItem.setSelected(false);
     }
 }
