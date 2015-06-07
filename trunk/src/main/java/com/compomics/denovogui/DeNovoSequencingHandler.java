@@ -57,9 +57,9 @@ public class DeNovoSequencingHandler {
      */
     private boolean enableDirecTag = true;
     /**
-     * If true, pNovo will be run.
+     * If true, pNovo+ will be run.
      */
-    private boolean enablePNovo = true;
+    private boolean enablePNovo = false;
     /**
      * Default PTM selection.
      */

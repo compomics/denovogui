@@ -21,6 +21,7 @@ import com.compomics.software.settings.UtilitiesPathPreferences;
 import com.compomics.software.settings.gui.PathSettingsDialog;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
+import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
@@ -321,7 +322,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     direcTagExecutable = "directag";
                 } else if (osName.contains("mac os")) {
                     // mac os x not supported
-                    direcTagCheckBox.setSelected(false);
+                    direcTagCheckBox.setSelected(false); // @TODO: does not work???
                     direcTagCheckBox.setEnabled(false);
                 } else {
                     // unsupported OS version
@@ -509,6 +510,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         pNovoButton = new javax.swing.JButton();
         pNovoPlatformsButton = new javax.swing.JButton();
         pNovoLinkLabel = new javax.swing.JLabel();
+        betaLabel = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -656,7 +658,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         pepNovoPlatformsButton.setBorderPainted(false);
         pepNovoPlatformsButton.setContentAreaFilled(false);
 
-        pNovoCheckBox.setSelected(true);
         pNovoCheckBox.setToolTipText("Enable pNovo+");
         pNovoCheckBox.setOpaque(false);
         pNovoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -703,6 +704,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         });
 
+        betaLabel.setFont(betaLabel.getFont().deriveFont(betaLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        betaLabel.setText("(beta)");
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -711,29 +715,29 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 .addGap(35, 35, 35)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                        .addComponent(pNovoCheckBox)
-                        .addGap(71, 71, 71)
-                        .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(pNovoPlatformsButton)
-                        .addGap(31, 31, 31)
-                        .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                         .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(direcTagCheckBox)
                             .addComponent(pepNovoCheckBox))
                         .addGap(71, 71, 71)
                         .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(direcTagPlatformsButton)
-                            .addComponent(pepNovoPlatformsButton))
-                        .addGap(31, 31, 31)
-                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                        .addComponent(pNovoCheckBox)
+                        .addGap(71, 71, 71)
+                        .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(betaLabel)))
+                .addGap(18, 18, 18)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(pNovoPlatformsButton)
+                    .addComponent(pepNovoPlatformsButton)
+                    .addComponent(direcTagPlatformsButton))
+                .addGap(31, 31, 31)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -759,7 +763,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(pNovoCheckBox)
                     .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pNovoPlatformsButton))
+                    .addComponent(pNovoPlatformsButton)
+                    .addComponent(betaLabel))
                 .addGap(20, 20, 20))
         );
 
@@ -1157,27 +1162,43 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
         }
-
-        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
-        saveModificationUsage(); // save the ptms usage
-
-        waitingDialog = new WaitingDialog(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
-                getTips(),
-                "De Novo Sequencing",
-                "DeNovoGUI",
-                new Properties().getVersion(),
-                true);
-        waitingDialog.addWaitingActionListener(new WaitingActionListener() {
-            @Override
-            public void cancelPressed() {
-                cancelSequencing();
+        
+        boolean ptmsOk = true;
+        
+        // check if all ptms are valid for pNovo+
+        if (pNovoCheckBox.isSelected()) {
+            for (String tempPtm : searchParameters.getModificationProfile().getAllModifications()) {
+                PTM currentPtm = ptmFactory.getPTM(tempPtm);
+                if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
+                   JOptionPane.showMessageDialog(this, "Terminal modifications are currently not supported for pNovo+.\n"
+                           + "Please remove \'" + tempPtm + "\' or disable pNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                   ptmsOk = false; 
+                }
             }
-        });
-        waitingDialog.setCloseDialogWhenImportCompletes(true, true);
-        waitingDialog.setLocationRelativeTo(this);
-        startSequencing(waitingDialog);
+        }
+
+        if (ptmsOk) {
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+            saveModificationUsage(); // save the ptms usage
+
+            waitingDialog = new WaitingDialog(this,
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), false,
+                    getTips(),
+                    "De Novo Sequencing",
+                    "DeNovoGUI",
+                    new Properties().getVersion(),
+                    true);
+            waitingDialog.addWaitingActionListener(new WaitingActionListener() {
+                @Override
+                public void cancelPressed() {
+                    cancelSequencing();
+                }
+            });
+            waitingDialog.setCloseDialogWhenImportCompletes(true, true);
+            waitingDialog.setLocationRelativeTo(this);
+            startSequencing(waitingDialog);
+        }
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
@@ -1800,6 +1821,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addSpectraButton;
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JLabel betaLabel;
     private javax.swing.JButton clearSpectraButton;
     private javax.swing.JLabel configurationFileLbl;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;

@@ -51,7 +51,7 @@ public class DeNovoCLI implements Callable {
     public DeNovoCLI(String[] args) {
 
         try {
-            // Load modifications
+            // load modifications
             try {
                 ptmFactory.importModifications(DeNovoSequencingHandler.getModificationsFile(getJarFilePath()), false);
             } catch (Exception e) {

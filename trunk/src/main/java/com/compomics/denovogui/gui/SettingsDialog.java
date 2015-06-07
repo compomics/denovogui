@@ -1249,7 +1249,7 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pNovoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("pNovo Settings"));
+        pNovoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("pNovo+ Settings"));
         pNovoPanel.setOpaque(false);
 
         activationTypeLabel.setText("Activation Type");
