@@ -4,6 +4,7 @@ import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.matches_iterators.PsmIterator;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,8 +19,8 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
 /**
- * <p>Class to plot a histogram of the number of peaks of all intensity
- * values.</p>
+ * <p>
+ * Class to plot a histogram of the number of peaks of all intensity values.</p>
  *
  * @author Thilo Muth
  */
@@ -41,10 +42,12 @@ public class ScoreHistogram extends Chart {
         // List of all the scores
         List<Double> scores = new ArrayList<Double>();
         for (String spectrumFile : identification.getSpectrumFiles()) {
-            identification.loadSpectrumMatches(spectrumFile, null);
-            for (String spectrumTitle : identification.getSpectrumIdentification(spectrumFile)) {
-                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+
+            PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
+
+            while (psmIterator.hasNext()) {
+
+                SpectrumMatch spectrumMatch = psmIterator.next();
                 ArrayList<Double> matchScores = new ArrayList<Double>(spectrumMatch.getAssumptionsMap().get(Advocate.pepnovo.getIndex()).keySet());
                 Collections.sort(matchScores);
                 scores.add(matchScores.get(0));

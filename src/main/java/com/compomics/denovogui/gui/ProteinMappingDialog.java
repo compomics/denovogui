@@ -2,10 +2,10 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SequenceFactory;
-import com.compomics.util.gui.protein.SequenceDbDetailsDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.IOException;

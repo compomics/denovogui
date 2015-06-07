@@ -39,6 +39,7 @@ import com.compomics.util.experiment.identification.identifications.Ms2Identific
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.matches_iterators.PsmIterator;
 import com.compomics.util.experiment.identification.protein_inference.proteintree.ProteinTree;
 import com.compomics.util.experiment.identification.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.tags.Tag;
@@ -1902,11 +1903,12 @@ public class ResultsFrame extends javax.swing.JFrame {
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
 
-            identification.loadSpectrumMatches(spectrumFile, null);
+            PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
 
-            for (String spectrumKey : identification.getSpectrumIdentification(spectrumFile)) {
+            while(psmIterator.hasNext()) {
 
-                SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
+                SpectrumMatch spectrumMatch = psmIterator.next();
+                String spectrumKey = spectrumMatch.getKey();
 
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
 
@@ -2378,7 +2380,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                         for (int i = 0; i < deNovoMatchesTable.getSelectedRowCount(); i++) {
 
                             TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
-                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, tagAssumption, SequenceMatchingPreferences.defaultStringMatching);
+                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, tagAssumption, SequenceMatchingPreferences.defaultStringMatching, SequenceMatchingPreferences.defaultStringMatching);
                             updateAnnotationPreferences();
                             ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, tagAssumption.getTag());
 
