@@ -1,7 +1,6 @@
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
-import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.Enzyme;
@@ -115,7 +114,8 @@ public class PNovoJob extends Job {
                 command += commandComponent;
             }
 
-            outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + ".pnovo.txt");
+            String txtFileName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+            outputFile = new File(outputFolder, txtFileName + ".txt");
 
             // Set the description - yet not used
             setDescription("pNovo+");
@@ -127,7 +127,7 @@ public class PNovoJob extends Job {
 
         } catch (Exception e) {
             exceptionHandler.catchException(e);
-            waitingHandler.appendReport("An error occurred running PepNovo+. See error log for details. " + e.getMessage(), true, true);
+            waitingHandler.appendReport("An error occurred running pNovo+. See error log for details. " + e.getMessage(), true, true);
             waitingHandler.setRunCanceled();
         }
     }

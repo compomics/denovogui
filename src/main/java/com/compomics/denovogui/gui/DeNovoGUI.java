@@ -1162,22 +1162,48 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
         }
-        
-        boolean ptmsOk = true;
-        
+
+        boolean validInput = true;
+
         // check if all ptms are valid for pNovo+
         if (pNovoCheckBox.isSelected()) {
             for (String tempPtm : searchParameters.getModificationProfile().getAllModifications()) {
                 PTM currentPtm = ptmFactory.getPTM(tempPtm);
                 if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
-                   JOptionPane.showMessageDialog(this, "Terminal modifications are currently not supported for pNovo+.\n"
-                           + "Please remove \'" + tempPtm + "\' or disable pNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                   ptmsOk = false; 
+                    JOptionPane.showMessageDialog(this, "Terminal modifications are currently not supported for pNovo+.\n"
+                            + "Please remove \'" + tempPtm + "\' or disable pNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                    validInput = false;
                 }
             }
         }
 
-        if (ptmsOk) {
+        // check for supported accuracy values for DirecTag and PepNovo
+        if (validInput && (direcTagCheckBox.isSelected() || pepNovoCheckBox.isSelected())) {
+            if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                JOptionPane.showMessageDialog(this, "DirecTag and PepNovo only supports fragment ion mass tolerances in dalton.\n"
+                        + "Please edit the settings or disable DirecTag and PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
+            } else if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                JOptionPane.showMessageDialog(this, "DirecTag and PepNovo only supports precursor mass tolerances in dalton.\n"
+                        + "Please edit the settings or disable DirecTag and PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
+            }
+        }
+
+        // check for valid mass accuracy values for PepNovo
+        if (validInput && pepNovoCheckBox.isSelected()) {
+            if (searchParameters.getPrecursorAccuracy() > 5.0) {
+                JOptionPane.showMessageDialog(this, "The maximum precursor mass tolerance for PepNovo is 5 Da.\n"
+                        + "Please edit the settings or disable PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
+            } else if (searchParameters.getFragmentIonAccuracy() > 0.75) {
+                JOptionPane.showMessageDialog(this, "The maximum fragment ion mass tolerance for PepNovo is 0.75 Da.\n"
+                        + "Please edit the settings or disable PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
+            }
+        }
+
+        if (validInput) {
             sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
             saveModificationUsage(); // save the ptms usage
 
@@ -2003,7 +2029,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 String report = "";
 
                 if (waitingHandler instanceof WaitingDialog) {
-                    report = ((WaitingDialog) waitingHandler).getReport(new File(outputFolder, fileName));
+                    report = "<pre>" + ((WaitingDialog) waitingHandler).getReport(new File(outputFolder, fileName))  + "</pre>";
                 }
 
                 // append the search parameters
@@ -2714,6 +2740,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
         this.sequenceMatchingPreferences = sequenceMatchingPreferences;
     }
+
     /**
      * Opens a dialog allowing the setting of paths.
      *

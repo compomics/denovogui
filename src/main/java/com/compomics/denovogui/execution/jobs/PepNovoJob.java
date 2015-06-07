@@ -94,6 +94,9 @@ public class PepNovoJob extends Job {
             }
 
             // Add fragment tolerance
+            if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                throw new IllegalArgumentException("PepNovo+ only supports fragment ion mass tolerances in dalton!");
+            }
             procCommands.add("-fragment_tolerance");
             procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
 
@@ -102,6 +105,9 @@ public class PepNovoJob extends Job {
             procCommands.add(String.valueOf(pepNovoParameters.getHitListLength()));
 
             // Precursor tolerance
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                throw new IllegalArgumentException("PepNovo+ only supports fragment ion mass tolerances in dalton!");
+            }
             procCommands.add("-pm_tolerance");
             procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
 

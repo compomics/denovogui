@@ -132,12 +132,18 @@ public class DirecTagJob extends Job {
             }
 
             // fragment tolerance
+            if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                throw new IllegalArgumentException("DirecTag only supports fragment ion mass tolerances in dalton!");
+            }
             procCommands.add("-FragmentMzTolerance");
             procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
 
             // precursor tolerance
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                throw new IllegalArgumentException("DirecTag only supports precursor mass tolerances in dalton!");
+            }
             procCommands.add("-PrecursorMzTolerance");
-            procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
+            procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracy()));
 
             // tag length
             procCommands.add("-TagLength");
