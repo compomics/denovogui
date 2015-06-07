@@ -3,7 +3,7 @@
 
 ----
 
-*Changes in DeNovoGUI 1.5.0 (June 7. 2015):*
+*Changes in DeNovoGUI 1.5.0 (Coming soon...):*
 
  * NEW FEATURE: Started adding support for pNovo+ (beta).
  * NEW FEATURE: Added support for mirrored spectra in the results frame.
