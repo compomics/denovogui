@@ -51,19 +51,18 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="pNovoPanel" max="32767" attributes="0"/>
-                      <Component id="directTagPanel" alignment="0" max="32767" attributes="0"/>
-                      <Component id="generalPanel" alignment="0" max="32767" attributes="0"/>
                       <Component id="modificationsPanel1" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                           <Component id="openDialogHelpJButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="863" pref="863" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="okButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
+                      <Component id="generalPanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="directTagPanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="pNovoPanel" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -286,7 +285,7 @@
                           <Component id="variableModificationsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                              <Component id="variableModsJScrollPane" pref="457" max="32767" attributes="0"/>
+                              <Component id="variableModsJScrollPane" pref="555" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="addVariableModification" alignment="1" min="-2" pref="54" max="-2" attributes="0"/>
@@ -513,107 +512,105 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="198" pref="198" max="-2" attributes="0"/>
-                                      <Component id="tagLengthTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="198" max="-2" attributes="0"/>
+                                      <Component id="tagLengthTextField" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="tagLengthLabel" linkSize="4" alignment="0" min="-2" pref="180" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="numVariableModsLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="numVariableModsTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="numVariableModsTextField" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="numberOfChargeStatesLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="numberOfChargeStatesTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="numberOfChargeStatesTextField" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="duplicateSpectraLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="duplicateSpectraPerChargeCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="duplicateSpectraPerChargeCmb" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="ticCutoffLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="ticCutoffTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="ticCutoffTextField" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="numberOfIntensityClassesLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="numberOfIntensityClassesTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="maxPeakCountLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="maxPeakCountTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="outputSuffixLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="outputSuffixTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                                      </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="numberOfIntensityClassesLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="numberOfIntensityClassesTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="maxPeakCountLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxPeakCountTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="outputSuffixLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                      <Component id="outputSuffixTextField" min="-2" pref="130" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="isotopeToleranceLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="isotopeToleranceTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Component id="isotopeToleranceTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                               <Component id="precursorAdjustmentStepLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="precursorAdjustmentStepTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Component id="precursorAdjustmentStepTextField" min="-2" pref="130" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="deisotopingModeLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="deisptopingModeTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Component id="deisptopingModeTextField" min="-2" pref="130" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                               <Component id="complementToleranceLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="complementToleranceTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Component id="complementToleranceTextField" min="-2" pref="130" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="50" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="minPrecursorAdjustmentLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
                                   <Component id="maxPrecursorAdjustmentLabel" linkSize="4" alignment="0" min="-2" pref="180" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="minPrecursorAdjustmentTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                                  <Component id="maxPrecursorAdjustmentTextField" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                                  <Component id="minPrecursorAdjustmentTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                                  <Component id="maxPrecursorAdjustmentTextField" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="complementScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="complementScoreWeightTextField" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Component id="complementScoreWeightTextField" min="-2" pref="130" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="mzFidelityScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
                                   <Component id="intensityScoreWeightLabel" linkSize="4" min="-2" pref="180" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="intensityScoreWeightTextField" pref="100" max="32767" attributes="0"/>
-                                  <Component id="mzFidelityScoreWeightTextField" max="32767" attributes="0"/>
+                              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="intensityScoreWeightTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                                  <Component id="mzFidelityScoreWeightTextField" min="-2" pref="130" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -979,41 +976,52 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="fragmentMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="fragmentMassToleranceSpinner" min="-2" pref="100" max="-2" attributes="0"/>
+                              <Component id="fragmentMassToleranceSpinner" linkSize="5" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="precursorMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="precursorMassToleranceSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="numberOfThreadsLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="numberOfThreadsSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="useSpectrumChargeStageLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="useSpectrumChargeCmb" min="-2" pref="100" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="numberOfSolutionsLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="numberOfSolutionsSpinner" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="adjustPrecursorLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="adjustPrecursorCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                              <Component id="precursorMassToleranceSpinner" linkSize="5" min="-2" pref="62" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="fragmentMassToleranceTypeComboBox" linkSize="5" pref="62" max="32767" attributes="0"/>
+                          <Component id="precursorMassToleranceTypeComboBox" linkSize="5" alignment="0" pref="62" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="numberOfSolutionsLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="numberOfSolutionsSpinner" min="-2" pref="130" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="numberOfThreadsLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="numberOfThreadsSpinner" min="-2" pref="130" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="useSpectrumChargeStageLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="useSpectrumChargeCmb" min="-2" pref="130" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="adjustPrecursorLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="adjustPrecursorCmb" min="-2" pref="130" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1021,41 +1029,24 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="fragmentMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="fragmentMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="precursorMassToleranceSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="precursorMassToleranceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                      <Component id="adjustPrecursorCmb" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="adjustPrecursorLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="numberOfSolutionsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="numberOfSolutionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                      <Component id="useSpectrumChargeStageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="useSpectrumChargeCmb" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="numberOfThreadsSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="numberOfThreadsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="precursorMassToleranceLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="precursorMassToleranceSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="precursorMassToleranceTypeComboBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfSolutionsLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfSolutionsSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="adjustPrecursorLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="adjustPrecursorCmb" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="fragmentMassToleranceLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="fragmentMassToleranceSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="fragmentMassToleranceTypeComboBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfThreadsLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="numberOfThreadsSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="useSpectrumChargeStageLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="useSpectrumChargeCmb" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -1065,28 +1056,28 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="fragmentMassToleranceLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance (Da)"/>
+                <Property name="text" type="java.lang.String" value="Fragment Mass Tolerance"/>
                 <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="fragmentMassToleranceSpinner">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="0.5" maximum="0.75" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                  <SpinnerModel initial="0.5" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="Fragment mass tolerance - max 0.75 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="precursorMassToleranceLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance (Da)"/>
+                <Property name="text" type="java.lang.String" value="Precursor Mass Tolerance"/>
                 <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JSpinner" name="precursorMassToleranceSpinner">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="1.0" maximum="5.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
+                  <SpinnerModel initial="1.0" minimum="0.0" numberType="java.lang.Double" stepSize="0.1" type="number"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
               </Properties>
@@ -1145,6 +1136,28 @@
                 </Property>
               </Properties>
             </Component>
+            <Component class="javax.swing.JComboBox" name="fragmentMassToleranceTypeComboBox">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="ppm"/>
+                    <StringItem index="1" value="Da"/>
+                  </StringArray>
+                </Property>
+                <Property name="selectedIndex" type="int" value="1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="precursorMassToleranceTypeComboBox">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="ppm"/>
+                    <StringItem index="1" value="Da"/>
+                  </StringArray>
+                </Property>
+                <Property name="selectedIndex" type="int" value="1"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="pNovoPanel">
@@ -1161,19 +1174,19 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="activationTypeLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="activationTypeCmb" min="-2" pref="100" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                      <Component id="activationTypeCmb" min="-2" pref="130" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                       <Component id="minPrecursorMassLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="minPrecursorMassTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                      <EmptySpace min="50" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                      <Component id="minPrecursorMassTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                       <Component id="maxPrecursorMassLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="maxPrecursorMassTextField" min="-2" pref="100" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                      <Component id="maxPrecursorMassTextField" min="-2" pref="130" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

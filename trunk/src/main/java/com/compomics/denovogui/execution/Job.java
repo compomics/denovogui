@@ -90,56 +90,74 @@ public abstract class Job implements Executable, Runnable {
         Scanner scan = new Scanner(proc.getInputStream());
         scan.useDelimiter(System.getProperty("line.separator"));
 
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        if (description.equalsIgnoreCase("pNovo+")) {
 
-            // set the progress dialog update count
-            int totalSpectrumCount = waitingHandler.getMaxPrimaryProgressCounter();
-            int spectrumCount = 1000;
-            if (totalSpectrumCount <= 1000) {
-                spectrumCount = 100;
-            }
-            if (totalSpectrumCount <= 100) {
-                spectrumCount = 10;
-            }
-
-            // Get input from scanner and send to stdout
+            // get input from scanner and send to stdout
             while (scan.hasNextLine() && !waitingHandler.isRunCanceled()) {
                 String temp = scan.nextLine();
-                writer.write(temp);
-                writer.newLine();
-
-                if (description.equalsIgnoreCase("DirecTag") || description.equalsIgnoreCase("pNovo+")) {
-                    waitingHandler.appendReport(temp, false, true);
-                    // @TODO: better processing of pNovo progress output
-                } else {
-                    if (temp.startsWith(">>")) {
-                        int progressCounter = waitingHandler.getPrimaryProgressCounter();
-                        if (progressCounter % spectrumCount == 0 || progressCounter == 1) {
-                            if (progressCounter == 1) {
-                                progressCounter = 0;
-                            }
-                            waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
-                                    + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
-                                    + " of " + totalSpectrumCount + ".", true, true);
-                        }
-                        waitingHandler.increasePrimaryProgressCounter();
-                        waitingHandler.increaseSecondaryProgressCounter();
-                    }
-                }
+                waitingHandler.appendReport(temp, false, true); // @TODO: better processing of pNovo progress output
             }
 
-            writer.flush();
-            writer.close();
-        } catch (IOException ex) {
-            exceptionHandler.catchException(ex);
-        }
+        } else {
 
-        scan.close();
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+
+                // set the progress dialog update count
+                int totalSpectrumCount = waitingHandler.getMaxPrimaryProgressCounter();
+                int spectrumCount = 1000;
+                if (totalSpectrumCount <= 1000) {
+                    spectrumCount = 100;
+                }
+                if (totalSpectrumCount <= 100) {
+                    spectrumCount = 10;
+                }
+
+                // get input from scanner and send to stdout
+                while (scan.hasNextLine() && !waitingHandler.isRunCanceled()) {
+                    String temp = scan.nextLine();
+                    writer.write(temp);
+                    writer.newLine();
+
+                    if (description.equalsIgnoreCase("DirecTag") || description.equalsIgnoreCase("pNovo+")) {
+                        waitingHandler.appendReport(temp, false, true);
+                        // @TODO: better processing of pNovo progress output
+                    } else {
+                        if (temp.startsWith(">>")) {
+                            int progressCounter = waitingHandler.getPrimaryProgressCounter();
+                            if (progressCounter % spectrumCount == 0 || progressCounter == 1) {
+                                if (progressCounter == 1) {
+                                    progressCounter = 0;
+                                }
+                                waitingHandler.appendReport("Processing spectrum " + (progressCounter + 1)
+                                        + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
+                                        + " of " + totalSpectrumCount + ".", true, true);
+                            }
+                            waitingHandler.increasePrimaryProgressCounter();
+                            waitingHandler.increaseSecondaryProgressCounter();
+                        }
+                    }
+                }
+
+                writer.flush();
+                writer.close();
+            } catch (IOException ex) {
+                exceptionHandler.catchException(ex);
+            }
+
+            scan.close();
+        }
 
         try {
             proc.waitFor();
             setStatus(JobStatus.FINISHED);
+
+            // rename the pnovo result file
+            if (description.equalsIgnoreCase("pNovo+")) {
+                String txtFileName = outputFile.getName().substring(0, outputFile.getName().lastIndexOf("."));
+                File temp = new File(outputFile.getParentFile(), txtFileName + ".pnovo.txt");
+                outputFile.renameTo(temp);
+            }
         } catch (InterruptedException e) {
             if (!waitingHandler.isRunCanceled()) {
                 setError(e.getMessage());

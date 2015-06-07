@@ -2574,7 +2574,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         immoniumIonsCheckMenu.setSelected(false);
         reporterIonsCheckMenu.setSelected(false);
 
-        for (Ion.IonType ionType : specificAnnotationPreferences.getIonTypes().keySet()) {
+        for (Ion.IonType ionType : specificAnnotationPreferences.getIonTypes().keySet()) { // @TODO: can be null!!
             if (ionType == Ion.IonType.IMMONIUM_ION) {
                 immoniumIonsCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.PRECURSOR_ION) {
@@ -3026,14 +3026,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         }
                                                         int aaIndex = aa - 1;
                                                         aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
-                                                    } else if (advocate == Advocate.pNovo.getIndex()) { // @TODO: map the modifications
-                                                        // String pNovoPtmName = modificationMatch.getTheoreticPtm();
-                                                        // PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                        // String utilitiesPtmName = pNovoParameters.getUtilitiesPtmName(pNovoPtmName);
-                                                        // if (utilitiesPtmName == null) {
-                                                        //      throw new IllegalArgumentException("pNovo ptm " + pNovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                        // }
-                                                        // modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    } else if (advocate == Advocate.pNovo.getIndex()) {
+                                                        // already mapped
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                         if (notImplemented == null) {
@@ -3073,14 +3067,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         }
                                                         int aaIndex = aa - 1;
                                                         aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
-                                                    } else if (advocate == Advocate.pNovo.getIndex()) { // @TODO: map the modifications
-                                                        // String pNovoPtmName = modificationMatch.getTheoreticPtm();
-                                                        // PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                        // String utilitiesPtmName = pNovoParameters.getUtilitiesPtmName(pNovoPtmName);
-                                                        // if (utilitiesPtmName == null) {
-                                                        //      throw new IllegalArgumentException("pNovo ptm " + pNovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                        // }
-                                                        // modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                    } else if (advocate == Advocate.pNovo.getIndex()) {
+                                                        // already mapped
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                         if (notImplemented == null) {
