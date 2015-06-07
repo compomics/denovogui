@@ -3,6 +3,26 @@
 
 ----
 
+*Changes in DeNovoGUI 1.5.0 (June 7. 2015):*
+
+ * NEW FEATURE: Started adding support for pNovo+ (beta).
+ * NEW FEATURE: Added support for mirrored spectra in the results frame.
+
+ * FEATURE IMPROVEMENT: Improved the color coding for the ID column in the Results frame.
+ * FEATURE IMPROVEMENT: Updated the "please cite us" link in the tip of the day to include the real link to the paper.
+ * FEATURE IMPROVEMENT: Added a check for if DeNovoGUI is started from within a zip file.
+ * FEATURE IMPROVEMENT: Increased the size of the spectrum panel.
+ * FEATURE IMPROVEMENT: Made it possible to set the Java Home from the GUI.
+ * FEATURE IMPROVEMENT: Improvements to the handling of errors on the command line.
+ * FEATURE IMPROVEMENT: Added a new simpler way of resetting the spectrum annotation.
+
+ * BUG FIX: Fixed a bug in the progress counter for PepNovo+.
+ * BUG FIX: Fixed JavaDoc errors so that it builds again in Java 8.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.49.9.
+
+----
+
 *Changes in DeNovoGUI 1.4.12 (October 23. 2014):*
 
  * FEATURE IMPROVEMENT: PTM tooltips now include "confident" or "not confident" in addition to the color coding.
