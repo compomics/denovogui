@@ -40,7 +40,7 @@ public class DeNovoCLIInputBean {
     /**
      * If true, pNovo+ is enabled.
      */
-    private boolean pNovoEnabled = true;
+    private boolean pNovoEnabled = false;
     /**
      * The PepNovo executable. Full path.
      */

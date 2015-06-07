@@ -370,18 +370,18 @@ public class PNovoJob extends Job {
             for (Character aa : enzyme.getAminoAcidBefore()) {
                 enzymeAsString += aa;
             }
-            enzymeAsString += " ";
-            for (Character aa : enzyme.getRestrictionAfter()) {
-                enzymeAsString += aa;
-            }
+            enzymeAsString += " C";
+//            for (Character aa : enzyme.getRestrictionAfter()) {
+//                enzymeAsString += aa;
+//            }
         } else if (enzyme.getAminoAcidAfter().size() > 0) {
             for (Character aa : enzyme.getAminoAcidAfter()) {
                 enzymeAsString += aa;
             }
-            enzymeAsString += " ";
-            for (Character aa : enzyme.getRestrictionBefore()) {
-                enzymeAsString += aa;
-            }
+            enzymeAsString += " N";
+//            for (Character aa : enzyme.getRestrictionBefore()) {
+//                enzymeAsString += aa;
+//            }
         }
 
         return enzymeAsString;
