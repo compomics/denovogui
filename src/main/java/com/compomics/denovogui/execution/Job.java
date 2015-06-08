@@ -156,6 +156,9 @@ public abstract class Job implements Executable, Runnable {
             if (description.equalsIgnoreCase("pNovo+")) {
                 String txtFileName = outputFile.getName().substring(0, outputFile.getName().lastIndexOf("."));
                 File temp = new File(outputFile.getParentFile(), txtFileName + ".pnovo.txt");
+                if (temp.exists()) {
+                    temp.delete();
+                }
                 outputFile.renameTo(temp);
             }
         } catch (InterruptedException e) {
