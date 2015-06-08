@@ -178,7 +178,7 @@ public class PNovoJob extends Job {
             // n-term=43.005814
             // c-term=0.984016
             //
-            // #A fixed modification can be added like:
+            // #fixed modifications can be added like:
             // C=160.030654
             // #in which 160.030654 = mass(C) + mass(Carbamidomethyl)
             //
@@ -237,7 +237,7 @@ public class PNovoJob extends Job {
                             char currentModLetter = variableModificationsCharacters[variableModCount++];
                             modificationLetterToPtmMap.put(currentModLetter, variableModification);
                             modificationLetterToResidueMap.put(currentModLetter, target);
-                            br.write(currentModLetter + "=" + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
+                            br.write(currentModLetter + "=" + (AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass()) + System.getProperty("line.separator"));
                         }
                     }
                 }
@@ -267,7 +267,7 @@ public class PNovoJob extends Job {
                 for (String fixedModification : searchParameters.getModificationProfile().getFixedModifications()) {
                     PTM ptm = ptmFactory.getPTM(fixedModification);
                     for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
-                        br.write(target + "=" + AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass() + System.getProperty("line.separator"));
+                        br.write(target + "=" + (AminoAcid.getAminoAcid(target).monoisotopicMass + ptm.getMass()) + System.getProperty("line.separator"));
                     }
                 }
                 

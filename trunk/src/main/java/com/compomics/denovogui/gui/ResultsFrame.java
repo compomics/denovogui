@@ -83,6 +83,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -1727,8 +1728,8 @@ public class ResultsFrame extends javax.swing.JFrame {
 
     /**
      * Reset the annotation to the default annotation.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void resetAnnotationMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_resetAnnotationMenuMenuSelected
         defaultAnnotationCheckBoxMenuItem.setSelected(true);
@@ -1905,7 +1906,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
 
-            while(psmIterator.hasNext()) {
+            while (psmIterator.hasNext()) {
 
                 SpectrumMatch spectrumMatch = psmIterator.next();
                 String spectrumKey = spectrumMatch.getKey();
@@ -2574,7 +2575,14 @@ public class ResultsFrame extends javax.swing.JFrame {
         immoniumIonsCheckMenu.setSelected(false);
         reporterIonsCheckMenu.setSelected(false);
 
-        for (Ion.IonType ionType : specificAnnotationPreferences.getIonTypes().keySet()) { // @TODO: can be null!!
+        HashMap<Ion.IonType, HashSet<Integer>> ionTypes;
+        if (specificAnnotationPreferences != null) {
+            ionTypes = specificAnnotationPreferences.getIonTypes();
+        } else {
+            ionTypes = annotationPreferences.getIonTypes();
+        }
+
+        for (Ion.IonType ionType : ionTypes.keySet()) { // @TODO: can be null!!
             if (ionType == Ion.IonType.IMMONIUM_ION) {
                 immoniumIonsCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.PRECURSOR_ION) {
@@ -2582,7 +2590,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             } else if (ionType == Ion.IonType.REPORTER_ION) {
                 reporterIonsCheckMenu.setSelected(true);
             } else if (ionType == Ion.IonType.TAG_FRAGMENT_ION) {
-                for (int subtype : specificAnnotationPreferences.getIonTypes().get(ionType)) {
+                for (int subtype : ionTypes.get(ionType)) {
                     if (subtype == TagFragmentIon.A_ION) {
                         aIonCheckBoxMenuItem.setSelected(true);
                     } else if (subtype == TagFragmentIon.B_ION) {
@@ -2630,13 +2638,23 @@ public class ResultsFrame extends javax.swing.JFrame {
             lossSplitter.setVisible(false);
         } else {
 
+            ArrayList<NeutralLoss> currentNeutralLosses;
+            boolean neutralLossesAuto;
+            if (specificAnnotationPreferences != null) {
+                currentNeutralLosses = specificAnnotationPreferences.getNeutralLossesMap().getAccountedNeutralLosses();
+                neutralLossesAuto = specificAnnotationPreferences.isNeutralLossesAuto();
+            } else {
+                currentNeutralLosses = annotationPreferences.getNeutralLosses();
+                neutralLossesAuto = true;
+            }
+
             for (int i = 0; i < names.size(); i++) {
 
                 String neutralLossName = names.get(i);
                 NeutralLoss neutralLoss = neutralLosses.get(neutralLossName);
 
                 boolean selected = false;
-                for (NeutralLoss specificNeutralLoss : specificAnnotationPreferences.getNeutralLossesMap().getAccountedNeutralLosses()) {
+                for (NeutralLoss specificNeutralLoss : currentNeutralLosses) {
                     if (neutralLoss.isSameAs(specificNeutralLoss)) {
                         selected = true;
                         break;
@@ -2645,7 +2663,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                 JCheckBoxMenuItem lossMenuItem = new JCheckBoxMenuItem(neutralLossName);
                 lossMenuItem.setSelected(selected);
-                lossMenuItem.setEnabled(!specificAnnotationPreferences.isNeutralLossesAuto());
+                lossMenuItem.setEnabled(!neutralLossesAuto);
                 lossMenuItem.addActionListener(new java.awt.event.ActionListener() {
                     @Override
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2656,7 +2674,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 lossMenus.put(neutralLosses.get(neutralLossName), lossMenuItem);
                 lossMenu.add(lossMenuItem, i);
             }
-            adaptCheckBoxMenuItem.setSelected(specificAnnotationPreferences.isNeutralLossesAuto());
+            adaptCheckBoxMenuItem.setSelected(neutralLossesAuto);
         }
 
         chargeMenus.clear();
@@ -2666,11 +2684,19 @@ public class ResultsFrame extends javax.swing.JFrame {
             precursorCharge = 2;
         }
 
+        ArrayList<Integer> selectedCharges;
+        if (specificAnnotationPreferences != null) {
+            selectedCharges = specificAnnotationPreferences.getSelectedCharges();
+        } else {
+            selectedCharges = new ArrayList<Integer>();
+            selectedCharges.add(1);
+        }
+
         for (Integer charge = 1; charge < precursorCharge; charge++) {
 
             final JCheckBoxMenuItem chargeMenuItem = new JCheckBoxMenuItem(charge + "+");
 
-            chargeMenuItem.setSelected(specificAnnotationPreferences.getSelectedCharges().contains(charge));
+            chargeMenuItem.setSelected(selectedCharges.contains(charge));
             chargeMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
