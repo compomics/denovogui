@@ -7,6 +7,7 @@ import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
@@ -94,22 +95,30 @@ public class PepNovoJob extends Job {
             }
 
             // Add fragment tolerance
+            double tolerance = searchParameters.getFragmentIonAccuracy();
             if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                throw new IllegalArgumentException("PepNovo+ only supports fragment ion mass tolerances in dalton!");
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+                if (tolerance > 0.75) {
+                    tolerance = 0.75;
+                }
             }
             procCommands.add("-fragment_tolerance");
-            procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
+            procCommands.add(String.valueOf(tolerance));
 
             // Add solution number
             procCommands.add("-num_solutions");
             procCommands.add(String.valueOf(pepNovoParameters.getHitListLength()));
 
             // Precursor tolerance
-            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                throw new IllegalArgumentException("PepNovo+ only supports fragment ion mass tolerances in dalton!");
+            tolerance = searchParameters.getPrecursorAccuracy();
+            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+                if (tolerance > 0.5) {
+                    tolerance = 0.5;
+                }
             }
             procCommands.add("-pm_tolerance");
-            procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracyDalton()));
+            procCommands.add(String.valueOf(tolerance));
 
             // Use spectrum charge: no by default
             if (!pepNovoParameters.isEstimateCharge()) {
