@@ -36,6 +36,7 @@ import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import com.compomics.util.io.ConfigurationFile;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.LastSelectedFolder;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
@@ -1177,29 +1178,23 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
         }
 
-        // check for supported accuracy values for DirecTag and PepNovo
-        if (validInput && (direcTagCheckBox.isSelected() || pepNovoCheckBox.isSelected())) {
-            if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                JOptionPane.showMessageDialog(this, "DirecTag and PepNovo only supports fragment ion mass tolerances in dalton.\n"
-                        + "Please edit the settings or disable DirecTag and PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                validInput = false;
-            } else if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                JOptionPane.showMessageDialog(this, "DirecTag and PepNovo only supports precursor mass tolerances in dalton.\n"
-                        + "Please edit the settings or disable DirecTag and PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                validInput = false;
-            }
-        }
-
         // check for valid mass accuracy values for PepNovo
         if (validInput && pepNovoCheckBox.isSelected()) {
-            if (searchParameters.getPrecursorAccuracy() > 5.0) {
-                JOptionPane.showMessageDialog(this, "The maximum precursor mass tolerance for PepNovo is 5 Da.\n"
-                        + "Please edit the settings or disable PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                validInput = false;
-            } else if (searchParameters.getFragmentIonAccuracy() > 0.75) {
+            double tolerance = searchParameters.getPrecursorAccuracy();
+            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+            }
+            if (tolerance > 5.0) {
+                JOptionPane.showMessageDialog(this, "The maximum precursor ion mass tolerance for PepNovo is 5 Da.\n"
+                        + "This value will be used.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+            }
+            tolerance = searchParameters.getFragmentIonAccuracy();
+            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+            }
+            if (tolerance > 0.75) {
                 JOptionPane.showMessageDialog(this, "The maximum fragment ion mass tolerance for PepNovo is 0.75 Da.\n"
-                        + "Please edit the settings or disable PepNovo.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                validInput = false;
+                        + "This value will be used.", "Settings Error", JOptionPane.WARNING_MESSAGE);
             }
         }
 

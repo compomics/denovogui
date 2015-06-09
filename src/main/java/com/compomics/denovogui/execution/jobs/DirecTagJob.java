@@ -10,6 +10,7 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
@@ -132,18 +133,20 @@ public class DirecTagJob extends Job {
             }
 
             // fragment tolerance
+            double tolerance = searchParameters.getFragmentIonAccuracy();
             if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                throw new IllegalArgumentException("DirecTag only supports fragment ion mass tolerances in dalton!");
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
             }
             procCommands.add("-FragmentMzTolerance");
-            procCommands.add(String.valueOf(searchParameters.getFragmentIonAccuracy()));
+            procCommands.add(String.valueOf(tolerance));
 
             // precursor tolerance
-            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
-                throw new IllegalArgumentException("DirecTag only supports precursor mass tolerances in dalton!");
+            tolerance = searchParameters.getPrecursorAccuracy();
+            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
             }
             procCommands.add("-PrecursorMzTolerance");
-            procCommands.add(String.valueOf(searchParameters.getPrecursorAccuracy()));
+            procCommands.add(String.valueOf(tolerance));
 
             // tag length
             procCommands.add("-TagLength");
