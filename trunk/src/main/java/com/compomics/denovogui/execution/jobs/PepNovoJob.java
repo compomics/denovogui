@@ -43,6 +43,14 @@ public class PepNovoJob extends Job {
      * The command executed.
      */
     private String command = "";
+    /**
+     * The maximum allowed precursor tolerance.
+     */
+    public static final double MAX_PRECURSOR_TOLERANCE = 5.0;
+    /**
+     * The maximum allowed fragment ion tolerance.
+     */
+    public static final double MAX_FRAGMENT_ION_TOLERANCE = 0.75;
 
     /**
      * Constructor for the PepNovoJob.
@@ -98,9 +106,10 @@ public class PepNovoJob extends Job {
             double tolerance = searchParameters.getFragmentIonAccuracy();
             if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
                 tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
-                if (tolerance > 0.75) {
-                    tolerance = 0.75;
-                }
+            }
+            if (tolerance > MAX_FRAGMENT_ION_TOLERANCE) { // limit to max supported value
+                throw new IllegalArgumentException("The maximum fragment ion mass tolerance for PepNovo+ is " 
+                        + PepNovoJob.MAX_FRAGMENT_ION_TOLERANCE + " Da! Current value: " + tolerance + " Da.");
             }
             procCommands.add("-fragment_tolerance");
             procCommands.add(String.valueOf(tolerance));
@@ -111,11 +120,12 @@ public class PepNovoJob extends Job {
 
             // Precursor tolerance
             tolerance = searchParameters.getPrecursorAccuracy();
-            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
                 tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
-                if (tolerance > 0.5) {
-                    tolerance = 0.5;
-                }
+            }
+            if (tolerance > MAX_PRECURSOR_TOLERANCE) { // limit to max supported value
+                throw new IllegalArgumentException("The maximum precursor ion mass tolerance for PepNovo+ is " 
+                        + PepNovoJob.MAX_PRECURSOR_TOLERANCE + " Da! Current value: " + tolerance + " Da.");
             }
             procCommands.add("-pm_tolerance");
             procCommands.add(String.valueOf(tolerance));

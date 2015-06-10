@@ -2,6 +2,7 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
+import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CommandLineUtils;
 import com.compomics.software.ToolFactory;
@@ -1180,21 +1181,23 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
         // check for valid mass accuracy values for PepNovo
         if (validInput && pepNovoCheckBox.isSelected()) {
-            double tolerance = searchParameters.getPrecursorAccuracy();
-            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
-                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+            double precursorToleranceInDalton = searchParameters.getPrecursorAccuracy();
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                precursorToleranceInDalton = IdentificationParameters.getDaTolerance(precursorToleranceInDalton, 1000); //@TODO: make the reference mass a user parameter?
             }
-            if (tolerance > 5.0) {
-                JOptionPane.showMessageDialog(this, "The maximum precursor ion mass tolerance for PepNovo is 5 Da.\n"
-                        + "This value will be used.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+            if (precursorToleranceInDalton > PepNovoJob.MAX_PRECURSOR_TOLERANCE) {
+                JOptionPane.showMessageDialog(this, "The maximum precursor ion mass tolerance for PepNovo+ is " + PepNovoJob.MAX_PRECURSOR_TOLERANCE + " Da.\n"
+                        + "Please edit the settings or disable PepNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
             }
-            tolerance = searchParameters.getFragmentIonAccuracy();
-            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
-                tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
+            double fragmentToleranceInDalton = searchParameters.getFragmentIonAccuracy();
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
+                fragmentToleranceInDalton = IdentificationParameters.getDaTolerance(fragmentToleranceInDalton, 1000); //@TODO: make the reference mass a user parameter?
             }
-            if (tolerance > 0.75) {
-                JOptionPane.showMessageDialog(this, "The maximum fragment ion mass tolerance for PepNovo is 0.75 Da.\n"
-                        + "This value will be used.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+            if (fragmentToleranceInDalton > PepNovoJob.MAX_FRAGMENT_ION_TOLERANCE) {
+                JOptionPane.showMessageDialog(this, "The maximum fragment ion mass tolerance for PepNovo+ is " + PepNovoJob.MAX_FRAGMENT_ION_TOLERANCE + " Da.\n"
+                        + "Please edit the settings or disable PepNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
             }
         }
 
