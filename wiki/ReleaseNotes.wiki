@@ -8,6 +8,7 @@
  * NEW FEATURE: Started adding support for pNovo+ (beta).
  * NEW FEATURE: Added support for mirrored spectra in the results frame.
 
+ * FEATURE IMPROVEMENT: Mass tolerances can now be provided in ppm.
  * FEATURE IMPROVEMENT: Improved the color coding for the ID column in the Results frame.
  * FEATURE IMPROVEMENT: Updated the "please cite us" link in the tip of the day to include the real link to the paper.
  * FEATURE IMPROVEMENT: Added a check for if DeNovoGUI is started from within a zip file.
@@ -18,8 +19,9 @@
 
  * BUG FIX: Fixed a bug in the progress counter for PepNovo+.
  * BUG FIX: Fixed JavaDoc errors so that it builds again in Java 8.
+ * BUG FIX: Fixed an issue in the annotation preferences that occurred if no identifications were found.
 
- * LIBRARY UPDATE: Updated utilities to version 3.49.9.
+ * LIBRARY UPDATE: Updated utilities to version 3.49.11.
 
 ----
 
