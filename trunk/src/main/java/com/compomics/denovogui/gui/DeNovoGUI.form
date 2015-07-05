@@ -72,13 +72,13 @@
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="pepNovoMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="algorithmLocationsMenuItem">
               <Properties>
-                <Property name="mnemonic" type="int" value="65"/>
+                <Property name="mnemonic" type="int" value="76"/>
                 <Property name="text" type="java.lang.String" value="Algorithm Locations"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="algorithmLocationsMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
@@ -205,7 +205,7 @@
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Component id="aboutButton" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                          <Component id="deNovoGuiWebPageJLabel" pref="552" max="32767" attributes="0"/>
+                          <Component id="deNovoGuiWebPageJLabel" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="startButton" min="-2" pref="162" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
@@ -281,36 +281,45 @@
                           <Component id="pepNovoLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="directTagSettingsJButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoSettingsJButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="pNovoSettingsJButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="direcTagCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="direcTagLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="directTagSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="pepNovoCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="pepNovoSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="pNovoCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="pNovoLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="betaLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="pNovoSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -472,6 +481,69 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="(beta)"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="directTagSettingsJButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced DirecTag Settings"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="directTagSettingsJButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="directTagSettingsJButtonMouseExited"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="directTagSettingsJButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="pepNovoSettingsJButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="No advanced settings for PepNovo+"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoSettingsJButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoSettingsJButtonMouseExited"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="pNovoSettingsJButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced pNovo+ Settings"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pNovoSettingsJButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pNovoSettingsJButtonMouseExited"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pNovoSettingsJButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

@@ -5,7 +5,7 @@
     <groupId>com.compomics.denovogui</groupId>
     <artifactId>DeNovoGUI</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <name>DeNovoGUI</name>
     <url>http://denovogui.googlecode.com</url>
     <description>Graphical user interface for de novo sequencing of tandem mass spectra</description>
@@ -326,7 +326,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>3.49.11</version>
+            <version>3.49.22</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
