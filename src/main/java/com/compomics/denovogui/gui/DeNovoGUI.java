@@ -24,6 +24,17 @@ import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.identification.identification_parameters.AndromedaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.CometParameters;
+import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MsAmandaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
+import com.compomics.util.experiment.identification.identification_parameters.MyriMatchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PNovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.TideParameters;
+import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -417,7 +428,41 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
             this.searchParameters = searchParameters;
 
-            // check the search parameters for backwards compatibility?
+            // check the search parameters for backwards compatibility
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), new XtandemParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.comet.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.comet.getIndex(), new CometParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.tide.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.tide.getIndex(), new TideParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex(), new MsAmandaParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex(), new MyriMatchParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.andromeda.getIndex(), new AndromedaParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
+            }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
+            }
+
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
                 setOutputFolder(outputFolder);
@@ -432,7 +477,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             setVisible(true);
 
             validateInput(false);
-            this.searchParameters = searchParameters;
         }
     }
 
@@ -513,6 +557,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         pNovoPlatformsButton = new javax.swing.JButton();
         pNovoLinkLabel = new javax.swing.JLabel();
         betaLabel = new javax.swing.JLabel();
+        directTagSettingsJButton = new javax.swing.JButton();
+        pepNovoSettingsJButton = new javax.swing.JButton();
+        pNovoSettingsJButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -540,7 +587,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         modsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        pepNovoMenuItem = new javax.swing.JMenuItem();
+        algorithmLocationsMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         javaSettingsJMenuItem = new javax.swing.JMenuItem();
         privacyMenuItem = new javax.swing.JMenuItem();
@@ -709,6 +756,62 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         betaLabel.setFont(betaLabel.getFont().deriveFont(betaLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         betaLabel.setText("(beta)");
 
+        directTagSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
+        directTagSettingsJButton.setToolTipText("Edit Advanced DirecTag Settings");
+        directTagSettingsJButton.setBorder(null);
+        directTagSettingsJButton.setBorderPainted(false);
+        directTagSettingsJButton.setContentAreaFilled(false);
+        directTagSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        directTagSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                directTagSettingsJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                directTagSettingsJButtonMouseExited(evt);
+            }
+        });
+        directTagSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                directTagSettingsJButtonActionPerformed(evt);
+            }
+        });
+
+        pepNovoSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
+        pepNovoSettingsJButton.setToolTipText("No advanced settings for PepNovo+");
+        pepNovoSettingsJButton.setBorder(null);
+        pepNovoSettingsJButton.setBorderPainted(false);
+        pepNovoSettingsJButton.setContentAreaFilled(false);
+        pepNovoSettingsJButton.setEnabled(false);
+        pepNovoSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        pepNovoSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pepNovoSettingsJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pepNovoSettingsJButtonMouseExited(evt);
+            }
+        });
+
+        pNovoSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
+        pNovoSettingsJButton.setToolTipText("Edit Advanced pNovo+ Settings");
+        pNovoSettingsJButton.setBorder(null);
+        pNovoSettingsJButton.setBorderPainted(false);
+        pNovoSettingsJButton.setContentAreaFilled(false);
+        pNovoSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        pNovoSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pNovoSettingsJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pNovoSettingsJButtonMouseExited(evt);
+            }
+        });
+        pNovoSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pNovoSettingsJButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -740,7 +843,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(71, 71, 71)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(directTagSettingsJButton)
+                    .addComponent(pepNovoSettingsJButton)
+                    .addComponent(pNovoSettingsJButton))
+                .addGap(81, 81, 81))
         );
 
         searchEnginesPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {direcTagButton, pepNovoButton});
@@ -748,26 +856,29 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         searchEnginesPanelLayout.setVerticalGroup(
             searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap()
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(direcTagCheckBox)
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(direcTagPlatformsButton))
-                .addGap(18, 18, 18)
+                    .addComponent(direcTagPlatformsButton)
+                    .addComponent(directTagSettingsJButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(pepNovoCheckBox)
                     .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pepNovoPlatformsButton))
-                .addGap(18, 18, 18)
+                    .addComponent(pepNovoPlatformsButton)
+                    .addComponent(pepNovoSettingsJButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(pNovoCheckBox)
                     .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pNovoPlatformsButton)
-                    .addComponent(betaLabel))
-                .addGap(20, 20, 20))
+                    .addComponent(betaLabel)
+                    .addComponent(pNovoSettingsJButton))
+                .addContainerGap())
         );
 
         startButton.setBackground(new java.awt.Color(0, 153, 0));
@@ -939,7 +1050,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                         .addGap(10, 10, 10)
                         .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
-                        .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+                        .addComponent(deNovoGuiWebPageJLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11)))
@@ -1018,14 +1129,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         editMenu.add(modsMenuItem);
         editMenu.add(jSeparator1);
 
-        pepNovoMenuItem.setMnemonic('A');
-        pepNovoMenuItem.setText("Algorithm Locations");
-        pepNovoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        algorithmLocationsMenuItem.setMnemonic('L');
+        algorithmLocationsMenuItem.setText("Algorithm Locations");
+        algorithmLocationsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pepNovoMenuItemActionPerformed(evt);
+                algorithmLocationsMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(pepNovoMenuItem);
+        editMenu.add(algorithmLocationsMenuItem);
         editMenu.add(jSeparator5);
 
         javaSettingsJMenuItem.setMnemonic('O');
@@ -1149,9 +1260,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      *
      * @param evt
      */
-    private void pepNovoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoMenuItemActionPerformed
+    private void algorithmLocationsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_algorithmLocationsMenuItemActionPerformed
         new LocationDialog(this, true);
-    }//GEN-LAST:event_pepNovoMenuItemActionPerformed
+    }//GEN-LAST:event_algorithmLocationsMenuItemActionPerformed
 
     /**
      * Start the de novo sequencing.
@@ -1418,14 +1529,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 parametersFile = file;
                 searchParameters.setParametersFile(parametersFile);
                 settingsFileJTextField.setText(parametersFile.getName());
-
-                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
-                boolean valid = settingsDialog.validateParametersInput(false);
-
-                if (!valid) {
-                    settingsDialog.validateParametersInput(true);
-                    settingsDialog.setVisible(true);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error occurred while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
@@ -1771,6 +1874,73 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_pNovoLinkLabelMouseExited
 
+    private void directTagSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonMouseEntered
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_directTagSettingsJButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void directTagSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonMouseExited
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_directTagSettingsJButtonMouseExited
+
+    /**
+     * Open the DirecTag advanced settings.
+     *
+     * @param evt
+     */
+    private void directTagSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonActionPerformed
+        new DirecTagSettingsDialog(this, searchParameters, true);
+    }//GEN-LAST:event_directTagSettingsJButtonActionPerformed
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_pepNovoSettingsJButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pepNovoSettingsJButtonMouseExited
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void pNovoSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_pNovoSettingsJButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void pNovoSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pNovoSettingsJButtonMouseExited
+
+    /**
+     * Open the pNovo advanced settings.
+     *
+     * @param evt
+     */
+    private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
+        new PNovoSettingsDialog(this, searchParameters, true);
+    }//GEN-LAST:event_pNovoSettingsJButtonActionPerformed
+
     /**
      * The main method.
      *
@@ -1844,6 +2014,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JButton aboutButton;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addSpectraButton;
+    private javax.swing.JMenuItem algorithmLocationsMenuItem;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel betaLabel;
     private javax.swing.JButton clearSpectraButton;
@@ -1853,6 +2024,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JCheckBox direcTagCheckBox;
     private javax.swing.JLabel direcTagLinkLabel;
     private javax.swing.JButton direcTagPlatformsButton;
+    private javax.swing.JButton directTagSettingsJButton;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
@@ -1878,11 +2050,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private javax.swing.JCheckBox pNovoCheckBox;
     private javax.swing.JLabel pNovoLinkLabel;
     private javax.swing.JButton pNovoPlatformsButton;
+    private javax.swing.JButton pNovoSettingsJButton;
     private javax.swing.JButton pepNovoButton;
     private javax.swing.JCheckBox pepNovoCheckBox;
     private javax.swing.JLabel pepNovoLinkLabel;
-    private javax.swing.JMenuItem pepNovoMenuItem;
     private javax.swing.JButton pepNovoPlatformsButton;
+    private javax.swing.JButton pepNovoSettingsJButton;
     private javax.swing.JMenuItem privacyMenuItem;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
@@ -2027,7 +2200,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 String report = "";
 
                 if (waitingHandler instanceof WaitingDialog) {
-                    report = "<pre>" + ((WaitingDialog) waitingHandler).getReport(new File(outputFolder, fileName))  + "</pre>";
+                    report = "<pre>" + ((WaitingDialog) waitingHandler).getReport(new File(outputFolder, fileName)) + "</pre>";
                 }
 
                 // append the search parameters
@@ -2553,23 +2726,23 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      */
     public boolean validateParametersInput(boolean showMessage) {
 
-        SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
-        boolean valid = settingsDialog.validateParametersInput(false);
-
-        if (!valid) {
-            if (showMessage) {
-                settingsDialog.validateParametersInput(true);
-                settingsDialog.setVisible(true);
-            } else {
-                configurationFileLbl.setForeground(Color.RED);
-                configurationFileLbl.setToolTipText("Please check the search settings");
-            }
-        } else {
-            configurationFileLbl.setToolTipText(null);
-            configurationFileLbl.setForeground(Color.BLACK);
-        }
-
-        return valid;
+        // @TODO: do something here?
+//        SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+//        boolean valid = settingsDialog.validateParametersInput(false);
+//
+//        if (!valid) {
+//            if (showMessage) {
+//                settingsDialog.validateParametersInput(true);
+//                settingsDialog.setVisible(true);
+//            } else {
+//                configurationFileLbl.setForeground(Color.RED);
+//                configurationFileLbl.setToolTipText("Please check the search settings");
+//            }
+//        } else {
+//            configurationFileLbl.setToolTipText(null);
+//            configurationFileLbl.setForeground(Color.BLACK);
+//        }
+        return true;
     }
 
     /**
@@ -2773,5 +2946,140 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         } catch (Exception e) {
             catchException(e);
         }
+    }
+
+    /**
+     * Check if the search parameters have changed and ask the user if the
+     * parameters should be saved if they have.
+     *
+     * @param tempSearchParameters the current search parameters
+     * @return true of the save to file was successful
+     */
+    public boolean checkSearchParameters(SearchParameters tempSearchParameters) {
+
+        if (!searchParameters.equals(tempSearchParameters)) {
+
+            int value = JOptionPane.showConfirmDialog(this, "The settings have changed."
+                    + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+            if (value == JOptionPane.YES_OPTION) {
+
+                boolean userSelectFile = false;
+
+                // see if the user wants to overwrite the current settings file
+                if (tempSearchParameters.getParametersFile() != null) {
+                    value = JOptionPane.showConfirmDialog(this, "Overwrite current settings file?", "Overwrite?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    if (value == JOptionPane.NO_OPTION) {
+                        userSelectFile = true;
+                    } else if (value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION) {
+                        return false;
+                    }
+
+                } else {
+                    // no params file > have the user select a file
+                    userSelectFile = true;
+                }
+
+                boolean fileSelected = true;
+                if (userSelectFile) {
+                    fileSelected = getNewSearchParameterFileLocation(tempSearchParameters);
+                }
+
+                if (fileSelected && tempSearchParameters.getParametersFile() != null) {
+                    try {
+                        SearchParameters.saveIdentificationParameters(tempSearchParameters, tempSearchParameters.getParametersFile());
+                        searchParameters = tempSearchParameters;
+                        loadModifications(searchParameters);
+                        settingsFileJTextField.setText(parametersFile.getName());
+                        return true;
+                    } catch (ClassNotFoundException e) {
+                        JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else if (value == JOptionPane.NO_OPTION) {
+                // reject the changes
+                return true;
+            } else { // dialog canceled by user
+                return false;
+            }
+        } else {
+            // no changes
+            return true;
+        }
+    }
+
+    /**
+     * Get the new search parameter file location from the user.
+     *
+     * @param tempSearchParameters the new search settings
+     * @return true if the file was selected
+     */
+    public boolean getNewSearchParameterFileLocation(SearchParameters tempSearchParameters) {
+
+        // First check whether a file has already been selected.
+        // If so, start from that file's parent.
+        File startLocation = new File(getLastSelectedFolder().getLastSelectedFolder());
+
+        if (tempSearchParameters.getParametersFile() != null) {
+            startLocation = tempSearchParameters.getParametersFile();
+        }
+
+        boolean complete = false;
+
+        while (!complete) {
+            JFileChooser fc = new JFileChooser(startLocation);
+            FileFilter filter = new FileFilter() {
+                @Override
+                public boolean accept(File myFile) {
+                    return myFile.getName().toLowerCase().endsWith(".parameters") || myFile.isDirectory();
+                }
+
+                @Override
+                public String getDescription() {
+                    return "DeNovoGUI settings file (.parameters)";
+                }
+            };
+            fc.setFileFilter(filter);
+            int result = fc.showSaveDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selected = fc.getSelectedFile();
+                getLastSelectedFolder().setLastSelectedFolder(selected.getAbsolutePath());
+
+                // make sure the file is appended with '.parameters'
+                if (!selected.getName().toLowerCase().endsWith(".parameters")) {
+                    selected = new File(selected.getParentFile(), selected.getName() + ".parameters");
+                    parametersFile = selected;
+                } else {
+                    selected = new File(selected.getParentFile(), selected.getName());
+                    parametersFile = selected;
+                }
+                complete = true;
+                if (selected.exists()) {
+                    int choice = JOptionPane.showConfirmDialog(this,
+                            new String[]{"The file " + selected.getName() + " already exists.", "Overwrite?"},
+                            "File Already Exists", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.NO_OPTION) {
+                        complete = false;
+                    }
+                }
+            } else {
+                return complete;
+            }
+        }
+
+        tempSearchParameters.setParametersFile(parametersFile);
+        return true;
     }
 }
