@@ -309,12 +309,13 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
                 return myFile.getName().toLowerCase().endsWith(".out")
                         || myFile.getName().toLowerCase().endsWith(".tags")
+                        || myFile.getName().toLowerCase().endsWith(".pnovo.txt")
                         || myFile.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "Supported formats: PepNovo+ (.out), DirecTag (.tags)";
+                return "Supported formats: DirecTag (.tags), PepNovo+ (.out) and pNovo+ (.pnovo.txt)";
             }
         };
 

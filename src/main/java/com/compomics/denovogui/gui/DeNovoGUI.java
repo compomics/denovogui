@@ -777,11 +777,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
         });
 
         pepNovoSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
-        pepNovoSettingsJButton.setToolTipText("No advanced settings for PepNovo+");
+        pepNovoSettingsJButton.setToolTipText("Edit Advanced PepNovo+ Settings");
         pepNovoSettingsJButton.setBorder(null);
         pepNovoSettingsJButton.setBorderPainted(false);
         pepNovoSettingsJButton.setContentAreaFilled(false);
-        pepNovoSettingsJButton.setEnabled(false);
         pepNovoSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
         pepNovoSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -789,6 +788,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 pepNovoSettingsJButtonMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                pepNovoSettingsJButtonMouseReleased(evt);
             }
         });
 
@@ -1901,24 +1903,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      *
      * @param evt
      */
-    private void pepNovoSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseEntered
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    }//GEN-LAST:event_pepNovoSettingsJButtonMouseEntered
-
-    /**
-     * Changes the cursor back to the default cursor.
-     *
-     * @param evt
-     */
-    private void pepNovoSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseExited
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-    }//GEN-LAST:event_pepNovoSettingsJButtonMouseExited
-
-    /**
-     * Changes the cursor into a hand cursor.
-     *
-     * @param evt
-     */
     private void pNovoSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonMouseEntered
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }//GEN-LAST:event_pNovoSettingsJButtonMouseEntered
@@ -1940,6 +1924,33 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
     private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
         new PNovoSettingsDialog(this, searchParameters, true);
     }//GEN-LAST:event_pNovoSettingsJButtonActionPerformed
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_pepNovoSettingsJButtonMouseExited
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void pepNovoSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_pepNovoSettingsJButtonMouseEntered
+
+    /**
+     * Show a message that there are no advanced PepNovo settings.
+     * 
+     * @param evt 
+     */
+    private void pepNovoSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseReleased
+        JOptionPane.showMessageDialog(this, "There are no advanced settings for PepNovo+. Please use the general settings.", "PepNovo Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_pepNovoSettingsJButtonMouseReleased
 
     /**
      * The main method.
