@@ -1949,7 +1949,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * @param evt 
      */
     private void pepNovoSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseReleased
-        JOptionPane.showMessageDialog(this, "There are no advanced settings for PepNovo+. Please use the general settings.", "PepNovo Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "There are no advanced settings for PepNovo+. Please use the general settings.", "PepNovo+ Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_pepNovoSettingsJButtonMouseReleased
 
     /**
