@@ -508,13 +508,12 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit_gray.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="No advanced settings for PepNovo+"/>
+                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced PepNovo+ Settings"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
                 <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="contentAreaFilled" type="boolean" value="false"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit.png"/>
                 </Property>
@@ -522,6 +521,7 @@
               <Events>
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoSettingsJButtonMouseEntered"/>
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoSettingsJButtonMouseExited"/>
+                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pepNovoSettingsJButtonMouseReleased"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="pNovoSettingsJButton">

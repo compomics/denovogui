@@ -8,7 +8,6 @@ import com.compomics.util.experiment.identification.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
-import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.tags.Tag;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
@@ -81,7 +80,6 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
                         + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
@@ -104,15 +102,13 @@ public class TextExporter {
                             String spectrumDetails = "";
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                             spectrumDetails += mgfFile + separator + spectrumTitle + separator;
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
-
-                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
@@ -269,18 +265,14 @@ public class TextExporter {
                     for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
                         if (identification.matchExists(spectrumKey)) {
 
-                            String spectrumDetails = "";
-
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
-                            spectrumDetails += mgfFile + separator + spectrumTitle + separator;
+                            String spectrumDetails = mgfFile + separator + spectrumTitle + separator;
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-
-                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
@@ -409,13 +401,11 @@ public class TextExporter {
 
                             String spectrumDetails = ">";
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumKey);
                             spectrumDetails += mgfFile + separator2 + spectrumTitle + separator2;
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
                             ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
-
-                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = spectrumMatch.getAssumptionsMap();
+                            HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);

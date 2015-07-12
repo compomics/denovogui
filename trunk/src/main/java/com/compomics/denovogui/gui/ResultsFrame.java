@@ -1898,23 +1898,23 @@ public class ResultsFrame extends javax.swing.JFrame {
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
         int total = identification.getSpectrumIdentificationSize();
         waitingHandler.setMaxSecondaryProgressCounter(total);
-        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); //@TODO: remove when the objectDB is stable
+        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); // @TODO: remove when the objectDB is stable
         TagMatcher tagMatcher = new TagMatcher(fixedModifications, searchParameters.getModificationProfile().getAllNotFixedModifications(), deNovoGUI.getSequenceMatchingPreferences());
 
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
 
-            PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
+            PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, waitingHandler);
 
             while (psmIterator.hasNext()) {
 
                 SpectrumMatch spectrumMatch = psmIterator.next();
                 String spectrumKey = spectrumMatch.getKey();
+                HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
 
                 for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
 
                     int advocateIndex = advocate.getIndex();
-                    HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                     HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocateIndex);
 
                     if (assumptionsMap != null) {
@@ -1956,10 +1956,10 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 }
                             }
                         }
-
-                        identification.updateSpectrumMatch(spectrumMatch);
                     }
                 }
+
+                identification.updateSpectrumMatch(spectrumMatch);
 
                 // free memory if needed
                 if (memoryUsed() > 0.8 && !objectsCache.isEmpty()) {
