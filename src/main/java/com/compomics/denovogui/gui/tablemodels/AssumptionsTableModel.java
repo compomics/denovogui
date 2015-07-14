@@ -151,12 +151,26 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public Class getColumnClass(int columnIndex) {
-        for (int i = 0; i < getRowCount(); i++) {
-            if (getValueAt(i, columnIndex) != null) {
-                return getValueAt(i, columnIndex).getClass();
-            }
+        switch (columnIndex) {
+            case 0:
+            case 1:
+            case 4:
+                return Integer.class;
+            case 2:
+                return String.class;
+            case 3:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                return Double.class;
+            case 11:
+                return Boolean.class;
+            default:
+                return null;
         }
-        return String.class;
     }
 
     @Override
