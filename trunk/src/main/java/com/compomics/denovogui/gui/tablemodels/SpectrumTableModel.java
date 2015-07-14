@@ -110,12 +110,14 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
+
+        String spectrumTitle = orderedSpectrumTitles.get(row);
+
         switch (column) {
             case 0:
                 return row + 1;
             case 1:
                 try {
-                    String spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
@@ -127,11 +129,9 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 2:
-                String spectrumTitle = orderedSpectrumTitles.get(row);
                 return spectrumTitle;
             case 3:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
                     return precursor.getMz();
                 } catch (Exception e) {
@@ -140,9 +140,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 4:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-
                     if (precursor.getPossibleCharges().size() == 1) {
                         return precursor.getPossibleCharges().get(0).value;
                     } else if (precursor.getPossibleCharges().size() > 1) {
@@ -156,7 +154,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 5:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
                     return precursor.getIntensity();
                 } catch (Exception e) {
@@ -165,7 +162,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 6:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
                     return precursor.getRt();
                 } catch (Exception e) {
@@ -174,7 +170,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 7:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     MSnSpectrum spectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumFile, spectrumTitle);
                     return spectrum.getPeakList().size();
                 } catch (Exception e) {
@@ -183,7 +178,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 8:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
@@ -205,7 +199,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 9:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
@@ -220,14 +213,13 @@ public class SpectrumTableModel extends DefaultTableModel {
                             return bestScore;
                         }
                     }
-                    return "";
+                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 10:
                 try {
-                    spectrumTitle = orderedSpectrumTitles.get(row);
                     String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                     if (update && identification.matchExists(spectrumKey)) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
@@ -248,7 +240,6 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 11:
-                spectrumTitle = orderedSpectrumTitles.get(row);
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 return identification.matchExists(spectrumKey);
             default:
@@ -258,12 +249,26 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public Class getColumnClass(int columnIndex) {
-        for (int i = 0; i < getRowCount(); i++) {
-            if (getValueAt(i, columnIndex) != null) {
-                return getValueAt(i, columnIndex).getClass();
-            }
+        switch (columnIndex) {
+            case 0:
+            case 1:
+            case 4:
+            case 7:
+                return Integer.class;
+            case 2:
+                return String.class;
+            case 3:
+            case 5:
+            case 6:
+            case 8:
+            case 9:
+            case 10:
+                return Double.class;
+            case 11:
+                return Boolean.class;
+            default:
+                return null;
         }
-        return String.class;
     }
 
     @Override

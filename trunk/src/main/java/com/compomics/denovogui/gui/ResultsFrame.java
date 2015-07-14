@@ -1521,7 +1521,30 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @param evt
      */
     private void spectrumFileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spectrumFileComboBoxActionPerformed
-        displayResults();
+
+        progressDialog = new ProgressDialogX(this,
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                true);
+        progressDialog.setPrimaryProgressCounterIndeterminate(true);
+        progressDialog.setTitle("Sorting Spectrum Table. Please Wait...");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    progressDialog.setVisible(true);
+                } catch (IndexOutOfBoundsException e) {
+                    // ignore
+                }
+            }
+        }, "ProgressDialog").start();
+        
+        new Thread("DisplayThread") {
+            @Override
+            public void run() {
+                displayResults();
+            }
+        }.start();
     }//GEN-LAST:event_spectrumFileComboBoxActionPerformed
 
     /**
@@ -2023,72 +2046,50 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private void displayResults() {
 
-        progressDialog = new ProgressDialogX(this,
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
-                true);
+        orderedSpectrumTitles = null;
+        try {
+            orderedSpectrumTitles = orderTitlesByScore(progressDialog);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while sorting the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
         progressDialog.setPrimaryProgressCounterIndeterminate(true);
-        progressDialog.setTitle("Sorting Spectrum Table. Please Wait...");
+        progressDialog.setTitle("Updating Display. Please Wait...");
 
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    progressDialog.setVisible(true);
-                } catch (IndexOutOfBoundsException e) {
-                    // ignore
-                }
-            }
-        }, "ProgressDialog").start();
+        TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
+        querySpectraTable.setModel(tableModel);
+        setSpectrumTableProperties();
 
-        new Thread("DisplayThread") {
-            public void run() {
-                orderedSpectrumTitles = null;
-                try {
-                    orderedSpectrumTitles = orderTitlesByScore(progressDialog);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while sorting the results.", "Out File Error", JOptionPane.WARNING_MESSAGE);
-                    e.printStackTrace();
-                }
-                progressDialog.setPrimaryProgressCounterIndeterminate(true);
-                progressDialog.setTitle("Updating Display. Please Wait...");
+        ((DefaultTableModel) querySpectraTable.getModel()).fireTableDataChanged();
 
-                TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
-                querySpectraTable.setModel(tableModel);
-                setSpectrumTableProperties();
+        if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
+            ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra (?/"
+                    + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
+        } else {
+            ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
+                    + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
+                    + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
+        }
 
-                ((DefaultTableModel) querySpectraTable.getModel()).fireTableDataChanged();
+        querySpectraPanel.repaint();
 
-                if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
-                    ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra (?/"
-                            + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
-                } else {
-                    ((TitledBorder) querySpectraPanel.getBorder()).setTitle("Query Spectra ("
-                            + identification.getSpectrumIdentification(getSelectedSpectrumFile()).size() + "/"
-                            + spectrumFactory.getNSpectra(getSelectedSpectrumFile()) + ")");
-                }
+        if (querySpectraTable.getRowCount() > 0) {
+            querySpectraTable.setRowSelectionInterval(0, 0);
+        }
 
-                querySpectraPanel.repaint();
+        // select the first assumption
+        updateAssumptionsTable(0);
 
-                if (querySpectraTable.getRowCount() > 0) {
-                    querySpectraTable.setRowSelectionInterval(0, 0);
-                }
+        findPanel.setEnabled(true);
 
-                // select the first assumption
-                updateAssumptionsTable(0);
+        // change the icon to the normal version (should not be needed, but added as an extra safty)
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
 
-                progressDialog.setRunFinished();
-                findPanel.setEnabled(true);
-
-                // change the icon to the normal version (should not be needed, but added as an extra safty)
-                setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
-
-                // the spectrum file and the results file do not match...
-                if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
-                    JOptionPane.showMessageDialog(ResultsFrame.this, "No identifications for the selected spectrum file."
-                            + "\nPlease check that you loaded the correct files.", "File Errors", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }.start();
+        // the spectrum file and the results file do not match...
+        if (identification.getSpectrumIdentification(getSelectedSpectrumFile()) == null) {
+            JOptionPane.showMessageDialog(ResultsFrame.this, "No identifications for the selected spectrum file."
+                    + "\nPlease check that you loaded the correct files.", "File Errors", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -2543,10 +2544,12 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                     // import the de novo results
                     identification = importDeNovoResults(finalOutFiles, searchParameters, progressDialog);
-                    progressDialog.setRunFinished();
+
                     if (identification != null) {
                         displayResults();
                     }
+
+                    progressDialog.setRunFinished();
 
                     // @TODO: catch out of memory...
                 } catch (Exception e) {
