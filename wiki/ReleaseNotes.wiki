@@ -3,6 +3,19 @@
 
 ----
 
+*Changes in DeNovoGUI 1.5.2 (July 14. 2015):*
+
+ * FEATURE IMPROVEMENT: Made it possible to open pNovo+ files via the Open menu item.
+ * FEATURE IMPROVEMENT: Added a message that PepNovo+ does not have any advanced settings.
+
+ * BUG FIX: Fixed bugs in the Tag Matches and BLAST exports.
+ * BUG FIX: Fixed a bug in the loading of the results which slowed down the loading process.
+ * BUG FIX: Fixed a bug in the sorting of the columns.
+
+ * LIBRARY UPDATE: Updated utilities to version 3.49.23.
+
+----
+
 *Changes in DeNovoGUI 1.5.1 (July 6. 2015):*
 
  * FEATURE IMPROVEMENT: Redesigned the settings dialog to work better on smaller screens.
