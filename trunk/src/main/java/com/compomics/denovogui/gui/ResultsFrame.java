@@ -1842,14 +1842,13 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * Matches the tags to proteins.
      *
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws ClassNotFoundException
-     * @throws InterruptedException
-     * @throws SQLException
+     * @throws IOException exception thrown whenever an error occurred while reading or writing a file
+     * @throws ClassNotFoundException exception thrown whenever an error occurred while deserializing an object
+     * @throws InterruptedException exception thrown whenever a threading error occurred
+     * @throws SQLException exception thrown whenever an error occurs while interacting with the back-end database
      */
     private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
-            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, FileNotFoundException, ClassNotFoundException, InterruptedException, SQLException {
+            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, ClassNotFoundException, InterruptedException, SQLException {
 
         double threshold = 0;
         if (scoreThreshold != null) {
@@ -1901,28 +1900,13 @@ public class ResultsFrame extends javax.swing.JFrame {
             return;
         }
 
-        // disconnect from the database 
-        identification.close(); // @TODO: should not be needed?
-
-        // reconnect to the database
-        String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
-        objectsCache.setAutomatedMemoryManagement(true);
-        try {
-            identification.establishConnection(dbFolder, false, objectsCache);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. "
-                    + "Please make sure that no other instance of DeNovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
-            e.printStackTrace();
-            return;
-        }
-
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
         int total = identification.getSpectrumIdentificationSize();
         waitingHandler.setMaxSecondaryProgressCounter(total);
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); // @TODO: remove when the objectDB is stable
-        TagMatcher tagMatcher = new TagMatcher(fixedModifications, searchParameters.getModificationProfile().getAllNotFixedModifications(), deNovoGUI.getSequenceMatchingPreferences());
+        TagMatcher tagMatcher = new TagMatcher(fixedModifications, variableModifications, deNovoGUI.getSequenceMatchingPreferences());
 
         int progress = 0;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
@@ -2961,7 +2945,6 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         // The identification object
         Identification tempIdentification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
-        tempIdentification.setIsDB(true);
 
         // The cache used whenever the identification becomes too big
         String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
@@ -3312,27 +3295,27 @@ public class ResultsFrame extends javax.swing.JFrame {
         HashMap<Double, String> knownMassDeltas = new HashMap<Double, String>();
 
         // add the monoisotopic amino acids masses
-        knownMassDeltas.put(AminoAcid.A.monoisotopicMass, "A");
-        knownMassDeltas.put(AminoAcid.R.monoisotopicMass, "R");
-        knownMassDeltas.put(AminoAcid.N.monoisotopicMass, "N");
-        knownMassDeltas.put(AminoAcid.D.monoisotopicMass, "D");
-        knownMassDeltas.put(AminoAcid.C.monoisotopicMass, "C");
-        knownMassDeltas.put(AminoAcid.Q.monoisotopicMass, "Q");
-        knownMassDeltas.put(AminoAcid.E.monoisotopicMass, "E");
-        knownMassDeltas.put(AminoAcid.G.monoisotopicMass, "G");
-        knownMassDeltas.put(AminoAcid.H.monoisotopicMass, "H");
-        knownMassDeltas.put(AminoAcid.I.monoisotopicMass, "I/L");
-        knownMassDeltas.put(AminoAcid.K.monoisotopicMass, "K");
-        knownMassDeltas.put(AminoAcid.M.monoisotopicMass, "M");
-        knownMassDeltas.put(AminoAcid.F.monoisotopicMass, "F");
-        knownMassDeltas.put(AminoAcid.P.monoisotopicMass, "P");
-        knownMassDeltas.put(AminoAcid.S.monoisotopicMass, "S");
-        knownMassDeltas.put(AminoAcid.T.monoisotopicMass, "T");
-        knownMassDeltas.put(AminoAcid.W.monoisotopicMass, "W");
-        knownMassDeltas.put(AminoAcid.Y.monoisotopicMass, "Y");
-        knownMassDeltas.put(AminoAcid.V.monoisotopicMass, "V");
-        knownMassDeltas.put(AminoAcid.U.monoisotopicMass, "U");
-        knownMassDeltas.put(AminoAcid.O.monoisotopicMass, "O");
+        knownMassDeltas.put(AminoAcid.A.getMonoisotopicMass(), "A");
+        knownMassDeltas.put(AminoAcid.R.getMonoisotopicMass(), "R");
+        knownMassDeltas.put(AminoAcid.N.getMonoisotopicMass(), "N");
+        knownMassDeltas.put(AminoAcid.D.getMonoisotopicMass(), "D");
+        knownMassDeltas.put(AminoAcid.C.getMonoisotopicMass(), "C");
+        knownMassDeltas.put(AminoAcid.Q.getMonoisotopicMass(), "Q");
+        knownMassDeltas.put(AminoAcid.E.getMonoisotopicMass(), "E");
+        knownMassDeltas.put(AminoAcid.G.getMonoisotopicMass(), "G");
+        knownMassDeltas.put(AminoAcid.H.getMonoisotopicMass(), "H");
+        knownMassDeltas.put(AminoAcid.I.getMonoisotopicMass(), "I/L");
+        knownMassDeltas.put(AminoAcid.K.getMonoisotopicMass(), "K");
+        knownMassDeltas.put(AminoAcid.M.getMonoisotopicMass(), "M");
+        knownMassDeltas.put(AminoAcid.F.getMonoisotopicMass(), "F");
+        knownMassDeltas.put(AminoAcid.P.getMonoisotopicMass(), "P");
+        knownMassDeltas.put(AminoAcid.S.getMonoisotopicMass(), "S");
+        knownMassDeltas.put(AminoAcid.T.getMonoisotopicMass(), "T");
+        knownMassDeltas.put(AminoAcid.W.getMonoisotopicMass(), "W");
+        knownMassDeltas.put(AminoAcid.Y.getMonoisotopicMass(), "Y");
+        knownMassDeltas.put(AminoAcid.V.getMonoisotopicMass(), "V");
+        knownMassDeltas.put(AminoAcid.U.getMonoisotopicMass(), "U");
+        knownMassDeltas.put(AminoAcid.O.getMonoisotopicMass(), "O");
 
         // add default neutral losses
 //        knownMassDeltas.put(NeutralLoss.H2O.mass, "H2O");
@@ -3353,7 +3336,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             if (ptm != null) {
 
-                String shortName = ptmFactory.getShortName(modification);
+                String shortName = ptm.getShortName();
                 AminoAcidPattern ptmPattern = ptm.getPattern();
                 double mass = ptm.getMass();
 
@@ -3361,7 +3344,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     for (Character aa : ptmPattern.getAminoAcidsAtTarget()) {
                         if (!knownMassDeltas.containsValue(aa + "<" + shortName + ">")) {
                             AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
-                            knownMassDeltas.put(mass + aminoAcid.monoisotopicMass,
+                            knownMassDeltas.put(mass + aminoAcid.getMonoisotopicMass(),
                                     aa + "<" + shortName + ">");
                         }
                     }

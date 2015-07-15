@@ -51,19 +51,7 @@ public class DeNovoCLI implements Callable {
     public DeNovoCLI(String[] args) {
 
         try {
-            // load modifications
-            try {
-                ptmFactory.importModifications(DeNovoSequencingHandler.getModificationsFile(getJarFilePath()), false);
-            } catch (Exception e) {
-                System.out.println("An error occurred while loading the modifications.");
-                exceptionHandler.catchException(e);
-            }
-            try {
-                ptmFactory.importModifications(DeNovoSequencingHandler.getUserModificationsFile(getJarFilePath()), true);
-            } catch (Exception e) {
-                System.out.println("An error occurred while loading the user modifications.");
-                exceptionHandler.catchException(e);
-            }
+            // load enzymes
             try {
                 enzymeFactory.importEnzymes(DeNovoSequencingHandler.getEnzymesFile(getJarFilePath()));
             } catch (Exception e) {

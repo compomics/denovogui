@@ -41,7 +41,6 @@ import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.gui.searchsettings.SearchSettingsDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
@@ -87,7 +86,7 @@ import net.jimmc.jshortcut.JShellLink;
  * @author Thilo Muth
  * @author Harald Barsnes
  */
-public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, JavaHomeOrMemoryDialogParent {
+public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDialogParent {
 
     /**
      * The compomics enzyme factory.
@@ -382,20 +381,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
             // set the title of the frame and add the icon
             this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
 
-            // load modifications
-            try {
-                ptmFactory.importModifications(new File(DeNovoSequencingHandler.getDefaultModificationFile()), false);
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getDefaultModificationFile() + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-            }
-            try {
-                ptmFactory.importModifications(new File(DeNovoSequencingHandler.getUserModificationFile()), true);
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getUserModificationFile() + ".", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-            }
-
             // load the enzymes
             try {
                 enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.getEnzymeFile()));
@@ -428,7 +413,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
 
             this.searchParameters = searchParameters;
 
-            // check the search parameters for backwards compatibility
             if (searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
                 searchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
             }
@@ -1344,7 +1328,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
      * @param evt
      */
     private void modsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modsMenuItemActionPerformed
-        new ModificationsDialog(this, this, true);
+        new ModificationsDialog(this, true);
     }//GEN-LAST:event_modsMenuItemActionPerformed
 
     /**
@@ -2118,11 +2102,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements PtmDialogParent, Ja
                 catchException(e);
             }
         }
-    }
-
-    @Override
-    public void updateModifications() {
-        // do nothing
     }
 
     /**

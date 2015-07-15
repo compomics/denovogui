@@ -402,20 +402,6 @@ public class DeNovoSequencingHandler {
     }
 
     /**
-     * Returns the modifications file.
-     *
-     * @param jarFolder the folder containing the jar file
-     * @return the modifications file
-     */
-    public static File getModificationsFile(String jarFolder) {
-        File result = new File(jarFolder, MODIFICATIONS_FILE);
-        if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, MODIFICATIONS_FILE + " not found.", "Modification File Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return result;
-    }
-
-    /**
      * Returns the user defined enzymes file.
      *
      * @param jarFolder the folder containing the jar file
@@ -425,20 +411,6 @@ public class DeNovoSequencingHandler {
         File result = new File(jarFolder, ENZYME_FILE);
         if (!result.exists()) {
             JOptionPane.showMessageDialog(null, ENZYME_FILE + " not found.", "Enzymes File Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return result;
-    }
-
-    /**
-     * Returns the user defined modifications file.
-     *
-     * @param jarFolder the folder containing the jar file
-     * @return the user defined modifications file
-     */
-    public static File getUserModificationsFile(String jarFolder) {
-        File result = new File(jarFolder, USER_MODIFICATIONS_FILE);
-        if (!result.exists()) {
-            JOptionPane.showMessageDialog(null, USER_MODIFICATIONS_FILE + " not found.", "User Modification File Error", JOptionPane.ERROR_MESSAGE);
         }
         return result;
     }
