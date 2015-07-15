@@ -19,7 +19,6 @@ import com.compomics.util.experiment.identification.identification_parameters.Ti
 import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -44,7 +43,7 @@ import org.jfree.chart.plot.PlotOrientation;
  *
  * @author Harald Barsnes
  */
-public class SettingsDialog extends javax.swing.JDialog implements PtmDialogParent {
+public class SettingsDialog extends javax.swing.JDialog {
 
     /**
      * A references to the main DeNovoGUI.
@@ -1363,7 +1362,8 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
      * @param evt
      */
     private void openModificationSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonActionPerformed
-        new ModificationsDialog(deNovoGUI, this, true);
+        new ModificationsDialog(deNovoGUI, true);
+        updateModificationList();
     }//GEN-LAST:event_openModificationSettingsJButtonActionPerformed
 
     /**
@@ -1649,9 +1649,6 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         }
         tempSearchParameters.setModificationProfile(modificationProfile);
 
-        // set omssa indexes
-        ptmFactory.setSearchedOMSSAIndexes(tempSearchParameters.getModificationProfile());
-
         if (searchParameters.getParametersFile() != null && searchParameters.getParametersFile().exists()) {
             tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
         }
@@ -1799,10 +1796,5 @@ public class SettingsDialog extends javax.swing.JDialog implements PtmDialogPare
         addVariableModification.setEnabled(modificationsTable.getSelectedRow() != -1);
         removeFixedModification.setEnabled(fixedModsTable.getSelectedRow() != -1);
         addFixedModification.setEnabled(modificationsTable.getSelectedRow() != -1);
-    }
-
-    @Override
-    public void updateModifications() {
-        updateModificationList();
     }
 }

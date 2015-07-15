@@ -3,7 +3,6 @@ package com.compomics.denovogui.gui;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.SequenceFactory;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.gui.ptm.PtmDialogParent;
 import com.compomics.util.preferences.ModificationProfile;
 import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;
 import java.awt.Color;
@@ -27,7 +26,7 @@ import org.jfree.chart.plot.PlotOrientation;
  *
  * @author Marc Vaudel
  */
-public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDialogParent {
+public class ProteinMappingDialog extends javax.swing.JDialog{
 
     /**
      * The protein sequence factory.
@@ -252,11 +251,6 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
         }
 
         return valid;
-    }
-
-    @Override
-    public void updateModifications() {
-        updateModificationList();
     }
 
     /**
@@ -540,7 +534,8 @@ public class ProteinMappingDialog extends javax.swing.JDialog implements PtmDial
      * @param evt
      */
     private void openModificationSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openModificationSettingsJButtonActionPerformed
-        new ModificationsDialog(resultsFrame, this, true);
+        new ModificationsDialog(resultsFrame, true);
+        updateModificationList();
     }//GEN-LAST:event_openModificationSettingsJButtonActionPerformed
 
     /**
