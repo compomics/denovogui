@@ -1,7 +1,7 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.SequenceFactory;
+import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.preferences.ModificationProfile;
 import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;

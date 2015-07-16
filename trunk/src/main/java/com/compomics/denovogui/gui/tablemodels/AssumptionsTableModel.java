@@ -1,7 +1,7 @@
 package com.compomics.denovogui.gui.tablemodels;
 
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.TagAssumption;
+import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.preferences.ModificationProfile;
 import java.util.ArrayList;
