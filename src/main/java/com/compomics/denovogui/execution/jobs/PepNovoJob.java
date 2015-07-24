@@ -2,7 +2,7 @@ package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SearchParameters;
@@ -99,7 +99,7 @@ public class PepNovoJob extends Job {
             ArrayList<String> modifications = searchParameters.getModificationProfile().getAllModifications();
             if (!modifications.isEmpty()) {
                 procCommands.add("-PTMs");
-                procCommands.add(ModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications()));
+                procCommands.add(PepNovoModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications()));
             }
 
             // Add fragment tolerance

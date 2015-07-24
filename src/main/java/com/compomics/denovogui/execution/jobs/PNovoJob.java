@@ -242,7 +242,7 @@ public class PNovoJob extends Job {
                     }
                 }
             }
-            
+
             pNovoParameters.setPNovoPtmMap(modificationLetterToPtmMap);
             pNovoParameters.setPNovoPtmResiduesMap(modificationLetterToResidueMap);
 
@@ -266,11 +266,13 @@ public class PNovoJob extends Job {
 
                 for (String fixedModification : searchParameters.getModificationProfile().getFixedModifications()) {
                     PTM ptm = ptmFactory.getPTM(fixedModification);
-                    for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
-                        br.write(target + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getMass()) + System.getProperty("line.separator"));
+                    if (ptm.getPattern() != null) {
+                        for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
+                            br.write(target + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getMass()) + System.getProperty("line.separator"));
+                        }
                     }
                 }
-                
+
                 // @TODO: what about fixed terminal ptms at specific amino acids? not supported?
                 // @TODO: what about fixed terminal ptms without a specific amino acid target?
             }

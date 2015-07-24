@@ -142,7 +142,7 @@ public class DirecTagJob extends Job {
 
             // precursor tolerance
             tolerance = searchParameters.getPrecursorAccuracy();
-            if (searchParameters.getPrecursorAccuracyType()== SearchParameters.MassAccuracyType.PPM) {
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.PPM) {
                 tolerance = IdentificationParameters.getDaTolerance(tolerance, 1000); //@TODO: make the reference mass a user parameter?
             }
             procCommands.add("-PrecursorMzTolerance");
@@ -291,12 +291,14 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
-        for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-            ptmAsString += " " + aa + " " + modIndex + " " + ptmMass;
-        }
-        if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-            for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
-                ptmAsString += " " + aminoAcid + " " + modIndex + " " + ptmMass;
+        if (tempPtm.getPattern() != null) {
+            for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
+                ptmAsString += " " + aa + " " + modIndex + " " + ptmMass;
+            }
+            if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+                for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
+                    ptmAsString += " " + aminoAcid + " " + modIndex + " " + ptmMass;
+                }
             }
         }
 
@@ -317,6 +319,7 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
+        if (tempPtm.getPattern() != null) {
         for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
             ptmAsString += " " + aa + " " + ptmMass;
         }
@@ -324,6 +327,7 @@ public class DirecTagJob extends Job {
             for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
                 ptmAsString += " " + aminoAcid + " " + ptmMass;
             }
+        }
         }
 
         // return the ptm
