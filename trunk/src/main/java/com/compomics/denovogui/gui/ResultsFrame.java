@@ -1538,7 +1538,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 }
             }
         }, "ProgressDialog").start();
-        
+
         new Thread("DisplayThread") {
             @Override
             public void run() {
@@ -1842,10 +1842,14 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * Matches the tags to proteins.
      *
-     * @throws IOException exception thrown whenever an error occurred while reading or writing a file
-     * @throws ClassNotFoundException exception thrown whenever an error occurred while deserializing an object
-     * @throws InterruptedException exception thrown whenever a threading error occurred
-     * @throws SQLException exception thrown whenever an error occurs while interacting with the back-end database
+     * @throws IOException exception thrown whenever an error occurred while
+     * reading or writing a file
+     * @throws ClassNotFoundException exception thrown whenever an error
+     * occurred while deserializing an object
+     * @throws InterruptedException exception thrown whenever a threading error
+     * occurred
+     * @throws SQLException exception thrown whenever an error occurs while
+     * interacting with the back-end database
      */
     private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
             Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, ClassNotFoundException, InterruptedException, SQLException {
@@ -3032,12 +3036,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                        ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                        if (aaAtTarget.size() > 1) {
-                                                            throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                        if (ptm.getPattern() != null) {
+                                                            ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                            if (aaAtTarget.size() > 1) {
+                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                            }
+                                                            int aaIndex = aa - 1;
+                                                            aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
                                                         }
-                                                        int aaIndex = aa - 1;
-                                                        aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped
                                                     } else {
@@ -3073,12 +3079,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
+                                                        if (ptm.getPattern() != null) {
                                                         ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
                                                         if (aaAtTarget.size() > 1) {
                                                             throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
                                                         }
                                                         int aaIndex = aa - 1;
                                                         aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
+                                                        }
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped
                                                     } else {
@@ -3340,7 +3348,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 AminoAcidPattern ptmPattern = ptm.getPattern();
                 double mass = ptm.getMass();
 
-                if (ptm.getType() == PTM.MODAA) {
+                if (ptm.getType() == PTM.MODAA && ptmPattern != null) {
                     for (Character aa : ptmPattern.getAminoAcidsAtTarget()) {
                         if (!knownMassDeltas.containsValue(aa + "<" + shortName + ">")) {
                             AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);

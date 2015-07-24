@@ -5,7 +5,7 @@ import com.compomics.denovogui.execution.jobs.DirecTagJob;
 import com.compomics.denovogui.execution.jobs.PNovoJob;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.denovogui.io.ModificationFile;
+import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
@@ -153,7 +153,7 @@ public class DeNovoSequencingHandler {
 
         // store the pepnovo to utilities ptm mapping
         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
-        pepnovoParameters.setPepNovoPtmMap(ModificationFile.getInvertedModIdMap());
+        pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());
 
         if (searchParameters.getParametersFile() != null) {
             SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
@@ -162,7 +162,7 @@ public class DeNovoSequencingHandler {
         // Write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
-            ModificationFile.writeFile(folder, searchParameters.getModificationProfile());
+            PepNovoModificationFile.writeFile(folder, searchParameters.getModificationProfile());
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
             exceptionHandler.catchException(e);

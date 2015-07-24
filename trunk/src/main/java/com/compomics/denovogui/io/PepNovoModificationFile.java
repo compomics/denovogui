@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author Thilo Muth
  */
-public class ModificationFile {
+public class PepNovoModificationFile {
 
     /**
      * The name of the file.
@@ -112,7 +112,7 @@ public class ModificationFile {
             }
 
             // Write a line for each residue
-            if (ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+            if (ptm.getPattern() == null || ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
 
                 if (variable.equalsIgnoreCase(FIXED_PTM)) {
                     variable = VARIABLE_PTM; // PepNovo+ does not support fixed PTMs at the terminals...
@@ -199,7 +199,7 @@ public class ModificationFile {
                 connector = "";
             }
 
-            if (ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+            if (ptm.getPattern() == null || ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
                 if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
                         || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
                     modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptm.getMass())));
