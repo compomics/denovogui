@@ -83,7 +83,7 @@ public class TextExporter {
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
                         + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "N-Gap" + separator + "C-Gap" + separator
                         + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)" + separator + "Tag Mass Error (ppm)" + separator
                         + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)" + separator + "Isotope");
                 b.newLine();
@@ -171,10 +171,12 @@ public class TextExporter {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                        b.write(tagAssumption.getScore() + separator + separator);
-                                    } else {
-                                        b.write(separator + separator + tagAssumption.getScore() + separator);
-                                    }
+                                        b.write(tagAssumption.getScore() + separator + separator + separator);
+                                    } else if(tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator);
+                                    } else if(tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator);
+                                    } 
                                     b.write(tag.getNTerminalGap() + separator);
                                     b.write(tag.getCTerminalGap() + separator);
                                     b.write(tag.getMass() + separator);
@@ -250,7 +252,7 @@ public class TextExporter {
             try {
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Tag" + separator + "Longest AminoAcid sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "N-Gap" + separator + "C-Gap" + separator
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "N-Gap" + separator + "C-Gap" + separator
                         + "Theoretic m/z" + separator + "Identification Charge");
                 b.newLine();
 
@@ -317,9 +319,11 @@ public class TextExporter {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                        b.write(tagAssumption.getScore() + separator + separator);
-                                    } else {
-                                        b.write(separator + separator + tagAssumption.getScore() + separator);
+                                        b.write(tagAssumption.getScore() + separator + separator + separator);
+                                    } else if(tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator);
+                                    } else if(tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator);
                                     }
                                     b.write(tag.getNTerminalGap() + separator);
                                     b.write(tag.getCTerminalGap() + separator);
