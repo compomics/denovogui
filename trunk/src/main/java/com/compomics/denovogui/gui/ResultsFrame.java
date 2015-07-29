@@ -3080,12 +3080,12 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
                                                         if (ptm.getPattern() != null) {
-                                                        ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                        if (aaAtTarget.size() > 1) {
-                                                            throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
-                                                        }
-                                                        int aaIndex = aa - 1;
-                                                        aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
+                                                            ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
+                                                            if (aaAtTarget.size() > 1) {
+                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                            }
+                                                            int aaIndex = aa - 1;
+                                                            aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
                                                         }
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped

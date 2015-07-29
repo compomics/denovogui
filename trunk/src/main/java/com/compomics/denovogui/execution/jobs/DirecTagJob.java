@@ -320,14 +320,14 @@ public class DirecTagJob extends Job {
 
         // get the targeted amino acids
         if (tempPtm.getPattern() != null) {
-        for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-            ptmAsString += " " + aa + " " + ptmMass;
-        }
-        if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-            for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
-                ptmAsString += " " + aminoAcid + " " + ptmMass;
+            for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
+                ptmAsString += " " + aa + " " + ptmMass;
             }
-        }
+            if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+                for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
+                    ptmAsString += " " + aminoAcid + " " + ptmMass;
+                }
+            }
         }
 
         // return the ptm

@@ -179,9 +179,8 @@ public class PepNovoModificationFile {
      * Fill the modification ID map.
      */
     private static void fillModIdMap() {
-        
-        // @TODO: is this method really needed anymore?
 
+        // @TODO: is this method really needed anymore?
         modIdMap = new HashMap<String, String>();
         PTMFactory ptmFactory = PTMFactory.getInstance();
         List<String> mods = new ArrayList<String>();
