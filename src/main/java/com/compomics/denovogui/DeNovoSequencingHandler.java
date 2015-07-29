@@ -185,12 +185,12 @@ public class DeNovoSequencingHandler {
         if (spectrumFactory.getMgfFileNames().size() > 1) {
             fileEnding = "s";
         }
-        String spectrumEnding = "";
+        String threadEnding = "";
         if (nThreads > 1) {
-            spectrumEnding = "s";
+            threadEnding = "s";
         }
         waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
-                + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + spectrumEnding + ".", true, true);
+                + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + threadEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
         waitingHandler.increasePrimaryProgressCounter();
 
@@ -320,7 +320,7 @@ public class DeNovoSequencingHandler {
         // Execute the jobs from the queue.
         for (Job job : jobs) {
             job.writeCommand();
-            threadExecutor.execute(job);
+            threadExecutor.execute(job); // @TODO: one job at the time!!!
             if (waitingHandler.isRunCanceled()) {
                 return;
             }
