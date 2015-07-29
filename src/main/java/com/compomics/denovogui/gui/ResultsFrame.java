@@ -3039,7 +3039,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         if (ptm.getPattern() != null) {
                                                             ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
                                                             if (aaAtTarget.size() > 1) {
-                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm.getName() + ", tag duplication required.");
                                                             }
                                                             int aaIndex = aa - 1;
                                                             aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
@@ -3082,7 +3082,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         if (ptm.getPattern() != null) {
                                                             ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
                                                             if (aaAtTarget.size() > 1) {
-                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm + ", tag duplication required.");
+                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm.getName() + ", tag duplication required.");
                                                             }
                                                             int aaIndex = aa - 1;
                                                             aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
