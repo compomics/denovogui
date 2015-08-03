@@ -55,6 +55,10 @@ public class DirecTagJob extends Job {
      * The command executed.
      */
     private String command = "";
+    /**
+     * The DirecTag modification index.
+     */
+    private int modIndex = 0;
 
     /**
      * Constructor for the DirecTag algorithm job.
@@ -86,7 +90,6 @@ public class DirecTagJob extends Job {
     private void initJob() {
 
         try {
-
             // get the DirecTag specific parameters
             DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
 
@@ -117,19 +120,20 @@ public class DirecTagJob extends Job {
             }
 
             // add variable mods
-            int modCounter = 0;
+            ArrayList<String> utilitiesPtms = new ArrayList<String>();
             String variableModsAsString = "";
             ArrayList<String> variablePtms = searchParameters.getModificationProfile().getVariableModifications();
             for (String ptmName : variablePtms) {
                 PTM ptm = ptmFactory.getPTM(ptmName);
                 if (ptm.getType() == PTM.MODAA) {
-                    variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, modCounter++);
+                    variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, utilitiesPtms);
                 }
             }
             variableModsAsString = variableModsAsString.trim();
             if (!variableModsAsString.isEmpty()) {
                 procCommands.add("-DynamicMods");
                 procCommands.add(CommandLineUtils.getQuoteType() + variableModsAsString + CommandLineUtils.getQuoteType());
+                direcTagParameters.setPtms(utilitiesPtms);
             }
 
             // fragment tolerance
@@ -282,9 +286,12 @@ public class DirecTagJob extends Job {
      * Get the given modification as a string in the DirecTag format.
      *
      * @param ptmName the utilities name of the PTM
+     * @param utilitiesPtms the list of utilities PTMs, index is the index used
+     * in the DirecTag output (note that the same PTM may occur more than once
+     * in the list as multiple DirecTag PTM can map to the same utilities PTM)
      * @return the given modification as a string in the DirecTag format
      */
-    private String getVariablePtmFormattedForDirecTag(String ptmName, int modIndex) {
+    private String getVariablePtmFormattedForDirecTag(String ptmName, ArrayList<String> utilitiesPtms) {
 
         PTM tempPtm = ptmFactory.getPTM(ptmName);
         double ptmMass = tempPtm.getMass();
@@ -293,11 +300,13 @@ public class DirecTagJob extends Job {
         // get the targeted amino acids
         if (tempPtm.getPattern() != null) {
             for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-                ptmAsString += " " + aa + " " + modIndex + " " + ptmMass;
+                ptmAsString += " " + aa + " " + modIndex++ + " " + ptmMass;
+                utilitiesPtms.add(ptmName);
             }
             if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
                 for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
-                    ptmAsString += " " + aminoAcid + " " + modIndex + " " + ptmMass;
+                    ptmAsString += " " + aminoAcid + " " + modIndex++ + " " + ptmMass;
+                    utilitiesPtms.add(ptmName);
                 }
             }
         }
