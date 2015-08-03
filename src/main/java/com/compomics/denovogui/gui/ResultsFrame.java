@@ -46,6 +46,7 @@ import com.compomics.util.experiment.identification.amino_acid_tags.Tag;
 import com.compomics.util.experiment.identification.amino_acid_tags.TagComponent;
 import com.compomics.util.experiment.identification.amino_acid_tags.matchers.TagMatcher;
 import com.compomics.util.experiment.biology.MassGap;
+import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
@@ -76,7 +77,6 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -3025,25 +3025,17 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                         String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                         if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("PepNovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else if (advocate == Advocate.direcTag.getIndex()) {
                                                         Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                        String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
+                                                        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.direcTag.getIndex());
+                                                        String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
                                                         if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            throw new IllegalArgumentException("DirecTag PTM " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                        PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                        if (ptm.getPattern() != null) {
-                                                            ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                            if (aaAtTarget.size() > 1) {
-                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm.getName() + ", tag duplication required.");
-                                                            }
-                                                            int aaIndex = aa - 1;
-                                                            aminoAcidPattern.setTargeted(aaIndex, aaAtTarget);
-                                                        }
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped
                                                     } else {
@@ -3068,25 +3060,11 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                         String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                         if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("PepNovo ptm " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                         }
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                        Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                        String utilitiesPtmName = searchParameters.getModificationProfile().getVariableModifications().get(directagIndex);
-                                                        if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("DirecTag ptm " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                        }
-                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                        PTM ptm = ptmFactory.getPTM(utilitiesPtmName);
-                                                        if (ptm.getPattern() != null) {
-                                                            ArrayList<Character> aaAtTarget = ptm.getPattern().getAminoAcidsAtTarget();
-                                                            if (aaAtTarget.size() > 1) {
-                                                                throw new IllegalArgumentException("More than one amino acid can be targeted by the modification " + ptm.getName() + ", tag duplication required.");
-                                                            }
-                                                            int aaIndex = aa - 1;
-                                                            aminoAcidSequence.setAaAtIndex(aaIndex, aaAtTarget.get(0));
-                                                        }
+                                                        // already mapped
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped
                                                     } else {
