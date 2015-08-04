@@ -1276,6 +1276,26 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         }
 
+        // check if all ptms are valid for DirecTag
+        if (direcTagCheckBox.isSelected()) {
+            boolean terminalPtmsSelected = false;
+            for (String tempPtm : searchParameters.getModificationProfile().getAllModifications()) {
+                PTM currentPtm = ptmFactory.getPTM(tempPtm);
+                if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
+                    terminalPtmsSelected = true;
+                }
+            }
+
+            if (terminalPtmsSelected) {
+                int option = JOptionPane.showConfirmDialog(this,
+                        "Terminal modifications are not supported for DirecTag and will be ignored.\n"
+                        + "Do you still want to continue?", "Settings Error", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (option == JOptionPane.NO_OPTION) {
+                    validInput = false;
+                }
+            }
+        }
+
         // check for valid mass accuracy values for PepNovo
         if (validInput && pepNovoCheckBox.isSelected()) {
             double precursorToleranceInDalton = searchParameters.getPrecursorAccuracy();
@@ -1929,8 +1949,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
     /**
      * Show a message that there are no advanced PepNovo settings.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void pepNovoSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseReleased
         JOptionPane.showMessageDialog(this, "There are no advanced settings for PepNovo+. Please use the general settings.", "PepNovo+ Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
