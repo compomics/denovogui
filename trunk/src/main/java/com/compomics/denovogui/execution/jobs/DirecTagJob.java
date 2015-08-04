@@ -293,13 +293,12 @@ public class DirecTagJob extends Job {
     private String getVariablePtmFormattedForDirecTag(String ptmName, ArrayList<String> utilitiesPtms) {
 
         PTM tempPtm = ptmFactory.getPTM(ptmName);
-        double ptmMass = tempPtm.getMass();
         String ptmAsString = "";
 
         // get the targeted amino acids
         if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-                ptmAsString += " " + aa + " " + modIndex++ + " " + ptmMass;
+                ptmAsString += " " + aa + " " + modIndex++ + " " + tempPtm.getRoundedMass();
                 utilitiesPtms.add(ptmName);
             }
         }
@@ -317,13 +316,12 @@ public class DirecTagJob extends Job {
     private String getFixedPtmFormattedForDirecTag(String ptmName) {
 
         PTM tempPtm = ptmFactory.getPTM(ptmName);
-        double ptmMass = tempPtm.getMass();
         String ptmAsString = "";
 
         // get the targeted amino acids
         if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-                ptmAsString += " " + aa + " " + ptmMass;
+                ptmAsString += " " + aa + " " + tempPtm.getRoundedMass();
             }
         }
 

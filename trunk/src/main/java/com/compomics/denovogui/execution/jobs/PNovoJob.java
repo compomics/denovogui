@@ -237,7 +237,7 @@ public class PNovoJob extends Job {
                             char currentModLetter = variableModificationsCharacters[variableModCount++];
                             modificationLetterToPtmMap.put(currentModLetter, variableModification);
                             modificationLetterToResidueMap.put(currentModLetter, target);
-                            br.write(currentModLetter + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getMass()) + System.getProperty("line.separator"));
+                            br.write(currentModLetter + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getRoundedMass()) + System.getProperty("line.separator"));
                         }
                     }
                 }
@@ -251,9 +251,9 @@ public class PNovoJob extends Job {
                 for (String variableModification : searchParameters.getModificationProfile().getVariableModifications()) {
                     PTM ptm = ptmFactory.getPTM(variableModification);
                     if (ptm.isNTerm()) {
-                        br.write("n-term=" + ptm.getMass() + System.getProperty("line.separator"));
+                        br.write("n-term=" + ptm.getRoundedMass() + System.getProperty("line.separator"));
                     } else if (ptm.isCTerm()) {
-                        br.write("c-term=" + ptm.getMass() + System.getProperty("line.separator"));
+                        br.write("c-term=" + ptm.getRoundedMass() + System.getProperty("line.separator"));
                     }
                 }
                 // @TODO: how to parse terminal ptms from the output? seems to be annotated using 'n' or 'c' at the start/end of the sequence. but if more than one terminal ptm which do they refer to..?
@@ -268,7 +268,7 @@ public class PNovoJob extends Job {
                     PTM ptm = ptmFactory.getPTM(fixedModification);
                     if (ptm.getPattern() != null) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
-                            br.write(target + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getMass()) + System.getProperty("line.separator"));
+                            br.write(target + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getRoundedMass()) + System.getProperty("line.separator"));
                         }
                     }
                 }
