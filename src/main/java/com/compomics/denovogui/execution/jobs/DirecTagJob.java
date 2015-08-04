@@ -4,7 +4,6 @@ import com.compomics.denovogui.execution.Job;
 import com.compomics.software.CommandLineUtils;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.AminoAcid;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
@@ -298,16 +297,10 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
-        if (tempPtm.getPattern() != null) {
+        if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
                 ptmAsString += " " + aa + " " + modIndex++ + " " + ptmMass;
                 utilitiesPtms.add(ptmName);
-            }
-            if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-                for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
-                    ptmAsString += " " + aminoAcid + " " + modIndex++ + " " + ptmMass;
-                    utilitiesPtms.add(ptmName);
-                }
             }
         }
 
@@ -328,14 +321,9 @@ public class DirecTagJob extends Job {
         String ptmAsString = "";
 
         // get the targeted amino acids
-        if (tempPtm.getPattern() != null) {
+        if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
             for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
                 ptmAsString += " " + aa + " " + ptmMass;
-            }
-            if (tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-                for (String aminoAcid : AminoAcid.getAminoAcidsList()) {
-                    ptmAsString += " " + aminoAcid + " " + ptmMass;
-                }
             }
         }
 
