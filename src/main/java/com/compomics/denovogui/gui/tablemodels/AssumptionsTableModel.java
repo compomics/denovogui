@@ -3,7 +3,7 @@ package com.compomics.denovogui.gui.tablemodels;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
-import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,7 +21,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
     /**
      * The modification profile of the search.
      */
-    private ModificationProfile modificationProfile = null;
+    private PtmSettings modificationProfile = null;
     /**
      * If true, the fixed PTMs are indicated in the peptide sequences.
      */
@@ -41,7 +41,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
      * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
      * table
      */
-    public AssumptionsTableModel(ArrayList<TagAssumption> tagAssumptions, ModificationProfile modificationProfile, boolean excludeAllFixedPtms) {
+    public AssumptionsTableModel(ArrayList<TagAssumption> tagAssumptions, PtmSettings modificationProfile, boolean excludeAllFixedPtms) {
         this.tagAssumptions = tagAssumptions;
         this.modificationProfile = modificationProfile;
         this.excludeAllFixedPtms = excludeAllFixedPtms;

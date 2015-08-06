@@ -9,7 +9,7 @@ import com.compomics.software.ToolFactory;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences.DeNovoGUIPathKey;
@@ -24,17 +24,17 @@ import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.AndromedaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.CometParameters;
-import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MsAmandaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MyriMatchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.PNovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.TideParameters;
-import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.AndromedaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.CometParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsAmandaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsgfParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MyriMatchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.OmssaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.TideParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.XtandemParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -1319,7 +1319,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         if (validInput) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
             saveModificationUsage(); // save the ptms usage
 
             waitingDialog = new WaitingDialog(this,
@@ -1651,7 +1651,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         if (sequenceMatchingPreferences == null) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         }
         new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
@@ -1698,7 +1698,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     progressDialog.setRunFinished();
                     setVisible(false);
                     if (sequenceMatchingPreferences == null) {
-                        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+                        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
                     }
                     new ResultsFrame(DeNovoGUI.this, outFiles, searchParameters);
                 } catch (ClassNotFoundException e) {
@@ -2270,7 +2270,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         setVisible(false);
         if (sequenceMatchingPreferences == null) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         }
         new ResultsFrame(this, resultFiles, searchParameters);
     }
@@ -2627,7 +2627,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         } else {
             settingsFileJTextField.setText(userSettingsTxt);
         }
-        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching(searchParameters);
+        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         validateInput(false);
     }
 

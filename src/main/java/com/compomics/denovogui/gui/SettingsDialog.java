@@ -5,21 +5,21 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.AndromedaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.CometParameters;
-import com.compomics.util.experiment.identification.identification_parameters.DirecTagParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MsAmandaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MsgfParameters;
-import com.compomics.util.experiment.identification.identification_parameters.MyriMatchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.OmssaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.PNovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.PepnovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.TideParameters;
-import com.compomics.util.experiment.identification.identification_parameters.XtandemParameters;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.AndromedaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.CometParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsAmandaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsgfParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MyriMatchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.OmssaParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.TideParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.XtandemParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -249,7 +249,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         // add the modifications
         ArrayList<String> missingPtms = new ArrayList<String>();
-        ModificationProfile modificationProfile = searchParameters.getModificationProfile();
+        PtmSettings modificationProfile = searchParameters.getModificationProfile();
         if (modificationProfile != null) {
             ArrayList<String> fixedMods = modificationProfile.getFixedModifications();
 
@@ -1635,7 +1635,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         }
 
         // set the modifications
-        ModificationProfile modificationProfile = new ModificationProfile();
+        PtmSettings modificationProfile = new PtmSettings();
         for (int i = 0; i < fixedModsTable.getRowCount(); i++) {
             String modName = (String) fixedModsTable.getValueAt(i, 1);
             modificationProfile.addFixedModification(ptmFactory.getPTM(modName));

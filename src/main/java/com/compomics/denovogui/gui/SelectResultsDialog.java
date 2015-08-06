@@ -2,7 +2,7 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
-import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.gui.filehandling.FileSelectionDialog;
 import java.io.File;
 import java.io.IOException;

@@ -3,7 +3,7 @@ package com.compomics.denovogui.gui;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -64,7 +64,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
      * @param modificationProfile the modification profile used for the
      * identification
      */
-    public ProteinMappingDialog(ResultsFrame resultFrame, ModificationProfile modificationProfile) {
+    public ProteinMappingDialog(ResultsFrame resultFrame, PtmSettings modificationProfile) {
         super(resultFrame, true);
         this.resultsFrame = resultFrame;
         if (modificationProfile != null) {
