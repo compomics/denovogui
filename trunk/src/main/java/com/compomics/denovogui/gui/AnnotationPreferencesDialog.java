@@ -1,7 +1,7 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.util.gui.error_handlers.HelpDialog;
-import com.compomics.util.preferences.AnnotationPreferences;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
 import java.awt.Toolkit;
 
 /**
@@ -15,7 +15,7 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
     /**
      * The annotation preferences.
      */
-    private AnnotationPreferences annotationPreferences;
+    private AnnotationSettings annotationPreferences;
     /**
      * The ResultsFrame parent.
      */

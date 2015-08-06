@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.software.CommandLineUtils;
-import com.compomics.util.experiment.identification.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

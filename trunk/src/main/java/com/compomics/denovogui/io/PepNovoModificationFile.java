@@ -2,7 +2,7 @@ package com.compomics.denovogui.io;
 
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.preferences.ModificationProfile;
+import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -66,7 +66,7 @@ public class PepNovoModificationFile {
      * @param modificationProfile The modification profile of the search.
      * @throws java.io.IOException Exception thrown when the file access fails.
      */
-    public static void writeFile(File filePath, ModificationProfile modificationProfile) throws IOException {
+    public static void writeFile(File filePath, PtmSettings modificationProfile) throws IOException {
         // Init the buffered writer.
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath, name)));
 
