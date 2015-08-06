@@ -96,10 +96,10 @@ public class PepNovoJob extends Job {
             procCommands.add(pepNovoParameters.getFragmentationModel());
 
             // Add modifications
-            ArrayList<String> modifications = searchParameters.getModificationProfile().getAllModifications();
+            ArrayList<String> modifications = searchParameters.getPtmSettings().getAllModifications();
             if (!modifications.isEmpty()) {
                 procCommands.add("-PTMs");
-                procCommands.add(PepNovoModificationFile.getModsString(searchParameters.getModificationProfile().getAllModifications()));
+                procCommands.add(PepNovoModificationFile.getModsString(searchParameters.getPtmSettings().getAllModifications()));
             }
 
             // Add fragment tolerance

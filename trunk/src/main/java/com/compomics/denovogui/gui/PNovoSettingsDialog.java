@@ -436,7 +436,7 @@ public class PNovoSettingsDialog extends javax.swing.JDialog {
         tempSearchParameters.setFragmentAccuracyType(searchParameters.getFragmentAccuracyType());
         tempSearchParameters.setPrecursorAccuracy(searchParameters.getPrecursorAccuracy());
         tempSearchParameters.setPrecursorAccuracyType(searchParameters.getPrecursorAccuracyType());
-        tempSearchParameters.setModificationProfile(searchParameters.getModificationProfile());
+        tempSearchParameters.setPtmSettings(searchParameters.getPtmSettings());
 
         PNovoParameters pNovoParameters = new PNovoParameters();
         pNovoParameters.setLowerPrecursorMass(Integer.parseInt(minPrecursorMassTextField.getText()));

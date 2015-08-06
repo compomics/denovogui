@@ -158,7 +158,7 @@ public class TextExporter {
 
                                     b.write(peptide.getSequence() + separator);
                                     b.write(getPeptideModificationsAsString(peptide) + separator);
-                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
 
                                     TagAssumption tagAssumption = new TagAssumption();
                                     tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
@@ -166,17 +166,17 @@ public class TextExporter {
                                     b.write(tag.asSequence() + separator);
                                     b.write(tag.getLongestAminoAcidSequence() + separator);
                                     b.write(Tag.getTagModificationsAsString(tag) + separator);
-                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
                                     if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
                                         b.write(tagAssumption.getScore() + separator + separator + separator);
-                                    } else if(tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+                                    } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
                                         b.write(separator + separator + tagAssumption.getScore() + separator + separator);
-                                    } else if(tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                                    } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
                                         b.write(separator + separator + separator + tagAssumption.getScore() + separator);
-                                    } 
+                                    }
                                     b.write(tag.getNTerminalGap() + separator);
                                     b.write(tag.getCTerminalGap() + separator);
                                     b.write(tag.getMass() + separator);
@@ -314,15 +314,15 @@ public class TextExporter {
                                     b.write(tag.asSequence() + separator);
                                     b.write(tag.getLongestAminoAcidSequence() + separator);
                                     b.write(Tag.getTagModificationsAsString(tag) + separator);
-                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationProfile(), false, false, true, false) + separator);
+                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
                                     if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
                                         b.write(tagAssumption.getScore() + separator + separator + separator);
-                                    } else if(tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+                                    } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
                                         b.write(separator + separator + tagAssumption.getScore() + separator + separator);
-                                    } else if(tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                                    } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
                                         b.write(separator + separator + separator + tagAssumption.getScore() + separator);
                                     }
                                     b.write(tag.getNTerminalGap() + separator);
@@ -487,38 +487,40 @@ public class TextExporter {
 
         StringBuilder result = new StringBuilder();
 
-        HashMap<String, ArrayList<Integer>> modMap = new HashMap<String, ArrayList<Integer>>();
-        for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
-            if (modificationMatch.isVariable()) {
-                if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
-                    modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
+        if (peptide.isModified()) {
+            HashMap<String, ArrayList<Integer>> modMap = new HashMap<String, ArrayList<Integer>>(peptide.getNModifications());
+            for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                if (modificationMatch.isVariable()) {
+                    if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
+                        modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
+                    }
+                    modMap.get(modificationMatch.getTheoreticPtm()).add(modificationMatch.getModificationSite());
                 }
-                modMap.get(modificationMatch.getTheoreticPtm()).add(modificationMatch.getModificationSite());
             }
-        }
 
-        boolean first = true, first2;
-        ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
+            boolean first = true, first2;
+            ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
 
-        Collections.sort(mods);
-        for (String mod : mods) {
-            if (first) {
-                first = false;
-            } else {
-                result.append(", ");
-            }
-            first2 = true;
-            result.append(mod);
-            result.append(" (");
-            for (int aa : modMap.get(mod)) {
-                if (first2) {
-                    first2 = false;
+            Collections.sort(mods);
+            for (String mod : mods) {
+                if (first) {
+                    first = false;
                 } else {
                     result.append(", ");
                 }
-                result.append(aa);
+                first2 = true;
+                result.append(mod);
+                result.append(" (");
+                for (int aa : modMap.get(mod)) {
+                    if (first2) {
+                        first2 = false;
+                    } else {
+                        result.append(", ");
+                    }
+                    result.append(aa);
+                }
+                result.append(")");
             }
-            result.append(")");
         }
 
         return result.toString();

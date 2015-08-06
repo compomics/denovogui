@@ -214,7 +214,7 @@ public class PNovoJob extends Job {
             int variableModCount = 0;
 
             // add the variable modifications
-            if (!searchParameters.getModificationProfile().getVariableModifications().isEmpty()) {
+            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
                 br.write("#variable modifications" + System.getProperty("line.separator"));
             }
 
@@ -223,8 +223,8 @@ public class PNovoJob extends Job {
             HashMap<Character, Character> modificationLetterToResidueMap = new HashMap<Character, Character>();
 
             // variable modifications targetting specific amino acids
-            if (!searchParameters.getModificationProfile().getVariableModifications().isEmpty()) {
-                for (String variableModification : searchParameters.getModificationProfile().getVariableModifications()) {
+            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
                     PTM ptm = ptmFactory.getPTM(variableModification);
                     if (!ptm.isCTerm() && !ptm.isNTerm()) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
@@ -247,8 +247,8 @@ public class PNovoJob extends Job {
             pNovoParameters.setPNovoPtmResiduesMap(modificationLetterToResidueMap);
 
             // variable modifications targetting the n or c term
-            if (!searchParameters.getModificationProfile().getVariableModifications().isEmpty()) {
-                for (String variableModification : searchParameters.getModificationProfile().getVariableModifications()) {
+            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
                     PTM ptm = ptmFactory.getPTM(variableModification);
                     if (ptm.isNTerm()) {
                         br.write("n-term=" + ptm.getRoundedMass() + System.getProperty("line.separator"));
@@ -261,10 +261,10 @@ public class PNovoJob extends Job {
             }
 
             // add the fixed modifications
-            if (!searchParameters.getModificationProfile().getFixedModifications().isEmpty()) {
+            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
                 br.write(System.getProperty("line.separator") + "#fixed modifications" + System.getProperty("line.separator"));
 
-                for (String fixedModification : searchParameters.getModificationProfile().getFixedModifications()) {
+                for (String fixedModification : searchParameters.getPtmSettings().getFixedModifications()) {
                     PTM ptm = ptmFactory.getPTM(fixedModification);
                     if (ptm.getPattern() != null) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
