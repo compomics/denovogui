@@ -105,7 +105,7 @@ public class DirecTagJob extends Job {
 
             // add fixed mods
             String fixedModsAsString = "";
-            ArrayList<String> fixedPtms = searchParameters.getModificationProfile().getFixedModifications();
+            ArrayList<String> fixedPtms = searchParameters.getPtmSettings().getFixedModifications();
             for (String ptmName : fixedPtms) {
                 PTM ptm = ptmFactory.getPTM(ptmName);
                 if (ptm.getType() == PTM.MODAA) {
@@ -121,7 +121,7 @@ public class DirecTagJob extends Job {
             // add variable mods
             ArrayList<String> utilitiesPtms = new ArrayList<String>();
             String variableModsAsString = "";
-            ArrayList<String> variablePtms = searchParameters.getModificationProfile().getVariableModifications();
+            ArrayList<String> variablePtms = searchParameters.getPtmSettings().getVariableModifications();
             for (String ptmName : variablePtms) {
                 PTM ptm = ptmFactory.getPTM(ptmName);
                 if (ptm.getType() == PTM.MODAA) {

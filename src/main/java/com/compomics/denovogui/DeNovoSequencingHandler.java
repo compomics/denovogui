@@ -162,7 +162,7 @@ public class DeNovoSequencingHandler {
         // Write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
-            PepNovoModificationFile.writeFile(folder, searchParameters.getModificationProfile());
+            PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
         } catch (Exception e) {
             waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
             exceptionHandler.catchException(e);

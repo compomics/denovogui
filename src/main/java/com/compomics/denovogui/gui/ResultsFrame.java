@@ -1671,7 +1671,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION;
                 final ProteinMappingDialog mappingDialog;
                 if (needMapping) {
-                    mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationProfile());
+                    mappingDialog = new ProteinMappingDialog(this, searchParameters.getPtmSettings());
                     if (mappingDialog.isCanceled() || sequenceFactory.getCurrentFastaFile() == null) {
                         return;
                     }
@@ -2276,7 +2276,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     }
                 }
 
-                TableModel tableModel = new AssumptionsTableModel(assumptions, searchParameters.getModificationProfile(), !fixedPtmsCheckBoxMenuItem.isSelected());
+                TableModel tableModel = new AssumptionsTableModel(assumptions, searchParameters.getPtmSettings(), !fixedPtmsCheckBoxMenuItem.isSelected());
                 deNovoMatchesTable.setModel(tableModel);
 
                 ((DefaultTableModel) deNovoMatchesTable.getModel()).fireTableDataChanged();
@@ -2428,7 +2428,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 modifiedSequence += " vs. ";
                             }
 
-                            modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationProfile(), false, false, true, false);
+                            modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
 
                             if (tagAssumption.getIdentificationCharge().value > maxPrecursorCharge) {
                                 maxPrecursorCharge = tagAssumption.getIdentificationCharge().value;
@@ -2873,7 +2873,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
                         String affectedResidue = aminoAcidPattern.asSequence(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
-                        Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
+                        Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
                         if (modificationMatch.isConfident()) {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                     + affectedResidue
@@ -2893,7 +2893,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
                         char affectedResidue = aminoAcidSequence.charAt(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
-                        Color ptmColor = deNovoGUI.getSearchParameters().getModificationProfile().getColor(modName);
+                        Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
                         if (modificationMatch.isConfident()) {
                             tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                     + affectedResidue
@@ -3009,7 +3009,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 Tag tag = tagAssumption.getTag();
 
                                 // add the fixed PTMs
-                                ptmFactory.checkFixedModifications(searchParameters.getModificationProfile(), tag, deNovoGUI.getSequenceMatchingPreferences());
+                                ptmFactory.checkFixedModifications(searchParameters.getPtmSettings(), tag, deNovoGUI.getSequenceMatchingPreferences());
 
                                 // rename the variable modifications
                                 for (TagComponent tagComponent : tag.getContent()) {
@@ -3250,7 +3250,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @return the modifications found in this project
      */
     public ArrayList<String> getFoundModifications() {
-        return searchParameters.getModificationProfile().getAllModifications();
+        return searchParameters.getPtmSettings().getAllModifications();
     }
 
     /**
@@ -3312,7 +3312,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 //        knownMassDeltas.put(4d, "18O"); // @TODO: should this be added to neutral losses??
 //        knownMassDeltas.put(44d, "PEG"); // @TODO: should this be added to neutral losses??
         // add the modifications
-        PtmSettings modificationProfile = searchParameters.getModificationProfile();
+        PtmSettings modificationProfile = searchParameters.getPtmSettings();
         ArrayList<String> modificationList = modificationProfile.getAllModifications();
         Collections.sort(modificationList);
 

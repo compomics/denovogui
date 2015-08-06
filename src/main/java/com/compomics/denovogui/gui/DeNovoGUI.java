@@ -1266,7 +1266,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         // check if all ptms are valid for pNovo+
         if (pNovoCheckBox.isSelected()) {
-            for (String tempPtm : searchParameters.getModificationProfile().getAllModifications()) {
+            for (String tempPtm : searchParameters.getPtmSettings().getAllModifications()) {
                 PTM currentPtm = ptmFactory.getPTM(tempPtm);
                 if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
                     JOptionPane.showMessageDialog(this, "Terminal modifications are currently not supported for pNovo+.\n"
@@ -1279,7 +1279,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         // check if all ptms are valid for DirecTag
         if (direcTagCheckBox.isSelected()) {
             boolean terminalPtmsSelected = false;
-            for (String tempPtm : searchParameters.getModificationProfile().getAllModifications()) {
+            for (String tempPtm : searchParameters.getPtmSettings().getAllModifications()) {
                 PTM currentPtm = ptmFactory.getPTM(tempPtm);
                 if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
                     terminalPtmsSelected = true;
