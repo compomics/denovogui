@@ -9,7 +9,7 @@ DeNovoCLI takes a set of spectrum files as input and uses the [http://proteomics
 
 Note that the spectra must be provided in the Mascot Generic File (mgf) format.
 
-The recommended way to generate an identification parameters file is via the DeNovoGUI graphical user interface. But the file can also be created using the [http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI IdentificationParametersCLI]. 
+The recommended way to generate an identification parameters file is via the DeNovoGUI graphical user interface. But the file can also be created using the [http://code.google.com/p/compomics-utilities/wiki/IdentificationParametersCLI IdentificationParametersCLI]. The folders used in the processing can be set via [#PathSettingsCLI PathSettingsCLI].
 
 *General command line:*
 
@@ -59,6 +59,48 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI [parameters]
                         Default is the number of cores available.
 }}}
 
+[#DeNovoGUI_Command_Line_Interface Go to top of page]
+
+----
+
+==PathSettingsCLI==
+
+*Standard command line*
+
+{{{
+java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.PathSettingsCLI [parameters]
+}}}
+
+*Generic temporary folder*
+
+{{{
+-temp_folder               A folder for temporary file storage. Use only if 
+                           you encounter problems with the default configuration.
+}}}
+
+*Specific path setting*
+
+{{{
+-denovogui_matches_directory  
+                           Folder where identification matches are temporarily saved to reduce the memory footprint.
+
+-utilities_user_preferences
+                           Folder containing the compomics utilities user preferences file.
+
+-ptm_configuration         Folder containing the PTM user preferences file.
+
+-fasta_indexes             Folder containing the indexes of the protein sequences databases.
+
+-gene_mapping              Folder containing the gene mapping files.
+
+-pride_annotation          Folder containing the PRIDE annotation preferences.
+}}}
+
+
+[#DeNovoGUI_Command_Line_Interface Go to top of page]
+
+----
+
 ==Comma Separated List==
 
 When using comma separated lists as input for the mgf files or the PTMs, please pay attention to the quotes required. Surround the full content of the option in quotes and not the individual items:
@@ -68,6 +110,10 @@ When using comma separated lists as input for the mgf files or the PTMs, please 
 
 -variable_mods "oxidation of m, phosphorylation of s"
 }}}
+
+[#DeNovoGUI_Command_Line_Interface Go to top of page]
+
+----
 
 ==Examples==
 
@@ -82,6 +128,12 @@ java -cp DeNovoGUI-X.Y.Z.jar com.compomics.denovogui.cmd.DeNovoCLI
 
 _Note that for readability the commands are here split over multiple lines. When used the commands should of course be single lines._
 
+[#DeNovoGUI_Command_Line_Interface Go to top of page]
+
+----
+
 == Help==
 
 If you experience any problems with the command line or have any suggestion please contact us via the [https://groups.google.com/group/peptide-shaker PeptideShaker mailing list].
+
+[#DeNovoGUI_Command_Line_Interface Go to top of page]
