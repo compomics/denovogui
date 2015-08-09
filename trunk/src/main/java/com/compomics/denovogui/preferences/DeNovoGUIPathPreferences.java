@@ -28,7 +28,7 @@ public class DeNovoGUIPathPreferences {
          * Directory where identification matches are temporarily saved to
          * reduce the memory footprint.
          */
-        matchesDirectory("denovogui_matches_directory", "Directory where identification matches are temporarily saved to reduce the memory footprint.", "", true);
+        matchesDirectory("denovogui_matches_directory", "Folder where identification matches are temporarily saved to reduce the memory footprint.", "", true);
         /**
          * The key used to refer to this path.
          */
@@ -212,7 +212,7 @@ public class DeNovoGUIPathPreferences {
                 newFile.mkdirs();
             }
             if (!newFile.exists()) {
-                throw new FileNotFoundException(newFile.getAbsolutePath() + "could not be created.");
+                throw new FileNotFoundException(newFile.getAbsolutePath() + " could not be created.");
             }
             setPathPreference(denovoguiPathKey, newFile.getAbsolutePath());
         }
