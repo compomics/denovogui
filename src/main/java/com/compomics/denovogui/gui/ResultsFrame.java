@@ -1543,6 +1543,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             @Override
             public void run() {
                 displayResults();
+                progressDialog.setRunFinished();
             }
         }.start();
     }//GEN-LAST:event_spectrumFileComboBoxActionPerformed
