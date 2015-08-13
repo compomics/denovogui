@@ -273,7 +273,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
         annotationPreferences.setPreferencesFromSearchParameters(searchParameters);
-        annotationPreferences.setAnnotationLevel(0.0); // annotate all peaks by default
+        annotationPreferences.setIntensityLimit(0.0); // annotate all peaks by default
         setLocationRelativeTo(null);
         setExtendedState(MAXIMIZED_BOTH);
         // set the title of the frame and add the icon
