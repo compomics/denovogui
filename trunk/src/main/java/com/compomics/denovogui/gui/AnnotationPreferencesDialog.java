@@ -209,7 +209,7 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        annotationPreferences.setAnnotationLevel(((Integer) intensitySpinner.getValue()) / 100.0);
+        annotationPreferences.setIntensityLimit(((Integer) intensitySpinner.getValue()) / 100.0);
         annotationPreferences.setFragmentIonAccuracy((Double) accuracySpinner.getValue());
         resultsFrame.setAnnotationPreferences(annotationPreferences);
         resultsFrame.updateSpectrum();
