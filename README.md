@@ -18,9 +18,9 @@
 | [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.5.2/DeNovoGUI-1.5.2-mac_and_linux.tar.gz) | *v1.5.2 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
 
 ---
-
-[![](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_small.png)](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI.png)
-[![](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_2_small.png)](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_2.png)
+|  |  |
+|:--:|:--:|:--:|
+| [![](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_small.png)](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI.png) | [![](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_2_small.png)](https://github.com/compomics/denovogui/wiki/images/DeNovoGUI_2.png) |
 
 ---
 
