@@ -79,7 +79,7 @@ public class DeNovoSequencingHandler {
     /**
      * The name of the parameters file saved by default.
      */
-    public final static String parametersFileName = "denovoGUI.parameters";
+    public final static String parametersFileName = "denovoGUI.par";
     /**
      * The chunk files.
      */

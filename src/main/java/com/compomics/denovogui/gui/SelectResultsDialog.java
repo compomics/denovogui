@@ -347,7 +347,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                 }
                 File parentFolder = new File(lastSelectedFolder);
                 for (File file : parentFolder.listFiles()) {
-                    if (file.getName().toLowerCase().endsWith(".parameters") && !parameterFiles.contains(file)) {
+                    if (file.getName().toLowerCase().endsWith(".par") && !parameterFiles.contains(file)) {
                         parameterFiles.add(file);
                     }
                 }
@@ -452,7 +452,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private void browseParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseParametersButtonActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".parameters", "DeNovoGUI settings (.parameters)", "Select Settings File", lastSelectedFolder, true);
+        File selectedFile = Util.getUserSelectedFile(this, ".par", "DeNovoGUI settings (.par)", "Select Settings File", lastSelectedFolder, true);
 
         if (selectedFile != null) {
             File tempParamtersFile = selectedFile;

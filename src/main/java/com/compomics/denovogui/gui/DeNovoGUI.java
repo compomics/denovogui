@@ -127,7 +127,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     /**
      * The example search parameters.
      */
-    public final static String exampleSearchParams = "resources/reference_dataset/denovoGUI_example.parameters";
+    public final static String exampleSearchParams = "resources/reference_dataset/denovoGUI_example.par";
     /**
      * /**
      * The selected output folder for the de novo search.
@@ -1514,9 +1514,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             @Override
             public boolean accept(File myFile) {
 
-                return myFile.getName().toLowerCase().endsWith(".properties")
-                        || myFile.getName().toLowerCase().endsWith(".parameters")
-                        || myFile.isDirectory();
+                return myFile.getName().toLowerCase().endsWith(".par") || myFile.isDirectory();
             }
 
             @Override
@@ -3052,12 +3050,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             FileFilter filter = new FileFilter() {
                 @Override
                 public boolean accept(File myFile) {
-                    return myFile.getName().toLowerCase().endsWith(".parameters") || myFile.isDirectory();
+                    return myFile.getName().toLowerCase().endsWith(".par") || myFile.isDirectory();
                 }
 
                 @Override
                 public String getDescription() {
-                    return "DeNovoGUI settings file (.parameters)";
+                    return "DeNovoGUI settings file (.par)";
                 }
             };
             fc.setFileFilter(filter);
@@ -3067,9 +3065,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 File selected = fc.getSelectedFile();
                 getLastSelectedFolder().setLastSelectedFolder(selected.getAbsolutePath());
 
-                // make sure the file is appended with '.parameters'
-                if (!selected.getName().toLowerCase().endsWith(".parameters")) {
-                    selected = new File(selected.getParentFile(), selected.getName() + ".parameters");
+                // make sure the file is appended with '.par'
+                if (!selected.getName().toLowerCase().endsWith(".par")) {
+                    selected = new File(selected.getParentFile(), selected.getName() + ".par");
                     parametersFile = selected;
                 } else {
                     selected = new File(selected.getParentFile(), selected.getName());
