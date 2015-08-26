@@ -255,7 +255,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * Exception handler.
      */
-    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
+    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "https://github.com/compomics/denovogui/issues");
     /**
      * The spectrum annotator to use.
      */
@@ -1730,7 +1730,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(ResultsFrame.this, JOptionEditorPane.getJOptionEditorPane(
                                     "DeNovoGUI used up all the available memory and had to be stopped.<br>"
                                     + "Memory boundaries are changed via the Edit menu (Edit Java Options)<br>. "
-                                    + "See also <a href=\"http://code.google.com/p/compomics-utilities/wiki/JavaTroubleShooting\">JavaTroubleShooting</a>."),
+                                    + "See also <a href=\"http://compomics.github.io/compomics-utilities/wiki/javatroubleshooting.html\">JavaTroubleShooting</a>."),
                                     "Out Of Memory", JOptionPane.ERROR_MESSAGE);
 
                             error.printStackTrace();
@@ -1888,8 +1888,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         } else {
             waitingHandler.appendReport("Warning: DeNovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
                     + "Note that using large large databases also increases the number of false positives. "
-                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to PeptideShaker, or (iii) improve the reading speed by using an SSD disc. "
-                    + "(See also http://code.google.com/p/compomics-utilities/wiki/ProteinInference.)", true, true);
+                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to DeNovoGUI, or (iii) improve the reading speed by using an SSD disc. "
+                    + "(See also http://compomics.github.io/compomics-utilities/wiki/proteininference.html.)", true, true);
 
         }
         int cacheSize = (int) availableCachSize;

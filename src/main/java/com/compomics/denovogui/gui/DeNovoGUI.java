@@ -192,7 +192,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     /**
      * The exception handler.
      */
-    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "http://code.google.com/p/denovogui/issues/list");
+    private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "https://github.com/compomics/denovogui/issues");
     /**
      * The progress dialog.
      */
@@ -1609,7 +1609,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        BareBonesBrowserLaunch.openURL("http://denovogui.googlecode.com");
+        BareBonesBrowserLaunch.openURL("http://compomics.github.io/projects/denovogui.html");
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_aboutButtonActionPerformed
 
@@ -2171,7 +2171,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
          */
         public SequencingWorker(WaitingHandler waitingHandler, boolean displayResults) {
             this.waitingHandler = waitingHandler;
-            this.workerExceptionHandler = new WaitingDialogExceptionHandler(waitingDialog, "http://code.google.com/p/denovogui/issues/list");
+            this.workerExceptionHandler = new WaitingDialogExceptionHandler(waitingDialog, "https://github.com/compomics/denovogui/issues");
             this.displayResults = displayResults;
         }
 
