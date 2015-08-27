@@ -5,7 +5,7 @@
     <groupId>com.compomics.denovogui</groupId>
     <artifactId>DeNovoGUI</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.3-beta</version>
+    <version>1.6.0</version>
     <name>DeNovoGUI</name>
     <url>http://denovogui.googlecode.com</url>
     <description>Graphical user interface for de novo sequencing of tandem mass spectra</description>
