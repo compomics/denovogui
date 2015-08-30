@@ -42,6 +42,10 @@ public class DeNovoCLIInputBean {
      */
     private boolean pNovoEnabled = false;
     /**
+     * If true, Novor is enabled.
+     */
+    private boolean novorEnabled = false;
+    /**
      * The PepNovo executable. Full path.
      */
     private File pepNovoExecutable = null;
@@ -53,6 +57,10 @@ public class DeNovoCLIInputBean {
      * The pNovo executable. Full path.
      */
     private File pNovoExecutable = null;
+    /**
+     * The Novor executable. Full path.
+     */
+    private File novorExecutable = null;
     /**
      * Number of threads to use. Defaults to the number of cores available.
      */
@@ -102,6 +110,12 @@ public class DeNovoCLIInputBean {
                 pNovoEnabled = false;
             }
         }
+        if (aLine.hasOption(DeNovoCLIParams.NOVOR.id)) {
+            String pNovoOption = aLine.getOptionValue(DeNovoCLIParams.NOVOR.id);
+            if (pNovoOption.trim().equals("0")) {
+                pNovoEnabled = false;
+            }
+        }
 
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
@@ -115,6 +129,10 @@ public class DeNovoCLIInputBean {
         if (aLine.hasOption(DeNovoCLIParams.PNOVO_LOCATION.id)) {
             String tempPNovoExecutable = aLine.getOptionValue(DeNovoCLIParams.PNOVO_LOCATION.id);
             this.pNovoExecutable = new File(tempPNovoExecutable);
+        }
+        if (aLine.hasOption(DeNovoCLIParams.NOVOR_LOCATION.id)) {
+            String tempNovorExecutable = aLine.getOptionValue(DeNovoCLIParams.NOVOR_LOCATION.id);
+            this.novorExecutable = new File(tempNovorExecutable);
         }
 
         // get the number of threads
@@ -176,6 +194,15 @@ public class DeNovoCLIInputBean {
     public File getPepNovoExecutable() {
         return pepNovoExecutable;
     }
+    
+    /**
+     * Returns the Novor executable. Null if not set.
+     *
+     * @return the Novor executable
+     */
+    public File getNovorExecutable() {
+        return novorExecutable;
+    }
 
     /**
      * Returns the DirecTag executable. Null if not set.
@@ -202,6 +229,15 @@ public class DeNovoCLIInputBean {
      */
     public boolean enablePepNovo() {
         return pepNovoEnabled;
+    }
+    
+    /**
+     * Returns if Novor is to be run or not.
+     *
+     * @return if Novor is to be run or not
+     */
+    public boolean enableNovor() {
+        return novorEnabled;
     }
 
     /**

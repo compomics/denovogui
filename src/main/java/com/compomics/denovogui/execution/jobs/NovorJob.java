@@ -1,0 +1,342 @@
+package com.compomics.denovogui.execution.jobs;
+
+import com.compomics.denovogui.execution.Job;
+import com.compomics.software.CommandLineUtils;
+import com.compomics.software.CompomicsWrapper;
+import com.compomics.util.exceptions.ExceptionHandler;
+import com.compomics.util.experiment.biology.PTM;
+import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.waiting.WaitingHandler;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+
+/**
+ * This job class runs the Novor software in wrapper mode.
+ *
+ * @author Harald Barsnes
+ */
+public class NovorJob extends Job {
+
+    /**
+     * The name of the Novor executable.
+     */
+    public final static String EXECUTABLE_FILE_NAME = "novor.jar";
+    /**
+     * The spectrumFile file.
+     */
+    private File spectrumFile;
+    /**
+     * The search parameters.
+     */
+    private SearchParameters searchParameters;
+    /**
+     * The path to the Novor executable.
+     */
+    private File novorFolder;
+    /**
+     * The output path.
+     */
+    private File outputFolder;
+    /**
+     * The command executed.
+     */
+    private String command = "";
+    /**
+     * The name of the Novor parameters file.
+     */
+    private String parameterFileName = "novor_params.txt";
+    /**
+     * The name of the Novor custom modifications file.
+     */
+    private String modsFileName = "novor_mods.txt";
+    /**
+     * The post translational modifications factory.
+     */
+    private PTMFactory ptmFactory = PTMFactory.getInstance();
+
+    /**
+     * Constructor for the NovorJob.
+     *
+     * @param novorFolder the path to the Novor executable
+     * @param mgfFile the spectrum MGF file
+     * @param outputFolder the output folder
+     * @param searchParameters the search parameters
+     * @param isCommandLine true if run from the command line, false if GUI
+     * @param waitingHandler the waiting handler
+     * @param exceptionHandler the exception handler
+     */
+    public NovorJob(File novorFolder, File mgfFile, File outputFolder, SearchParameters searchParameters, boolean isCommandLine, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) {
+        this.novorFolder = novorFolder;
+        this.spectrumFile = mgfFile;
+        this.outputFolder = outputFolder;
+        this.searchParameters = searchParameters;
+        this.waitingHandler = waitingHandler;
+        this.exceptionHandler = exceptionHandler;
+        initJob(isCommandLine);
+    }
+
+    /**
+     * Initializes the job, setting up the commands for the ProcessBuilder.
+     */
+    private void initJob(boolean isCommandLine) {
+
+        try {
+            // make sure that the novor jar file is executable
+            File novorExecutable = new File(novorFolder.getAbsolutePath() + File.separator + EXECUTABLE_FILE_NAME);
+            novorExecutable.setExecutable(true);
+
+            // set java home
+            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            CompomicsWrapper wrapper = new CompomicsWrapper();
+            ArrayList<String> javaHomeAndOptions = wrapper.getJavaHomeAndOptions(utilitiesUserPreferences.getSearchGuiPath()); // @TODO; replace by denovogui...
+            procCommands.add(javaHomeAndOptions.get(0)); // set java home
+
+            // set java options
+            if (!isCommandLine) {
+                for (int i = 1; i < javaHomeAndOptions.size(); i++) {
+                    procCommands.add(javaHomeAndOptions.get(i));
+                }
+            } else {
+                // add the jvm arguments for denovogui to novor
+                RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+                List<String> aList = bean.getInputArguments();
+                for (String element : aList) {
+                    procCommands.add(element);
+                }
+            }
+
+            // add novor.jar
+            procCommands.add("-jar");
+            procCommands.add(CommandLineUtils.getCommandLineArgument(new File(novorFolder, EXECUTABLE_FILE_NAME)));
+
+            // create the parameters file
+            createParameterFile();
+
+            // add the parameters
+            procCommands.add("-p");
+            procCommands.add(novorFolder.getAbsolutePath() + File.separator + parameterFileName);
+
+            // add the custom modifications
+            procCommands.add("-m");
+            procCommands.add(novorFolder.getAbsolutePath() + File.separator + modsFileName);
+
+            // add output folder
+            String txtFileName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+            outputFile = new File(outputFolder, txtFileName + ".novor.csv");
+            procCommands.add("-o");
+            procCommands.add(CommandLineUtils.getCommandLineArgument(outputFile));
+
+            // force overwrite of output file
+            procCommands.add("-f");
+
+            // add the spectrum file
+            procCommands.add(CommandLineUtils.getCommandLineArgument(spectrumFile));
+
+            procCommands.trimToSize();
+
+            // save command line
+            for (String commandComponent : procCommands) {
+                if (!command.equals("")) {
+                    command += " ";
+                }
+                command += commandComponent;
+            }
+
+            // Set the description - yet not used
+            setDescription("Novor");
+            procBuilder = new ProcessBuilder(procCommands);
+            procBuilder.directory(novorFolder);
+
+            // set error out and std out to same stream
+            procBuilder.redirectErrorStream(true);
+
+        } catch (Exception e) {
+            exceptionHandler.catchException(e);
+            waitingHandler.appendReport("An error occurred running Novor. See error log for details. " + e.getMessage(), true, true);
+            waitingHandler.setRunCanceled();
+        }
+    }
+
+    /**
+     * Cancels the job by destroying the process.
+     */
+    @Override
+    public void cancel() {
+        if (proc != null) {
+            proc.destroy();
+            log.info(">> De novo sequencing has been canceled.");
+        }
+    }
+
+    @Override
+    public void run() {
+        super.run();
+    }
+
+    @Override
+    public void writeCommand() {
+        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "Novor command: " + command + System.getProperty("line.separator"));
+    }
+
+    /**
+     * Create the Novor parameters file.
+     */
+    private void createParameterFile() {
+
+        // get the Novoe specific parameters
+        //NovorParameters pNovoParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
+        try {
+            FileWriter parameterWriter = new FileWriter(novorFolder.getAbsolutePath() + File.separator + parameterFileName);
+            BufferedWriter bufferedParameterWriter = new BufferedWriter(parameterWriter);
+
+            bufferedParameterWriter.write("# Search parameters. In v1.1, only Trypsin and Trap are supported." + System.getProperty("line.separator"));
+
+            // the enzyme
+            bufferedParameterWriter.write("enzyme = Trypsin" + System.getProperty("line.separator"));
+
+            // the instrument
+            bufferedParameterWriter.write("massAnalyzer = Trap" + System.getProperty("line.separator"));
+
+            // the fragment ion tolerance
+            bufferedParameterWriter.write("fragmentIonErrorTol = " + searchParameters.getFragmentIonAccuracy());
+            if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.DA) {
+                bufferedParameterWriter.write("Da" + System.getProperty("line.separator"));
+            } else {
+                bufferedParameterWriter.write("ppm" + System.getProperty("line.separator"));
+            }
+
+            // the precursor ion tolerance
+            bufferedParameterWriter.write("precursorErrorTol = " + searchParameters.getPrecursorAccuracy());
+            if (searchParameters.getPrecursorAccuracyType() == SearchParameters.MassAccuracyType.DA) {
+                bufferedParameterWriter.write("Da" + System.getProperty("line.separator"));
+            } else {
+                bufferedParameterWriter.write("ppm" + System.getProperty("line.separator"));
+            }
+
+            // add empty line
+            bufferedParameterWriter.write(System.getProperty("line.separator"));
+
+            // modifications
+            FileWriter modsWriter = new FileWriter(novorFolder.getAbsolutePath() + File.separator + modsFileName);
+            BufferedWriter bufferedModsWriter = new BufferedWriter(modsWriter);
+
+            // variable modifications
+            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+                bufferedParameterWriter.write("# Variable modifications" + System.getProperty("line.separator"));
+                String variableModsAsString = "";
+
+                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
+                    PTM ptm = ptmFactory.getPTM(variableModification);
+                    addModification(bufferedModsWriter, ptm);
+
+                    // update the modifications string
+                    if (!variableModsAsString.isEmpty()) {
+                        variableModsAsString += ", ";
+                    }
+                    variableModsAsString += ptm.getName();
+                }
+
+                // add the modification to the parameter file
+                variableModsAsString = "variableModifications = " + variableModsAsString;
+                bufferedParameterWriter.write(variableModsAsString + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            }
+
+            // fixed modifications
+            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
+                bufferedParameterWriter.write("# Fixed modifications" + System.getProperty("line.separator"));
+                String fixedModsAsString = "";
+
+                for (String fixedModification : searchParameters.getPtmSettings().getFixedModifications()) {
+                    PTM ptm = ptmFactory.getPTM(fixedModification);
+                    addModification(bufferedModsWriter, ptm);
+
+                    // update the modifications string
+                    if (!fixedModsAsString.isEmpty()) {
+                        fixedModsAsString += ", ";
+                    }
+                    fixedModsAsString += ptm.getName();
+                }
+
+                // add the modification to the parameter file
+                fixedModsAsString = "fixedModifications = " + fixedModsAsString;
+                bufferedParameterWriter.write(fixedModsAsString + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            }
+
+            // close the mods writer
+            bufferedModsWriter.close();
+            modsWriter.close();
+
+            // forbidden residues
+            bufferedParameterWriter.write("# The residue which will not be used in de novo algorithm." + System.getProperty("line.separator"));
+            bufferedParameterWriter.write("# I is disabled as default because it is the same as L" + System.getProperty("line.separator"));
+            bufferedParameterWriter.write("# U is disabled because it is very rare" + System.getProperty("line.separator"));
+            bufferedParameterWriter.write("forbiddenResidues = I,U" + System.getProperty("line.separator")); // @TODO: make this a user parameter?
+
+            // close the parameters writer
+            bufferedParameterWriter.close();
+            modsWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, new String[]{"Unable to write file: '" + e.getMessage() + "'!",
+                "Could not save pNovo+ parameter file."}, "pNovo+ Parameter File Error", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    /**
+     * Converts a modification to the Novor format.
+     *
+     * @param bufferedModsWriter the writer to add the modification to
+     * @param ptm the current PTM
+     * @param modsAsString the current modifications as a string
+     * @throws IOException thrown if an IOException occurs
+     */
+    private void addModification(BufferedWriter bufferedModsWriter, PTM ptm) throws IOException {
+
+        // modification id
+        bufferedModsWriter.write(ptm.getName() + ", ");
+
+        // short name
+        bufferedModsWriter.write(ptm.getName() + ", ");
+
+        // long name
+        bufferedModsWriter.write(ptm.getName() + ", ");
+
+        // the groups involved in the modification
+        if (ptm.isNTerm()) {
+            bufferedModsWriter.write("--c, ");
+        } else if (ptm.isCTerm()) {
+            bufferedModsWriter.write("n--, ");
+        } else {
+            bufferedModsWriter.write("-r-, "); // @TODO: what about "nr-" (both the N-term and the side chain participate the modification)? and "-rc"..?
+        }
+
+        // the affected residues
+        if (ptm.getPattern() != null) {
+            for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
+                bufferedModsWriter.write(target);
+            }
+            bufferedModsWriter.write(", ");
+        } else {
+            bufferedModsWriter.write("*, ");
+        }
+
+        // the change of atoms
+        bufferedModsWriter.write(", "); // @TOOD: we use this one instead of the mass?
+
+        // the mass change
+        bufferedModsWriter.write("" + ptm.getRoundedMass());
+
+        // add new line
+        bufferedModsWriter.write(System.getProperty("line.separator"));
+    }
+}

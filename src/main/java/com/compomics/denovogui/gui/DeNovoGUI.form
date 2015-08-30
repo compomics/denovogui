@@ -262,11 +262,23 @@
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="pNovoCheckBox" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="pNovoCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="novorCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
-                              <Component id="pNovoButton" min="-2" pref="84" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="betaLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="pNovoButton" min="-2" pref="84" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="betaLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="novorButton" min="-2" pref="63" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="betaLabel1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -274,15 +286,18 @@
                           <Component id="pNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="direcTagPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="novorPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="direcTagLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="novorLinkLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="novorSettingsJButton" min="-2" max="-2" attributes="0"/>
                           <Component id="directTagSettingsJButton" min="-2" max="-2" attributes="0"/>
                           <Component id="pepNovoSettingsJButton" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoSettingsJButton" min="-2" max="-2" attributes="0"/>
@@ -318,6 +333,15 @@
                           <Component id="pNovoPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="betaLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="pNovoSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="novorCheckBox" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="novorButton" alignment="2" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="novorPlatformsButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="novorLinkLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="novorSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="betaLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -544,6 +568,85 @@
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pNovoSettingsJButtonMouseExited"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pNovoSettingsJButtonActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="novorCheckBox">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="Enable Novor"/>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="novorCheckBoxActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="novorButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/novor.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Enable Novor"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorButtonMouseExited"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="novorButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="novorPlatformsButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/all_platforms_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Supported on Windows, Mac and Linux&#xa;&lt;/html&gt;"/>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="novorLinkLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;Novor De Novo Peptide Sequencing - &lt;a href=&quot;http://rapidnovor.com&quot;&gt;Novor web page&lt;/a&gt;&lt;/html&gt; "/>
+                <Property name="toolTipText" type="java.lang.String" value="Open the Novor web page"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorLinkLabelMouseClicked"/>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorLinkLabelMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorLinkLabelMouseExited"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="novorSettingsJButton">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit_gray.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced Novor Settings"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/edit.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorSettingsJButtonMouseEntered"/>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorSettingsJButtonMouseExited"/>
+                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="novorSettingsJButtonMouseReleased"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="betaLabel1">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font bold="false" component="betaLabel1" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="(beta)"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>

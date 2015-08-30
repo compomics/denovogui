@@ -90,7 +90,7 @@ public abstract class Job implements Executable, Runnable {
         Scanner scan = new Scanner(proc.getInputStream());
         scan.useDelimiter(System.getProperty("line.separator"));
 
-        if (description.equalsIgnoreCase("pNovo+")) {
+        if (description.equalsIgnoreCase("pNovo+") || description.equalsIgnoreCase("Novor")) {
 
             // get input from scanner and send to stdout
             while (scan.hasNextLine() && !waitingHandler.isRunCanceled()) {
@@ -119,9 +119,8 @@ public abstract class Job implements Executable, Runnable {
                     writer.write(temp);
                     writer.newLine();
 
-                    if (description.equalsIgnoreCase("DirecTag") || description.equalsIgnoreCase("pNovo+")) {
+                    if (description.equalsIgnoreCase("DirecTag")) {
                         waitingHandler.appendReport(temp, false, true);
-                        // @TODO: better processing of pNovo progress output
                     } else {
                         if (temp.startsWith(">>")) {
                             int progressCounter = waitingHandler.getPrimaryProgressCounter();

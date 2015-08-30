@@ -222,6 +222,19 @@ public class FileProcessor {
     }
 
     /**
+     * Returns the Novor result file corresponding to the given spectrum file
+     * and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding out file
+     */
+    public static File getNovorResultFile(File outFolder, File spectrumFile) {
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".novor.csv");
+    }
+
+    /**
      * Returns the DirectTag result file corresponding to the given spectrum
      * file and output folder.
      *
@@ -303,8 +316,23 @@ public class FileProcessor {
     }
 
     /**
-     * Returns a list of PepNovo out files and DirecTag tags files expected from
-     * a list of spectrum files.
+     * Returns a list of Novor result files expected from a list of spectrum
+     * files.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getNovorResultFiles(File outFolder, ArrayList<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            outFiles.add(getNovorResultFile(outFolder, file));
+        }
+        return outFiles;
+    }
+
+    /**
+     * Returns a list of result files expected from a list of spectrum files.
      *
      * @param resultsFolder the results folder
      * @param spectrumFiles list of spectrum files
@@ -315,6 +343,8 @@ public class FileProcessor {
         for (File file : spectrumFiles) {
             resultFiles.add(getOutFile(resultsFolder, file));
             resultFiles.add(getTagsFile(resultsFolder, file));
+            resultFiles.add(getPNovoResultFile(resultsFolder, file));
+            resultFiles.add(getNovorResultFile(resultsFolder, file));
         }
         return resultFiles;
     }

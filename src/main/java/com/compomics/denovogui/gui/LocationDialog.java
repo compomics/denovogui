@@ -5,7 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- * Simple dialog to set the PepNovo location.
+ * Simple dialog to set the algorithm locations.
  *
  * @author Harald Barsnes
  */
@@ -17,7 +17,7 @@ public class LocationDialog extends javax.swing.JDialog {
     private DeNovoGUI deNovoGUI;
 
     /**
-     * Creates a new PepNovoLocationDialog.
+     * Creates a new LocationDialog.
      *
      * @param deNovoGUI the DeNovoGUI main frame
      * @param modal if the dialog is to be modal
@@ -38,6 +38,10 @@ public class LocationDialog extends javax.swing.JDialog {
         if (deNovoGUI.getPNovoFolder() != null) {
             pNovoLocationTextField.setText(new File(deNovoGUI.getPNovoFolder(), deNovoGUI.getPNovoExecutable()).getAbsolutePath());
             okButton.setEnabled(deNovoGUI.checkPNovoFolder(deNovoGUI.getPNovoFolder()));
+        }
+        if (deNovoGUI.getNovorFolder() != null) {
+            novorLocationTextField.setText(new File(deNovoGUI.getNovorFolder(), deNovoGUI.getNovorExecutable()).getAbsolutePath());
+            okButton.setEnabled(deNovoGUI.checkNovorFolder(deNovoGUI.getNovorFolder()));
         }
 
         setLocationRelativeTo(deNovoGUI);
@@ -64,6 +68,9 @@ public class LocationDialog extends javax.swing.JDialog {
         pNovoLocationLabel = new javax.swing.JLabel();
         pNovoLocationTextField = new javax.swing.JTextField();
         pNovoLocationBrowseButton = new javax.swing.JButton();
+        novorLocationLabel = new javax.swing.JLabel();
+        novorLocationTextField = new javax.swing.JTextField();
+        novorLocationBrowseButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
@@ -102,6 +109,15 @@ public class LocationDialog extends javax.swing.JDialog {
             }
         });
 
+        novorLocationLabel.setText("Novor Location");
+
+        novorLocationBrowseButton.setText("Browse");
+        novorLocationBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novorLocationBrowseButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pepNovoLocationPanelLayout = new javax.swing.GroupLayout(pepNovoLocationPanel);
         pepNovoLocationPanel.setLayout(pepNovoLocationPanelLayout);
         pepNovoLocationPanelLayout.setHorizontalGroup(
@@ -127,7 +143,13 @@ public class LocationDialog extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addComponent(pNovoLocationTextField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(pNovoLocationBrowseButton)))
+                        .addComponent(pNovoLocationBrowseButton))
+                    .addGroup(pepNovoLocationPanelLayout.createSequentialGroup()
+                        .addComponent(novorLocationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(novorLocationTextField)
+                        .addGap(10, 10, 10)
+                        .addComponent(novorLocationBrowseButton)))
                 .addContainerGap())
         );
         pepNovoLocationPanelLayout.setVerticalGroup(
@@ -148,7 +170,12 @@ public class LocationDialog extends javax.swing.JDialog {
                     .addComponent(pNovoLocationLabel)
                     .addComponent(pNovoLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pNovoLocationBrowseButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pepNovoLocationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(novorLocationLabel)
+                    .addComponent(novorLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorLocationBrowseButton))
+                .addContainerGap())
         );
 
         okButton.setText("OK");
@@ -188,8 +215,8 @@ public class LocationDialog extends javax.swing.JDialog {
             backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(backgroundPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pepNovoLocationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pepNovoLocationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
@@ -255,12 +282,24 @@ public class LocationDialog extends javax.swing.JDialog {
         browsePNovoExecutable();
     }//GEN-LAST:event_pNovoLocationBrowseButtonActionPerformed
 
+    /**
+     * Set the Novor location.
+     *
+     * @param evt
+     */
+    private void novorLocationBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novorLocationBrowseButtonActionPerformed
+        browseNovorExecutable();
+    }//GEN-LAST:event_novorLocationBrowseButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton direcTagLocationBrowseButton;
     private javax.swing.JLabel direcTagLocationLabel;
     private javax.swing.JTextField direcTagLocationTextField;
+    private javax.swing.JButton novorLocationBrowseButton;
+    private javax.swing.JLabel novorLocationLabel;
+    private javax.swing.JTextField novorLocationTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JButton pNovoLocationBrowseButton;
     private javax.swing.JLabel pNovoLocationLabel;
@@ -353,5 +392,33 @@ public class LocationDialog extends javax.swing.JDialog {
         }
 
         okButton.setEnabled(deNovoGUI.checkPNovoFolder(deNovoGUI.getPNovoFolder()));
+    }
+
+    /**
+     * This method is called when the Browse button for Novor is pressed.
+     */
+    public void browseNovorExecutable() {
+
+        String startLocation = novorLocationTextField.getText();
+        JFileChooser fc = new JFileChooser(startLocation);
+        int result = fc.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File novorExecutable = fc.getSelectedFile();
+
+            if (deNovoGUI.checkNovorFolder(novorExecutable.getParentFile())) {
+                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(novorExecutable.getAbsolutePath());
+                deNovoGUI.setNovorFolder(novorExecutable.getParentFile());
+                deNovoGUI.setNovorExecutable(novorExecutable.getName());
+                novorLocationTextField.setText(novorExecutable.getAbsolutePath());
+            } else {
+                JOptionPane.showMessageDialog(this, "Incorrect Novor executable selected.\n"
+                        + "Please try again, or press cancel to exit.",
+                        "Incorrect Novor Executable", JOptionPane.WARNING_MESSAGE);
+                browseNovorExecutable();
+            }
+        }
+
+        okButton.setEnabled(deNovoGUI.checkNovorFolder(deNovoGUI.getNovorFolder()));
     }
 }

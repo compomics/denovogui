@@ -310,12 +310,13 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                 return myFile.getName().toLowerCase().endsWith(".out")
                         || myFile.getName().toLowerCase().endsWith(".tags")
                         || myFile.getName().toLowerCase().endsWith(".pnovo.txt")
+                        || myFile.getName().toLowerCase().endsWith(".novor.csv")
                         || myFile.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "Supported formats: DirecTag (.tags), PepNovo+ (.out) and pNovo+ (.pnovo.txt)";
+                return "Supported formats: DirecTag (.tags), PepNovo+ (.out), pNovo+ (.pnovo.txt) and Novor (.novor.csv)";
             }
         };
 

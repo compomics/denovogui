@@ -146,6 +146,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private File pNovoFolder;
     /**
+     * The selected Novor folder.
+     */
+    private File novorFolder;
+    /**
      * Title of the PepNovo executable.
      */
     private String pepNovoExecutable = "PepNovo_Windows.exe";
@@ -157,6 +161,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * Title of the pNovo executable.
      */
     private String pNovoExecutable = "pNovoplus.exe";
+    /**
+     * Title of the Novor executable.
+     */
+    private String novorExecutable = "novor.jar";
     /**
      * Spectra files list.
      */
@@ -201,7 +209,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * The implemented algorithms. The matches of these will be displayed only
      * and in this order.
      */
-    public final static Advocate[] implementedAlgorithms = {Advocate.direcTag, Advocate.pepnovo, Advocate.pNovo};
+    public final static Advocate[] implementedAlgorithms = {Advocate.direcTag, Advocate.pepnovo, Advocate.pNovo, Advocate.novor};
     /**
      * The utilities user preferences.
      */
@@ -370,8 +378,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     pNovoCheckBox.setEnabled(false);
                 }
             }
+            
+                        
+            // set the default Novor folder
+            if (new File(getJarFilePath() + "/resources/Novor").exists()) {
+                novorFolder = new File(getJarFilePath() + "/resources/Novor");
+                novorExecutable = "novor.jar";
+            }
 
-            deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder);
+            deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
 
             setUpGUI();
 
@@ -544,6 +559,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         directTagSettingsJButton = new javax.swing.JButton();
         pepNovoSettingsJButton = new javax.swing.JButton();
         pNovoSettingsJButton = new javax.swing.JButton();
+        novorCheckBox = new javax.swing.JCheckBox();
+        novorButton = new javax.swing.JButton();
+        novorPlatformsButton = new javax.swing.JButton();
+        novorLinkLabel = new javax.swing.JLabel();
+        novorSettingsJButton = new javax.swing.JButton();
+        betaLabel1 = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -798,6 +819,73 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         });
 
+        novorCheckBox.setToolTipText("Enable Novor");
+        novorCheckBox.setOpaque(false);
+        novorCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novorCheckBoxActionPerformed(evt);
+            }
+        });
+
+        novorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/novor.png"))); // NOI18N
+        novorButton.setToolTipText("Enable Novor");
+        novorButton.setBorder(null);
+        novorButton.setBorderPainted(false);
+        novorButton.setContentAreaFilled(false);
+        novorButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                novorButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                novorButtonMouseExited(evt);
+            }
+        });
+        novorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novorButtonActionPerformed(evt);
+            }
+        });
+
+        novorPlatformsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/all_platforms_gray.png"))); // NOI18N
+        novorPlatformsButton.setToolTipText("<html>\nSupported on Windows, Mac and Linux\n</html>");
+        novorPlatformsButton.setBorderPainted(false);
+        novorPlatformsButton.setContentAreaFilled(false);
+
+        novorLinkLabel.setText("<html>Novor De Novo Peptide Sequencing - <a href=\"http://rapidnovor.com\">Novor web page</a></html> ");
+        novorLinkLabel.setToolTipText("Open the Novor web page");
+        novorLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                novorLinkLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                novorLinkLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                novorLinkLabelMouseExited(evt);
+            }
+        });
+
+        novorSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
+        novorSettingsJButton.setToolTipText("Edit Advanced Novor Settings");
+        novorSettingsJButton.setBorder(null);
+        novorSettingsJButton.setBorderPainted(false);
+        novorSettingsJButton.setContentAreaFilled(false);
+        novorSettingsJButton.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        novorSettingsJButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                novorSettingsJButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                novorSettingsJButtonMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                novorSettingsJButtonMouseReleased(evt);
+            }
+        });
+
+        betaLabel1.setFont(betaLabel1.getFont().deriveFont(betaLabel1.getFont().getStyle() & ~java.awt.Font.BOLD));
+        betaLabel1.setText("(beta)");
+
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -814,23 +902,34 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             .addComponent(pepNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                        .addComponent(pNovoCheckBox)
+                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pNovoCheckBox)
+                            .addComponent(novorCheckBox))
                         .addGap(71, 71, 71)
-                        .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(betaLabel)))
+                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                                .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(betaLabel))
+                            .addGroup(searchEnginesPanelLayout.createSequentialGroup()
+                                .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(betaLabel1)))))
                 .addGap(18, 18, 18)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(pNovoPlatformsButton)
                     .addComponent(pepNovoPlatformsButton)
-                    .addComponent(direcTagPlatformsButton))
+                    .addComponent(direcTagPlatformsButton)
+                    .addComponent(novorPlatformsButton))
                 .addGap(31, 31, 31)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pepNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pNovoLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(71, 71, 71)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(novorSettingsJButton)
                     .addComponent(directTagSettingsJButton)
                     .addComponent(pepNovoSettingsJButton)
                     .addComponent(pNovoSettingsJButton))
@@ -864,6 +963,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     .addComponent(pNovoPlatformsButton)
                     .addComponent(betaLabel)
                     .addComponent(pNovoSettingsJButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(novorCheckBox)
+                    .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorPlatformsButton)
+                    .addComponent(novorLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorSettingsJButton)
+                    .addComponent(betaLabel1))
                 .addContainerGap())
         );
 
@@ -1955,6 +2062,99 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }//GEN-LAST:event_pepNovoSettingsJButtonMouseReleased
 
     /**
+     * Validate the input.
+     *
+     * @param evt
+     */
+    private void novorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novorCheckBoxActionPerformed
+        validateInput(false);
+    }//GEN-LAST:event_novorCheckBoxActionPerformed
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void novorButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_novorButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void novorButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_novorButtonMouseExited
+
+    /**
+     * Select Novor.
+     *
+     * @param evt
+     */
+    private void novorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novorButtonActionPerformed
+        novorCheckBox.setSelected(!novorCheckBox.isSelected());
+        validateInput(false);
+    }//GEN-LAST:event_novorButtonActionPerformed
+
+    /**
+     * Open the Novor web page.
+     *
+     * @param evt
+     */
+    private void novorLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorLinkLabelMouseClicked
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+        BareBonesBrowserLaunch.openURL("http://rapidnovor.com");
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_novorLinkLabelMouseClicked
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void novorLinkLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorLinkLabelMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_novorLinkLabelMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void novorLinkLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorLinkLabelMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_novorLinkLabelMouseExited
+
+    /**
+     * Changes the cursor into a hand cursor.
+     *
+     * @param evt
+     */
+    private void novorSettingsJButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorSettingsJButtonMouseEntered
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_novorSettingsJButtonMouseEntered
+
+    /**
+     * Changes the cursor back to the default cursor.
+     *
+     * @param evt
+     */
+    private void novorSettingsJButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorSettingsJButtonMouseExited
+        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+    }//GEN-LAST:event_novorSettingsJButtonMouseExited
+
+    /**
+     * Show a message that there are no advanced Novor settings.
+     *
+     * @param evt
+     */
+    private void novorSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorSettingsJButtonMouseReleased
+        JOptionPane.showMessageDialog(this, "There are no advanced settings for Novor. Please use the general settings.", "Novor Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_novorSettingsJButtonMouseReleased
+
+    /**
      * The main method.
      *
      * @param args the command line arguments
@@ -2030,6 +2230,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JMenuItem algorithmLocationsMenuItem;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel betaLabel;
+    private javax.swing.JLabel betaLabel1;
     private javax.swing.JButton clearSpectraButton;
     private javax.swing.JLabel configurationFileLbl;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;
@@ -2057,6 +2258,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem modsMenuItem;
+    private javax.swing.JButton novorButton;
+    private javax.swing.JCheckBox novorCheckBox;
+    private javax.swing.JLabel novorLinkLabel;
+    private javax.swing.JButton novorPlatformsButton;
+    private javax.swing.JButton novorSettingsJButton;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JTextField outputFolderTextField;
     private javax.swing.JButton pNovoButton;
@@ -2186,8 +2392,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 loadSpectra(spectrumFiles, waitingHandler);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, pNovoExecutable,
-                        pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), pNovoCheckBox.isSelected(), waitingHandler, exceptionHandler);
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable, 
+                        pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), pNovoCheckBox.isSelected(), novorCheckBox.isSelected(), waitingHandler, exceptionHandler);
             } catch (Exception e) {
                 workerExceptionHandler.catchException(e);
             }
@@ -2264,6 +2470,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
         if (pNovoCheckBox.isSelected()) {
             resultFiles.addAll(FileProcessor.getPNovoResultFiles(outputFolder, spectrumFiles));
+        }
+        if (novorCheckBox.isSelected()) {
+            resultFiles.addAll(FileProcessor.getNovorResultFiles(outputFolder, spectrumFiles));
         }
 
         setVisible(false);
@@ -2405,6 +2614,42 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public String getPepNovoExecutable() {
         return pepNovoExecutable;
     }
+ 
+    /**
+     * Sets the Novor folder.
+     *
+     * @param novorFolder Novor folder.
+     */
+    public void setNovorFolder(File novorFolder) {
+        this.novorFolder = novorFolder;
+    }
+
+    /**
+     * Returns the Novor executable.
+     *
+     * @return the Novor folder
+     */
+    public File getNovorFolder() {
+        return novorFolder;
+    }
+
+    /**
+     * Sets the Novor executable.
+     *
+     * @param novorExecutable Novor executable.
+     */
+    public void setNovorExecutable(String novorExecutable) {
+        this.novorExecutable = novorExecutable;
+    }
+
+    /**
+     * Returns the Novor folder.
+     *
+     * @return the Novor executable
+     */
+    public String getNovorExecutable() {
+        return novorExecutable;
+    }
 
     /**
      * Sets the DirecTag folder.
@@ -2416,12 +2661,40 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }
 
     /**
-     * Returns the PepNovo folder.
+     * Returns the DirecTag folder.
      *
      * @return the direcTagFolder
      */
     public File getDirecTagFolder() {
         return direcTagFolder;
+    }
+
+    /**
+     * This method checks for the folder being the Novor folder.
+     *
+     * @param deNovoFolder the folder to check
+     * @return boolean to show whether the Novor folder is correct
+     */
+    public boolean checkNovorFolder(File deNovoFolder) {
+
+        boolean result = false;
+
+        if (deNovoFolder != null && deNovoFolder.exists() && deNovoFolder.isDirectory()) {
+            String[] fileNames = deNovoFolder.list();
+            int executableCounter = 0;
+            for (String lFileName : fileNames) {
+                if (lFileName.equalsIgnoreCase("novor.jar")) {
+                    executableCounter++;
+                }
+            }
+            if (executableCounter == 1) {
+                result = true;
+            }
+        }
+
+        novorCheckBox.setEnabled(result);
+
+        return result;
     }
 
     /**
@@ -2664,7 +2937,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         boolean valid = true;
 
-        if (!pepNovoCheckBox.isSelected() && !direcTagCheckBox.isSelected() && !pNovoCheckBox.isSelected()) {
+        if (!pepNovoCheckBox.isSelected() && !direcTagCheckBox.isSelected() && !pNovoCheckBox.isSelected() && !novorCheckBox.isSelected()) {
             if (showMessage && valid) {
                 JOptionPane.showMessageDialog(this, "You need to select at least one sequencing method.", "No Sequencing Methods Selected", JOptionPane.WARNING_MESSAGE);
             }
@@ -2849,7 +3122,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 if (bestScore == 0.0 || score < bestScore) {
                     bestScore = score;
                 }
-            } else if (advocate == Advocate.pepnovo || advocate == Advocate.pNovo) {
+            } else if (advocate == Advocate.pepnovo || advocate == Advocate.pNovo || advocate == Advocate.novor) {
                 if (score > bestScore) {
                     bestScore = score;
                 }
@@ -2869,7 +3142,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public static void sortScores(Advocate advocate, ArrayList<Double> scores) {
         if (advocate == Advocate.direcTag) {
             Collections.sort(scores);
-        } else if (advocate == Advocate.pepnovo || advocate == Advocate.pNovo) {
+        } else if (advocate == Advocate.pepnovo || advocate == Advocate.pNovo || advocate == Advocate.novor) {
             Collections.sort(scores, Collections.reverseOrder());
         } else {
             throw new IllegalArgumentException("Sorting order not implemented for algorithm " + advocate + ".");

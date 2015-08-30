@@ -29,10 +29,6 @@ public class DeNovoCLI implements Callable {
      */
     private DeNovoCLIInputBean deNovoCLIInputBean;
     /**
-     * The post translational modifications factory.
-     */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
-    /**
      * The enzyme factory.
      */
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
@@ -119,16 +115,14 @@ public class DeNovoCLI implements Callable {
             boolean runPepNovo = deNovoCLIInputBean.enablePepNovo();
             boolean runDirecTag = deNovoCLIInputBean.enableDirecTag();
             boolean runPNovo = deNovoCLIInputBean.enablePNovo();
+            boolean runNovor = deNovoCLIInputBean.enableNovor();
 
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
             File pNovoExecutable = deNovoCLIInputBean.getPNovoExecutable();
-            File pepNovoFolder = null;
-            File direcTagFolder = null;
-            File pNovoFolder = null;
-            String pepNovoExecutableTitle = null;
-            String direcTagExecutableTitle = null;
-            String pNovoExecutableTitle = null;
+            File novorExecutable = deNovoCLIInputBean.getNovorExecutable();
+            File pepNovoFolder = null, direcTagFolder = null, pNovoFolder = null, novorFolder = null;
+            String pepNovoExecutableTitle = null, direcTagExecutableTitle = null, pNovoExecutableTitle = null, novorExecutableTitle = null;
 
             // OS check
             String osName = System.getProperty("os.name").toLowerCase();
@@ -185,7 +179,7 @@ public class DeNovoCLI implements Callable {
                     // unsupported OS version
                 }
             }
-            
+
             // pNovo
             if (pNovoExecutable != null) {
                 pNovoExecutableTitle = pNovoExecutable.getName();
@@ -204,6 +198,17 @@ public class DeNovoCLI implements Callable {
                 } else {
                     // unsupported OS version
                 }
+            }
+
+            // novor
+            if (novorExecutable != null) {
+                novorExecutableTitle = novorExecutable.getName();
+                novorFolder = novorExecutable.getParentFile();
+            } else if (new File(getJarFilePath() + "/resources/Novor").exists()) {
+
+                // use the default Novor folder if not set by user
+                novorFolder = new File(getJarFilePath() + "/resources/Novor");
+                pNovoExecutableTitle = "novor.jar";
             }
 
             // check if the PepNovo folder is set
@@ -229,7 +234,7 @@ public class DeNovoCLI implements Callable {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
                 System.exit(0);
             }
-            
+
             // check if the pNovo folder is set
             if (pNovoFolder == null && runPNovo) {
                 waitingHandlerCLIImpl.appendReport("\npNovo+ location not set! Sequencing canceled.", false, true);
@@ -242,7 +247,19 @@ public class DeNovoCLI implements Callable {
                 System.exit(0);
             }
 
-            if (!runPepNovo && !runDirecTag && !runPNovo) {
+            // check of the Novor executable is set
+            if (novorExecutableTitle == null && runNovor) {
+                waitingHandlerCLIImpl.appendReport("\nNovor executable not set! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+
+            // check if the Novor folder is set
+            if (novorFolder == null && runNovor) {
+                waitingHandlerCLIImpl.appendReport("\nNovor location not set! Sequencing canceled.", false, true);
+                System.exit(0);
+            }
+
+            if (!runPepNovo && !runDirecTag && !runPNovo && !runNovor) {
                 waitingHandlerCLIImpl.appendReport("\nNo sequencing algorithms selected! Sequencing canceled.", false, true);
                 System.exit(0);
             }
@@ -267,12 +284,12 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
 
             // start the sequencing
-            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle,
-                    runPepNovo, runDirecTag, runPNovo, waitingHandlerCLIImpl, exceptionHandler);
+                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle, novorExecutableTitle,
+                    runPepNovo, runDirecTag, runPNovo, runNovor, waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
             exceptionHandler.catchException(e);
         }
@@ -295,7 +312,7 @@ public class DeNovoCLI implements Callable {
      */
     private static String getHeader() {
         return System.getProperty("line.separator")
-                + "DeNovoCLI performs de novo sequencing using the PepNovo+, DirecTag and pNovo+ algoritms." + System.getProperty("line.separator")
+                + "DeNovoCLI performs de novo sequencing using the PepNovo+, DirecTag, pNovo+ and Novor algoritms." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "Spectra must be provided in the Mascot Generic File (mgf) format." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")

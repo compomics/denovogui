@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
  * A model of table presenting the tag assumptions of a spectrum match.
  *
  * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class AssumptionsTableModel extends DefaultTableModel {
 
@@ -67,7 +68,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 12;
+        return 13;
     }
 
     @Override
@@ -96,6 +97,8 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 10:
                 return "Score (p)";
             case 11:
+                return "Score (N)";
+            case 12:
                 return "  ";
             default:
                 return "";
@@ -143,6 +146,11 @@ public class AssumptionsTableModel extends DefaultTableModel {
                 }
                 return null;
             case 11:
+                if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+                    return tagAssumption.getScore();
+                }
+                return null;
+            case 12:
                 return true;
             default:
                 return "";
@@ -165,8 +173,9 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 8:
             case 9:
             case 10:
-                return Double.class;
             case 11:
+                return Double.class;
+            case 12:
                 return Boolean.class;
             default:
                 return null;

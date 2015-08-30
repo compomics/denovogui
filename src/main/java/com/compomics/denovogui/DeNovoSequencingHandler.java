@@ -2,6 +2,7 @@ package com.compomics.denovogui;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.execution.jobs.DirecTagJob;
+import com.compomics.denovogui.execution.jobs.NovorJob;
 import com.compomics.denovogui.execution.jobs.PNovoJob;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
@@ -13,6 +14,7 @@ import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,6 +51,10 @@ public class DeNovoSequencingHandler {
      */
     private File pNovoFolder;
     /**
+     * The Novor folder.
+     */
+    private File novorFolder;
+    /**
      * If true, PepNovo will be run.
      */
     private boolean enablePepNovo = true;
@@ -60,6 +66,10 @@ public class DeNovoSequencingHandler {
      * If true, pNovo+ will be run.
      */
     private boolean enablePNovo = false;
+    /**
+     * If true, Novor will be run.
+     */
+    private boolean enableNovor = false;
     /**
      * Default PTM selection.
      */
@@ -111,11 +121,13 @@ public class DeNovoSequencingHandler {
      * @param pepNovoFolder the PepNovo+ folder
      * @param direcTagFolder the DirecTag folder
      * @param pNovoFolder the pNovo folder
+     * @param novorFolder the Novor folder
      */
-    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder) {
+    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder, File novorFolder) {
         this.pepNovoFolder = pepNovoFolder;
         this.direcTagFolder = direcTagFolder;
         this.pNovoFolder = pNovoFolder;
+        this.novorFolder = novorFolder;
     }
 
     /**
@@ -128,9 +140,11 @@ public class DeNovoSequencingHandler {
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
      * @param pNovoExeTitle the name of the pNovo+ executable
+     * @param novorExeTitle the name of the Novor executable
      * @param enablePepNovo run PepNovo?
      * @param enableDirecTag run DirecTag?
      * @param enablePNovo run pNovo?
+     * @param enableNovor run Novor?
      * @param waitingHandler the waiting handler
      * @param exceptionHandler the exception handler to use when an exception is
      * caught
@@ -139,12 +153,13 @@ public class DeNovoSequencingHandler {
      * @throws ClassNotFoundException thrown if the search parameters cannot be
      * processed from file
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle,
-            boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle,
+            boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, boolean enableNovor, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
 
         this.enablePepNovo = enablePepNovo;
         this.enableDirecTag = enableDirecTag;
         this.enablePNovo = enablePNovo;
+        this.enableNovor = enableNovor;
         this.exceptionHandler = exceptionHandler;
 
         long startTime = System.nanoTime();
@@ -195,7 +210,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.increasePrimaryProgressCounter();
 
         for (File spectrumFile : spectrumFiles) {
-            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, waitingHandler, spectrumFiles.size() > 1);
+            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, novorExeTitle, waitingHandler, spectrumFiles.size() > 1);
             if (waitingHandler.isRunCanceled()) {
                 break;
             }
@@ -217,12 +232,13 @@ public class DeNovoSequencingHandler {
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
      * @param pNovoExeTitle the name of the pNovo+ executable
+     * @param novorExeTitle the name of the Novor executable
      * @param waitingHandler the waiting handler
      * @param secondaryProgress if true the progress on the given file will be
      * displayed
      */
     private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle,
-            String direcTagExeTitle, String pNovoExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
+            String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
         // Start a fixed thread pool
         threadExecutor = Executors.newFixedThreadPool(nThreads);
@@ -299,6 +315,12 @@ public class DeNovoSequencingHandler {
             if (enablePNovo) {
                 PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(pNovoJob);
+            }
+            
+            // Add the Novor job only once - multithreading is done in the application itself
+            if (enableNovor) {
+                NovorJob novorJob = new NovorJob(novorFolder, spectrumFile, outputFolder, searchParameters, waitingHandler instanceof WaitingHandlerCLIImpl, waitingHandler, exceptionHandler);
+                jobs.add(novorJob);
             }
 
         } catch (FileNotFoundException ex) {

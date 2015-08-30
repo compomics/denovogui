@@ -213,6 +213,14 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private double maxPNovoScore = Double.MIN_VALUE;
     /**
+     * The minimal Novor score.
+     */
+    private double minNovorScore = Double.MAX_VALUE;
+    /**
+     * The maximal Novor score.
+     */
+    private double maxNovorScore = Double.MIN_VALUE;
+    /**
      * The maximal n gap.
      */
     private double maxNGap = 0;
@@ -349,6 +357,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         querySpectraTableToolTips.add("Max PepNovo+ Score");
         querySpectraTableToolTips.add("Min DirecTag E-Value");
         querySpectraTableToolTips.add("Max pNovo+ Score");
+        querySpectraTableToolTips.add("Max Novor Score");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
@@ -363,6 +372,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoPeptidesTableToolTips.add("PepNovo+ Score");
         deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("pNovo+ Score");
+        deNovoPeptidesTableToolTips.add("Novor Score");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
@@ -432,6 +442,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (D)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score (p)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPNovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (N)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNovorScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (N)").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
         // make sure that the user is made aware that the tool is doing something during sorting of the query table
         querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
@@ -482,6 +494,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (P)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("Score (p)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxPNovoScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (N)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNovorScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (N)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
@@ -1933,7 +1947,9 @@ public class ResultsFrame extends javax.swing.JFrame {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores);
 
-                        if (advocate.getIndex() == Advocate.pepnovo.getIndex() || advocate.getIndex() == Advocate.pNovo.getIndex()) {
+                        if (advocate.getIndex() == Advocate.pepnovo.getIndex() 
+                                || advocate.getIndex() == Advocate.pNovo.getIndex() 
+                                || advocate.getIndex() == Advocate.novor.getIndex()) {
                             Collections.reverse(scores);
                         }
 
@@ -2967,6 +2983,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         boolean pepNovoDataLoaded = false;
         boolean direcTagDataLoaded = false;
         boolean pNovoDataLoaded = false;
+        boolean novorDataLoaded = false;
 
         for (int i = 0; i < resultFiles.size(); i++) {
 
@@ -2999,6 +3016,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                             direcTagDataLoaded = true;
                         } else if (advocate == Advocate.pNovo.getIndex()) {
                             pNovoDataLoaded = true;
+                        } else if (advocate == Advocate.novor.getIndex()) {
+                            novorDataLoaded = true;
                         }
 
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = assumptionsMap.get(advocate);
@@ -3039,6 +3058,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                         modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
                                                         // already mapped
+                                                    } else if (advocate == Advocate.novor.getIndex()) {
+                                                        // already mapped
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                         if (notImplemented == null) {
@@ -3067,6 +3088,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                     } else if (advocate == Advocate.direcTag.getIndex()) {
                                                         // already mapped
                                                     } else if (advocate == Advocate.pNovo.getIndex()) {
+                                                        // already mapped
+                                                    } else if (advocate == Advocate.novor.getIndex()) {
                                                         // already mapped
                                                     } else {
                                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
@@ -3129,12 +3152,19 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     if (score < minPNovoScore) {
                                         minPNovoScore = score;
                                     }
+                                } else if (advocate == Advocate.novor.getIndex()) {
+                                    if (score > maxNovorScore) {
+                                        maxNovorScore = score;
+                                    }
+                                    if (score < minNovorScore) {
+                                        minNovorScore = score;
+                                    }
                                 } else {
                                     Advocate notImplemented = Advocate.getAdvocate(advocate);
                                     if (notImplemented == null) {
                                         throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
                                     }
-                                    throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                                    throw new IllegalArgumentException("Unsupported advocate " + Advocate.getAdvocate(advocate).getName() + ".");
                                 }
                             }
                         }
@@ -3163,6 +3193,9 @@ public class ResultsFrame extends javax.swing.JFrame {
             numberOfAdvocateLoaded++;
         }
         if (pNovoDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+        if (novorDataLoaded) {
             numberOfAdvocateLoaded++;
         }
 

@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
  * Model for a spectrum table.
  *
  * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class SpectrumTableModel extends DefaultTableModel {
 
@@ -73,7 +74,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 12;
+        return 13;
     }
 
     @Override
@@ -102,6 +103,8 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 10:
                 return "Score (p)";
             case 11:
+                return "Score (N)";
+            case 12:
                 return "  ";
             default:
                 return "";
@@ -240,6 +243,27 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 11:
+                try {
+                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+                    if (update && identification.matchExists(spectrumKey)) {
+                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.novor.getIndex());
+                        if (hitMap != null) {
+                            double bestScore = 0;
+                            for (double score : hitMap.keySet()) {
+                                if (score > bestScore) {
+                                    bestScore = score;
+                                }
+                            }
+                            return bestScore;
+                        }
+                    }
+                    return null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            case 12:
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 return identification.matchExists(spectrumKey);
             default:
@@ -263,8 +287,9 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 8:
             case 9:
             case 10:
-                return Double.class;
             case 11:
+                return Double.class;
+            case 12:
                 return Boolean.class;
             default:
                 return null;

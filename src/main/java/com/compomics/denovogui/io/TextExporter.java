@@ -28,6 +28,7 @@ import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
  * This class allows exporting the results in a text file.
  *
  * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class TextExporter {
 
@@ -83,9 +84,9 @@ public class TextExporter {
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
                         + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "N-Gap" + separator + "C-Gap" + separator
-                        + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)" + separator + "Tag Mass Error (ppm)" + separator
-                        + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)" + separator + "Isotope");
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "Novor Score" + separator 
+                        + "N-Gap" + separator + "C-Gap" + separator + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)" 
+                        + separator + "Tag Mass Error (ppm)" + separator + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)" + separator + "Isotope");
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -171,11 +172,13 @@ public class TextExporter {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                        b.write(tagAssumption.getScore() + separator + separator + separator);
+                                        b.write(tagAssumption.getScore() + separator + separator + separator + separator);
                                     } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator);
+                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
                                     } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator);
+                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
+                                    } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+                                        b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
                                     }
                                     b.write(tag.getNTerminalGap() + separator);
                                     b.write(tag.getCTerminalGap() + separator);
@@ -252,8 +255,8 @@ public class TextExporter {
             try {
                 b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
                         + "Rank" + separator + "Tag" + separator + "Longest AminoAcid sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "N-Gap" + separator + "C-Gap" + separator
-                        + "Theoretic m/z" + separator + "Identification Charge");
+                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "Novor Score" + separator 
+                        + "N-Gap" + separator + "C-Gap" + separator + "Theoretic m/z" + separator + "Identification Charge");;
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -319,11 +322,13 @@ public class TextExporter {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                        b.write(tagAssumption.getScore() + separator + separator + separator);
+                                        b.write(tagAssumption.getScore() + separator + separator + separator + separator);
                                     } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator);
+                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
                                     } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator);
+                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
+                                    } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+                                        b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
                                     }
                                     b.write(tag.getNTerminalGap() + separator);
                                     b.write(tag.getCTerminalGap() + separator);
@@ -524,5 +529,5 @@ public class TextExporter {
         }
 
         return result.toString();
-    }
+    }   
 }
