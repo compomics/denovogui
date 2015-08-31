@@ -15,6 +15,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Se
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -165,6 +166,14 @@ public class DeNovoSequencingHandler {
         long startTime = System.nanoTime();
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
+        
+        // set this version as the default DeNovoGUI version
+        if (!getJarFilePath().equalsIgnoreCase(".")) {
+            String versionNumber = new com.compomics.denovogui.util.Properties().getVersion();
+            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+            UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
+        }
 
         // store the pepnovo to utilities ptm mapping
         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());

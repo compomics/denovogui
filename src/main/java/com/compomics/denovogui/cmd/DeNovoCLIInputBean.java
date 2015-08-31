@@ -94,27 +94,19 @@ public class DeNovoCLIInputBean {
         // see which algorithms to use
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO.id)) {
             String pepNovoOption = aLine.getOptionValue(DeNovoCLIParams.PEPNOVO.id);
-            if (pepNovoOption.trim().equals("0")) {
-                pepNovoEnabled = false;
-            }
+            pepNovoEnabled = pepNovoOption.trim().equals("1");
         }
         if (aLine.hasOption(DeNovoCLIParams.DIRECT_TAG.id)) {
             String direcTagOption = aLine.getOptionValue(DeNovoCLIParams.DIRECT_TAG.id);
-            if (direcTagOption.trim().equals("0")) {
-                direcTagEnabled = false;
-            }
+            direcTagEnabled = direcTagOption.trim().equals("1");
         }
         if (aLine.hasOption(DeNovoCLIParams.PNOVO.id)) {
             String pNovoOption = aLine.getOptionValue(DeNovoCLIParams.PNOVO.id);
-            if (pNovoOption.trim().equals("0")) {
-                pNovoEnabled = false;
-            }
+            pNovoEnabled = pNovoOption.trim().equals("1");
         }
         if (aLine.hasOption(DeNovoCLIParams.NOVOR.id)) {
-            String pNovoOption = aLine.getOptionValue(DeNovoCLIParams.NOVOR.id);
-            if (pNovoOption.trim().equals("0")) {
-                pNovoEnabled = false;
-            }
+            String novorOption = aLine.getOptionValue(DeNovoCLIParams.NOVOR.id);
+            novorEnabled = novorOption.trim().equals("1");
         }
 
         // search engine folders

@@ -97,7 +97,7 @@ public class NovorJob extends Job {
             // set java home
             UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
             CompomicsWrapper wrapper = new CompomicsWrapper();
-            ArrayList<String> javaHomeAndOptions = wrapper.getJavaHomeAndOptions(utilitiesUserPreferences.getSearchGuiPath()); // @TODO; replace by denovogui...
+            ArrayList<String> javaHomeAndOptions = wrapper.getJavaHomeAndOptions(utilitiesUserPreferences.getDeNovoGuiPath());
             procCommands.add(javaHomeAndOptions.get(0)); // set java home
 
             // set java options

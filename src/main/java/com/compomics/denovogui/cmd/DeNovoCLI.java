@@ -208,7 +208,7 @@ public class DeNovoCLI implements Callable {
 
                 // use the default Novor folder if not set by user
                 novorFolder = new File(getJarFilePath() + "/resources/Novor");
-                pNovoExecutableTitle = "novor.jar";
+                novorExecutableTitle = "novor.jar";
             }
 
             // check if the PepNovo folder is set
