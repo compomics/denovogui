@@ -27,7 +27,7 @@
 
 ## Introduction ##
 
-**DeNovoGUI** provides a user-friendly open-source graphical user interface for running the [PepNovo+](http://proteomics.ucsd.edu/Software/PepNovo.html),  [DirecTag](http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/), [pNovo+](http://pfind.ict.ac.cn/software/pNovo/) (beta) and [Novor](http://rapidnovor.com) _de novo_ sequencing algorithms on Windows, Mac and Linux.
+**DeNovoGUI** provides a user-friendly open-source graphical user interface for running the [PepNovo+](http://proteomics.ucsd.edu/Software/PepNovo.html),  [DirecTag](http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/), [pNovo+](http://pfind.ict.ac.cn/software/pNovo/) (beta) and [Novor](http://rapidnovor.com) (beta) _de novo_ sequencing algorithms on Windows, Mac and Linux.
 
 To start using DeNovoGUI, unzip the downloaded file, and double-click the `DeNovoGUI-X.Y.Z.jar file`. No additional installation required!
 
