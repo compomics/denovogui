@@ -595,6 +595,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         algorithmLocationsMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         javaSettingsJMenuItem = new javax.swing.JMenuItem();
+        resourceSettingsMenuItem = new javax.swing.JMenuItem();
         privacyMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
@@ -1241,6 +1242,16 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         });
         editMenu.add(javaSettingsJMenuItem);
 
+        resourceSettingsMenuItem.setMnemonic('E');
+        resourceSettingsMenuItem.setText("Resource Settings");
+        resourceSettingsMenuItem.setToolTipText("Set paths to resource folders");
+        resourceSettingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resourceSettingsMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(resourceSettingsMenuItem);
+
         privacyMenuItem.setMnemonic('P');
         privacyMenuItem.setText("Privacy Settings");
         privacyMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1638,7 +1649,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 searchParameters = SearchParameters.getIdentificationParameters(file);
                 loadModifications(searchParameters);
                 parametersFile = file;
-                searchParameters.setParametersFile(parametersFile);
                 settingsFileJTextField.setText(parametersFile.getName());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -2155,6 +2165,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }//GEN-LAST:event_novorSettingsJButtonMouseReleased
 
     /**
+     * Edit the paths.
+     * 
+     * @param evt 
+     */
+    private void resourceSettingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resourceSettingsMenuItemActionPerformed
+        editPathSettings();
+    }//GEN-LAST:event_resourceSettingsMenuItemActionPerformed
+
+    /**
      * The main method.
      *
      * @param args the command line arguments
@@ -2276,6 +2295,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JButton pepNovoPlatformsButton;
     private javax.swing.JButton pepNovoSettingsJButton;
     private javax.swing.JMenuItem privacyMenuItem;
+    private javax.swing.JMenuItem resourceSettingsMenuItem;
     private javax.swing.JButton resultFolderBrowseButton;
     private javax.swing.JLabel resultFolderLbl;
     private javax.swing.JPanel searchEnginesPanel;
@@ -3195,7 +3215,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
     /**
      * Opens a dialog allowing the setting of paths.
-     *
      */
     public void editPathSettings() {
         try {

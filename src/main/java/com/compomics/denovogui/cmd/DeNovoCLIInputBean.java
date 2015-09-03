@@ -301,8 +301,7 @@ public class DeNovoCLIInputBean {
         if (aLine.hasOption(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id)) {
             try {
                 String fileTxt = aLine.getOptionValue(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id);
-                SearchParameters tempSearchParameters = SearchParameters.getIdentificationParameters(new File(fileTxt));
-
+                SearchParameters.getIdentificationParameters(new File(fileTxt));
             } catch (Exception e) {
                 System.out.println(System.getProperty("line.separator") + "An error occurred while reading the search parameters:"
                         + System.getProperty("line.separator") + e.getLocalizedMessage() + System.getProperty("line.separator"));

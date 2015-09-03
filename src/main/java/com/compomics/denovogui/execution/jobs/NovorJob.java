@@ -313,11 +313,19 @@ public class NovorJob extends Job {
 
         // the groups involved in the modification
         if (ptm.isNTerm()) {
-            bufferedModsWriter.write("--c, ");
+            if (ptm.getType() == PTM.MODNAA || ptm.getType() == PTM.MODNPAA) {
+                bufferedModsWriter.write("nr-, ");
+            } else {
+                bufferedModsWriter.write("n--, ");
+            }
         } else if (ptm.isCTerm()) {
-            bufferedModsWriter.write("n--, ");
+            if (ptm.getType() == PTM.MODCAA || ptm.getType() == PTM.MODCPAA) {
+                bufferedModsWriter.write("-rc, ");
+            } else {
+                bufferedModsWriter.write("--c, ");
+            }
         } else {
-            bufferedModsWriter.write("-r-, "); // @TODO: what about "nr-" (both the N-term and the side chain participate the modification)? and "-rc"..?
+            bufferedModsWriter.write("-r-, ");
         }
 
         // the affected residues
