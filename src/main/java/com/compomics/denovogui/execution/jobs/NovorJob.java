@@ -7,6 +7,7 @@ import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
@@ -207,11 +208,12 @@ public class NovorJob extends Job {
             bufferedParameterWriter.write("massAnalyzer = Trap" + System.getProperty("line.separator"));
 
             // the fragment ion tolerance
-            bufferedParameterWriter.write("fragmentIonErrorTol = " + searchParameters.getFragmentIonAccuracy());
+            bufferedParameterWriter.write("fragmentIonErrorTol = ");
             if (searchParameters.getFragmentAccuracyType() == SearchParameters.MassAccuracyType.DA) {
-                bufferedParameterWriter.write("Da" + System.getProperty("line.separator"));
+                bufferedParameterWriter.write(searchParameters.getFragmentIonAccuracy() + "Da" + System.getProperty("line.separator"));
             } else {
-                bufferedParameterWriter.write("ppm" + System.getProperty("line.separator"));
+                double convertedTolerance = IdentificationParameters.getDaTolerance(searchParameters.getFragmentIonAccuracy(), 1000);
+                bufferedParameterWriter.write(convertedTolerance + "Da" + System.getProperty("line.separator")); // note: only dalton is currently supported
             }
 
             // the precursor ion tolerance
