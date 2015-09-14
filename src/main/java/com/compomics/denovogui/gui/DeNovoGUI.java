@@ -378,8 +378,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     pNovoCheckBox.setEnabled(false);
                 }
             }
-            
-                        
+
             // set the default Novor folder
             if (new File(getJarFilePath() + "/resources/Novor").exists()) {
                 novorFolder = new File(getJarFilePath() + "/resources/Novor");
@@ -2166,8 +2165,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
     /**
      * Edit the paths.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void resourceSettingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resourceSettingsMenuItemActionPerformed
         editPathSettings();
@@ -2331,7 +2330,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         if (waitingDialog != null) {
             waitingDialog.appendReportEndLine();
-            waitingDialog.appendReport("Sequencing Cancelled.\n", true, true);
+            waitingDialog.appendReport("Sequencing Canceled.\n", true, true);
         }
         if (sequencingWorker != null) {
             sequencingWorker.cancel(true);
@@ -2412,7 +2411,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 loadSpectra(spectrumFiles, waitingHandler);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable, 
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable,
                         pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), pNovoCheckBox.isSelected(), novorCheckBox.isSelected(), waitingHandler, exceptionHandler);
             } catch (Exception e) {
                 workerExceptionHandler.catchException(e);
@@ -2452,11 +2451,22 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     catchException(e);
                 }
 
-                if (displayResults) {
-                    try {
-                        displayResults();
-                    } catch (Exception e) {
-                        catchException(e);
+                // check if there are any output files to open
+                ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(
+                        outputFolder, spectrumFiles,
+                        pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(),
+                        pNovoCheckBox.isSelected(), novorCheckBox.isSelected());
+
+                if (resultFiles.isEmpty()) {
+                    waitingHandler.appendReportEndLine();
+                    waitingHandler.appendReport("The de novo sequencing did not generate any output files!", true, true);
+                } else {
+                    if (displayResults) {
+                        try {
+                            displayResults(resultFiles);
+                        } catch (Exception e) {
+                            catchException(e);
+                        }
                     }
                 }
             }
@@ -2476,24 +2486,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * Loads the results of the given spectrum files and loads everything in the
      * identification.
      *
+     * @param resultFiles the result files to load
      * @throws Exception thrown if an exception occurs
      */
-    public void displayResults() throws Exception {
-
-        ArrayList<File> resultFiles = new ArrayList<File>();
-
-        if (pepNovoCheckBox.isSelected()) {
-            resultFiles = FileProcessor.getOutFiles(outputFolder, spectrumFiles);
-        }
-        if (direcTagCheckBox.isSelected()) {
-            resultFiles.addAll(FileProcessor.getTagsFiles(outputFolder, spectrumFiles));
-        }
-        if (pNovoCheckBox.isSelected()) {
-            resultFiles.addAll(FileProcessor.getPNovoResultFiles(outputFolder, spectrumFiles));
-        }
-        if (novorCheckBox.isSelected()) {
-            resultFiles.addAll(FileProcessor.getNovorResultFiles(outputFolder, spectrumFiles));
-        }
+    private void displayResults(ArrayList<File> resultFiles) throws Exception {
 
         setVisible(false);
         if (sequenceMatchingPreferences == null) {
@@ -2634,7 +2630,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public String getPepNovoExecutable() {
         return pepNovoExecutable;
     }
- 
+
     /**
      * Sets the Novor folder.
      *

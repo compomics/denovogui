@@ -166,7 +166,7 @@ public class DeNovoSequencingHandler {
         long startTime = System.nanoTime();
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
-        
+
         // set this version as the default DeNovoGUI version
         if (!getJarFilePath().equalsIgnoreCase(".")) {
             String versionNumber = new com.compomics.denovogui.util.Properties().getVersion();
@@ -183,7 +183,7 @@ public class DeNovoSequencingHandler {
             SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
         }
 
-        // Write the modification file
+        // write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
             PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
@@ -194,7 +194,7 @@ public class DeNovoSequencingHandler {
             return;
         }
 
-        // Back-up the parameters
+        // back-up the parameters
         try {
             SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
         } catch (Exception e) {
@@ -204,7 +204,7 @@ public class DeNovoSequencingHandler {
             return;
         }
 
-        // Get the number of available threads
+        // get the number of available threads
         String fileEnding = "";
         if (spectrumFactory.getMgfFileNames().size() > 1) {
             fileEnding = "s";
@@ -228,7 +228,17 @@ public class DeNovoSequencingHandler {
         if (!waitingHandler.isRunCanceled()) {
             double elapsedTime = (System.nanoTime() - startTime) * 1.0e-9;
             waitingHandler.appendReport("Total sequencing time: " + Util.roundDouble(elapsedTime, 2) + " sec.", true, true);
-            waitingHandler.setRunFinished();
+
+            // check if we have any output files
+            ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles, enablePepNovo, enableDirecTag, enablePNovo, enableNovor);
+
+            if (resultFiles.isEmpty()) {
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("The de novo sequencing did not generate any output files!", true, true);
+                waitingHandler.setRunCanceled();
+            } else {
+                waitingHandler.setRunFinished();
+            }
         }
     }
 
@@ -249,10 +259,10 @@ public class DeNovoSequencingHandler {
     private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle,
             String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
 
-        // Start a fixed thread pool
+        // start a fixed thread pool
         threadExecutor = Executors.newFixedThreadPool(nThreads);
 
-        // Job queue.
+        // job queue
         jobs = new ArrayDeque<Job>();
         try {
             int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
@@ -283,7 +293,7 @@ public class DeNovoSequencingHandler {
                 waitingHandler.setSecondaryProgressCounterIndeterminate(true);
             }
 
-            // Verify that the file is chunked and use the entire if not
+            // verify that the file is chunked and use the entire if not
             boolean chunksuccess = true;
             if (enablePepNovo) {
                 for (File chunkFile : chunkFiles) {
@@ -301,7 +311,7 @@ public class DeNovoSequencingHandler {
                 }
             }
 
-            // Distribute the chunked spectra to the different PepNovo+ jobs.
+            // distribute the chunked spectra to the different PepNovo+ jobs
             if (enablePepNovo) {
                 if (chunksuccess) {
                     for (File chunkFile : chunkFiles) {
@@ -314,19 +324,19 @@ public class DeNovoSequencingHandler {
                 }
             }
 
-            // Add the DirecTag job only once - multithreading is done in the application itself
+            // add the DirecTag job only once - multithreading is done in the application itself
             if (enableDirecTag) {
                 DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(direcTagJob);
             }
 
-            // Add the pNovo+ job only once - multithreading is done in the application itself
+            // add the pNovo+ job only once - multithreading is done in the application itself
             if (enablePNovo) {
                 PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 jobs.add(pNovoJob);
             }
-            
-            // Add the Novor job only once - multithreading is done in the application itself
+
+            // add the Novor job only once - multithreading is done in the application itself
             if (enableNovor) {
                 NovorJob novorJob = new NovorJob(novorFolder, spectrumFile, outputFolder, searchParameters, waitingHandler instanceof WaitingHandlerCLIImpl, waitingHandler, exceptionHandler);
                 jobs.add(novorJob);
@@ -348,7 +358,7 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReport("Starting de novo sequencing of " + spectrumFile.getName() + ".", true, true);
         waitingHandler.appendReportEndLine();
 
-        // Execute the jobs from the queue.
+        // execute the jobs from the queue
         for (Job job : jobs) {
             job.writeCommand();
             threadExecutor.execute(job); // @TODO: one job at the time!!!
@@ -357,7 +367,7 @@ public class DeNovoSequencingHandler {
             }
         }
 
-        // Wait for executor service to shutdown.      
+        // wait for executor service to shutdown
         threadExecutor.shutdown();
 
         try {
@@ -383,7 +393,7 @@ public class DeNovoSequencingHandler {
         if (enablePepNovo) {
             FileProcessor.mergeAndDeleteOutputFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles));
 
-            // Delete the mgf file chunks.
+            // delete the mgf file chunks
             FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
         }
     }
@@ -414,10 +424,10 @@ public class DeNovoSequencingHandler {
             }
 
             if (chunkFiles != null) {
-                // Delete the output files.
+                // delete the output files
                 FileProcessor.deleteChunkFiles(FileProcessor.getOutFiles(outputFolder, chunkFiles), waitingHandler);
 
-                // Delete the mgf file chunks.
+                // delete the mgf file chunks
                 FileProcessor.deleteChunkFiles(chunkFiles, waitingHandler);
             }
         }

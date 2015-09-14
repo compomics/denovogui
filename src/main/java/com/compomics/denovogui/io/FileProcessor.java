@@ -275,10 +275,13 @@ public class FileProcessor {
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
-    public static ArrayList<File> getOutFiles(File outFolder, ArrayList<File> spectrumFiles) {
+    public static ArrayList<File> getOutFiles(File outFolder, List<File> spectrumFiles) {
         ArrayList<File> outFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
-            outFiles.add(getOutFile(outFolder, file));
+            File tempFile = getOutFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
         }
         return outFiles;
     }
@@ -291,10 +294,13 @@ public class FileProcessor {
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
-    public static ArrayList<File> getTagsFiles(File outFolder, ArrayList<File> spectrumFiles) {
+    public static ArrayList<File> getTagsFiles(File outFolder, List<File> spectrumFiles) {
         ArrayList<File> outFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
-            outFiles.add(getTagsFile(outFolder, file));
+            File tempFile = getTagsFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
         }
         return outFiles;
     }
@@ -307,10 +313,13 @@ public class FileProcessor {
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
-    public static ArrayList<File> getPNovoResultFiles(File outFolder, ArrayList<File> spectrumFiles) {
+    public static ArrayList<File> getPNovoResultFiles(File outFolder, List<File> spectrumFiles) {
         ArrayList<File> outFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
-            outFiles.add(getPNovoResultFile(outFolder, file));
+            File tempFile = getPNovoResultFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
         }
         return outFiles;
     }
@@ -323,10 +332,13 @@ public class FileProcessor {
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
-    public static ArrayList<File> getNovorResultFiles(File outFolder, ArrayList<File> spectrumFiles) {
+    public static ArrayList<File> getNovorResultFiles(File outFolder, List<File> spectrumFiles) {
         ArrayList<File> outFiles = new ArrayList<File>();
         for (File file : spectrumFiles) {
-            outFiles.add(getNovorResultFile(outFolder, file));
+            File tempFile = getNovorResultFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
         }
         return outFiles;
     }
@@ -338,13 +350,35 @@ public class FileProcessor {
      * @param spectrumFiles list of spectrum files
      * @return expected list of out files
      */
-    public static ArrayList<File> getAllResultFiles(File resultsFolder, ArrayList<File> spectrumFiles) {
+    public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles) {
+        return getAllResultFiles(resultsFolder, spectrumFiles, true, true, true, true);
+    }
+
+    /**
+     * Returns a list of result files expected from a list of spectrum files.
+     *
+     * @param resultsFolder the results folder
+     * @param spectrumFiles list of spectrum files
+     * @param pepNovo add PepNovo files
+     * @param direcTag add DirecTag files
+     * @param pNovo add pNovo files
+     * @param novor add Novor files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles, 
+            boolean pepNovo, boolean direcTag, boolean pNovo, boolean novor) {
         ArrayList<File> resultFiles = new ArrayList<File>();
-        for (File file : spectrumFiles) {
-            resultFiles.add(getOutFile(resultsFolder, file));
-            resultFiles.add(getTagsFile(resultsFolder, file));
-            resultFiles.add(getPNovoResultFile(resultsFolder, file));
-            resultFiles.add(getNovorResultFile(resultsFolder, file));
+        if (pepNovo) {
+            resultFiles.addAll(getOutFiles(resultsFolder, spectrumFiles));
+        }
+        if (direcTag) {
+            resultFiles.addAll(getTagsFiles(resultsFolder, spectrumFiles));
+        }
+        if (pNovo) {
+            resultFiles.addAll(getPNovoResultFiles(resultsFolder, spectrumFiles));
+        }
+        if (novor) {
+            resultFiles.addAll(getNovorResultFiles(resultsFolder, spectrumFiles));
         }
         return resultFiles;
     }
