@@ -1452,6 +1452,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @see #updateSpectrum()
      */
     private void allCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allCheckBoxMenuItemActionPerformed
+        annotationPreferences.setShowAllPeaks(allCheckBoxMenuItem.isSelected());
         updateSpectrum();
     }//GEN-LAST:event_allCheckBoxMenuItemActionPerformed
 
