@@ -167,14 +167,6 @@ public class DeNovoSequencingHandler {
         waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
-        // set this version as the default DeNovoGUI version
-        if (!getJarFilePath().equalsIgnoreCase(".")) {
-            String versionNumber = new com.compomics.denovogui.util.Properties().getVersion();
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-            utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
-            UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
-        }
-
         // store the pepnovo to utilities ptm mapping
         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());

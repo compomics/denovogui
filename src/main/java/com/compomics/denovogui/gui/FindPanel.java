@@ -1,6 +1,5 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
@@ -263,27 +262,32 @@ public class FindPanel extends javax.swing.JPanel {
                                         if (resultsFrame.getIdentifications().matchExists(psmKey)) {
 
                                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = resultsFrame.getIdentifications().getAssumptions(psmKey);
-                                            HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(Advocate.pepnovo.getIndex());
 
-                                            if (assumptionsMap != null) {
-                                                ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                                                Collections.sort(scores, Collections.reverseOrder());
+                                            for (Integer advocateIndex : allAssumptions.keySet()) {
 
-                                                int rowCounter = 0;
+                                                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocateIndex);
 
-                                                for (Double score : scores) {
-                                                    for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                                        if (assumption instanceof TagAssumption) {
-                                                            TagAssumption tagAssumption = (TagAssumption) assumption;
-                                                            String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
-                                                            if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
-                                                                possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
+                                                if (assumptionsMap != null) {
+                                                    ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
+                                                    Collections.sort(scores, Collections.reverseOrder());
+
+                                                    int rowCounter = 0;
+
+                                                    for (Double score : scores) {
+                                                        for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
+                                                            if (assumption instanceof TagAssumption) {
+                                                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                                                String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
+                                                                if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
+                                                                    possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
+                                                                }
+                                                                rowCounter++;
                                                             }
-                                                            rowCounter++;
                                                         }
                                                     }
                                                 }
                                             }
+
                                         }
                                     }
                                 }

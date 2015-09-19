@@ -317,7 +317,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         }
         spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
 
-        // Add default neutral losses to display
+        // add default neutral losses to display
         IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O);
         IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
         spectrumAnnotationMenuPanel.add(annotationMenuBar);
@@ -567,6 +567,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         jSeparator19 = new javax.swing.JPopupMenu.Separator();
         deNovoChargeOneJRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
         deNovoChargeTwoJRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        individualDeNovoCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         splitterMenu9 = new javax.swing.JMenu();
         settingsMenu = new javax.swing.JMenu();
         allCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -812,6 +814,16 @@ public class ResultsFrame extends javax.swing.JFrame {
             }
         });
         deNovoMenu.add(deNovoChargeTwoJRadioButtonMenuItem);
+        deNovoMenu.add(jSeparator1);
+
+        individualDeNovoCheckBoxMenuItem.setText("Amino Acid Scores");
+        individualDeNovoCheckBoxMenuItem.setToolTipText("<html>\nColor indicates the amino acid scores.<br>\nLight color: low score, darker color: high score.\n</html>");
+        individualDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                individualDeNovoCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        deNovoMenu.add(individualDeNovoCheckBoxMenuItem);
 
         annotationMenuBar.add(deNovoMenu);
 
@@ -1775,6 +1787,13 @@ public class ResultsFrame extends javax.swing.JFrame {
         defaultAnnotationCheckBoxMenuItemActionPerformed(null);
     }//GEN-LAST:event_resetAnnotationMenuMenuSelected
 
+    /**
+     * @see #updateSpectrum()
+     */
+    private void individualDeNovoCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_individualDeNovoCheckBoxMenuItemActionPerformed
+        updateSpectrum();
+    }//GEN-LAST:event_individualDeNovoCheckBoxMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1815,7 +1834,9 @@ public class ResultsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JCheckBoxMenuItem highResAnnotationCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem immoniumIonsCheckMenu;
+    private javax.swing.JCheckBoxMenuItem individualDeNovoCheckBoxMenuItem;
     private javax.swing.JMenu ionsMenu;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
@@ -1948,8 +1969,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
                         Collections.sort(scores);
 
-                        if (advocate.getIndex() == Advocate.pepnovo.getIndex() 
-                                || advocate.getIndex() == Advocate.pNovo.getIndex() 
+                        if (advocate.getIndex() == Advocate.pepnovo.getIndex()
+                                || advocate.getIndex() == Advocate.pNovo.getIndex()
                                 || advocate.getIndex() == Advocate.novor.getIndex()) {
                             Collections.reverse(scores);
                         }
@@ -2395,16 +2416,11 @@ public class ResultsFrame extends javax.swing.JFrame {
                             if (i == 0) {
                                 spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
-                                // add de novo sequencing
-                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
-                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                        TagFragmentIon.Y_ION,
-                                        annotationPreferences.getDeNovoCharge(),
-                                        annotationPreferences.showForwardIonDeNovoTags(),
-                                        annotationPreferences.showRewindIonDeNovoTags(),
-                                        0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
-                            } else {
-                                spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                                // convert the amino acid scores to alpha levels
+                                ArrayList<float[]> alphaValues = null;
+                                if (tagAssumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
+                                    alphaValues = convertAminoAcidScoresToAlphaValues(tagAssumption.getAminoAcidScores());
+                                }
 
                                 // add de novo sequencing
                                 spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
@@ -2413,7 +2429,24 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         annotationPreferences.getDeNovoCharge(),
                                         annotationPreferences.showForwardIonDeNovoTags(),
                                         annotationPreferences.showRewindIonDeNovoTags(),
-                                        0.75, 1.0, !fixedPtmsCheckBoxMenuItem.isSelected(), true);
+                                        0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
+                            } else {
+                                spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+
+                                // convert the amino acid scores to alpha levels
+                                ArrayList<float[]> alphaValues = null;
+                                if (tagAssumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
+                                    alphaValues = convertAminoAcidScoresToAlphaValues(tagAssumption.getAminoAcidScores());
+                                }
+
+                                // add de novo sequencing
+                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                        TagFragmentIon.Y_ION,
+                                        annotationPreferences.getDeNovoCharge(),
+                                        annotationPreferences.showForwardIonDeNovoTags(),
+                                        annotationPreferences.showRewindIonDeNovoTags(),
+                                        0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), true);
                             }
 
                             spectrumJPanel.add(spectrumPanel);
@@ -3445,5 +3478,30 @@ public class ResultsFrame extends javax.swing.JFrame {
     private void deselectDefaultAnnotationMenuItem() {
         defaultAnnotationCheckBoxMenuItem.setSelected(false);
         resetAnnotationMenu.setVisible(true);
+    }
+
+    /**
+     * Converts the amino acid scores to alpha values. Assumes that the amino
+     * acid scores are in the range [0-100].
+     *
+     * @param aminoAcidScores the amino acid scores
+     * @return the alpha values
+     */
+    private ArrayList<float[]> convertAminoAcidScoresToAlphaValues(ArrayList<double[]> aminoAcidScores) {
+
+        ArrayList<float[]> alphaValues = new ArrayList<float[]>();
+
+        for (double[] tempAminoAcidScores : aminoAcidScores) {
+
+            float[] tempAlphaValues = new float[tempAminoAcidScores.length];
+
+            for (int i = 0; i < tempAminoAcidScores.length; i++) {
+                tempAlphaValues[i] = 0.2f * ((float) tempAminoAcidScores[i] / 100);
+            }
+
+            alphaValues.add(tempAlphaValues);
+        }
+
+        return alphaValues;
     }
 }

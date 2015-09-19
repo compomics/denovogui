@@ -216,6 +216,17 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deNovoChargeTwoJRadioButtonMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="individualDeNovoCheckBoxMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Amino Acid Scores"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Color indicates the amino acid scores.&lt;br&gt;&#xa;Light color: low score, darker color: high score.&#xa;&lt;/html&gt;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="individualDeNovoCheckBoxMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="splitterMenu9">

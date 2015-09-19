@@ -293,6 +293,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 }
             }
 
+            // set this version as the default DeNovoGUI version
+            if (!getJarFilePath().equalsIgnoreCase(".")) {
+                String versionNumber = new com.compomics.denovogui.util.Properties().getVersion();
+                UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+                utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+                UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
+            }
+
             // set the font color for the titlted borders, looks better than the default black
             UIManager.put("TitledBorder.titleColor", new Color(59, 59, 59));
 
