@@ -816,6 +816,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoMenu.add(deNovoChargeTwoJRadioButtonMenuItem);
         deNovoMenu.add(jSeparator1);
 
+        individualDeNovoCheckBoxMenuItem.setSelected(true);
         individualDeNovoCheckBoxMenuItem.setText("Amino Acid Scores");
         individualDeNovoCheckBoxMenuItem.setToolTipText("<html>\nColor indicates the amino acid scores.<br>\nLight color: low score, darker color: high score.\n</html>");
         individualDeNovoCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
