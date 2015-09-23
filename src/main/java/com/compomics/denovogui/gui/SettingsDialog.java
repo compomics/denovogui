@@ -20,6 +20,7 @@ import com.compomics.util.experiment.identification.identification_parameters.to
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -214,10 +215,14 @@ public class SettingsDialog extends javax.swing.JDialog {
         if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
             searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
         }
+        if (searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex()) == null) {
+            searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), new NovorParameters());
+        }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
         PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex());
+        NovorParameters novorParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
 
         // mass tolerances
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
@@ -1536,6 +1541,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()));
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()));
         tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()));
+        tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex()));
 
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
@@ -1569,6 +1575,9 @@ public class SettingsDialog extends javax.swing.JDialog {
         }
         if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
             tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
+        }
+        if (tempSearchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex()) == null) {
+            tempSearchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), new NovorParameters());
         }
 
         // clone the pepnovo parameters

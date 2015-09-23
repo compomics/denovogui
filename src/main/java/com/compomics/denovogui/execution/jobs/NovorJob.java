@@ -6,7 +6,9 @@ import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import com.compomics.util.waiting.WaitingHandler;
@@ -194,18 +196,21 @@ public class NovorJob extends Job {
     private void createParameterFile() {
 
         // get the Novoe specific parameters
-        //NovorParameters pNovoParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
+        NovorParameters novorParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
         try {
             FileWriter parameterWriter = new FileWriter(novorFolder.getAbsolutePath() + File.separator + parameterFileName);
             BufferedWriter bufferedParameterWriter = new BufferedWriter(parameterWriter);
 
-            bufferedParameterWriter.write("# Search parameters. In v1.1, only Trypsin and Trap are supported." + System.getProperty("line.separator"));
+            bufferedParameterWriter.write("# Search parameters" + System.getProperty("line.separator"));
 
             // the enzyme
             bufferedParameterWriter.write("enzyme = Trypsin" + System.getProperty("line.separator"));
 
+            // fragmentation method
+            bufferedParameterWriter.write("fragmentation = " + novorParameters.getFragmentationMethod() + System.getProperty("line.separator"));
+            
             // the instrument
-            bufferedParameterWriter.write("massAnalyzer = Trap" + System.getProperty("line.separator"));
+            bufferedParameterWriter.write("massAnalyzer = " + novorParameters.getMassAnalyzer() + System.getProperty("line.separator"));
 
             // the fragment ion tolerance
             bufferedParameterWriter.write("fragmentIonErrorTol = ");

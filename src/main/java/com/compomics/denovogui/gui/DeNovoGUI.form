@@ -521,7 +521,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit_gray.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced DirecTag Settings"/>
+                <Property name="toolTipText" type="java.lang.String" value="Edit DirecTag Advanced Settings"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
@@ -542,7 +542,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit_gray.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced PepNovo+ Settings"/>
+                <Property name="toolTipText" type="java.lang.String" value="Edit PepNovo+ Advanced Settings"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
@@ -563,7 +563,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit_gray.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced pNovo+ Settings"/>
+                <Property name="toolTipText" type="java.lang.String" value="Edit pNovo+ Advanced Settings"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
@@ -632,7 +632,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/icons/edit_gray.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Edit Advanced Novor Settings"/>
+                <Property name="toolTipText" type="java.lang.String" value="Edit Novor Advanced Settings"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>

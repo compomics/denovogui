@@ -1,5 +1,7 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.util.gui.searchsettings.algorithm_settings.PNovoSettingsDialog;
+import com.compomics.util.gui.searchsettings.algorithm_settings.DirecTagSettingsDialog;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
@@ -30,6 +32,7 @@ import com.compomics.util.experiment.identification.identification_parameters.to
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsAmandaParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsgfParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MyriMatchParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.OmssaParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
@@ -42,6 +45,7 @@ import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.searchsettings.SearchSettingsDialog;
+import com.compomics.util.gui.searchsettings.algorithm_settings.NovorSettingsDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
@@ -468,6 +472,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
                 searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
             }
+            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex()) == null) {
+                searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), new NovorParameters());
+            }
 
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
@@ -770,7 +777,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         betaLabel.setText("(beta)");
 
         directTagSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
-        directTagSettingsJButton.setToolTipText("Edit Advanced DirecTag Settings");
+        directTagSettingsJButton.setToolTipText("Edit DirecTag Advanced Settings");
         directTagSettingsJButton.setBorder(null);
         directTagSettingsJButton.setBorderPainted(false);
         directTagSettingsJButton.setContentAreaFilled(false);
@@ -790,7 +797,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         });
 
         pepNovoSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
-        pepNovoSettingsJButton.setToolTipText("Edit Advanced PepNovo+ Settings");
+        pepNovoSettingsJButton.setToolTipText("Edit PepNovo+ Advanced Settings");
         pepNovoSettingsJButton.setBorder(null);
         pepNovoSettingsJButton.setBorderPainted(false);
         pepNovoSettingsJButton.setContentAreaFilled(false);
@@ -808,7 +815,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         });
 
         pNovoSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
-        pNovoSettingsJButton.setToolTipText("Edit Advanced pNovo+ Settings");
+        pNovoSettingsJButton.setToolTipText("Edit pNovo+ Advanced Settings");
         pNovoSettingsJButton.setBorder(null);
         pNovoSettingsJButton.setBorderPainted(false);
         pNovoSettingsJButton.setContentAreaFilled(false);
@@ -874,7 +881,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         });
 
         novorSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit_gray.png"))); // NOI18N
-        novorSettingsJButton.setToolTipText("Edit Advanced Novor Settings");
+        novorSettingsJButton.setToolTipText("Edit Novor Advanced Settings");
         novorSettingsJButton.setBorder(null);
         novorSettingsJButton.setBorderPainted(false);
         novorSettingsJButton.setContentAreaFilled(false);
@@ -2021,7 +2028,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void directTagSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonActionPerformed
-        new DirecTagSettingsDialog(this, searchParameters, true);
+        DirecTagSettingsDialog direcTagSettingsDialog = new DirecTagSettingsDialog(this, searchParameters, true);
+
+        // see if there are changes to the parameters and ask the user if these are to be saved
+        while (!direcTagSettingsDialog.isCanceled() && !checkSearchParameters(direcTagSettingsDialog.getSearchParametersFromGUI())) {
+            direcTagSettingsDialog.setVisible(true);
+        }
+
+        direcTagSettingsDialog.dispose();
     }//GEN-LAST:event_directTagSettingsJButtonActionPerformed
 
     /**
@@ -2048,7 +2062,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
-        new PNovoSettingsDialog(this, searchParameters, true);
+        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, searchParameters, true);
+
+        // see if there are changes to the parameters and ask the user if these are to be saved
+        while (!pNovoSettingsDialog.isCanceled() && !checkSearchParameters(pNovoSettingsDialog.getSearchParametersFromGUI())) {
+            pNovoSettingsDialog.setVisible(true);
+        }
+
+        pNovoSettingsDialog.dispose();
     }//GEN-LAST:event_pNovoSettingsJButtonActionPerformed
 
     /**
@@ -2163,12 +2184,20 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }//GEN-LAST:event_novorSettingsJButtonMouseExited
 
     /**
-     * Show a message that there are no advanced Novor settings.
+     * Open the Novor advanced settings.
      *
      * @param evt
      */
     private void novorSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorSettingsJButtonMouseReleased
-        JOptionPane.showMessageDialog(this, "There are no advanced settings for Novor. Please use the general settings.", "Novor Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
+
+        NovorSettingsDialog novorSettingsDialog = new NovorSettingsDialog(this, searchParameters, true);
+
+        // see if there are changes to the parameters and ask the user if these are to be saved
+        while (!novorSettingsDialog.isCanceled() && !checkSearchParameters(novorSettingsDialog.getSearchParametersFromGUI())) {
+            novorSettingsDialog.setVisible(true);
+        }
+
+        novorSettingsDialog.dispose();
     }//GEN-LAST:event_novorSettingsJButtonMouseReleased
 
     /**

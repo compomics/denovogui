@@ -67,6 +67,9 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id, true, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description);
+        
+        aOptions.addOption(IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.id, true, IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.description);
+        aOptions.addOption(IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.id, true, IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.description);
 
         aOptions.addOption(IdentificationParametersCLIParams.USAGE.id, false, IdentificationParametersCLIParams.USAGE.description);
         aOptions.addOption(IdentificationParametersCLIParams.USAGE_2.id, false, IdentificationParametersCLIParams.USAGE_2.description);
@@ -134,6 +137,10 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id) + IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description + "\n";
 
+        output += "\n\nNovor advanced parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.id) + IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.id) + IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.description + "\n";
+        
         output += "\n\nHelp:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.MODS.id) + IdentificationParametersCLIParams.MODS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.USAGE.id) + IdentificationParametersCLIParams.USAGE.description + "\n";
