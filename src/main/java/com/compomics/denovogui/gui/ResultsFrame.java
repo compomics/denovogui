@@ -1730,18 +1730,23 @@ public class ResultsFrame extends javax.swing.JFrame {
                     public void run() {
 
                         try {
+                            boolean peptideFound = true;
                             if (needMapping) {
-                                matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
+                                peptideFound = matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                             }
                             if (!progressDialog.isRunCanceled()) {
-                                progressDialog.setTitle("Exporting Matches. Please Wait...");
-                                deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
-                                TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog,
-                                        exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
-                                if (!progressDialog.isRunCanceled()) {
-                                    progressDialog.setRunFinished();
-                                    JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                                if (!peptideFound) {
+                                    JOptionPane.showMessageDialog(ResultsFrame.this, "No peptide could be matched to the database.", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    progressDialog.setTitle("Exporting Matches. Please Wait...");
+                                    deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
+                                    TextExporter.exportPeptides(selectedFile, identification, searchParameters, progressDialog,
+                                            exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
+                                    if (!progressDialog.isRunCanceled()) {
+                                        progressDialog.setRunFinished();
+                                        JOptionPane.showMessageDialog(ResultsFrame.this, "Matches exported to " + selectedFile.getAbsolutePath() + ".", "File Saved", JOptionPane.INFORMATION_MESSAGE);
+                                    }
                                 }
                             }
                         } catch (Exception e) {
@@ -1880,6 +1885,8 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * Matches the tags to proteins.
      *
+     * @return return a boolean indicating whether at least a peptide was found
+     *
      * @throws IOException exception thrown whenever an error occurred while
      * reading or writing a file
      * @throws ClassNotFoundException exception thrown whenever an error
@@ -1889,7 +1896,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @throws SQLException exception thrown whenever an error occurs while
      * interacting with the back-end database
      */
-    private void matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
+    private boolean matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
             Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, ClassNotFoundException, InterruptedException, SQLException {
 
         double threshold = 0;
@@ -1905,7 +1912,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         waitingHandler.setSecondaryProgressCounterIndeterminate(false);
 
         if (waitingHandler.isRunCanceled()) {
-            return;
+            return false;
         }
 
         waitingHandler.resetSecondaryProgressCounter();
@@ -1939,7 +1946,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
             waitingHandler.setRunCanceled();
-            return;
+            return false;
         }
 
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
@@ -1951,6 +1958,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         TagMatcher tagMatcher = new TagMatcher(fixedModifications, variableModifications, deNovoGUI.getSequenceMatchingPreferences());
 
         int progress = 0;
+        boolean peptideFound = false;
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, waitingHandler);
@@ -1968,20 +1976,21 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                     if (assumptionsMap != null) {
                         ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                        Collections.sort(scores);
-
                         if (advocate.getIndex() == Advocate.pepnovo.getIndex()
                                 || advocate.getIndex() == Advocate.pNovo.getIndex()
                                 || advocate.getIndex() == Advocate.novor.getIndex()) {
-                            Collections.reverse(scores);
+                            Collections.sort(scores, Collections.reverseOrder());
+                        } else {
+                            Collections.sort(scores);
                         }
 
                         for (int i = 0; i < scores.size() && i < numberOfMatches; i++) {
 
                             double score = scores.get(i);
-                            ArrayList<SpectrumIdentificationAssumption> tempAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptionsMap.get(score));
+                            ArrayList<SpectrumIdentificationAssumption> assumptions = assumptionsMap.get(score);
+                            ArrayList<SpectrumIdentificationAssumption> denovoAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptions);
 
-                            for (SpectrumIdentificationAssumption assumption : tempAssumptions) {
+                            for (SpectrumIdentificationAssumption assumption : denovoAssumptions) {
 
                                 boolean passesThreshold;
 
@@ -1997,11 +2006,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
                                                 tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
                                         for (Peptide peptide : proteinMapping.keySet()) {
+                                            if (!peptideFound) {
+                                                peptideFound = true;
+                                            }
                                             peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
                                             PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
                                                     advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
                                             peptideAssumption.addUrParam(tagAssumption);
-                                            spectrumMatch.addHit(advocateIndex, peptideAssumption, true);
+                                            assumptions.add(peptideAssumption);
                                         }
                                     }
                                 }
@@ -2010,7 +2022,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     }
                 }
 
-                identification.updateSpectrumMatch(spectrumMatch);
+                identification.updateAssumptions(spectrumKey, allAssumptions);
 
                 // free memory if needed
                 if (memoryUsed() > 0.8 && !objectsCache.isEmpty()) {
@@ -2030,11 +2042,13 @@ public class ResultsFrame extends javax.swing.JFrame {
         }
 
         if (waitingHandler.isRunCanceled()) {
-            return;
+            return false;
         }
 
         ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
         waitingHandler.setRunFinished();
+
+        return peptideFound;
     }
 
     /**
