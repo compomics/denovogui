@@ -26,18 +26,6 @@ import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.AndromedaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.CometParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsAmandaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MsgfParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.MyriMatchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.OmssaParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.TideParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.XtandemParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -438,43 +426,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
 
             this.searchParameters = searchParameters;
-
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.omssa.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.omssa.getIndex(), new OmssaParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.xtandem.getIndex(), new XtandemParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msgf.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.msgf.getIndex(), new MsgfParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.comet.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.comet.getIndex(), new CometParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.tide.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.tide.getIndex(), new TideParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex(), new MsAmandaParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex(), new MyriMatchParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.andromeda.getIndex(), new AndromedaParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), new PepnovoParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), new DirecTagParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.pNovo.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), new PNovoParameters());
-            }
-            if (searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex()) == null) {
-                searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), new NovorParameters());
-            }
 
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
