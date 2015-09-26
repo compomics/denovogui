@@ -8,7 +8,6 @@ import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.software.CompomicsWrapper;
-import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
@@ -204,10 +203,10 @@ public class DeNovoSequencingHandler {
         if (nThreads > 1) {
             threadEnding = "s";
         }
-        
+
         Duration duration = new Duration();
         duration.start();
-        
+
         waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
                 + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + threadEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
@@ -221,6 +220,7 @@ public class DeNovoSequencingHandler {
         }
 
         if (!waitingHandler.isRunCanceled()) {
+            duration.end();
             waitingHandler.appendReport("De novo sequencing completed (" + duration.toString() + ").", true, true);
 
             // check if we have any output files
@@ -255,7 +255,7 @@ public class DeNovoSequencingHandler {
 
         try {
 
-            // Pepnovo
+            // PepNovo
             if (enablePepNovo) {
 
                 Duration algorithmDuration = new Duration();
@@ -470,10 +470,8 @@ public class DeNovoSequencingHandler {
 
         } catch (FileNotFoundException ex) {
             exceptionHandler.catchException(ex);
-            return;
         } catch (IOException ex) {
             exceptionHandler.catchException(ex);
-            return;
         }
     }
 
