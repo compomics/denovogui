@@ -255,6 +255,8 @@ public class DeNovoSequencingHandler {
 
         try {
 
+            jobs = new ArrayDeque<Job>();
+
             // PepNovo
             if (enablePepNovo) {
 
@@ -269,7 +271,6 @@ public class DeNovoSequencingHandler {
                 threadExecutor = Executors.newFixedThreadPool(nThreads);
 
                 // job queue
-                jobs = new ArrayDeque<Job>();
                 int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
                 if (nThreads > 1) {
                     int remaining = nSpectra % nThreads;
