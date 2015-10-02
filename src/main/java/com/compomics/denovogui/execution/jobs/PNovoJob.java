@@ -226,7 +226,7 @@ public class PNovoJob extends Job {
             if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
                 for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
                     PTM ptm = ptmFactory.getPTM(variableModification);
-                    if (!ptm.isCTerm() && !ptm.isNTerm()) {
+                    if (!ptm.isCTerm() && !ptm.isNTerm() && ptm.getPattern() != null) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
 
                             if (variableModCount > variableModificationsCharacters.length) {
