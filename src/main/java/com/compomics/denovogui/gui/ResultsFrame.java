@@ -46,6 +46,7 @@ import com.compomics.util.experiment.identification.amino_acid_tags.Tag;
 import com.compomics.util.experiment.identification.amino_acid_tags.TagComponent;
 import com.compomics.util.experiment.identification.amino_acid_tags.matchers.TagMatcher;
 import com.compomics.util.experiment.biology.MassGap;
+import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
@@ -66,6 +67,7 @@ import com.compomics.util.experiment.identification.spectrum_annotation.Annotati
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
+import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
@@ -125,9 +127,9 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
     /**
-     * The current tag assumptions.
+     * The current assumptions.
      */
-    private ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
+    private ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>();
     /**
      * The annotation preferences.
      */
@@ -265,9 +267,13 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private FrameExceptionHandler exceptionHandler = new FrameExceptionHandler(this, "https://github.com/compomics/denovogui/issues");
     /**
-     * The spectrum annotator to use.
+     * The spectrum annotator to use for tags.
      */
-    private TagSpectrumAnnotator spectrumAnnotator = new TagSpectrumAnnotator();
+    private TagSpectrumAnnotator tagSpectrumAnnotator = new TagSpectrumAnnotator();
+    /**
+     * The spectrum annotator to use for peptides.
+     */
+    private PeptideSpectrumAnnotator peptideSpectrumAnnotator = new PeptideSpectrumAnnotator();
 
     /**
      * Creates a new ResultsPanel.
@@ -363,7 +369,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoPeptidesTableToolTips = new ArrayList<String>();
         deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add("Sequencing Algorithm");
-        deNovoPeptidesTableToolTips.add("Tag Sequences");
+        deNovoPeptidesTableToolTips.add("de novo Sequences");
         deNovoPeptidesTableToolTips.add("Precursor m/z");
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
@@ -1285,10 +1291,19 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         // check of the user clicked the blast columns
         if (evt.getButton() == 1 && row != -1 && column == deNovoMatchesTable.getColumn("  ").getModelIndex()) {
-            TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
+            SpectrumIdentificationAssumption assumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-            BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
-                    + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + tagAssumption.getTag().getLongestAminoAcidSequence());
+            if (assumption instanceof TagAssumption) {
+                TagAssumption tagAssumption = (TagAssumption) assumption;
+                BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
+                        + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + tagAssumption.getTag().getLongestAminoAcidSequence());
+            } else if (assumption instanceof PeptideAssumption) {
+                PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                BareBonesBrowserLaunch.openURL("http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&BLAST_PROGRAMS=blastp&"
+                        + "PAGE_TYPE=BlastSearch&SHOW_DEFAULTS=on&LINK_LOC=blasthome&QUERY=" + peptideAssumption.getPeptide().getSequence());
+            } else {
+                throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
+            }
             this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         }
 
@@ -1323,9 +1338,18 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                 if (sequence.contains("<span")) {
                     try {
-                        TagAssumption tagAssumption = assumptions.get(row);
-                        String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
-                        deNovoMatchesTable.setToolTipText(tooltip);
+                        SpectrumIdentificationAssumption assumption = assumptions.get(row);
+                        if (assumption instanceof TagAssumption) {
+                            TagAssumption tagAssumption = (TagAssumption) assumption;
+                            String tooltip = getTagModificationTooltipAsHtml(tagAssumption.getTag());
+                            deNovoMatchesTable.setToolTipText(tooltip);
+                        } else if (assumption instanceof PeptideAssumption) {
+                            PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                            String tooltip = getPeptideModificationTooltipAsHtml(peptideAssumption.getPeptide());
+                            deNovoMatchesTable.setToolTipText(tooltip);
+                        } else {
+                            throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
+                        }
                     } catch (Exception e) {
                         catchException(e);
                     }
@@ -2300,7 +2324,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     public void updateAssumptionsTable(int selectedPsmRow) {
 
         try {
-            assumptions = new ArrayList<TagAssumption>();
+            assumptions = new ArrayList<SpectrumIdentificationAssumption>();
 
             if (querySpectraTable.getRowCount() > 0) {
 
@@ -2320,10 +2344,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                             for (Double score : scores) {
                                 for (SpectrumIdentificationAssumption assumption : assumptionsMap.get(score)) {
-                                    if (assumption instanceof TagAssumption) {
-                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        assumptions.add(tagAssumption);
-                                    }
+                                    assumptions.add(assumption);
                                 }
                             }
                         }
@@ -2423,81 +2444,132 @@ public class ResultsFrame extends javax.swing.JFrame {
                         // add the spectrum annotations
                         for (int i = 0; i < deNovoMatchesTable.getSelectedRowCount(); i++) {
 
-                            TagAssumption tagAssumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
-                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, tagAssumption, SequenceMatchingPreferences.defaultStringMatching, SequenceMatchingPreferences.defaultStringMatching);
+                            SpectrumIdentificationAssumption assumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
+                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, assumption, SequenceMatchingPreferences.defaultStringMatching, SequenceMatchingPreferences.defaultStringMatching);
                             updateAnnotationPreferences();
-                            ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, tagAssumption.getTag());
-
+                            ArrayList<IonMatch> annotations;
+                            if (assumption instanceof TagAssumption) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                annotations = tagSpectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, tagAssumption.getTag());
+                            } else if (assumption instanceof PeptideAssumption) {
+                                PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                annotations = peptideSpectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, peptideAssumption.getPeptide());
+                            } else {
+                                throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
+                            }
                             if (i == 0) {
                                 spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
                                 // convert the amino acid scores to alpha levels
                                 ArrayList<float[]> alphaValues = null;
-                                if (tagAssumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
-                                    alphaValues = convertAminoAcidScoresToAlphaValues(tagAssumption.getAminoAcidScores());
+                                if (assumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
+                                    alphaValues = convertAminoAcidScoresToAlphaValues(assumption.getAminoAcidScores());
                                 }
 
                                 // add de novo sequencing
-                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
-                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                        TagFragmentIon.Y_ION,
-                                        annotationPreferences.getDeNovoCharge(),
-                                        annotationPreferences.showForwardIonDeNovoTags(),
-                                        annotationPreferences.showRewindIonDeNovoTags(),
-                                        0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
+                                if (assumption instanceof TagAssumption) {
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                                            TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                            TagFragmentIon.Y_ION,
+                                            annotationPreferences.getDeNovoCharge(),
+                                            annotationPreferences.showForwardIonDeNovoTags(),
+                                            annotationPreferences.showRewindIonDeNovoTags(),
+                                            0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
+                                } else if (assumption instanceof PeptideAssumption) {
+                                    PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                    spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
+                                            PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                            PeptideFragmentIon.Y_ION, annotationPreferences.getDeNovoCharge(),
+                                            annotationPreferences.showForwardIonDeNovoTags(),
+                                            annotationPreferences.showRewindIonDeNovoTags(), false);
+                                } else {
+                                    throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
+                                }
                             } else {
                                 spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations));
 
                                 // convert the amino acid scores to alpha levels
                                 ArrayList<float[]> alphaValues = null;
-                                if (tagAssumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
-                                    alphaValues = convertAminoAcidScoresToAlphaValues(tagAssumption.getAminoAcidScores());
+                                if (assumption.getAminoAcidScores() != null && individualDeNovoCheckBoxMenuItem.isSelected()) {
+                                    alphaValues = convertAminoAcidScoresToAlphaValues(assumption.getAminoAcidScores());
                                 }
 
                                 // add de novo sequencing
-                                spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
-                                        TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                        TagFragmentIon.Y_ION,
-                                        annotationPreferences.getDeNovoCharge(),
-                                        annotationPreferences.showForwardIonDeNovoTags(),
-                                        annotationPreferences.showRewindIonDeNovoTags(),
-                                        0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), true);
-                            }
-
-                            spectrumJPanel.add(spectrumPanel);
-                            Tag tag = tagAssumption.getTag();
-
-                            // get the modifications for the tag
-                            for (TagComponent tagComponent : tagAssumption.getTag().getContent()) {
-                                if (tagComponent instanceof AminoAcidPattern) {
-                                    AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
-                                    for (int site = 1; site <= aminoAcidPattern.length(); site++) {
-                                        for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
-                                            allModifications.add(modificationMatch);
-                                        }
-                                    }
-                                } else if (tagComponent instanceof AminoAcidSequence) {
-                                    AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
-                                    for (int site = 1; site <= aminoAcidSequence.length(); site++) {
-                                        for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
-                                            allModifications.add(modificationMatch);
-                                        }
-                                    }
-                                } else if (tagComponent instanceof MassGap) {
-                                    // Nothing to do here
+                                if (assumption instanceof TagAssumption) {
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    spectrumPanel.addAutomaticDeNovoSequencing(tagAssumption.getTag(), annotations,
+                                            TagFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                            TagFragmentIon.Y_ION,
+                                            annotationPreferences.getDeNovoCharge(),
+                                            annotationPreferences.showForwardIonDeNovoTags(),
+                                            annotationPreferences.showRewindIonDeNovoTags(),
+                                            0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), true);
+                                } else if (assumption instanceof PeptideAssumption) {
+                                    PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                    spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
+                                            PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
+                                            PeptideFragmentIon.Y_ION, annotationPreferences.getDeNovoCharge(),
+                                            annotationPreferences.showForwardIonDeNovoTags(),
+                                            annotationPreferences.showRewindIonDeNovoTags(), false);
                                 } else {
-                                    throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
+                                    throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                                 }
                             }
 
-                            if (!modifiedSequence.isEmpty()) {
-                                modifiedSequence += " vs. ";
+                            spectrumJPanel.add(spectrumPanel);
+
+                            // get the modifications and update the modified sequence for the panel title
+                            if (assumption instanceof TagAssumption) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                Tag tag = tagAssumption.getTag();
+                                for (TagComponent tagComponent : tag.getContent()) {
+                                    if (tagComponent instanceof AminoAcidPattern) {
+                                        AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                                        for (int site = 1; site <= aminoAcidPattern.length(); site++) {
+                                            for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
+                                                allModifications.add(modificationMatch);
+                                            }
+                                        }
+                                    } else if (tagComponent instanceof AminoAcidSequence) {
+                                        AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                                        for (int site = 1; site <= aminoAcidSequence.length(); site++) {
+                                            for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
+                                                allModifications.add(modificationMatch);
+                                            }
+                                        }
+                                    } else if (tagComponent instanceof MassGap) {
+                                        // Nothing to do here
+                                    } else {
+                                        throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
+                                    }
+                                }
+
+                                if (!modifiedSequence.isEmpty()) {
+                                    modifiedSequence += " vs. ";
+                                }
+
+                                modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
+
+                            } else if (assumption instanceof PeptideAssumption) {
+                                PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                Peptide peptide = peptideAssumption.getPeptide();
+                                for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                                    allModifications.add(modificationMatch);
+                                }
+
+                                if (!modifiedSequence.isEmpty()) {
+                                    modifiedSequence += " vs. ";
+                                }
+
+                                modifiedSequence += peptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
+                            } else {
+                                throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                             }
 
-                            modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
-
-                            if (tagAssumption.getIdentificationCharge().value > maxPrecursorCharge) {
-                                maxPrecursorCharge = tagAssumption.getIdentificationCharge().value;
+                            // Update max precursor charge
+                            if (assumption.getIdentificationCharge().value > maxPrecursorCharge) {
+                                maxPrecursorCharge = assumption.getIdentificationCharge().value;
                             }
                         }
 
@@ -2505,10 +2577,22 @@ public class ResultsFrame extends javax.swing.JFrame {
 
                         // update the spectrum title
                         if (deNovoMatchesTable.getSelectedRowCount() == 1) {
+                            double theoreticMz;
+                            SpectrumIdentificationAssumption assumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow()));
+                            if (assumption instanceof TagAssumption) {
+                                TagAssumption tagAssumption = (TagAssumption) assumption;
+                                theoreticMz = tagAssumption.getTheoreticMz(true, true);
+                            } else if (assumption instanceof PeptideAssumption) {
+                                PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                theoreticMz = peptideAssumption.getTheoreticMz();
+                            } else {
+                                throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
+                            }
+
                             ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
                                     "Spectrum Viewer (" + modifiedSequence
                                     + "   " + maxPrecursorCharge + "   "
-                                    + Util.roundDouble(assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRow())).getTheoreticMz(true, true), 2) + " m/z)");
+                                    + Util.roundDouble(theoreticMz, 2) + " m/z)");
                         } else if (deNovoMatchesTable.getSelectedRowCount() == 2) {
                             ((TitledBorder) spectrumViewerPanel.getBorder()).setTitle(
                                     "Spectrum Viewer (" + modifiedSequence + ")");
@@ -2920,6 +3004,48 @@ public class ResultsFrame extends javax.swing.JFrame {
     }
 
     /**
+     * Returns a string with the HTML tooltip for the peptide indicating the
+     * modification details.
+     *
+     * @param peptide the peptide
+     * @return a string with the HTML tooltip for the peptide
+     */
+    public String getPeptideModificationTooltipAsHtml(Peptide peptide) {
+
+        String peptideSequence = peptide.getSequence();
+
+        // @TODO: update to use the ptm scores
+        // @TODO: merge with getPeptideModificationTooltipAsHtml in PeptideShaker and move to utilities
+        String tooltip = "<html>";
+        ArrayList<String> alreadyAnnotated = new ArrayList<String>();
+
+        for (int aa = 1; aa <= peptideSequence.length(); aa++) {
+
+            int aaIndex = aa - 1;
+            char aminoAcid = peptideSequence.charAt(aaIndex);
+
+            for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                if (modificationMatch.isVariable() && modificationMatch.getModificationSite() == aa) {
+                    String ptmName = modificationMatch.getTheoreticPtm();
+                    String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (confident)<br>";
+                    if (!alreadyAnnotated.contains(temp)) {
+                        tooltip += temp;
+                        alreadyAnnotated.add(temp);
+                    }
+                }
+            }
+        }
+
+        if (!tooltip.equalsIgnoreCase("<html>")) {
+            tooltip += "</html>";
+        } else {
+            tooltip = null;
+        }
+
+        return tooltip;
+    }
+
+    /**
      * Returns a String with the HTML tooltip for the tag indicating the
      * modification details.
      *
@@ -2929,7 +3055,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     public String getTagModificationTooltipAsHtml(Tag tag) {
 
         // @TODO: update to use the ptm scores
-        // @TODO: merge with getTagModificationTooltipAsHtml in DeNovoGUI and move to utilities
+        // @TODO: merge with getTagModificationTooltipAsHtml in PeptideShaker and move to utilities
         String tooltip = "<html>";
 
         for (TagComponent tagComponent : tag.getContent()) {
@@ -3074,146 +3200,167 @@ public class ResultsFrame extends javax.swing.JFrame {
                         for (double score : tempAssumptions.keySet()) {
                             for (SpectrumIdentificationAssumption assumption : tempAssumptions.get(score)) {
 
-                                TagAssumption tagAssumption = (TagAssumption) assumption;
-                                Tag tag = tagAssumption.getTag();
+                                if (assumption instanceof TagAssumption) {
 
-                                // add the fixed PTMs
-                                ptmFactory.checkFixedModifications(searchParameters.getPtmSettings(), tag, deNovoGUI.getSequenceMatchingPreferences());
+                                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                                    Tag tag = tagAssumption.getTag();
 
-                                // rename the variable modifications
-                                for (TagComponent tagComponent : tag.getContent()) {
-                                    if (tagComponent instanceof AminoAcidPattern) {
+                                    // add the fixed PTMs
+                                    ptmFactory.checkFixedModifications(searchParameters.getPtmSettings(), tag, deNovoGUI.getSequenceMatchingPreferences());
 
-                                        AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+                                    // rename the variable modifications
+                                    for (TagComponent tagComponent : tag.getContent()) {
+                                        if (tagComponent instanceof AminoAcidPattern) {
 
-                                        for (int aa : aminoAcidPattern.getModificationIndexes()) {
-                                            for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
-                                                if (modificationMatch.isVariable()) {
-                                                    if (advocate == Advocate.pepnovo.getIndex()) {
-                                                        String pepnovoPtmName = modificationMatch.getTheoreticPtm();
-                                                        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                        String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
-                                                        if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                            AminoAcidPattern aminoAcidPattern = (AminoAcidPattern) tagComponent;
+
+                                            for (int aa : aminoAcidPattern.getModificationIndexes()) {
+                                                for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(aa)) {
+                                                    if (modificationMatch.isVariable()) {
+                                                        if (advocate == Advocate.pepnovo.getIndex()) {
+                                                            String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                            PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                            String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                            if (utilitiesPtmName == null) {
+                                                                throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            }
+                                                            modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                        } else if (advocate == Advocate.direcTag.getIndex()) {
+                                                            Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
+                                                            DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.direcTag.getIndex());
+                                                            String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
+                                                            if (utilitiesPtmName == null) {
+                                                                throw new IllegalArgumentException("DirecTag PTM " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            }
+                                                            modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                        } else if (advocate == Advocate.pNovo.getIndex()) {
+                                                            // already mapped
+                                                        } else if (advocate == Advocate.novor.getIndex()) {
+                                                            // already mapped
+                                                        } else {
+                                                            Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                            if (notImplemented == null) {
+                                                                throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                            }
+                                                            throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                         }
-                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                    } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                        Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                        DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.direcTag.getIndex());
-                                                        String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
-                                                        if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("DirecTag PTM " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                        }
-                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                    } else if (advocate == Advocate.pNovo.getIndex()) {
-                                                        // already mapped
-                                                    } else if (advocate == Advocate.novor.getIndex()) {
-                                                        // already mapped
-                                                    } else {
-                                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                                        if (notImplemented == null) {
-                                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                                        }
-                                                        throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                     }
                                                 }
                                             }
-                                        }
-                                    } else if (tagComponent instanceof AminoAcidSequence) {
+                                        } else if (tagComponent instanceof AminoAcidSequence) {
 
-                                        AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
+                                            AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
 
-                                        for (int aa : aminoAcidSequence.getModificationIndexes()) {
-                                            for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(aa)) {
-                                                if (modificationMatch.isVariable()) {
-                                                    if (advocate == Advocate.pepnovo.getIndex()) {
-                                                        String pepnovoPtmName = modificationMatch.getTheoreticPtm();
-                                                        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
-                                                        String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
-                                                        if (utilitiesPtmName == null) {
-                                                            throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                            for (int aa : aminoAcidSequence.getModificationIndexes()) {
+                                                for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(aa)) {
+                                                    if (modificationMatch.isVariable()) {
+                                                        if (advocate == Advocate.pepnovo.getIndex()) {
+                                                            String pepnovoPtmName = modificationMatch.getTheoreticPtm();
+                                                            PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
+                                                            String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
+                                                            if (utilitiesPtmName == null) {
+                                                                throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                            }
+                                                            modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                        } else if (advocate == Advocate.direcTag.getIndex()) {
+                                                            // already mapped
+                                                        } else if (advocate == Advocate.pNovo.getIndex()) {
+                                                            // already mapped
+                                                        } else if (advocate == Advocate.novor.getIndex()) {
+                                                            // already mapped
+                                                        } else {
+                                                            Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                                            if (notImplemented == null) {
+                                                                throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                                            }
+                                                            throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                         }
-                                                        modificationMatch.setTheoreticPtm(utilitiesPtmName);
-                                                    } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                        // already mapped
-                                                    } else if (advocate == Advocate.pNovo.getIndex()) {
-                                                        // already mapped
-                                                    } else if (advocate == Advocate.novor.getIndex()) {
-                                                        // already mapped
-                                                    } else {
-                                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                                        if (notImplemented == null) {
-                                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                                        }
-                                                        throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                     }
                                                 }
                                             }
+                                        } else if (tagComponent instanceof MassGap) {
+                                            // Nothing to do here
+                                        } else {
+                                            throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
                                         }
-                                    } else if (tagComponent instanceof MassGap) {
-                                        // Nothing to do here
+                                    }
+
+                                    // Set GUI min/max values
+                                    double mz = tagAssumption.getTheoreticMz();
+                                    if (mz > maxIdentificationMz) {
+                                        maxIdentificationMz = mz;
+                                    }
+                                    if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
+                                        maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
+                                    }
+                                    double nGap = tag.getNTerminalGap();
+                                    if (nGap > maxNGap) {
+                                        maxNGap = nGap;
+                                    }
+                                    double cGap = tag.getCTerminalGap();
+                                    if (cGap > maxCGap) {
+                                        maxCGap = cGap;
+                                    }
+
+                                    if (advocate == Advocate.pepnovo.getIndex()) {
+                                        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                        double rankScore = pepnovoAssumptionDetails.getRankScore();
+                                        if (rankScore < minRankScore) {
+                                            minRankScore = rankScore;
+                                        }
+                                        if (rankScore > maxRankScore) {
+                                            maxRankScore = rankScore;
+                                        }
+                                        if (score > maxPepnovoScore) {
+                                            maxPepnovoScore = score;
+                                        }
+                                    } else if (advocate == Advocate.direcTag.getIndex()) {
+                                        if (score > maxDirectTagEvalue) {
+                                            maxDirectTagEvalue = score;
+                                        }
+                                        if (score < minDirectTagEvalue) {
+                                            minDirectTagEvalue = score;
+                                        }
+                                    } else if (advocate == Advocate.pNovo.getIndex()) {
+                                        if (score > maxPNovoScore) {
+                                            maxPNovoScore = score;
+                                        }
+                                        if (score < minPNovoScore) {
+                                            minPNovoScore = score;
+                                        }
+                                    } else if (advocate == Advocate.novor.getIndex()) {
+                                        if (score > maxNovorScore) {
+                                            maxNovorScore = score;
+                                        }
+                                        if (score < minNovorScore) {
+                                            minNovorScore = score;
+                                        }
                                     } else {
-                                        throw new UnsupportedOperationException("Annotation not supported for the tag component " + tagComponent.getClass() + ".");
+                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                        if (notImplemented == null) {
+                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                        }
+                                        throw new IllegalArgumentException("Unsupported advocate " + Advocate.getAdvocate(advocate).getName() + ".");
                                     }
-                                }
-
-                                // Set GUI min/max values
-                                double mz = tagAssumption.getTheoreticMz();
-                                if (mz > maxIdentificationMz) {
-                                    maxIdentificationMz = mz;
-                                }
-                                if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
-                                    maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
-                                }
-                                double nGap = tag.getNTerminalGap();
-                                if (nGap > maxNGap) {
-                                    maxNGap = nGap;
-                                }
-                                double cGap = tag.getCTerminalGap();
-                                if (cGap > maxCGap) {
-                                    maxCGap = cGap;
-                                }
-
-                                if (advocate == Advocate.pepnovo.getIndex()) {
-                                    PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                    double rankScore = pepnovoAssumptionDetails.getRankScore();
-                                    if (rankScore < minRankScore) {
-                                        minRankScore = rankScore;
-                                    }
-                                    if (rankScore > maxRankScore) {
-                                        maxRankScore = rankScore;
-                                    }
-                                    if (score > maxPepnovoScore) {
-                                        maxPepnovoScore = score;
-                                    }
-                                } else if (advocate == Advocate.direcTag.getIndex()) {
-                                    if (score > maxDirectTagEvalue) {
-                                        maxDirectTagEvalue = score;
-                                    }
-                                    if (score < minDirectTagEvalue) {
-                                        minDirectTagEvalue = score;
-                                    }
-                                } else if (advocate == Advocate.pNovo.getIndex()) {
-                                    if (score > maxPNovoScore) {
-                                        maxPNovoScore = score;
-                                    }
-                                    if (score < minPNovoScore) {
-                                        minPNovoScore = score;
-                                    }
-                                } else if (advocate == Advocate.novor.getIndex()) {
-                                    if (score > maxNovorScore) {
-                                        maxNovorScore = score;
-                                    }
-                                    if (score < minNovorScore) {
-                                        minNovorScore = score;
+                                } else if (assumption instanceof PeptideAssumption) {
+                                    //@TODO: implement other algorithms?
+                                    if (advocate == Advocate.novor.getIndex()) {
+                                        if (score > maxNovorScore) {
+                                            maxNovorScore = score;
+                                        }
+                                        if (score < minNovorScore) {
+                                            minNovorScore = score;
+                                        }
+                                    } else {
+                                        Advocate notImplemented = Advocate.getAdvocate(advocate);
+                                        if (notImplemented == null) {
+                                            throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
+                                        }
+                                        throw new IllegalArgumentException("Unsupported advocate " + Advocate.getAdvocate(advocate).getName() + ".");
                                     }
                                 } else {
-                                    Advocate notImplemented = Advocate.getAdvocate(advocate);
-                                    if (notImplemented == null) {
-                                        throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
-                                    }
-                                    throw new IllegalArgumentException("Unsupported advocate " + Advocate.getAdvocate(advocate).getName() + ".");
+                                    throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                                 }
                             }
                         }
