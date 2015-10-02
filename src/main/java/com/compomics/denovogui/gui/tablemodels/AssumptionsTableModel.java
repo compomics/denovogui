@@ -1,9 +1,13 @@
 package com.compomics.denovogui.gui.tablemodels;
 
+import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,9 +20,9 @@ import javax.swing.table.DefaultTableModel;
 public class AssumptionsTableModel extends DefaultTableModel {
 
     /**
-     * The ordered peptide assumptions of the selected spectrum match.
+     * The ordered assumptions of the selected spectrum match.
      */
-    private ArrayList<TagAssumption> tagAssumptions = null;
+    private ArrayList<SpectrumIdentificationAssumption> assumptions = null;
     /**
      * The modification profile of the search.
      */
@@ -37,13 +41,13 @@ public class AssumptionsTableModel extends DefaultTableModel {
     /**
      * Constructor.
      *
-     * @param tagAssumptions the tag assumptions
+     * @param assumptions the tag assumptions
      * @param modificationProfile the modification profile
      * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
      * table
      */
-    public AssumptionsTableModel(ArrayList<TagAssumption> tagAssumptions, PtmSettings modificationProfile, boolean excludeAllFixedPtms) {
-        this.tagAssumptions = tagAssumptions;
+    public AssumptionsTableModel(ArrayList<SpectrumIdentificationAssumption> assumptions, PtmSettings modificationProfile, boolean excludeAllFixedPtms) {
+        this.assumptions = assumptions;
         this.modificationProfile = modificationProfile;
         this.excludeAllFixedPtms = excludeAllFixedPtms;
     }
@@ -60,10 +64,10 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public int getRowCount() {
-        if (tagAssumptions == null) {
+        if (assumptions == null) {
             return 0;
         }
-        return tagAssumptions.size();
+        return assumptions.size();
     }
 
     @Override
@@ -107,47 +111,70 @@ public class AssumptionsTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        TagAssumption tagAssumption = tagAssumptions.get(row);
+        SpectrumIdentificationAssumption assumption = assumptions.get(row);
         switch (column) {
             case 0:
                 return (row + 1);
             case 1:
-                return tagAssumption.getAdvocate();
+                return assumption.getAdvocate();
             case 2:
-                return tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
+                if (assumption instanceof PeptideAssumption) {
+                    Peptide peptide = ((PeptideAssumption) assumption).getPeptide();
+                    return peptide.getTaggedModifiedSequence(modificationProfile, true, true, true, false);
+                } else if (assumption instanceof TagAssumption) {
+                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                    return tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, false, false);
+                } else {
+                    throw new UnsupportedOperationException("Sequence display not implemented for assumption " + assumption.getClass() + ".");
+                }
             case 3:
-                return tagAssumption.getTheoreticMz(true, true);
+                if (assumption instanceof TagAssumption) {
+                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                    return tagAssumption.getTheoreticMz(true, true);
+                } else {
+                    return assumption.getTheoreticMz();
+                }
             case 4:
-                return tagAssumption.getIdentificationCharge().value;
+                return assumption.getIdentificationCharge().value;
             case 5:
-                return tagAssumption.getTag().getNTerminalGap();
+                if (assumption instanceof TagAssumption) {
+                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                    return tagAssumption.getTag().getNTerminalGap();
+                } else {
+                    return 0.0;
+                }
             case 6:
-                return tagAssumption.getTag().getCTerminalGap();
+                if (assumption instanceof TagAssumption) {
+                    TagAssumption tagAssumption = (TagAssumption) assumption;
+                    return tagAssumption.getTag().getCTerminalGap();
+                } else {
+                    return 0.0;
+                }
             case 7:
-                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                if (assumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                     PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                    pepnovoAssumptionDetails = (PepnovoAssumptionDetails) assumption.getUrParam(pepnovoAssumptionDetails);
                     return pepnovoAssumptionDetails.getRankScore();
                 }
                 return null;
             case 8:
-                if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-                    return tagAssumption.getScore();
+                if (assumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                    return assumption.getScore();
                 }
                 return null;
             case 9:
-                if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                    return tagAssumption.getScore();
+                if (assumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+                    return assumption.getScore();
                 }
                 return null;
             case 10:
-                if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                    return tagAssumption.getScore();
+                if (assumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+                    return assumption.getScore();
                 }
                 return null;
             case 11:
-                if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-                    return tagAssumption.getScore();
+                if (assumption.getAdvocate() == Advocate.novor.getIndex()) {
+                    return assumption.getScore();
                 }
                 return null;
             case 12:
