@@ -369,7 +369,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoPeptidesTableToolTips = new ArrayList<String>();
         deNovoPeptidesTableToolTips.add(null);
         deNovoPeptidesTableToolTips.add("Sequencing Algorithm");
-        deNovoPeptidesTableToolTips.add("de novo Sequences");
+        deNovoPeptidesTableToolTips.add("De Novo Sequences");
         deNovoPeptidesTableToolTips.add("Precursor m/z");
         deNovoPeptidesTableToolTips.add("Precursor Charge");
         deNovoPeptidesTableToolTips.add("N-terminal Gap");
