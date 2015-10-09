@@ -311,6 +311,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                         || myFile.getName().toLowerCase().endsWith(".tags")
                         || myFile.getName().toLowerCase().endsWith(".pnovo.txt")
                         || myFile.getName().toLowerCase().endsWith(".novor.csv")
+                        || myFile.getName().toLowerCase().endsWith(".mzid")
                         || myFile.isDirectory();
             }
 

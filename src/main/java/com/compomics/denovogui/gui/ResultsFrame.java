@@ -1972,6 +1972,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             waitingHandler.setRunCanceled();
             return false;
         }
+        int treeKeyLength = proteinTree.getInitialTagSize();
 
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();
@@ -2027,17 +2028,20 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 if (passesThreshold) {
                                     if (assumption instanceof TagAssumption) {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
-                                                tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
-                                        for (Peptide peptide : proteinMapping.keySet()) {
-                                            if (!peptideFound) {
-                                                peptideFound = true;
+                                        int longestAminoAcidSequence = tagAssumption.getTag().getLongestAminoAcidSequence().length();
+                                        if (longestAminoAcidSequence >= treeKeyLength) {
+                                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
+                                                    tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
+                                            for (Peptide peptide : proteinMapping.keySet()) {
+                                                if (!peptideFound) {
+                                                    peptideFound = true;
+                                                }
+                                                peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
+                                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
+                                                        advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
+                                                peptideAssumption.addUrParam(tagAssumption);
+                                                assumptions.add(peptideAssumption);
                                             }
-                                            peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
-                                            PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
-                                                    advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                            peptideAssumption.addUrParam(tagAssumption);
-                                            assumptions.add(peptideAssumption);
                                         }
                                     }
                                 }
