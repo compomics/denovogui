@@ -454,7 +454,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private void browseParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseParametersButtonActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".par", "DeNovoGUI settings (.par)", "Select Settings File", lastSelectedFolder, true);
+        File selectedFile = Util.getUserSelectedFile(this, ".par", "DeNovoGUI settings (.par)", "Select Settings File", lastSelectedFolder, null, true);
 
         if (selectedFile != null) {
             File tempParamtersFile = selectedFile;

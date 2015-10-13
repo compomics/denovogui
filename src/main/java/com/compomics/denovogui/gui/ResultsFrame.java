@@ -1531,7 +1531,8 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         if (spectrumAsMgf != null) {
 
-            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), "Save As...", false);
+            String spectrumKey = Spectrum.getSpectrumKey(getSelectedSpectrumFile(), getSelectedSpectrumTitle());
+            File selectedFile = Util.getUserSelectedFile(this, ".mgf", "(Mascot Generic Format) *.mgf", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), spectrumKey + ".mgf", "Save As...", false);
 
             if (selectedFile != null) {
 
@@ -1644,7 +1645,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         exportSettingsDialog = new ExportSettingsDialog(this, true);
 
         if (!exportSettingsDialog.canceled()) {
-            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), "tag_matches.txt", false);
             if (selectedFile != null) {
                 deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
                 exportIdentification(selectedFile, ExportType.tags, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
@@ -1686,7 +1687,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         exportSettingsDialog = new ExportSettingsDialog(this, true);
 
         if (!exportSettingsDialog.canceled()) {
-            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
+            File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), "blast_output.txt", false);
             if (selectedFile != null) {
                 deNovoGUI.getLastSelectedFolder().setLastSelectedFolder(selectedFile.getParentFile().getAbsolutePath());
                 exportIdentification(selectedFile, ExportType.blast, exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
@@ -1714,7 +1715,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         if (!exportSettingsDialog.canceled()) {
 
-            final File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), false);
+            final File selectedFile = Util.getUserSelectedFile(this, ".txt", "Text file (.txt)", "Select File", deNovoGUI.getLastSelectedFolder().getLastSelectedFolder(), "peptide_matches.txt", false);
 
             if (selectedFile != null) {
 
