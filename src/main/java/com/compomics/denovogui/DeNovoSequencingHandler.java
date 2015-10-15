@@ -184,16 +184,6 @@ public class DeNovoSequencingHandler {
             return;
         }
 
-        // back-up the parameters
-        try {
-            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
-        } catch (Exception e) {
-            waitingHandler.appendReport("An error occurred while writing the sequencing parameters: " + e.getMessage(), true, true);
-            exceptionHandler.catchException(e);
-            waitingHandler.setRunCanceled();
-            return;
-        }
-
         // get the number of available threads
         String fileEnding = "";
         if (spectrumFactory.getMgfFileNames().size() > 1) {
@@ -217,6 +207,16 @@ public class DeNovoSequencingHandler {
             if (waitingHandler.isRunCanceled()) {
                 break;
             }
+        }
+        
+        // back-up the parameters
+        try {
+            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
+        } catch (Exception e) {
+            waitingHandler.appendReport("An error occurred while writing the sequencing parameters: " + e.getMessage(), true, true);
+            exceptionHandler.catchException(e);
+            waitingHandler.setRunCanceled();
+            return;
         }
 
         if (!waitingHandler.isRunCanceled()) {
