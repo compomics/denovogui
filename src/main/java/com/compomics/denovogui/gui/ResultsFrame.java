@@ -2045,9 +2045,9 @@ public class ResultsFrame extends javax.swing.JFrame {
                                             }
                                         }
                                     } else if (assumption instanceof PeptideAssumption) {
-                                                if (!peptideFound) {
-                                                    peptideFound = true;
-                                                }
+                                        if (!peptideFound) {
+                                            peptideFound = true;
+                                        }
                                     } else {
                                         throw new UnsupportedOperationException("Peptide mapping not supported for assumption of type " + assumption.getClass() + ".");
                                     }
