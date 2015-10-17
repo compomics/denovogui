@@ -297,7 +297,7 @@ public class TextExporter {
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
 
-                            ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
+                            ArrayList<SpectrumIdentificationAssumption> allAssumptions = new ArrayList<SpectrumIdentificationAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
@@ -307,10 +307,7 @@ public class TextExporter {
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
                                         for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
-                                            if (assumption instanceof TagAssumption) {
-                                                TagAssumption tagAssumption = (TagAssumption) assumption;
-                                                assumptions.add(tagAssumption);
-                                            }
+                                            allAssumptions.add(assumption);
                                         }
                                     }
                                 }
@@ -319,47 +316,27 @@ public class TextExporter {
                             int rank = 0;
 
                             // export all matches above the score threshold up to the given user selected amount
-                            for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
+                            for (int i = 0; i < allAssumptions.size() && i < numberOfMatches; i++) {
 
-                                TagAssumption tagAssumption = assumptions.get(i);
+                                SpectrumIdentificationAssumption assumption = allAssumptions.get(i);
 
                                 boolean passesThreshold;
 
                                 if (greaterThan) {
-                                    passesThreshold = tagAssumption.getScore() >= threshold;
+                                    passesThreshold = assumption.getScore() >= threshold;
                                 } else { // less than
-                                    passesThreshold = tagAssumption.getScore() <= threshold;
+                                    passesThreshold = assumption.getScore() <= threshold;
                                 }
 
                                 if (passesThreshold) {
-                                    Tag tag = tagAssumption.getTag();
                                     b.write(spectrumDetails);
                                     b.write(++rank + separator);
-                                    b.write(tag.asSequence() + separator);
-                                    b.write(tag.getLongestAminoAcidSequence() + separator);
-                                    b.write(Tag.getTagModificationsAsString(tag) + separator);
-                                    b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
-                                    if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-                                        PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                        b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                        b.write(tagAssumption.getScore() + separator + separator + separator + separator);
-                                    } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                                        b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
-                                    } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                                        b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
-                                    } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-                                        b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
-                                    }
-                                    b.write(tag.getNTerminalGap() + separator);
-                                    b.write(tag.getCTerminalGap() + separator);
-                                    b.write(tag.getMass() + separator);
-                                    b.write(tagAssumption.getIdentificationCharge().value + separator);
+                                    writeTagExportLine(b, assumption, searchParameters);
                                     b.newLine();
                                 }
                             }
-                            if (assumptions.isEmpty()) {
-                                b.newLine(); //This should not happen. Should.
+                            if (allAssumptions.isEmpty()) {
+                                b.newLine();
                             }
                             if (waitingHandler != null) {
                                 waitingHandler.increaseSecondaryProgressCounter();
@@ -378,6 +355,101 @@ public class TextExporter {
         } finally {
             f.close();
         }
+    }
+
+    /**
+     * Writes the details on the given assumption to the given writer in the
+     * form of a tag export.
+     *
+     * @param b the writer
+     * @param assumption the assumption to write
+     * @param searchParameters the search parameters
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * writing.
+     */
+    public static void writeTagExportLine(BufferedWriter b, SpectrumIdentificationAssumption assumption, SearchParameters searchParameters) throws IOException {
+        if (assumption instanceof TagAssumption) {
+            TagAssumption tagAssumption = (TagAssumption) assumption;
+            writeTagExportLine(b, tagAssumption, searchParameters);
+        } else if (assumption instanceof PeptideAssumption) {
+            PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+            writeTagExportLine(b, peptideAssumption, searchParameters);
+        } else {
+            throw new UnsupportedOperationException("Export not implemented for assumption of type " + assumption.getClass() + ".");
+        }
+    }
+
+    /**
+     * Writes the details on the given peptide assumption to the given writer in
+     * the form of a tag export.
+     *
+     * @param b the writer
+     * @param peptideAssumption the peptide assumption to write
+     * @param searchParameters the search parameters
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * writing.
+     */
+    public static void writeTagExportLine(BufferedWriter b, PeptideAssumption peptideAssumption, SearchParameters searchParameters) throws IOException {
+
+        Peptide peptide = peptideAssumption.getPeptide();
+        b.write(peptide.getSequence() + separator);
+        b.write(peptide.getSequence() + separator);
+        b.write(Peptide.getPeptideModificationsAsString(peptide, true) + separator);
+        b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+        if (peptideAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) peptideAssumption.getUrParam(pepnovoAssumptionDetails);
+            b.write(pepnovoAssumptionDetails.getRankScore() + separator);
+            b.write(peptideAssumption.getScore() + separator + separator + separator + separator);
+        } else if (peptideAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+            b.write(separator + separator + peptideAssumption.getScore() + separator + separator + separator);
+        } else if (peptideAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+            b.write(separator + separator + separator + peptideAssumption.getScore() + separator + separator);
+        } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+            b.write(separator + separator + separator + separator + peptideAssumption.getScore() + separator);
+        }
+        b.write(0 + separator);
+        b.write(0 + separator);
+        b.write(peptide.getMass() + separator);
+        b.write(peptideAssumption.getIdentificationCharge().value + separator);
+    }
+
+    /**
+     * Writes the details on the given tag assumption to the given writer in the
+     * form of a tag export.
+     *
+     * @param b the writer
+     * @param tagAssumption the tag assumption to write
+     * @param searchParameters the search parameters
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * writing.
+     */
+    public static void writeTagExportLine(BufferedWriter b, TagAssumption tagAssumption, SearchParameters searchParameters) throws IOException {
+
+        Tag tag = tagAssumption.getTag();
+        b.write(tag.asSequence() + separator);
+        b.write(tag.getLongestAminoAcidSequence() + separator);
+        b.write(Tag.getTagModificationsAsString(tag) + separator);
+        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+        if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+            b.write(pepnovoAssumptionDetails.getRankScore() + separator);
+            b.write(tagAssumption.getScore() + separator + separator + separator + separator);
+        } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
+            b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
+        } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
+            b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
+        } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+            b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
+        }
+        b.write(tag.getNTerminalGap() + separator);
+        b.write(tag.getCTerminalGap() + separator);
+        b.write(tag.getMass() + separator);
+        b.write(tagAssumption.getIdentificationCharge().value + separator);
     }
 
     /**
@@ -434,7 +506,7 @@ public class TextExporter {
                             spectrumDetails += mgfFile + separator2 + spectrumTitle + separator2;
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
                             spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
-                            ArrayList<TagAssumption> assumptions = new ArrayList<TagAssumption>();
+                            ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
@@ -444,10 +516,7 @@ public class TextExporter {
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
                                         for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
-                                            if (assumption instanceof TagAssumption) {
-                                                TagAssumption tagAssumption = (TagAssumption) assumption;
-                                                assumptions.add(tagAssumption);
-                                            }
+                                            assumptions.add(assumption);
                                         }
                                     }
                                 }
@@ -456,28 +525,38 @@ public class TextExporter {
                             // export all matches above the score threshold up to the given user selected amount
                             for (int i = 0; i < assumptions.size() && i < numberOfMatches; i++) {
 
-                                TagAssumption tagAssumption = assumptions.get(i);
+                                SpectrumIdentificationAssumption assumption = assumptions.get(i);
 
                                 boolean passesThreshold;
 
                                 if (greaterThan) {
-                                    passesThreshold = tagAssumption.getScore() >= threshold;
+                                    passesThreshold = assumption.getScore() >= threshold;
                                 } else { // less than
-                                    passesThreshold = tagAssumption.getScore() <= threshold;
+                                    passesThreshold = assumption.getScore() <= threshold;
                                 }
 
                                 if (passesThreshold) {
                                     b.write(spectrumDetails);
-                                    if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
+                                    if (assumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
+                                        pepnovoAssumptionDetails = (PepnovoAssumptionDetails) assumption.getUrParam(pepnovoAssumptionDetails);
                                         b.write(pepnovoAssumptionDetails.getRankScore() + separator2);
                                     } else {
                                         b.write(separator2);
                                     }
-                                    b.write(tagAssumption.getScore() + "");
+                                    b.write(assumption.getScore() + "");
                                     b.newLine();
-                                    b.write(tagAssumption.getTag().getLongestAminoAcidSequence());
+                                    if (assumption instanceof TagAssumption) {
+                                        TagAssumption tagAssumption = (TagAssumption) assumption;
+                                        b.write(tagAssumption.getTag().getLongestAminoAcidSequence());
+                                    } else if (assumption instanceof PeptideAssumption) {
+                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                        Peptide peptide = peptideAssumption.getPeptide();
+                                        b.write(peptide.getSequence());
+                                    } else {
+                                        throw new UnsupportedOperationException("Export not implemented for assumption of type " + assumption.getClass() + ".");
+                                    }
+
                                     b.newLine();
                                 }
                             }
