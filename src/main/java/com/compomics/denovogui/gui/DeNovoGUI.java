@@ -529,7 +529,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         novorPlatformsButton = new javax.swing.JButton();
         novorLinkLabel = new javax.swing.JLabel();
         novorSettingsJButton = new javax.swing.JButton();
-        betaLabel1 = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
         inputFilesPanel1 = new javax.swing.JPanel();
         spectraFilesLabel = new javax.swing.JLabel();
@@ -784,6 +783,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         });
 
+        novorCheckBox.setSelected(true);
         novorCheckBox.setToolTipText("Enable Novor");
         novorCheckBox.setOpaque(false);
         novorCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -848,9 +848,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         });
 
-        betaLabel1.setFont(betaLabel1.getFont().deriveFont(betaLabel1.getFont().getStyle() & ~java.awt.Font.BOLD));
-        betaLabel1.setText("(beta)");
-
         javax.swing.GroupLayout searchEnginesPanelLayout = new javax.swing.GroupLayout(searchEnginesPanel);
         searchEnginesPanel.setLayout(searchEnginesPanelLayout);
         searchEnginesPanelLayout.setHorizontalGroup(
@@ -871,15 +868,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             .addComponent(pNovoCheckBox)
                             .addComponent(novorCheckBox))
                         .addGap(71, 71, 71)
-                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                                 .addComponent(pNovoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(betaLabel))
-                            .addGroup(searchEnginesPanelLayout.createSequentialGroup()
-                                .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(betaLabel1)))))
+                            .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(pNovoPlatformsButton)
@@ -908,6 +902,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             .addGroup(searchEnginesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(novorCheckBox)
+                    .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorPlatformsButton)
+                    .addComponent(novorLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(novorSettingsJButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(direcTagCheckBox)
                     .addComponent(direcTagButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(direcTagLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -928,14 +929,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     .addComponent(pNovoPlatformsButton)
                     .addComponent(betaLabel)
                     .addComponent(pNovoSettingsJButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(searchEnginesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(novorCheckBox)
-                    .addComponent(novorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(novorPlatformsButton)
-                    .addComponent(novorLinkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(novorSettingsJButton)
-                    .addComponent(betaLabel1))
                 .addContainerGap())
         );
 
@@ -1120,8 +1113,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 .addContainerGap()
                 .addComponent(inputFilesPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchEnginesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchEnginesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(deNovoGuiWebPageJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2235,7 +2228,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JMenuItem algorithmLocationsMenuItem;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel betaLabel;
-    private javax.swing.JLabel betaLabel1;
     private javax.swing.JButton clearSpectraButton;
     private javax.swing.JLabel configurationFileLbl;
     private javax.swing.JLabel deNovoGuiWebPageJLabel;

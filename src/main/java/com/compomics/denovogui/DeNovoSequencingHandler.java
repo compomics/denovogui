@@ -162,7 +162,23 @@ public class DeNovoSequencingHandler {
         this.enableNovor = enableNovor;
         this.exceptionHandler = exceptionHandler;
 
-        waitingHandler.setMaxPrimaryProgressCounter(spectrumFactory.getNSpectra() + 2);
+        int numberOfSpectrumFiles = spectrumFiles.size();
+        int primaryProgressCounterMax = 1;
+        if (enablePepNovo) {
+            primaryProgressCounterMax += numberOfSpectrumFiles + 1;
+        } 
+        if (enableDirecTag) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        } 
+        if (enablePNovo) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        } 
+        if (enableNovor) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        }
+        
+        waitingHandler.setMaxPrimaryProgressCounter(primaryProgressCounterMax);
+        waitingHandler.increasePrimaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
         // store the pepnovo to utilities ptm mapping
@@ -200,10 +216,9 @@ public class DeNovoSequencingHandler {
         waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
                 + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + threadEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
-        waitingHandler.increasePrimaryProgressCounter();
 
         for (File spectrumFile : spectrumFiles) {
-            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, novorExeTitle, waitingHandler, spectrumFiles.size() > 1);
+            startSequencing(spectrumFile, searchParameters, outputFolder, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, novorExeTitle, waitingHandler);
             if (waitingHandler.isRunCanceled()) {
                 break;
             }
@@ -251,14 +266,91 @@ public class DeNovoSequencingHandler {
      * displayed
      */
     private void startSequencing(File spectrumFile, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle,
-            String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle, WaitingHandler waitingHandler, boolean secondaryProgress) throws IOException {
+            String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle, WaitingHandler waitingHandler) throws IOException {
 
         try {
-
             jobs = new ArrayDeque<Job>();
+            
+            // Novor
+            if (enableNovor && !waitingHandler.isRunCanceled()) {
 
-            // PepNovo
-            if (enablePepNovo) {
+                Duration algorithmDuration = new Duration();
+                algorithmDuration.start();
+
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using Novor.", true, true);
+                waitingHandler.appendReportEndLine();
+
+                threadExecutor = Executors.newFixedThreadPool(1);
+                NovorJob novorJob = new NovorJob(novorFolder, spectrumFile, outputFolder, searchParameters, waitingHandler instanceof WaitingHandlerCLIImpl, waitingHandler, exceptionHandler);
+                threadExecutor.submit(novorJob);
+                jobs.add(novorJob);
+
+                // wait for executor service to shutdown
+                threadExecutor.shutdown();
+
+                try {
+                    threadExecutor.awaitTermination(12, TimeUnit.HOURS);
+                } catch (InterruptedException ex) {
+                    if (!waitingHandler.isRunCanceled()) {
+                        threadExecutor.shutdownNow();
+                        exceptionHandler.catchException(ex);
+                    }
+                }
+
+                if (waitingHandler.isRunCanceled()) {
+                    return;
+                }
+
+                algorithmDuration.end();
+
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using Novor completed (" + algorithmDuration.toString() + ").", true, true);
+                waitingHandler.appendReportEndLine();
+                waitingHandler.increasePrimaryProgressCounter();
+            }
+            
+            // DirecTag
+            if (enableDirecTag && !waitingHandler.isRunCanceled()) {
+
+                Duration algorithmDuration = new Duration();
+                algorithmDuration.start();
+
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using DirecTag.", true, true);
+                waitingHandler.appendReportEndLine();
+
+                threadExecutor = Executors.newFixedThreadPool(1);
+                DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
+                threadExecutor.submit(direcTagJob);
+                jobs.add(direcTagJob);
+
+                // wait for executor service to shutdown
+                threadExecutor.shutdown();
+
+                try {
+                    threadExecutor.awaitTermination(12, TimeUnit.HOURS);
+                } catch (InterruptedException ex) {
+                    if (!waitingHandler.isRunCanceled()) {
+                        threadExecutor.shutdownNow();
+                        exceptionHandler.catchException(ex);
+                    }
+                }
+
+                if (waitingHandler.isRunCanceled()) {
+                    return;
+                }
+
+                algorithmDuration.end();
+
+                waitingHandler.appendReportEndLine();
+                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using DirecTag completed (" + algorithmDuration.toString() + ").", true, true);
+                waitingHandler.appendReportEndLine();
+                waitingHandler.increasePrimaryProgressCounter();
+            }
+
+            // PepNovo+
+            if (enablePepNovo && !waitingHandler.isRunCanceled()) {
 
                 Duration algorithmDuration = new Duration();
                 algorithmDuration.start();
@@ -266,7 +358,7 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using PepNovo+.", true, true);
                 waitingHandler.appendReportEndLine();
-
+                
                 // start a fixed thread pool
                 threadExecutor = Executors.newFixedThreadPool(nThreads);
 
@@ -290,14 +382,12 @@ public class DeNovoSequencingHandler {
                 if (waitingHandler.isRunCanceled()) {
                     return;
                 }
+                
+                waitingHandler.increasePrimaryProgressCounter();
 
                 waitingHandler.setWaitingText("Processing " + spectrumFile.getName() + ".");
-                if (secondaryProgress) {
-                    waitingHandler.resetSecondaryProgressCounter();
-                    waitingHandler.setMaxSecondaryProgressCounter(nSpectra);
-                } else {
-                    waitingHandler.setSecondaryProgressCounterIndeterminate(true);
-                }
+                waitingHandler.resetSecondaryProgressCounter();
+                waitingHandler.setMaxSecondaryProgressCounter(nSpectra);
 
                 // verify that the file is chunked and use the entire if not
                 boolean chunksuccess = true;
@@ -353,48 +443,11 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using PepNovo+ completed (" + algorithmDuration.toString() + ").", true, true);
                 waitingHandler.appendReportEndLine();
-            }
-
-            // DirecTag
-            if (enableDirecTag) {
-
-                Duration algorithmDuration = new Duration();
-                algorithmDuration.start();
-
-                waitingHandler.appendReportEndLine();
-                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using DirecTag.", true, true);
-                waitingHandler.appendReportEndLine();
-
-                threadExecutor = Executors.newFixedThreadPool(1);
-                DirecTagJob direcTagJob = new DirecTagJob(direcTagFolder, direcTagExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
-                threadExecutor.submit(direcTagJob);
-                jobs.add(direcTagJob);
-
-                // wait for executor service to shutdown
-                threadExecutor.shutdown();
-
-                try {
-                    threadExecutor.awaitTermination(12, TimeUnit.HOURS);
-                } catch (InterruptedException ex) {
-                    if (!waitingHandler.isRunCanceled()) {
-                        threadExecutor.shutdownNow();
-                        exceptionHandler.catchException(ex);
-                    }
-                }
-
-                if (waitingHandler.isRunCanceled()) {
-                    return;
-                }
-
-                algorithmDuration.end();
-
-                waitingHandler.appendReportEndLine();
-                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using DirecTag completed (" + algorithmDuration.toString() + ").", true, true);
-                waitingHandler.appendReportEndLine();
+                waitingHandler.increasePrimaryProgressCounter();
             }
 
             // pNovo+
-            if (enablePNovo) {
+            if (enablePNovo && !waitingHandler.isRunCanceled()) {
 
                 Duration algorithmDuration = new Duration();
                 algorithmDuration.start();
@@ -429,44 +482,7 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using pNovo+ completed (" + algorithmDuration.toString() + ").", true, true);
                 waitingHandler.appendReportEndLine();
-            }
-
-            // Novor
-            if (enableNovor) {
-
-                Duration algorithmDuration = new Duration();
-                algorithmDuration.start();
-
-                waitingHandler.appendReportEndLine();
-                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using Novor.", true, true);
-                waitingHandler.appendReportEndLine();
-
-                threadExecutor = Executors.newFixedThreadPool(1);
-                NovorJob novorJob = new NovorJob(novorFolder, spectrumFile, outputFolder, searchParameters, waitingHandler instanceof WaitingHandlerCLIImpl, waitingHandler, exceptionHandler);
-                threadExecutor.submit(novorJob);
-                jobs.add(novorJob);
-
-                // wait for executor service to shutdown
-                threadExecutor.shutdown();
-
-                try {
-                    threadExecutor.awaitTermination(12, TimeUnit.HOURS);
-                } catch (InterruptedException ex) {
-                    if (!waitingHandler.isRunCanceled()) {
-                        threadExecutor.shutdownNow();
-                        exceptionHandler.catchException(ex);
-                    }
-                }
-
-                if (waitingHandler.isRunCanceled()) {
-                    return;
-                }
-
-                algorithmDuration.end();
-
-                waitingHandler.appendReportEndLine();
-                waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using Novor completed (" + algorithmDuration.toString() + ").", true, true);
-                waitingHandler.appendReportEndLine();
+                waitingHandler.increasePrimaryProgressCounter();
             }
 
         } catch (FileNotFoundException ex) {

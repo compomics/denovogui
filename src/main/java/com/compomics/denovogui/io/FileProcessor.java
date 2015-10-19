@@ -53,8 +53,8 @@ public class FileProcessor {
         }
         long progress = 0;
         boolean streamClosed = false;
-        try {
 
+        try {
             // Read the filename.
             String filename = file.getName();
 

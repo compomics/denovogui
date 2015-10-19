@@ -1,6 +1,7 @@
 package com.compomics.denovogui.execution;
 
 import com.compomics.util.exceptions.ExceptionHandler;
+import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -67,6 +68,10 @@ public abstract class Job implements Executable, Runnable {
      * The exception handler.
      */
     protected ExceptionHandler exceptionHandler;
+    /**
+     * The spectrum factory.
+     */
+    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
 
     /**
      * Executes a job.
@@ -106,13 +111,13 @@ public abstract class Job implements Executable, Runnable {
                 waitingHandler.appendReport(temp, false, true);
             }
             
-        } else {
+        } else { // DirecTag and PepNovo+
 
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
                 // set the progress dialog update count
-                int totalSpectrumCount = waitingHandler.getMaxPrimaryProgressCounter();
+                int totalSpectrumCount = spectrumFactory.getNSpectra();
                 int spectrumCount = 1000;
                 if (totalSpectrumCount <= 1000) {
                     spectrumCount = 100;
@@ -130,8 +135,8 @@ public abstract class Job implements Executable, Runnable {
                     if (description.equalsIgnoreCase("DirecTag")) {
                         waitingHandler.appendReport(temp, false, true);
                     } else {
-                        if (temp.startsWith(">>")) {
-                            int progressCounter = waitingHandler.getPrimaryProgressCounter();
+                        if (temp.startsWith(">>")) { // PepNovo+
+                            int progressCounter = waitingHandler.getSecondaryProgressCounter();
                             if (progressCounter % spectrumCount == 0 || progressCounter == 1) {
                                 if (progressCounter == 1) {
                                     progressCounter = 0;
@@ -140,7 +145,6 @@ public abstract class Job implements Executable, Runnable {
                                         + "-" + Math.min(progressCounter + spectrumCount, totalSpectrumCount)
                                         + " of " + totalSpectrumCount + ".", true, true);
                             }
-                            waitingHandler.increasePrimaryProgressCounter();
                             waitingHandler.increaseSecondaryProgressCounter();
                         }
                     }
