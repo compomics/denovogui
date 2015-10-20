@@ -1,7 +1,5 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.gui.searchsettings.algorithm_settings.PNovoSettingsDialog;
-import com.compomics.util.gui.searchsettings.algorithm_settings.DirecTagSettingsDialog;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
@@ -31,9 +29,11 @@ import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
+import com.compomics.util.gui.parameters.identification_parameters.SearchSettingsDialog;
+import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.DirecTagSettingsDialog;
+import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.NovorSettingsDialog;
+import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.PNovoSettingsDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.gui.searchsettings.SearchSettingsDialog;
-import com.compomics.util.gui.searchsettings.algorithm_settings.NovorSettingsDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
@@ -1974,7 +1974,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         DirecTagSettingsDialog direcTagSettingsDialog = new DirecTagSettingsDialog(this, searchParameters, true);
 
         // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!direcTagSettingsDialog.isCanceled() && !checkSearchParameters(direcTagSettingsDialog.getSearchParametersFromGUI())) {
+        while (!direcTagSettingsDialog.isCancelled() && !checkSearchParameters(direcTagSettingsDialog.getSearchParametersFromGUI())) {
             direcTagSettingsDialog.setVisible(true);
         }
 
@@ -2008,7 +2008,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, searchParameters, true);
 
         // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!pNovoSettingsDialog.isCanceled() && !checkSearchParameters(pNovoSettingsDialog.getSearchParametersFromGUI())) {
+        while (!pNovoSettingsDialog.isCancelled() && !checkSearchParameters(pNovoSettingsDialog.getSearchParametersFromGUI())) {
             pNovoSettingsDialog.setVisible(true);
         }
 
@@ -2136,7 +2136,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         NovorSettingsDialog novorSettingsDialog = new NovorSettingsDialog(this, searchParameters, true);
 
         // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!novorSettingsDialog.isCanceled() && !checkSearchParameters(novorSettingsDialog.getSearchParametersFromGUI())) {
+        while (!novorSettingsDialog.isCancelled() && !checkSearchParameters(novorSettingsDialog.getSearchParametersFromGUI())) {
             novorSettingsDialog.setVisible(true);
         }
 
