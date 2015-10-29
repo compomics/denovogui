@@ -694,7 +694,7 @@
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="viewConfigurationsButton" linkSize="2" alignment="1" min="-2" pref="70" max="-2" attributes="0"/>
+                                  <Component id="editSettingsButton" linkSize="2" alignment="1" min="-2" pref="70" max="-2" attributes="0"/>
                                   <Component id="resultFolderBrowseButton" linkSize="2" alignment="1" min="-2" pref="70" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -709,7 +709,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="clearSpectraButton" linkSize="2" alignment="0" pref="70" max="32767" attributes="0"/>
-                          <Component id="loadConfigurationsButton" linkSize="2" alignment="0" pref="70" max="32767" attributes="0"/>
+                          <Component id="loadSettingsButton" linkSize="2" alignment="0" pref="70" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -729,8 +729,8 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="configurationFileLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="settingsFileJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="viewConfigurationsButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="loadConfigurationsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="editSettingsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="loadSettingsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -782,20 +782,20 @@
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="viewConfigurationsButton">
+            <Component class="javax.swing.JButton" name="editSettingsButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Edit"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewConfigurationsButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editSettingsButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="loadConfigurationsButton">
+            <Component class="javax.swing.JButton" name="loadSettingsButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Load"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadConfigurationsButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadSettingsButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="resultFolderLbl">

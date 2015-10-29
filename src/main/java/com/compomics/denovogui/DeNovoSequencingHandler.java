@@ -137,6 +137,7 @@ public class DeNovoSequencingHandler {
      * @param spectrumFiles the spectrum files to process
      * @param searchParameters the search parameters
      * @param outputFolder the output folder
+     * @param searchParametersFile the file where to save the search parameters
      * @param pepNovoExeTitle the name of the PepNovo+ executable
      * @param direcTagExeTitle the name of the DirecTag executable
      * @param pNovoExeTitle the name of the pNovo+ executable
@@ -153,7 +154,7 @@ public class DeNovoSequencingHandler {
      * @throws ClassNotFoundException thrown if the search parameters cannot be
      * processed from file
      */
-    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle,
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, File searchParametersFile, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle,
             boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, boolean enableNovor, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
 
         this.enablePepNovo = enablePepNovo;
@@ -185,8 +186,8 @@ public class DeNovoSequencingHandler {
         PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
         pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());
 
-        if (searchParameters.getParametersFile() != null) {
-            SearchParameters.saveIdentificationParameters(searchParameters, searchParameters.getParametersFile());
+        if (searchParametersFile != null) {
+            SearchParameters.saveIdentificationParameters(searchParameters, searchParametersFile);
         }
 
         // write the modification file

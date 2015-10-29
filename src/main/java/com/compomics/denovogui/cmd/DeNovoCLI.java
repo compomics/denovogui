@@ -7,6 +7,7 @@ import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
 import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
 import com.compomics.util.experiment.biology.*;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
@@ -264,8 +265,10 @@ public class DeNovoCLI implements Callable {
                 System.exit(0);
             }
 
+            File searchParametersFile = deNovoCLIInputBean.getSearchParametersFile();
+            SearchParameters searchParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
             // check precursor tolerance, max is 5, but default for search params is 10...
-            if (deNovoCLIInputBean.getSearchParameters().getPrecursorAccuracyDalton() > 5) {
+            if (searchParameters.getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
                 System.exit(0);
             }
@@ -287,8 +290,8 @@ public class DeNovoCLI implements Callable {
             DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
-                    deNovoCLIInputBean.getSearchParameters(),
-                    deNovoCLIInputBean.getOutputFile(), pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle, novorExecutableTitle,
+                    searchParameters,
+                    deNovoCLIInputBean.getOutputFile(), searchParametersFile, pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle, novorExecutableTitle,
                     runPepNovo, runDirecTag, runPNovo, runNovor, waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
             exceptionHandler.catchException(e);

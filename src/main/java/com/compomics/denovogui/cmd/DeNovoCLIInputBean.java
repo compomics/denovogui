@@ -26,9 +26,9 @@ public class DeNovoCLIInputBean {
      */
     private File outputFolder;
     /**
-     * The search parameters.
+     * The file where the search parameters are stored.
      */
-    private SearchParameters searchParameters;
+    private File searchParametersFile;
     /**
      * If true, PepNovo+ is enabled.
      */
@@ -89,7 +89,7 @@ public class DeNovoCLIInputBean {
         String arg = aLine.getOptionValue(DeNovoCLIParams.OUTPUT_FOLDER.id);
         outputFolder = new File(arg);
         String fileTxt = aLine.getOptionValue(DeNovoCLIParams.IDENTIFICATION_PARAMETERS.id);
-        searchParameters = SearchParameters.getIdentificationParameters(new File(fileTxt));
+        searchParametersFile = new File(fileTxt);
 
         // see which algorithms to use
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO.id)) {
@@ -155,12 +155,12 @@ public class DeNovoCLIInputBean {
     }
 
     /**
-     * Returns the search parameters.
+     * Returns the search parameters file.
      *
-     * @return the search parameters
+     * @return the search parameters file
      */
-    public SearchParameters getSearchParameters() {
-        return searchParameters;
+    public File getSearchParametersFile() {
+        return searchParametersFile;
     }
 
     /**

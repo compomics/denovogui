@@ -178,7 +178,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     public static final String userSettingsTxt = "[user settings]";
     /**
-     * The parameter file.
+     * The identification parameter file.
      */
     private File parametersFile = null;
     /**
@@ -215,10 +215,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * Creates a new DeNovoGUI.
      *
      * @param spectrumFiles the spectrum files (can be null)
-     * @param searchParameters the search parameters (can be null)
+     * @param searchParametersFile the search parameters file (can be null)
      * @param outputFolder the output folder (can be null)
      */
-    public DeNovoGUI(ArrayList<File> spectrumFiles, SearchParameters searchParameters, File outputFolder) {
+    public DeNovoGUI(ArrayList<File> spectrumFiles, File searchParametersFile, File outputFolder) {
 
         // set up the ErrorLog
         setUpLogFile();
@@ -403,13 +403,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getEnzymeFile() + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            if (searchParameters == null) {
-                searchParameters = new SearchParameters();
-                setDefaultParameters(); // label the configs as default
-            } else {
-                loadModifications(searchParameters);
-                settingsFileJTextField.setText(searchParameters.getParametersFile().getName());
-            }
+            setIdentificationParameters(searchParametersFile);
 
             File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
             File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
@@ -537,8 +531,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         spectrumFilesTextField = new javax.swing.JTextField();
         configurationFileLbl = new javax.swing.JLabel();
         settingsFileJTextField = new javax.swing.JTextField();
-        viewConfigurationsButton = new javax.swing.JButton();
-        loadConfigurationsButton = new javax.swing.JButton();
+        editSettingsButton = new javax.swing.JButton();
+        loadSettingsButton = new javax.swing.JButton();
         resultFolderLbl = new javax.swing.JLabel();
         outputFolderTextField = new javax.swing.JTextField();
         resultFolderBrowseButton = new javax.swing.JButton();
@@ -971,17 +965,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         settingsFileJTextField.setEditable(false);
         settingsFileJTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        viewConfigurationsButton.setText("Edit");
-        viewConfigurationsButton.addActionListener(new java.awt.event.ActionListener() {
+        editSettingsButton.setText("Edit");
+        editSettingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewConfigurationsButtonActionPerformed(evt);
+                editSettingsButtonActionPerformed(evt);
             }
         });
 
-        loadConfigurationsButton.setText("Load");
-        loadConfigurationsButton.addActionListener(new java.awt.event.ActionListener() {
+        loadSettingsButton.setText("Load");
+        loadSettingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadConfigurationsButtonActionPerformed(evt);
+                loadSettingsButtonActionPerformed(evt);
             }
         });
 
@@ -1014,7 +1008,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             .addComponent(settingsFileJTextField))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(viewConfigurationsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(editSettingsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(resultFolderBrowseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(inputFilesPanel1Layout.createSequentialGroup()
                         .addComponent(spectraFilesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1025,11 +1019,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(clearSpectraButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
-                    .addComponent(loadConfigurationsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
+                    .addComponent(loadSettingsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        inputFilesPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addSpectraButton, clearSpectraButton, loadConfigurationsButton, resultFolderBrowseButton, viewConfigurationsButton});
+        inputFilesPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addSpectraButton, clearSpectraButton, editSettingsButton, loadSettingsButton, resultFolderBrowseButton});
 
         inputFilesPanel1Layout.setVerticalGroup(
             inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1044,8 +1038,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(configurationFileLbl)
                     .addComponent(settingsFileJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(viewConfigurationsButton)
-                    .addComponent(loadConfigurationsButton))
+                    .addComponent(editSettingsButton)
+                    .addComponent(loadSettingsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(inputFilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(resultFolderLbl)
@@ -1564,24 +1558,28 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      *
      * @param evt
      */
-    private void viewConfigurationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConfigurationsButtonActionPerformed
-        new SettingsDialog(this, searchParameters, true, true);
-    }//GEN-LAST:event_viewConfigurationsButtonActionPerformed
+    private void editSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSettingsButtonActionPerformed
+        String settingsName = null;
+        if (parametersFile != null) {
+            settingsName = parametersFile.getName();
+        }
+        new SettingsDialog(this, settingsName, searchParameters, true, true);
+    }//GEN-LAST:event_editSettingsButtonActionPerformed
 
     /**
      * Load search parameters from a file.
      *
      * @param evt
      */
-    private void loadConfigurationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadConfigurationsButtonActionPerformed
+    private void loadSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSettingsButtonActionPerformed
 
         // First check whether a file has already been selected.
         // If so, start from that file's parent.
         File startLocation = new File(lastSelectedFolder.getLastSelectedFolder());
-        if (searchParameters.getParametersFile() != null && !settingsFileJTextField.getText().trim().equals("")
+        if (parametersFile != null && !settingsFileJTextField.getText().trim().equals("")
                 && !settingsFileJTextField.getText().trim().equals(defaultSettingsTxt)
                 && !settingsFileJTextField.getText().trim().equals(userSettingsTxt)) {
-            startLocation = searchParameters.getParametersFile().getParentFile();
+            startLocation = parametersFile.getParentFile();
         }
         JFileChooser fc = new JFileChooser(startLocation);
 
@@ -1610,13 +1608,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error occurred while reading " + file + ". Please verify the de novo parameters.", "File Error", JOptionPane.ERROR_MESSAGE);
-                SettingsDialog settingsDialog = new SettingsDialog(this, searchParameters, false, true);
+                SettingsDialog settingsDialog = new SettingsDialog(this, null, searchParameters, false, true);
                 settingsDialog.setVisible(true);
             }
         }
 
         validateInput(false);
-    }//GEN-LAST:event_loadConfigurationsButtonActionPerformed
+    }//GEN-LAST:event_loadSettingsButtonActionPerformed
 
     /**
      * Open a file chooser where the output folder can be selected.
@@ -1655,7 +1653,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuItemActionPerformed
-        new SettingsDialog(this, searchParameters, true, true);
+        String settingsName = null;
+        if (parametersFile != null) {
+            settingsName = parametersFile.getName();
+        }
+        new SettingsDialog(this, settingsName, searchParameters, true, true);
     }//GEN-LAST:event_settingsMenuItemActionPerformed
 
     /**
@@ -2175,7 +2177,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         ArrayList<File> spectrumFiles = null;
-        SearchParameters searchParameters = null;
+        File searchParametersFile = null;
         File outputFolder = null;
         boolean spectrum = false, parameters = false, output = false;
 
@@ -2194,9 +2196,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 spectrum = false;
             }
             if (parameters) {
-                File searchParametersFile = new File(arg);
+                searchParametersFile = new File(arg);
                 try {
-                    searchParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
+                    SearchParameters tempParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null,
                             "Failed to import search parameters from: " + searchParametersFile.getAbsolutePath() + ".", "Search Parameters",
@@ -2219,7 +2221,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         }
 
-        new DeNovoGUI(spectrumFiles, searchParameters, outputFolder);
+        new DeNovoGUI(spectrumFiles, searchParametersFile, outputFolder);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutButton;
@@ -2237,6 +2239,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JButton direcTagPlatformsButton;
     private javax.swing.JButton directTagSettingsJButton;
     private javax.swing.JMenu editMenu;
+    private javax.swing.JButton editSettingsButton;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
@@ -2250,8 +2253,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JMenuItem javaSettingsJMenuItem;
-    private javax.swing.JButton loadConfigurationsButton;
     private javax.swing.JMenuItem loadExampleMenuItem;
+    private javax.swing.JButton loadSettingsButton;
     private javax.swing.JMenuItem logReportMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem modsMenuItem;
@@ -2282,7 +2285,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private javax.swing.JLabel spectraFilesLabel;
     private javax.swing.JTextField spectrumFilesTextField;
     private javax.swing.JButton startButton;
-    private javax.swing.JButton viewConfigurationsButton;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -2390,7 +2392,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 loadSpectra(spectrumFiles, waitingHandler);
                 waitingHandler.appendReport("Done loading the spectra.", true, true);
                 waitingHandler.appendReportEndLine();
-                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable,
+                deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, parametersFile, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable,
                         pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), pNovoCheckBox.isSelected(), novorCheckBox.isSelected(), waitingHandler, exceptionHandler);
             } catch (Exception e) {
                 workerExceptionHandler.catchException(e);
@@ -2881,17 +2883,28 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }
 
     /**
-     * Set the search parameters.
+     * Set the search parameters file.
      *
-     * @param searchParameters the search parameters to set
+     * @param parametersFile the search parameters file to set
      */
-    public void setSearchParameters(SearchParameters searchParameters) {
-        this.searchParameters = searchParameters;
-        parametersFile = searchParameters.getParametersFile();
-        if (parametersFile != null) {
-            settingsFileJTextField.setText(parametersFile.getName());
+    public void setIdentificationParameters(File parametersFile) {
+        if (parametersFile == null) {
+            searchParameters = new SearchParameters();
+            setDefaultParameters(); // label the configs as default
         } else {
-            settingsFileJTextField.setText(userSettingsTxt);
+            try {
+                searchParameters = SearchParameters.getIdentificationParameters(parametersFile);
+                loadModifications(searchParameters);
+                settingsFileJTextField.setText(parametersFile.getName());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to import search parameters from: " + parametersFile.getAbsolutePath() + ".", "Search Parameters",
+                        JOptionPane.WARNING_MESSAGE);
+                e.printStackTrace();
+                setDefaultParameters(); // label the configs as default
+                searchParameters = new SearchParameters();
+                setDefaultParameters(); // label the configs as default
+            }
         }
         sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         validateInput(false);
@@ -3242,7 +3255,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 boolean userSelectFile = false;
 
                 // see if the user wants to overwrite the current settings file
-                if (tempSearchParameters.getParametersFile() != null) {
+                if (parametersFile != null) {
                     value = JOptionPane.showConfirmDialog(this, "Overwrite current settings file?", "Overwrite?", JOptionPane.YES_NO_CANCEL_OPTION);
 
                     if (value == JOptionPane.NO_OPTION) {
@@ -3261,9 +3274,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     fileSelected = getNewSearchParameterFileLocation(tempSearchParameters);
                 }
 
-                if (fileSelected && tempSearchParameters.getParametersFile() != null) {
+                if (fileSelected && parametersFile != null) {
                     try {
-                        SearchParameters.saveIdentificationParameters(tempSearchParameters, tempSearchParameters.getParametersFile());
+                        SearchParameters.saveIdentificationParameters(tempSearchParameters, parametersFile);
                         searchParameters = tempSearchParameters;
                         loadModifications(searchParameters);
                         settingsFileJTextField.setText(parametersFile.getName());
@@ -3306,8 +3319,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         // If so, start from that file's parent.
         File startLocation = new File(getLastSelectedFolder().getLastSelectedFolder());
 
-        if (tempSearchParameters.getParametersFile() != null) {
-            startLocation = tempSearchParameters.getParametersFile();
+        if (parametersFile != null) {
+            startLocation = parametersFile;
         }
 
         boolean complete = false;
@@ -3354,7 +3367,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             }
         }
 
-        tempSearchParameters.setParametersFile(parametersFile);
         return true;
     }
 }

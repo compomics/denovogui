@@ -53,10 +53,6 @@ public class SettingsDialog extends javax.swing.JDialog {
      */
     private SearchParameters searchParameters;
     /**
-     * The parameter file.
-     */
-    private File parametersFile = null;
-    /**
      * The modification table column header tooltips.
      */
     private ArrayList<String> modificationTableToolTips;
@@ -78,11 +74,12 @@ public class SettingsDialog extends javax.swing.JDialog {
      * Creates a new SettingsDialog.
      *
      * @param deNovoGUI references to the main DeNovoGUI
+     * @param settingsName the name of the settings
      * @param searchParameters the search parameters
      * @param setVisible if the dialog is to be visible
      * @param modal if the dialog is to be modal
      */
-    public SettingsDialog(DeNovoGUI deNovoGUI, SearchParameters searchParameters, boolean setVisible, boolean modal) {
+    public SettingsDialog(DeNovoGUI deNovoGUI, String settingsName, SearchParameters searchParameters, boolean setVisible, boolean modal) {
         super(deNovoGUI, modal);
         this.deNovoGUI = deNovoGUI;
         this.searchParameters = searchParameters;
@@ -91,9 +88,11 @@ public class SettingsDialog extends javax.swing.JDialog {
         insertData();
         setLocationRelativeTo(deNovoGUI);
 
-        if (searchParameters.getParametersFile() != null) {
-            setTitle("De Novo Settings - " + searchParameters.getParametersFile().getName());
+        String dialogTitle = "De Novo Settings";
+        if (settingsName != null && settingsName.length() > 0) {
+            dialogTitle += " - " + settingsName;
         }
+        setTitle(dialogTitle);
 
         if (setVisible) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -173,10 +172,6 @@ public class SettingsDialog extends javax.swing.JDialog {
      * Insert the search parameters into the GUI.
      */
     private void insertData() {
-
-        if (searchParameters.getParametersFile() != null) {
-            parametersFile = searchParameters.getParametersFile();
-        }
 
         PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
 
@@ -1564,10 +1559,6 @@ public class SettingsDialog extends javax.swing.JDialog {
             modificationProfile.setColor(modName, (Color) variableModsTable.getValueAt(i, 0));
         }
         tempSearchParameters.setPtmSettings(modificationProfile);
-
-        if (searchParameters.getParametersFile() != null && searchParameters.getParametersFile().exists()) {
-            tempSearchParameters.setParametersFile(searchParameters.getParametersFile());
-        }
 
         return tempSearchParameters;
     }
