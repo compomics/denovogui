@@ -367,9 +367,12 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                     boolean equalParameters = true;
 
                     try {
-                        for (int i = 0; i < parameterFiles.size() && equalParameters; i++) {
-                            for (int j = 0; j < parameterFiles.size() && equalParameters; j++) {
-                                equalParameters = SearchParameters.getIdentificationParameters(parameterFiles.get(i)).equals(SearchParameters.getIdentificationParameters(parameterFiles.get(j)));
+                        SearchParameters searchParameters0 = SearchParameters.getIdentificationParameters(parameterFiles.get(0));
+                        for (int i = 1; i < parameterFiles.size(); i++) {
+                            SearchParameters searchParametersI = SearchParameters.getIdentificationParameters(parameterFiles.get(i));
+                            if (!searchParameters0.equals(searchParametersI)) {
+                                equalParameters = false;
+                                break;
                             }
                         }
                     } catch (ClassNotFoundException e) {
@@ -380,7 +383,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
 
                     if (equalParameters) {
                         // all parameters are equal, just select one of them
-                        parameterFile = parameterFiles.get(0); // @TODO: can we be more clever in selecting the "right" one?
+                        parameterFile = parameterFiles.get(0);
                     } else {
                         FileSelectionDialog fileSelection = new FileSelectionDialog(parentFrame, parameterFiles, "Select the wanted SearchGUI parameters file.");
                         if (!fileSelection.isCanceled()) {
