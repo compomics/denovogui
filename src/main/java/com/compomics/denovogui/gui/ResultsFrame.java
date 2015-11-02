@@ -324,8 +324,6 @@ public class ResultsFrame extends javax.swing.JFrame {
         spectrumFileComboBox.setModel(new DefaultComboBoxModel(filesArray));
 
         // add default neutral losses to display
-        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.H2O);
-        IonFactory.getInstance().addDefaultNeutralLoss(NeutralLoss.NH3);
         spectrumAnnotationMenuPanel.add(annotationMenuBar);
 
         // make sure that the scroll panes are see-through

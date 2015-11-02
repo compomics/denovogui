@@ -3281,11 +3281,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                         loadModifications(searchParameters);
                         settingsFileJTextField.setText(parametersFile.getName());
                         return true;
-                    } catch (ClassNotFoundException e) {
-                        JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
-                        return false;
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
                                 + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
