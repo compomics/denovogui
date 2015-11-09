@@ -15,8 +15,7 @@
    ========================
 
    For updated information about DeNovoGUI please visit:
-
-   http://denovogui.googlecode.com
+   http://compomics.github.io/projects/denovogui.html
 
 
 
