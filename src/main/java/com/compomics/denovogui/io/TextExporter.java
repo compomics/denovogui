@@ -188,9 +188,9 @@ public class TextExporter {
                                         b.write(tag.getCTerminalGap() + separator);
                                         b.write(tag.getMass() + separator);
                                         b.write(tagAssumption.getIdentificationCharge().value + separator);
-                                        double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false);
+                                        double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + separator);
-                                        massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true);
+                                        massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + separator);
                                     } else {
                                         b.write(separator);
@@ -209,11 +209,11 @@ public class TextExporter {
                                         b.write(separator);
                                         b.write(separator);
                                     }
-                                    Double massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false);
+                                    Double massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                     b.write(massDeviation + separator);
-                                    massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true);
+                                    massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                     b.write(massDeviation + separator);
-                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz()) + separator);
+                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz(), searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection()) + separator);
                                     b.newLine();
                                 }
                             }
