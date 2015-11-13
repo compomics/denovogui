@@ -2,7 +2,7 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.software.CompomicsWrapper;
-import com.compomics.util.experiment.identification.search_parameters_cli.AbstractIdentificationParametersCli;
+import com.compomics.util.experiment.identification.parameters_cli.AbstractIdentificationParametersCli;
 import java.io.File;
 import org.apache.commons.cli.Options;
 

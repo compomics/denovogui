@@ -1,6 +1,6 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.util.experiment.identification.search_parameters_cli.IdentificationParametersCLIParams;
+import com.compomics.util.experiment.identification.parameters_cli.IdentificationParametersCLIParams;
 import org.apache.commons.cli.Options;
 
 /**
@@ -19,7 +19,7 @@ public class DeNovoIdentificationParametersCLIParams {
      */
     public static void createOptionsCLI(Options aOptions) {
 
-        aOptions.addOption(IdentificationParametersCLIParams.OUTPUT.id, true, IdentificationParametersCLIParams.OUTPUT.description);
+        aOptions.addOption(IdentificationParametersCLIParams.OUT.id, true, IdentificationParametersCLIParams.OUT.description);
         aOptions.addOption(IdentificationParametersCLIParams.MODS.id, false, IdentificationParametersCLIParams.MODS.description);
 
         aOptions.addOption(IdentificationParametersCLIParams.PREC_PPM.id, true, IdentificationParametersCLIParams.PREC_PPM.description);
@@ -87,7 +87,7 @@ public class DeNovoIdentificationParametersCLIParams {
         String formatter = "%-25s";
 
         output += "Mandatory parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.OUTPUT.id) + IdentificationParametersCLIParams.OUTPUT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.OUT.id) + IdentificationParametersCLIParams.OUT.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_PPM.id) + IdentificationParametersCLIParams.PREC_PPM.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_TOL.id) + IdentificationParametersCLIParams.PREC_TOL.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.FRAG_TOL.id) + IdentificationParametersCLIParams.FRAG_TOL.description + "\n";

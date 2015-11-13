@@ -14,6 +14,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Se
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.waiting.Duration;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -86,10 +87,6 @@ public class DeNovoSequencingHandler {
      * The enzyme file.
      */
     private static String ENZYME_FILE = "resources/conf/enzymes.xml";
-    /**
-     * The name of the parameters file saved by default.
-     */
-    public final static String parametersFileName = "denovoGUI.par";
     /**
      * The chunk files.
      */
@@ -167,17 +164,17 @@ public class DeNovoSequencingHandler {
         int primaryProgressCounterMax = 1;
         if (enablePepNovo) {
             primaryProgressCounterMax += numberOfSpectrumFiles + 1;
-        } 
+        }
         if (enableDirecTag) {
             primaryProgressCounterMax += numberOfSpectrumFiles;
-        } 
+        }
         if (enablePNovo) {
             primaryProgressCounterMax += numberOfSpectrumFiles;
-        } 
+        }
         if (enableNovor) {
             primaryProgressCounterMax += numberOfSpectrumFiles;
         }
-        
+
         waitingHandler.setMaxPrimaryProgressCounter(primaryProgressCounterMax);
         waitingHandler.increasePrimaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
@@ -224,16 +221,6 @@ public class DeNovoSequencingHandler {
                 break;
             }
         }
-        
-        // back-up the parameters
-        try {
-            SearchParameters.saveIdentificationParameters(searchParameters, new File(outputFolder, parametersFileName));
-        } catch (Exception e) {
-            waitingHandler.appendReport("An error occurred while writing the sequencing parameters: " + e.getMessage(), true, true);
-            exceptionHandler.catchException(e);
-            waitingHandler.setRunCanceled();
-            return;
-        }
 
         if (!waitingHandler.isRunCanceled()) {
             duration.end();
@@ -271,7 +258,7 @@ public class DeNovoSequencingHandler {
 
         try {
             jobs = new ArrayDeque<Job>();
-            
+
             // Novor
             if (enableNovor && !waitingHandler.isRunCanceled()) {
 
@@ -310,7 +297,7 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.increasePrimaryProgressCounter();
             }
-            
+
             // DirecTag
             if (enableDirecTag && !waitingHandler.isRunCanceled()) {
 
@@ -359,7 +346,7 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReportEndLine();
                 waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using PepNovo+.", true, true);
                 waitingHandler.appendReportEndLine();
-                
+
                 // start a fixed thread pool
                 threadExecutor = Executors.newFixedThreadPool(nThreads);
 
@@ -383,7 +370,7 @@ public class DeNovoSequencingHandler {
                 if (waitingHandler.isRunCanceled()) {
                     return;
                 }
-                
+
                 waitingHandler.increasePrimaryProgressCounter();
 
                 waitingHandler.setWaitingText("Processing " + spectrumFile.getName() + ".");
