@@ -2489,9 +2489,11 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                     spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
                                             PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                            PeptideFragmentIon.Y_ION, annotationPreferences.getDeNovoCharge(),
+                                            PeptideFragmentIon.Y_ION, 
+                                            annotationPreferences.getDeNovoCharge(),
                                             annotationPreferences.showForwardIonDeNovoTags(),
-                                            annotationPreferences.showRewindIonDeNovoTags(), false);
+                                            annotationPreferences.showRewindIonDeNovoTags(), 
+                                            0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
                                 } else {
                                     throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                                 }
@@ -2518,9 +2520,11 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                     spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
                                             PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                            PeptideFragmentIon.Y_ION, annotationPreferences.getDeNovoCharge(),
+                                            PeptideFragmentIon.Y_ION, 
+                                            annotationPreferences.getDeNovoCharge(),
                                             annotationPreferences.showForwardIonDeNovoTags(),
-                                            annotationPreferences.showRewindIonDeNovoTags(), false);
+                                            annotationPreferences.showRewindIonDeNovoTags(), 
+                                            0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
                                 } else {
                                     throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                                 }

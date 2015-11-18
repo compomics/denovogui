@@ -2,6 +2,8 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.software.CommandLineUtils;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.parameters_cli.IdentificationParametersInputBean;
+import com.compomics.util.preferences.IdentificationParameters;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,6 +71,14 @@ public class DeNovoCLIInputBean {
      * The path settings.
      */
     private PathSettingsCLIInputBean pathSettingsCLIInputBean;
+    /**
+     * The identification parameters input.
+     */
+    private IdentificationParametersInputBean identificationParametersInputBean;
+    /**
+     * The identification parameters file.
+     */
+    private File identificationParametersFile;
 
     /**
      * Takes all the arguments from a command line.
@@ -132,6 +142,9 @@ public class DeNovoCLIInputBean {
             arg = aLine.getOptionValue(DeNovoCLIParams.THREADS.id);
             nThreads = new Integer(arg);
         }
+        
+        // identification parameters
+        identificationParametersInputBean = new IdentificationParametersInputBean(aLine);
 
         pathSettingsCLIInputBean = new PathSettingsCLIInputBean(aLine);
     }
@@ -186,7 +199,7 @@ public class DeNovoCLIInputBean {
     public File getPepNovoExecutable() {
         return pepNovoExecutable;
     }
-    
+
     /**
      * Returns the Novor executable. Null if not set.
      *
@@ -222,7 +235,7 @@ public class DeNovoCLIInputBean {
     public boolean enablePepNovo() {
         return pepNovoEnabled;
     }
-    
+
     /**
      * Returns if Novor is to be run or not.
      *
@@ -268,7 +281,7 @@ public class DeNovoCLIInputBean {
      *
      * @throws FileNotFoundException thrown if a spectrum file cannot be found
      */
-    public static boolean isValidStartup(CommandLine aLine) throws FileNotFoundException {
+    public static boolean isValidStartup(CommandLine aLine) throws IOException {
 
         if (aLine.getOptions().length == 0) {
             return false;
@@ -310,6 +323,11 @@ public class DeNovoCLIInputBean {
             }
         }
 
+        // Check the identification parameters
+        if (!IdentificationParametersInputBean.isValidStartup(aLine, false)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -320,5 +338,23 @@ public class DeNovoCLIInputBean {
      */
     public PathSettingsCLIInputBean getPathSettingsCLIInputBean() {
         return pathSettingsCLIInputBean;
+    }
+    
+    /**
+     * Returns the identification parameters.
+     *
+     * @return the identification parameters
+     */
+    public IdentificationParameters getIdentificationParameters() {
+        return identificationParametersInputBean.getIdentificationParameters();
+    }
+
+    /**
+     * Returns the identification parameters file.
+     *
+     * @return the identification parameters file
+     */
+    public File getIdentificationParametersFile() {
+        return identificationParametersFile;
     }
 }
