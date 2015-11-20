@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -65,6 +66,11 @@ public class NovorJob extends Job {
      * The post translational modifications factory.
      */
     private PTMFactory ptmFactory = PTMFactory.getInstance();
+    /**
+     * The Novor to utilities PTM map. Key: Novor PTM short name, element:
+     * utilities PTM name.
+     */
+    private HashMap<String, String> novorPtmMap;
 
     /**
      * Constructor for the NovorJob.
@@ -208,7 +214,7 @@ public class NovorJob extends Job {
 
             // fragmentation method
             bufferedParameterWriter.write("fragmentation = " + novorParameters.getFragmentationMethod() + System.getProperty("line.separator"));
-            
+
             // the instrument
             bufferedParameterWriter.write("massAnalyzer = " + novorParameters.getMassAnalyzer() + System.getProperty("line.separator"));
 
@@ -235,6 +241,9 @@ public class NovorJob extends Job {
             // modifications
             FileWriter modsWriter = new FileWriter(novorFolder.getAbsolutePath() + File.separator + modsFileName);
             BufferedWriter bufferedModsWriter = new BufferedWriter(modsWriter);
+
+            // create map for mapping back to the utilities ptms used
+            novorPtmMap = new HashMap<String, String>();
 
             // variable modifications
             if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
@@ -277,6 +286,8 @@ public class NovorJob extends Job {
                 fixedModsAsString = "fixedModifications = " + fixedModsAsString;
                 bufferedParameterWriter.write(fixedModsAsString + System.getProperty("line.separator") + System.getProperty("line.separator"));
             }
+            
+            novorParameters.setNovorPtmMap(novorPtmMap);
 
             // close the mods writer
             bufferedModsWriter.close();
@@ -295,7 +306,7 @@ public class NovorJob extends Job {
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, new String[]{"Unable to write file: '" + e.getMessage() + "'!",
-                "Could not save pNovo+ parameter file."}, "pNovo+ Parameter File Error", JOptionPane.WARNING_MESSAGE);
+                "Could not save Novr+ parameter file."}, "Novor Parameter File Error", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -313,7 +324,8 @@ public class NovorJob extends Job {
         bufferedModsWriter.write(ptm.getName() + ", ");
 
         // short name
-        bufferedModsWriter.write(ptm.getName() + ", ");
+        bufferedModsWriter.write(novorPtmMap.keySet().size() + ", ");
+        novorPtmMap.put("" + novorPtmMap.keySet().size(), ptm.getName());
 
         // long name
         bufferedModsWriter.write(ptm.getName() + ", ");

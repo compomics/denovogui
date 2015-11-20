@@ -677,7 +677,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         availableModsPanelLayout.setVerticalGroup(
             availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(availableModsPanelLayout.createSequentialGroup()
-                .addGroup(availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(availableModsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(modificationsListCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openModificationSettingsJButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -726,13 +726,13 @@ public class SettingsDialog extends javax.swing.JDialog {
         fragmentMassToleranceLabel.setText("Fragment Mass Tolerance");
         fragmentMassToleranceLabel.setToolTipText("Fragment mass tolerance - max 0.75 Da");
 
-        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.5d), Double.valueOf(0.0d), null, Double.valueOf(0.1d)));
+        fragmentMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.0d, null, 0.1d));
         fragmentMassToleranceSpinner.setToolTipText("Fragment mass tolerance - max 0.75 Da");
 
         precursorMassToleranceLabel.setText("Precursor Mass Tolerance");
         precursorMassToleranceLabel.setToolTipText("Precursor mass tolerance - max 5.0 Da");
 
-        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(1.0d), Double.valueOf(0.0d), null, Double.valueOf(0.1d)));
+        precursorMassToleranceSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, null, 0.1d));
         precursorMassToleranceSpinner.setToolTipText("Precursor mass tolerance - max 5.0 Da");
 
         numberOfSolutionsLabel.setText("#Solutions (max. 20)");
@@ -741,7 +741,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         numberOfThreadsLabel.setText("#Threads/Cores");
 
-        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        numberOfThreadsSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
 
         adjustPrecursorLabel.setText("Use Spectrum Precursor m/z");
 
