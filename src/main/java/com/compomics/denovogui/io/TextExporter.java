@@ -35,11 +35,11 @@ public class TextExporter {
     /**
      * Separator used for the export.
      */
-    private static final String separator = "\t";
+    private static final String SEPARATOR = "\t";
     /**
      * Separator used for the export.
      */
-    private static final String separator2 = ";";
+    private static final String SEPARATOR_2 = ";";
 
     /**
      * Exports the peptide matching results to a given file.
@@ -81,12 +81,12 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-                b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
-                        + "Rank" + separator + "Protein(s)" + separator + "Peptide" + separator + "Peptide Variable Modifications" + separator + "Modified Sequence"
-                        + separator + "Tag" + separator + "Longest Amino Acid Sequence" + separator + "Tag Variable Modifications" + separator + "Modified tag sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "Novor Score" + separator
-                        + "N-Gap" + separator + "C-Gap" + separator + "Theoretic m/z" + separator + "Identification Charge" + separator + "Tag Mass Error (Da)"
-                        + separator + "Tag Mass Error (ppm)" + separator + "Peptide Mass Error (Da)" + separator + "Peptide Mass Error (ppm)" + separator + "Isotope");
+                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
+                        + "Rank" + SEPARATOR + "Protein(s)" + SEPARATOR + "Peptide" + SEPARATOR + "Peptide Variable Modifications" + SEPARATOR + "Modified Sequence"
+                        + SEPARATOR + "Tag" + SEPARATOR + "Longest Amino Acid Sequence" + SEPARATOR + "Tag Variable Modifications" + SEPARATOR + "Modified tag sequence" + SEPARATOR
+                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
+                        + "N-Gap" + SEPARATOR + "C-Gap" + SEPARATOR + "Theoretic m/z" + SEPARATOR + "Identification Charge" + SEPARATOR + "Tag Mass Error (Da)"
+                        + SEPARATOR + "Tag Mass Error (ppm)" + SEPARATOR + "Peptide Mass Error (Da)" + SEPARATOR + "Peptide Mass Error (ppm)" + SEPARATOR + "Isotope");
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -103,10 +103,10 @@ public class TextExporter {
                             String spectrumDetails = "";
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            spectrumDetails += mgfFile + separator + spectrumTitle + separator;
+                            spectrumDetails += mgfFile + SEPARATOR + spectrumTitle + SEPARATOR;
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
+                            spectrumDetails += precursor.getMz() + SEPARATOR + precursor.getPossibleChargesAsString() + SEPARATOR;
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
@@ -143,7 +143,7 @@ public class TextExporter {
                                 if (passesThreshold) {
 
                                     b.write(spectrumDetails);
-                                    b.write(peptideAssumption.getRank() + separator);
+                                    b.write(peptideAssumption.getRank() + SEPARATOR);
 
                                     Peptide peptide = peptideAssumption.getPeptide();
                                     String proteinText = "";
@@ -152,68 +152,68 @@ public class TextExporter {
                                         Collections.sort(proteins);
                                         for (String accession : proteins) {
                                             if (!proteinText.equals("")) {
-                                                proteinText += separator2;
+                                                proteinText += SEPARATOR_2;
                                             }
                                             proteinText += accession;
                                         }
                                     }
-                                    b.write(proteinText + separator);
+                                    b.write(proteinText + SEPARATOR);
 
-                                    b.write(peptide.getSequence() + separator);
-                                    b.write(getPeptideModificationsAsString(peptide) + separator);
-                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+                                    b.write(peptide.getSequence() + SEPARATOR);
+                                    b.write(getPeptideModificationsAsString(peptide) + SEPARATOR);
+                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
 
                                     // tag section if any
                                     TagAssumption tagAssumption = new TagAssumption();
                                     tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
                                     if (tagAssumption != null) {
                                         Tag tag = tagAssumption.getTag();
-                                        b.write(tag.asSequence() + separator);
-                                        b.write(tag.getLongestAminoAcidSequence() + separator);
-                                        b.write(Tag.getTagModificationsAsString(tag) + separator);
-                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+                                        b.write(tag.asSequence() + SEPARATOR);
+                                        b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
+                                        b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
+                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
                                         if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                            b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-                                            b.write(tagAssumption.getScore() + separator + separator + separator + separator);
+                                            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
+                                            b.write(tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
                                         } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                                            b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
+                                            b.write(SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
                                         } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                                            b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
+                                            b.write(SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR);
                                         } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-                                            b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
+                                            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR);
                                         }
-                                        b.write(tag.getNTerminalGap() + separator);
-                                        b.write(tag.getCTerminalGap() + separator);
-                                        b.write(tag.getMass() + separator);
-                                        b.write(tagAssumption.getIdentificationCharge().value + separator);
+                                        b.write(tag.getNTerminalGap() + SEPARATOR);
+                                        b.write(tag.getCTerminalGap() + SEPARATOR);
+                                        b.write(tag.getMass() + SEPARATOR);
+                                        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
                                         double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
-                                        b.write(massDeviation + separator);
+                                        b.write(massDeviation + SEPARATOR);
                                         massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
-                                        b.write(massDeviation + separator);
+                                        b.write(massDeviation + SEPARATOR);
                                     } else {
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
-                                        b.write(separator);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
                                     }
                                     Double massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
-                                    b.write(massDeviation + separator);
+                                    b.write(massDeviation + SEPARATOR);
                                     massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
-                                    b.write(massDeviation + separator);
-                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz(), searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection()) + separator);
+                                    b.write(massDeviation + SEPARATOR);
+                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz(), searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection()) + SEPARATOR);
                                     b.newLine();
                                 }
                             }
@@ -274,10 +274,10 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-                b.write("File Name" + separator + "Spectrum Title" + separator + "Measured m/z" + separator + "Measured Charge" + separator
-                        + "Rank" + separator + "Tag" + separator + "Longest AminoAcid sequence" + separator + "Variable Modifications" + separator + "Modified Sequence" + separator
-                        + "PepNovo RankScore" + separator + "PepNovo Score" + separator + "DirecTag E-value" + separator + "pNovo+ Score" + separator + "Novor Score" + separator
-                        + "N-Gap" + separator + "C-Gap" + separator + "Theoretic m/z" + separator + "Identification Charge");;
+                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
+                        + "Rank" + SEPARATOR + "Tag" + SEPARATOR + "Longest AminoAcid sequence" + SEPARATOR + "Variable Modifications" + SEPARATOR + "Modified Sequence" + SEPARATOR
+                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
+                        + "N-Gap" + SEPARATOR + "C-Gap" + SEPARATOR + "Theoretic m/z" + SEPARATOR + "Identification Charge");
                 b.newLine();
 
                 if (waitingHandler != null) {
@@ -292,10 +292,10 @@ public class TextExporter {
                         if (identification.matchExists(spectrumKey)) {
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            String spectrumDetails = mgfFile + separator + spectrumTitle + separator;
+                            String spectrumDetails = mgfFile + SEPARATOR + spectrumTitle + SEPARATOR;
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + separator + precursor.getPossibleChargesAsString() + separator;
+                            spectrumDetails += precursor.getMz() + SEPARATOR + precursor.getPossibleChargesAsString() + SEPARATOR;
 
                             ArrayList<SpectrumIdentificationAssumption> allAssumptions = new ArrayList<SpectrumIdentificationAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
@@ -330,7 +330,7 @@ public class TextExporter {
 
                                 if (passesThreshold) {
                                     b.write(spectrumDetails);
-                                    b.write(++rank + separator);
+                                    b.write(++rank + SEPARATOR);
                                     writeTagExportLine(b, assumption, searchParameters);
                                     b.newLine();
                                 }
@@ -394,26 +394,26 @@ public class TextExporter {
     public static void writeTagExportLine(BufferedWriter b, PeptideAssumption peptideAssumption, SearchParameters searchParameters) throws IOException {
 
         Peptide peptide = peptideAssumption.getPeptide();
-        b.write(peptide.getSequence() + separator);
-        b.write(peptide.getSequence() + separator);
-        b.write(Peptide.getPeptideModificationsAsString(peptide, true) + separator);
-        b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+        b.write(peptide.getSequence() + SEPARATOR);
+        b.write(peptide.getSequence() + SEPARATOR);
+        b.write(Peptide.getPeptideModificationsAsString(peptide, true) + SEPARATOR);
+        b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
         if (peptideAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) peptideAssumption.getUrParam(pepnovoAssumptionDetails);
-            b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-            b.write(peptideAssumption.getScore() + separator + separator + separator + separator);
+            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
+            b.write(peptideAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
         } else if (peptideAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-            b.write(separator + separator + peptideAssumption.getScore() + separator + separator + separator);
+            b.write(SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
         } else if (peptideAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-            b.write(separator + separator + separator + peptideAssumption.getScore() + separator + separator);
+            b.write(SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR + SEPARATOR);
         } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-            b.write(separator + separator + separator + separator + peptideAssumption.getScore() + separator);
+            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR);
         }
-        b.write(0 + separator);
-        b.write(0 + separator);
-        b.write(peptide.getMass() + separator);
-        b.write(peptideAssumption.getIdentificationCharge().value + separator);
+        b.write(0 + SEPARATOR);
+        b.write(0 + SEPARATOR);
+        b.write(peptide.getMass() + SEPARATOR);
+        b.write(peptideAssumption.getIdentificationCharge().value + SEPARATOR);
     }
 
     /**
@@ -430,26 +430,26 @@ public class TextExporter {
     public static void writeTagExportLine(BufferedWriter b, TagAssumption tagAssumption, SearchParameters searchParameters) throws IOException {
 
         Tag tag = tagAssumption.getTag();
-        b.write(tag.asSequence() + separator);
-        b.write(tag.getLongestAminoAcidSequence() + separator);
-        b.write(Tag.getTagModificationsAsString(tag) + separator);
-        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + separator);
+        b.write(tag.asSequence() + SEPARATOR);
+        b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
+        b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
+        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
         if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-            b.write(pepnovoAssumptionDetails.getRankScore() + separator);
-            b.write(tagAssumption.getScore() + separator + separator + separator + separator);
+            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
+            b.write(tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
         } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-            b.write(separator + separator + tagAssumption.getScore() + separator + separator + separator);
+            b.write(SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
         } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-            b.write(separator + separator + separator + tagAssumption.getScore() + separator + separator);
+            b.write(SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR);
         } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-            b.write(separator + separator + separator + separator + tagAssumption.getScore() + separator);
+            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR);
         }
-        b.write(tag.getNTerminalGap() + separator);
-        b.write(tag.getCTerminalGap() + separator);
-        b.write(tag.getMass() + separator);
-        b.write(tagAssumption.getIdentificationCharge().value + separator);
+        b.write(tag.getNTerminalGap() + SEPARATOR);
+        b.write(tag.getCTerminalGap() + SEPARATOR);
+        b.write(tag.getMass() + SEPARATOR);
+        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
     }
 
     /**
@@ -503,9 +503,9 @@ public class TextExporter {
 
                             String spectrumDetails = ">";
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            spectrumDetails += mgfFile + separator2 + spectrumTitle + separator2;
+                            spectrumDetails += mgfFile + SEPARATOR_2 + spectrumTitle + SEPARATOR_2;
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + separator2 + precursor.getPossibleChargesAsString() + separator2;
+                            spectrumDetails += precursor.getMz() + SEPARATOR_2 + precursor.getPossibleChargesAsString() + SEPARATOR_2;
                             ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
@@ -540,9 +540,9 @@ public class TextExporter {
                                     if (assumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                         PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                         pepnovoAssumptionDetails = (PepnovoAssumptionDetails) assumption.getUrParam(pepnovoAssumptionDetails);
-                                        b.write(pepnovoAssumptionDetails.getRankScore() + separator2);
+                                        b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR_2);
                                     } else {
-                                        b.write(separator2);
+                                        b.write(SEPARATOR_2);
                                     }
                                     b.write(assumption.getScore() + "");
                                     b.newLine();
@@ -594,12 +594,14 @@ public class TextExporter {
 
         if (peptide.isModified()) {
             HashMap<String, ArrayList<Integer>> modMap = new HashMap<String, ArrayList<Integer>>(peptide.getNModifications());
-            for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
-                if (modificationMatch.isVariable()) {
-                    if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
-                        modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
+            if (peptide.isModified()) {
+                for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                    if (modificationMatch.isVariable()) {
+                        if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
+                            modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
+                        }
+                        modMap.get(modificationMatch.getTheoreticPtm()).add(modificationMatch.getModificationSite());
                     }
-                    modMap.get(modificationMatch.getTheoreticPtm()).add(modificationMatch.getModificationSite());
                 }
             }
 

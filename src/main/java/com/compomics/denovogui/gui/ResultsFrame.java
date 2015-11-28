@@ -2567,8 +2567,10 @@ public class ResultsFrame extends javax.swing.JFrame {
                             } else if (assumption instanceof PeptideAssumption) {
                                 PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                 Peptide peptide = peptideAssumption.getPeptide();
-                                for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
-                                    allModifications.add(modificationMatch);
+                                if (peptide.isModified()) {
+                                    for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                                        allModifications.add(modificationMatch);
+                                    }
                                 }
 
                                 if (!modifiedSequence.isEmpty()) {
@@ -3037,13 +3039,15 @@ public class ResultsFrame extends javax.swing.JFrame {
             int aaIndex = aa - 1;
             char aminoAcid = peptideSequence.charAt(aaIndex);
 
-            for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
-                if (modificationMatch.isVariable() && modificationMatch.getModificationSite() == aa) {
-                    String ptmName = modificationMatch.getTheoreticPtm();
-                    String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (confident)<br>";
-                    if (!alreadyAnnotated.contains(temp)) {
-                        tooltip += temp;
-                        alreadyAnnotated.add(temp);
+            if (peptide.isModified()) {
+                for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
+                    if (modificationMatch.isVariable() && modificationMatch.getModificationSite() == aa) {
+                        String ptmName = modificationMatch.getTheoreticPtm();
+                        String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (confident)<br>";
+                        if (!alreadyAnnotated.contains(temp)) {
+                            tooltip += temp;
+                            alreadyAnnotated.add(temp);
+                        }
                     }
                 }
             }
