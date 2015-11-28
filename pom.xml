@@ -38,7 +38,7 @@
         <developer>
             <name>Harald Barsnes</name>
             <id>harald</id>
-            <email>harald.barsnes AT biomed.uib.no</email>
+            <email>harald.barsnes AT uib.no</email>
             <organization>Department of Biomedicine, University of Bergen, Norway</organization>
             <roles>
                 <role>Java Developer</role>
@@ -47,7 +47,7 @@
         <developer>
             <name>Marc Vaudel</name>
             <id>marc</id>
-            <email></email>
+            <email>marc.vaudel AT uib.no</email>
             <organization>Department of Biomedicine, University of Bergen, Norway</organization>
             <roles>
                 <role>Java Developer</role>
@@ -326,7 +326,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>4.2.8</version>
+            <version>4.2.11</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
