@@ -164,6 +164,8 @@ public class PepNovoJob extends Job {
                 command += commandComponent;
             }
 
+            writeCommand();
+            
             // Set the description - yet not used
             setDescription("PepNovo+");
             procBuilder = new ProcessBuilder(procCommands);

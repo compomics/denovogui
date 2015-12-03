@@ -160,6 +160,8 @@ public class NovorJob extends Job {
                 command += commandComponent;
             }
 
+            writeCommand();
+            
             // Set the description - yet not used
             setDescription("Novor");
             procBuilder = new ProcessBuilder(procCommands);

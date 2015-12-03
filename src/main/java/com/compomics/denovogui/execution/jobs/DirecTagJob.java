@@ -248,6 +248,8 @@ public class DirecTagJob extends Job {
                 }
                 command += commandComponent;
             }
+            
+            writeCommand();
 
             // set the description
             setDescription("DirecTag");

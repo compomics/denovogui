@@ -113,6 +113,8 @@ public class PNovoJob extends Job {
                 }
                 command += commandComponent;
             }
+            
+            writeCommand();
 
             String txtFileName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
             outputFile = new File(outputFolder, txtFileName + ".txt");
