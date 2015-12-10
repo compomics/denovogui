@@ -2489,10 +2489,10 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                     spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
                                             PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                            PeptideFragmentIon.Y_ION, 
+                                            PeptideFragmentIon.Y_ION,
                                             annotationPreferences.getDeNovoCharge(),
                                             annotationPreferences.showForwardIonDeNovoTags(),
-                                            annotationPreferences.showRewindIonDeNovoTags(), 
+                                            annotationPreferences.showRewindIonDeNovoTags(),
                                             0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
                                 } else {
                                     throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
@@ -2520,10 +2520,10 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                     spectrumPanel.addAutomaticDeNovoSequencing(peptideAssumption.getPeptide(), annotations,
                                             PeptideFragmentIon.B_ION, // @TODO: choose the fragment ion types from the annotation menu bar?
-                                            PeptideFragmentIon.Y_ION, 
+                                            PeptideFragmentIon.Y_ION,
                                             annotationPreferences.getDeNovoCharge(),
                                             annotationPreferences.showForwardIonDeNovoTags(),
-                                            annotationPreferences.showRewindIonDeNovoTags(), 
+                                            annotationPreferences.showRewindIonDeNovoTags(),
                                             0.75, 1.0, alphaValues, !fixedPtmsCheckBoxMenuItem.isSelected(), false);
                                 } else {
                                     throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
@@ -2794,13 +2794,21 @@ public class ResultsFrame extends javax.swing.JFrame {
             lossSplitter.setVisible(false);
         } else {
 
-            ArrayList<NeutralLoss> currentNeutralLosses;
+            ArrayList<String> currentNeutralLosses;
             boolean neutralLossesAuto;
             if (specificAnnotationPreferences != null) {
                 currentNeutralLosses = specificAnnotationPreferences.getNeutralLossesMap().getAccountedNeutralLosses();
                 neutralLossesAuto = specificAnnotationPreferences.isNeutralLossesAuto();
             } else {
-                currentNeutralLosses = annotationPreferences.getNeutralLosses();
+                ArrayList<NeutralLoss> annotationNeutralLosses = annotationPreferences.getNeutralLosses();
+                if (annotationNeutralLosses != null) {
+                    currentNeutralLosses = new ArrayList<String>(annotationNeutralLosses.size());
+                    for (NeutralLoss neutralLoss : annotationNeutralLosses) {
+                        currentNeutralLosses.add(neutralLoss.name);
+                    }
+                } else {
+                    currentNeutralLosses = new ArrayList<String>(0);
+                }
                 neutralLossesAuto = true;
             }
 
@@ -2810,7 +2818,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                 NeutralLoss neutralLoss = neutralLosses.get(neutralLossName);
 
                 boolean selected = false;
-                for (NeutralLoss specificNeutralLoss : currentNeutralLosses) {
+                for (String specificNeutralLossName : currentNeutralLosses) {
+                    NeutralLoss specificNeutralLoss = NeutralLoss.getNeutralLoss(specificNeutralLossName);
                     if (neutralLoss.isSameAs(specificNeutralLoss)) {
                         selected = true;
                         break;
