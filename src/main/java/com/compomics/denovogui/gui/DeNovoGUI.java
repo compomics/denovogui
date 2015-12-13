@@ -44,6 +44,7 @@ import com.compomics.util.preferences.LastSelectedFolder;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -67,7 +68,9 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingWorker;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import net.jimmc.jshortcut.JShellLink;
@@ -2165,6 +2168,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         boolean numbusLookAndFeelSet = false;
         try {
             numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
+            
+            // fix for the scroll bar thumb disappearing...
+            LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
+            UIDefaults defaults = lookAndFeel.getDefaults();
+            defaults.put("ScrollBar.minimumThumbSize", new Dimension(30, 30));
         } catch (Exception e) {
             // ignore, use default look and feel
         }

@@ -2889,21 +2889,27 @@ public class ResultsFrame extends javax.swing.JFrame {
             specificAnnotationPreferences.clearIonTypes();
             if (aIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.A_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.A_ION);
             }
             if (bIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.B_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.B_ION);
             }
             if (cIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.C_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.C_ION);
             }
             if (xIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.X_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.X_ION);
             }
             if (yIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Y_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.Y_ION);
             }
             if (zIonCheckBoxMenuItem.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, TagFragmentIon.Z_ION);
+                specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, PeptideFragmentIon.Z_ION);
             }
             if (precursorCheckMenu.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.PRECURSOR_ION);
