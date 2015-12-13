@@ -1,7 +1,9 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
+import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
+import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
@@ -11,9 +13,12 @@ import com.compomics.util.experiment.identification.identification_parameters.Se
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Callable;
 import org.apache.commons.cli.*;
 
@@ -86,6 +91,11 @@ public class DeNovoCLI implements Callable {
     public Object call() {
 
         PathSettingsCLIInputBean pathSettingsCLIInputBean = deNovoCLIInputBean.getPathSettingsCLIInputBean();
+
+        if (pathSettingsCLIInputBean.getLogFolder() != null) {
+            DeNovoCLI.redirectErrorStream(pathSettingsCLIInputBean.getLogFolder());
+        }
+        
         if (pathSettingsCLIInputBean.hasInput()) {
             PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
             pathSettingsCLI.setPathSettings();
@@ -343,6 +353,29 @@ public class DeNovoCLI implements Callable {
     public static void main(String[] args) {
         try {
             new DeNovoCLI(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * redirects the error stream to the PeptideShaker.log of a given folder.
+     *
+     * @param logFolder the folder where to save the log
+     */
+    public static void redirectErrorStream(File logFolder) {
+
+        try {
+            logFolder.mkdirs();
+            File file = new File(logFolder, "PeptideShaker.log");
+            System.setErr(new java.io.PrintStream(new FileOutputStream(file, true)));
+
+            System.err.println(System.getProperty("line.separator") + System.getProperty("line.separator") + new Date()
+                    + ": PeptideShaker version " + Properties.getVersion() + ".");
+            System.err.println("Memory given to the Java virtual machine: " + Runtime.getRuntime().maxMemory() + ".");
+            System.err.println("Total amount of memory in the Java virtual machine: " + Runtime.getRuntime().totalMemory() + ".");
+            System.err.println("Free memory: " + Runtime.getRuntime().freeMemory() + ".");
+            System.err.println("Java version: " + System.getProperty("java.version") + ".");
         } catch (Exception e) {
             e.printStackTrace();
         }

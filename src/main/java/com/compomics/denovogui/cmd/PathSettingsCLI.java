@@ -42,6 +42,10 @@ public class PathSettingsCLI {
      */
     public void setPathSettings() {
 
+        if (pathSettingsCLIInputBean.getLogFolder() != null) {
+            DeNovoCLI.redirectErrorStream(pathSettingsCLIInputBean.getLogFolder());
+        }
+
         String path = pathSettingsCLIInputBean.getTempFolder();
         if (!path.equals("")) {
             try {

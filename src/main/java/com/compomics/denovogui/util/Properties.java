@@ -21,12 +21,12 @@ public class Properties {
      *
      * @return the version number of the software
      */
-    public String getVersion() {
+    public static String getVersion() {
 
         java.util.Properties p = new java.util.Properties();
 
         try {
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("denovogui.properties");
+            InputStream is = (new Properties()).getClass().getClassLoader().getResourceAsStream("denovogui.properties");
             p.load(is);
         } catch (Exception e) {
             e.printStackTrace();
