@@ -2417,7 +2417,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 waitingHandler.appendReport("The de novo sequencing is complete.", true, true);
                 waitingHandler.setRunFinished();
 
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh.mm.ss");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
                 String fileName = "DeNovoGUI Report " + df.format(new Date()) + ".html";
                 String report = "";
 
