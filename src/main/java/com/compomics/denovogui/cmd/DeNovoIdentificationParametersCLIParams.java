@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
  * parameters cli in DeNovoGUI.
  *
  * @author Marc Vaudel
+ * @author Harald Barsnes
  */
 public class DeNovoIdentificationParametersCLIParams {
 
@@ -84,66 +85,66 @@ public class DeNovoIdentificationParametersCLIParams {
     public static String getOptionsAsString() {
 
         String output = "";
-        String formatter = "%-25s";
+        String formatter = "%-35s";
 
-        output += "Mandatory parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.OUT.id) + IdentificationParametersCLIParams.OUT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_PPM.id) + IdentificationParametersCLIParams.PREC_PPM.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_TOL.id) + IdentificationParametersCLIParams.PREC_TOL.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FRAG_TOL.id) + IdentificationParametersCLIParams.FRAG_TOL.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.ENZYME.id) + IdentificationParametersCLIParams.ENZYME.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FIXED_MODS.id) + IdentificationParametersCLIParams.FIXED_MODS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.VARIABLE_MODS.id) + IdentificationParametersCLIParams.VARIABLE_MODS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MIN_CHARGE.id) + IdentificationParametersCLIParams.MIN_CHARGE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MAX_CHARGE.id) + IdentificationParametersCLIParams.MAX_CHARGE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MC.id) + IdentificationParametersCLIParams.MC.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FI.id) + IdentificationParametersCLIParams.FI.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.RI.id) + IdentificationParametersCLIParams.RI.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DB.id) + IdentificationParametersCLIParams.DB.description + "\n";
+        output += "Mandatory Parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.OUT.id) + " " + IdentificationParametersCLIParams.OUT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_PPM.id) + " " + IdentificationParametersCLIParams.PREC_PPM.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_TOL.id) + " " + IdentificationParametersCLIParams.PREC_TOL.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FRAG_TOL.id) + " " + IdentificationParametersCLIParams.FRAG_TOL.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.ENZYME.id) + " " + IdentificationParametersCLIParams.ENZYME.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FIXED_MODS.id) + " " + IdentificationParametersCLIParams.FIXED_MODS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.VARIABLE_MODS.id) + " " + IdentificationParametersCLIParams.VARIABLE_MODS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MIN_CHARGE.id) + " " + IdentificationParametersCLIParams.MIN_CHARGE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MAX_CHARGE.id) + " " + IdentificationParametersCLIParams.MAX_CHARGE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MC.id) + " " + IdentificationParametersCLIParams.MC.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FI.id) + " " + IdentificationParametersCLIParams.FI.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.RI.id) + " " + IdentificationParametersCLIParams.RI.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DB.id) + " " + IdentificationParametersCLIParams.DB.description + "\n";
 
-        output += "\n\nPepNovo+ advanced parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id) + IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.id) + IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id) + IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id) + IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id) + IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id) + IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.description + "\n";
+        output += "\n\nPepNovo+ Advanced Parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id) + " " + IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.id) + " " + IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id) + " " + IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id) + " " + IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id) + " " + IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id) + " " + IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.description + "\n";
 
-        output += "\n\nDirecTag advanced parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.id) + IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.id) + IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_DEISOTOPING_MODE.id) + IdentificationParametersCLIParams.DIRECTAG_DEISOTOPING_MODE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_DUPLICATE_SPECTRA.id) + IdentificationParametersCLIParams.DIRECTAG_DUPLICATE_SPECTRA.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_INTENSITY_SCORE_WEIGHT.id) + IdentificationParametersCLIParams.DIRECTAG_INTENSITY_SCORE_WEIGHT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.id) + IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.id) + IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.id) + IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.id) + IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.id) + IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.id) + IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.id) + IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.id) + IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.id) + IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.id) + IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.id) + IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id) + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.DIRECTAG_TAG_LENGTH + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id) + IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id) + IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description + "\n";
+        output += "\n\nDirecTag Advanced Parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_SCORE_WEIGHT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_DEISOTOPING_MODE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_DEISOTOPING_MODE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_DUPLICATE_SPECTRA.id) + " " + IdentificationParametersCLIParams.DIRECTAG_DUPLICATE_SPECTRA.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_INTENSITY_SCORE_WEIGHT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_INTENSITY_SCORE_WEIGHT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.id) + " " + IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.id) + " " + IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.id) + " " + IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.id) + " " + IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description + "\n";
 
-        output += "\n\npNovo+ advanced parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.id) + IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id) + IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id) + IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description + "\n";
+        output += "\n\npNovo+ Advanced Parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.id) + " " + IdentificationParametersCLIParams.PNOVO_NUMBER_OF_PEPTIDES.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.id) + " " + IdentificationParametersCLIParams.PNOVO_LOWER_PRECURSOR_MASS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.id) + " " + IdentificationParametersCLIParams.PNOVO_UPPER_PRECURSOR_MASS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.id) + " " + IdentificationParametersCLIParams.PNOVO_ACTIVATION_TYPE.description + "\n";
 
-        output += "\n\nNovor advanced parameters:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.id) + IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.id) + IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.description + "\n";
+        output += "\n\nNovor Advanced Parameters:\n\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.id) + " " + IdentificationParametersCLIParams.NOVOR_FRAGMENTATION.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.id) + " " + IdentificationParametersCLIParams.NOVOR_MASS_ANALYZER.description + "\n";
         
         output += "\n\nHelp:\n\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MODS.id) + IdentificationParametersCLIParams.MODS.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.USAGE.id) + IdentificationParametersCLIParams.USAGE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.MODS.id) + " " + IdentificationParametersCLIParams.MODS.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.USAGE.id) + " " + IdentificationParametersCLIParams.USAGE.description + "\n";
 
         return output;
     }

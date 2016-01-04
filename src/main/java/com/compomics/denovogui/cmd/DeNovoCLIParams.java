@@ -77,28 +77,28 @@ public enum DeNovoCLIParams {
     public static String getOptionsAsString() {
 
         String output = "";
-        String formatter = "%-25s";
+        String formatter = "%-35s";
 
-        output += "Mandatory parameters:\n\n";
-        output += "-" + String.format(formatter, SPECTRUM_FILES.id) + SPECTRUM_FILES.description + "\n";
-        output += "-" + String.format(formatter, OUTPUT_FOLDER.id) + OUTPUT_FOLDER.description + "\n";
-        output += "-" + String.format(formatter, IDENTIFICATION_PARAMETERS.id) + IDENTIFICATION_PARAMETERS.description + "\n";
+        output += "Mandatory Parameters:\n\n";
+        output += "-" + String.format(formatter, SPECTRUM_FILES.id) + " " + SPECTRUM_FILES.description + "\n";
+        output += "-" + String.format(formatter, OUTPUT_FOLDER.id) + " " + OUTPUT_FOLDER.description + "\n";
+        output += "-" + String.format(formatter, IDENTIFICATION_PARAMETERS.id) + " " + IDENTIFICATION_PARAMETERS.description + "\n";
 
-        output += "\n\nOptional parameters:\n\n";
-        output += "-" + String.format(formatter, PEPNOVO.id) + PEPNOVO.description + "\n";
-        output += "-" + String.format(formatter, DIRECT_TAG.id) + DIRECT_TAG.description + "\n";
-        output += "-" + String.format(formatter, PNOVO.id) + PNOVO.description + "\n";
-        output += "-" + String.format(formatter, NOVOR.id) + NOVOR.description + "\n";
+        output += "\n\nOptional Parameters:\n\n";
+        output += "-" + String.format(formatter, PEPNOVO.id) + " " + PEPNOVO.description + "\n";
+        output += "-" + String.format(formatter, DIRECT_TAG.id) + " " + DIRECT_TAG.description + "\n";
+        output += "-" + String.format(formatter, PNOVO.id) + " " + PNOVO.description + "\n";
+        output += "-" + String.format(formatter, NOVOR.id) + " " + NOVOR.description + "\n";
 
-        output += "\n\nOptional advanced parameters:\n\n";
-        output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + PEPNOVO_LOCATION.description + "\n";
-        output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + DIRECTAG_LOCATION.description + "\n";
-        output += "-" + String.format(formatter, PNOVO_LOCATION.id) + PNOVO_LOCATION.description + "\n";
-        output += "-" + String.format(formatter, NOVOR_LOCATION.id) + NOVOR_LOCATION.description + "\n";
-        output += "-" + String.format(formatter, THREADS.id) + THREADS.description + "\n";
+        output += "\n\nOptional Advanced Parameters:\n\n";
+        output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + " " + PEPNOVO_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + " " + DIRECTAG_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, PNOVO_LOCATION.id) + " " + PNOVO_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, NOVOR_LOCATION.id) + " " + NOVOR_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, THREADS.id) + " " + THREADS.description + "\n";
 
-        output += "\n\nOptional temporary folder:\n\n";
-        output += "-" + String.format(formatter, PathSettingsCLIParams.ALL.id) + PathSettingsCLIParams.ALL.description + "\n";
+        output += "\n\nOptional Temporary Folder:\n\n";
+        output += "-" + String.format(formatter, PathSettingsCLIParams.ALL.id) + " " + PathSettingsCLIParams.ALL.description + "\n";
 
         return output;
     }
