@@ -557,6 +557,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         otherMenu = new javax.swing.JMenu();
         precursorCheckMenu = new javax.swing.JCheckBoxMenuItem();
         immoniumIonsCheckMenu = new javax.swing.JCheckBoxMenuItem();
+        relatedIonsCheckMenu = new javax.swing.JCheckBoxMenuItem();
         reporterIonsCheckMenu = new javax.swing.JCheckBoxMenuItem();
         lossSplitter = new javax.swing.JMenu();
         lossMenu = new javax.swing.JMenu();
@@ -738,6 +739,15 @@ public class ResultsFrame extends javax.swing.JFrame {
             }
         });
         otherMenu.add(immoniumIonsCheckMenu);
+
+        relatedIonsCheckMenu.setSelected(true);
+        relatedIonsCheckMenu.setText("Related");
+        relatedIonsCheckMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relatedIonsCheckMenuActionPerformed(evt);
+            }
+        });
+        otherMenu.add(relatedIonsCheckMenu);
 
         reporterIonsCheckMenu.setSelected(true);
         reporterIonsCheckMenu.setText("Reporter");
@@ -1823,6 +1833,14 @@ public class ResultsFrame extends javax.swing.JFrame {
         updateSpectrum();
     }//GEN-LAST:event_individualDeNovoCheckBoxMenuItemActionPerformed
 
+    /**
+     * @see #updateSpectrum()
+     */
+    private void relatedIonsCheckMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relatedIonsCheckMenuActionPerformed
+        deselectDefaultAnnotationMenuItem();
+        updateSpectrum();
+    }//GEN-LAST:event_relatedIonsCheckMenuActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem aIonCheckBoxMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1881,6 +1899,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel querySpectraPanel;
     private javax.swing.JTable querySpectraTable;
     private javax.swing.JScrollPane querySpectraTableScrollPane;
+    private javax.swing.JCheckBoxMenuItem relatedIonsCheckMenu;
     private javax.swing.JCheckBoxMenuItem reporterIonsCheckMenu;
     private javax.swing.JMenu resetAnnotationMenu;
     private javax.swing.JCheckBoxMenuItem rewindIonsDeNovoCheckBoxMenuItem;
@@ -2011,8 +2030,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                         for (int i = 0; i < scores.size() && i < numberOfMatches; i++) {
 
                             double score = scores.get(i);
-                            ArrayList<SpectrumIdentificationAssumption> assumptions = assumptionsMap.get(score);
-                            ArrayList<SpectrumIdentificationAssumption> denovoAssumptions = new ArrayList<SpectrumIdentificationAssumption>(assumptions);
+                            ArrayList<SpectrumIdentificationAssumption> tempAssumptions = assumptionsMap.get(score);
+                            ArrayList<SpectrumIdentificationAssumption> denovoAssumptions = new ArrayList<SpectrumIdentificationAssumption>(tempAssumptions);
 
                             for (SpectrumIdentificationAssumption assumption : denovoAssumptions) {
 
@@ -2039,7 +2058,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                 PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
                                                         advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
                                                 peptideAssumption.addUrParam(tagAssumption);
-                                                assumptions.add(peptideAssumption);
+                                                tempAssumptions.add(peptideAssumption);
                                             }
                                         }
                                     } else if (assumption instanceof PeptideAssumption) {
@@ -2729,6 +2748,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         zIonCheckBoxMenuItem.setSelected(false);
         precursorCheckMenu.setSelected(false);
         immoniumIonsCheckMenu.setSelected(false);
+        relatedIonsCheckMenu.setSelected(false);
         reporterIonsCheckMenu.setSelected(false);
 
         HashMap<Ion.IonType, HashSet<Integer>> ionTypes;
@@ -2738,28 +2758,49 @@ public class ResultsFrame extends javax.swing.JFrame {
             ionTypes = annotationPreferences.getIonTypes();
         }
 
-        for (Ion.IonType ionType : ionTypes.keySet()) { // @TODO: can be null!!
-            if (ionType == Ion.IonType.IMMONIUM_ION) {
-                immoniumIonsCheckMenu.setSelected(true);
-            } else if (ionType == Ion.IonType.PRECURSOR_ION) {
-                precursorCheckMenu.setSelected(true);
-            } else if (ionType == Ion.IonType.REPORTER_ION) {
-                reporterIonsCheckMenu.setSelected(true);
-            } else if (ionType == Ion.IonType.TAG_FRAGMENT_ION) {
-                for (int subtype : ionTypes.get(ionType)) {
-                    if (subtype == TagFragmentIon.A_ION) {
-                        aIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == TagFragmentIon.B_ION) {
-                        bIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == TagFragmentIon.C_ION) {
-                        cIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == TagFragmentIon.X_ION) {
-                        xIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == TagFragmentIon.Y_ION) {
-                        yIonCheckBoxMenuItem.setSelected(true);
-                    } else if (subtype == TagFragmentIon.Z_ION) {
-                        zIonCheckBoxMenuItem.setSelected(true);
-                    }
+        for (Ion.IonType ionType : ionTypes.keySet()) {
+            if (null != ionType) {
+                switch (ionType) {
+                    case IMMONIUM_ION:
+                        immoniumIonsCheckMenu.setSelected(true);
+                        break;
+                    case RELATED_ION:
+                        relatedIonsCheckMenu.setSelected(true);
+                        break;
+                    case PRECURSOR_ION:
+                        precursorCheckMenu.setSelected(true);
+                        break;
+                    case REPORTER_ION:
+                        reporterIonsCheckMenu.setSelected(true);
+                        break;
+                    case TAG_FRAGMENT_ION:
+                        for (int subtype : ionTypes.get(ionType)) {
+                            switch (subtype) {
+                                case TagFragmentIon.A_ION:
+                                    aIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                case TagFragmentIon.B_ION:
+                                    bIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                case TagFragmentIon.C_ION:
+                                    cIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                case TagFragmentIon.X_ION:
+                                    xIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                case TagFragmentIon.Y_ION:
+                                    yIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                case TagFragmentIon.Z_ION:
+                                    zIonCheckBoxMenuItem.setSelected(true);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -2916,6 +2957,9 @@ public class ResultsFrame extends javax.swing.JFrame {
             }
             if (immoniumIonsCheckMenu.isSelected()) {
                 specificAnnotationPreferences.addIonType(Ion.IonType.IMMONIUM_ION);
+            }
+            if (relatedIonsCheckMenu.isSelected()) {
+                specificAnnotationPreferences.addIonType(Ion.IonType.RELATED_ION);
             }
             if (reporterIonsCheckMenu.isSelected()) {
                 for (int subtype : getReporterIons()) {
