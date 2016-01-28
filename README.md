@@ -47,6 +47,8 @@ DeNovoGUI can also be used via the command line, see [DeNovoCLI](https://github.
 
 Note that PepNovo+ is not supported on Linux 32 bit, pNovo+ is only supported on Windows, and that DirectTag is currently not supported on Mac (support is in development).
 
+If you get problems running PepNovo+ on Linux (or OSX), please try the following: (1) install dos2unix, (2) run the following two commands inside the resources/PepNovo folder: `dos2unix Models/*.*` and `dos2unix Models/*/*.*`.
+
 For problems related to Java, memory or startup issues, please see: [Java Troubleshooting](https://github.com/compomics/compomics-utilities/wiki/JavaTroubleShooting).
 
 For other questions or suggestions please contact the developers of DeNovoGUI by setting up an [Issue](https://github.com/compomics/denovogui/issues) with your comment, or by sending an e-mail to the [DeNovoGUI Google Group](http://groups.google.com/group/denovogui).
