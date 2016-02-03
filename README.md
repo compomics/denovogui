@@ -14,8 +14,8 @@
 
 |   |   |   |
 | :------------------------- | :--------------- | :--: |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.5/DeNovoGUI-1.9.5-windows.zip) | *v1.9.5 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.5/DeNovoGUI-1.9.5-mac_and_linux.tar.gz) | *v1.9.5 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.6/DeNovoGUI-1.9.6-windows.zip) | *v1.9.6 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.6/DeNovoGUI-1.9.6-mac_and_linux.tar.gz) | *v1.9.6 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
 
 ---
 
@@ -46,6 +46,8 @@ DeNovoGUI can also be used via the command line, see [DeNovoCLI](https://github.
 ## Troubleshooting ##
 
 Note that PepNovo+ is not supported on Linux 32 bit, pNovo+ is only supported on Windows, and that DirectTag is currently not supported on Mac (support is in development).
+
+If you get problems running PepNovo+ on Linux (or OSX), please try the following: (1) install dos2unix, (2) run the following two commands inside the resources/PepNovo folder: `dos2unix Models/*.*` and `dos2unix Models/*/*.*`.
 
 For problems related to Java, memory or startup issues, please see: [Java Troubleshooting](https://github.com/compomics/compomics-utilities/wiki/JavaTroubleShooting).
 
