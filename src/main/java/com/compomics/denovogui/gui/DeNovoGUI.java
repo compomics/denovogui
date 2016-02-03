@@ -1605,7 +1605,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             lastSelectedFolder.setLastSelectedFolder(file.getAbsolutePath());
             try {
                 searchParameters = SearchParameters.getIdentificationParameters(file);
-                loadModifications(searchParameters);
+                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                if (error != null) {
+                    JOptionPane.showMessageDialog(this,
+                            error,
+                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                }
+
                 parametersFile = file;
                 settingsFileJTextField.setText(parametersFile.getName());
             } catch (Exception e) {
@@ -2168,7 +2174,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         boolean numbusLookAndFeelSet = false;
         try {
             numbusLookAndFeelSet = UtilitiesGUIDefaults.setLookAndFeel();
-            
+
             // fix for the scroll bar thumb disappearing...
             LookAndFeel lookAndFeel = UIManager.getLookAndFeel();
             UIDefaults defaults = lookAndFeel.getDefaults();
@@ -2449,13 +2455,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 if (resultFiles.isEmpty()) {
                     waitingHandler.appendReportEndLine();
                     waitingHandler.appendReport("The de novo sequencing did not generate any output files!", true, true);
-                } else {
-                    if (displayResults) {
-                        try {
-                            displayResults(resultFiles);
-                        } catch (Exception e) {
-                            catchException(e);
-                        }
+                } else if (displayResults) {
+                    try {
+                        displayResults(resultFiles);
+                    } catch (Exception e) {
+                        catchException(e);
                     }
                 }
             }
@@ -2902,7 +2906,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         } else {
             try {
                 searchParameters = SearchParameters.getIdentificationParameters(parametersFile);
-                loadModifications(searchParameters);
+                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                if (error != null) {
+                    JOptionPane.showMessageDialog(this,
+                            error,
+                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                }
                 settingsFileJTextField.setText(parametersFile.getName());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,
@@ -2916,31 +2925,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
         sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         validateInput(false);
-    }
-
-    /**
-     * Verifies that the modifications backed-up in the search parameters are
-     * loaded and alerts the user in case conflicts are found.
-     *
-     * @param searchParameters the search parameters to load
-     */
-    public void loadModifications(SearchParameters searchParameters) {
-        ArrayList<String> toCheck = ptmFactory.loadBackedUpModifications(searchParameters, false);
-        if (!toCheck.isEmpty()) {
-            String message = "The definition of the following PTM(s) seems to have change and was not loaded:\n";
-            for (int i = 0; i < toCheck.size(); i++) {
-                if (i > 0) {
-                    if (i < toCheck.size() - 1) {
-                        message += ", ";
-                    } else {
-                        message += " and ";
-                    }
-                }
-                message += toCheck.get(i);
-            }
-            message += ".\nPlease verify the definition of the PTM(s) in the modifications editor.";
-            javax.swing.JOptionPane.showMessageDialog(null, message, "PTM Definition Obsolete", JOptionPane.OK_OPTION);
-        }
     }
 
     /**
@@ -3286,7 +3270,12 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     try {
                         SearchParameters.saveIdentificationParameters(tempSearchParameters, parametersFile);
                         searchParameters = tempSearchParameters;
-                        loadModifications(searchParameters);
+                        String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                        if (error != null) {
+                            JOptionPane.showMessageDialog(this,
+                                    error,
+                                    "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                        }
                         settingsFileJTextField.setText(parametersFile.getName());
                         return true;
                     } catch (IOException e) {

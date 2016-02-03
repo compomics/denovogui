@@ -1,7 +1,6 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
-import com.compomics.denovogui.gui.DeNovoGUI;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
@@ -15,7 +14,6 @@ import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -277,6 +275,13 @@ public class DeNovoCLI implements Callable {
 
             File searchParametersFile = deNovoCLIInputBean.getSearchParametersFile();
             SearchParameters searchParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
+            
+            // load the project specific ptms
+            String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+            if (error != null) {
+                System.out.println(error);
+            }
+            
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (searchParameters.getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
@@ -288,7 +293,7 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReport("Starting DeNovoCLI.", true, true);
             waitingHandlerCLIImpl.appendReportEndLine();
 
-            // Load the spectra into the factory
+            // load the spectra into the factory
             SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             waitingHandlerCLIImpl.appendReport("Loading the spectra.", true, true);
             for (File spectrumFile : deNovoCLIInputBean.getSpectrumFiles()) {

@@ -9,12 +9,12 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
+import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
-import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.waiting.Duration;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -111,6 +111,10 @@ public class DeNovoSequencingHandler {
      * The exception handler.
      */
     private ExceptionHandler exceptionHandler;
+    /**
+     * The factory used to handle the modifications.
+     */
+    private PTMFactory ptmFactory = PTMFactory.getInstance();
 
     /**
      * Constructor.
@@ -609,5 +613,33 @@ public class DeNovoSequencingHandler {
      */
     public static void setUserModificationFile(String modificationFile) {
         DeNovoSequencingHandler.USER_MODIFICATIONS_FILE = modificationFile;
+    }
+    
+    /**
+     * Verifies that the modifications backed-up in the search parameters are
+     * loaded and returns an error message if one was already loaded, null
+     * otherwise.
+     *
+     * @param searchParameters the search parameters to load
+     * @return an error message if one was already loaded, null otherwise
+     */
+    public static String loadModifications(SearchParameters searchParameters) {
+        String error = null;
+        ArrayList<String> toCheck = PTMFactory.getInstance().loadBackedUpModifications(searchParameters, true);
+        if (!toCheck.isEmpty()) {
+            error = "The definition of the following PTM(s) seems to have changed and were overwritten:\n";
+            for (int i = 0; i < toCheck.size(); i++) {
+                if (i > 0) {
+                    if (i < toCheck.size() - 1) {
+                        error += ", ";
+                    } else {
+                        error += " and ";
+                    }
+                }
+                error += toCheck.get(i);
+            }
+            error += ".\nPlease verify the definition of the PTM(s) in the modifications editor.";
+        }
+        return error;
     }
 }
