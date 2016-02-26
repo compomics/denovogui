@@ -2062,8 +2062,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                             }
                                         }
                                     } else if (assumption instanceof PeptideAssumption) {
-                                        if (!peptideFound) {
-                                            peptideFound = true;
+                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                        HashMap<String, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
+                                                    peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
+                                        for (String peptideSequence : proteinMapping.keySet()) {
+                                            if (!peptideFound) {
+                                                peptideFound = true;
+                                            }
+                                            peptideAssumption.getPeptide().setParentProteins(new ArrayList<String>(proteinMapping.get(peptideSequence).keySet()));
                                         }
                                     } else {
                                         throw new UnsupportedOperationException("Peptide mapping not supported for assumption of type " + assumption.getClass() + ".");
