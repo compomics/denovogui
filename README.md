@@ -8,7 +8,7 @@
 
 ---
 
-**DeNovoGUI Publication:**
+## DeNovoGUI Publication:
   * [Muth at al: J Proteome Res. 2014 Feb 7;13(2):1143-6](http://www.ncbi.nlm.nih.gov/pubmed/24295440).
   * If you use DeNovoGUI as part of a publication, please include this reference.
 
