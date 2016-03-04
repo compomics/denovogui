@@ -1,6 +1,8 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
+import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.massspectrometry.Spectrum;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
@@ -85,17 +87,20 @@ public class FindPanel extends javax.swing.JPanel {
      * Updates the item selection in the selected tab.
      */
     public void updateSelection() {
-        indexLabel.setForeground(Color.BLACK);
-        String label = "(" + (currentSelection + 1) + " of " + possibilities.size() + ")";
-        indexLabel.setText(label);
 
         // update the selection
-        String currentMatch = possibilities.get(currentSelection);
-        String temp[] = currentMatch.split(SEPARATOR);
-        String spectrumFileName = temp[0];
-        String spectrumTitle = temp[1];
-        Integer psmRow = Integer.valueOf(temp[2]);
-        resultsFrame.setSelectedPsm(spectrumFileName, spectrumTitle, psmRow);
+        if (currentSelection < possibilities.size()) {
+            indexLabel.setForeground(Color.BLACK);
+            String label = "(" + (currentSelection + 1) + " of " + possibilities.size() + ")";
+            indexLabel.setText(label);
+
+            String currentMatch = possibilities.get(currentSelection);
+            String temp[] = currentMatch.split(SEPARATOR);
+            String spectrumFileName = temp[0];
+            String spectrumTitle = temp[1];
+            Integer psmRow = Integer.valueOf(temp[2]);
+            resultsFrame.setSelectedPsm(spectrumFileName, spectrumTitle, psmRow);
+        }
     }
 
     /**
@@ -246,6 +251,7 @@ public class FindPanel extends javax.swing.JPanel {
                             nextButtonActionPerformed(null);
                         } else {
                             possibilities.clear();
+                            currentSelection = 0;
                             String input = inputTxt.getText().trim().toLowerCase();
 
                             if (!input.equals("")) {
@@ -269,7 +275,12 @@ public class FindPanel extends javax.swing.JPanel {
 
                                                 if (assumptionsMap != null) {
                                                     ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                                                    Collections.sort(scores, Collections.reverseOrder());
+
+                                                    if (advocateIndex == Advocate.direcTag.getIndex()) {
+                                                        Collections.sort(scores);
+                                                    } else {
+                                                        Collections.sort(scores, Collections.reverseOrder());
+                                                    }
 
                                                     int rowCounter = 0;
 
@@ -278,8 +289,15 @@ public class FindPanel extends javax.swing.JPanel {
                                                             if (assumption instanceof TagAssumption) {
                                                                 TagAssumption tagAssumption = (TagAssumption) assumption;
                                                                 String peptideSequence = tagAssumption.getTag().asSequence().toLowerCase();
-                                                                if (peptideSequence.lastIndexOf(input) != -1) { // @TODO: add support for regular expressions?
-                                                                    possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter); // @TODO: order on decreasing score?
+                                                                if (peptideSequence.lastIndexOf(input) != -1) {
+                                                                    possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter);
+                                                                }
+                                                                rowCounter++;
+                                                            } else if (assumption instanceof PeptideAssumption) {
+                                                                PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                                                String peptideSequence = peptideAssumption.getPeptide().getSequence().toLowerCase();
+                                                                if (peptideSequence.lastIndexOf(input) != -1) {
+                                                                    possibilities.add(spectrumFileName + SEPARATOR + spectrumTitle + SEPARATOR + rowCounter);
                                                                 }
                                                                 rowCounter++;
                                                             }
@@ -287,7 +305,6 @@ public class FindPanel extends javax.swing.JPanel {
                                                     }
                                                 }
                                             }
-
                                         }
                                     }
                                 }
