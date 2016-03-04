@@ -8,7 +8,7 @@
 
 ---
 
-**DeNovoGUI Publication:**
+## DeNovoGUI Publication:
   * [Muth at al: J Proteome Res. 2014 Feb 7;13(2):1143-6](http://www.ncbi.nlm.nih.gov/pubmed/24295440).
   * If you use DeNovoGUI as part of a publication, please include this reference.
 
@@ -16,8 +16,8 @@
 
 |   |   |   |
 | :------------------------- | :--------------- | :--: |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.9/DeNovoGUI-1.9.9-windows.zip) | *v1.9.9 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.9/DeNovoGUI-1.9.9-mac_and_linux.tar.gz) | *v1.9.9 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.10/DeNovoGUI-1.9.10-windows.zip) | *v1.9.10 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.9.10/DeNovoGUI-1.9.10-mac_and_linux.tar.gz) | *v1.9.10 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
 
 ---
 
