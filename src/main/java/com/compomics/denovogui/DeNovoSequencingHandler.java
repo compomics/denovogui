@@ -183,14 +183,6 @@ public class DeNovoSequencingHandler {
         waitingHandler.increasePrimaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
 
-        // store the pepnovo to utilities ptm mapping
-        PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
-        pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());
-
-        if (searchParametersFile != null) {
-            SearchParameters.saveIdentificationParameters(searchParameters, searchParametersFile);
-        }
-
         // write the modification file
         try {
             File folder = new File(pepNovoFolder, "Models");
@@ -229,6 +221,15 @@ public class DeNovoSequencingHandler {
         if (!waitingHandler.isRunCanceled()) {
             duration.end();
             waitingHandler.appendReport("De novo sequencing completed (" + duration.toString() + ").", true, true);
+            
+            // store the pepnovo to utilities ptm mapping
+            PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
+            pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());
+
+            // make sure that the ptm mappings are saved, also for novor and pnovo
+            if (searchParametersFile != null) {
+                SearchParameters.saveIdentificationParameters(searchParameters, searchParametersFile);
+            }
 
             // check if we have any output files
             ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles, enablePepNovo, enableDirecTag, enablePNovo, enableNovor);

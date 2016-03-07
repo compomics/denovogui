@@ -1335,6 +1335,15 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         boolean validInput = true;
+        
+        // check if there are less than 10 ptms (variable and fixed) for novor
+        if (novorCheckBox.isSelected()) {            
+            if ((searchParameters.getPtmSettings().getFixedModifications().size() + searchParameters.getPtmSettings().getVariableModifications().size()) > 10) {
+                JOptionPane.showMessageDialog(this, "Maximum ten modifications are allowed when running Novor.\n"
+                            + "Please remove some of the modifications or disable Novor.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                    validInput = false;
+            }
+        }
 
         // check if all ptms are valid for pNovo+
         if (pNovoCheckBox.isSelected()) {

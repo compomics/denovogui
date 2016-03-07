@@ -6,7 +6,6 @@ import com.compomics.util.experiment.identification.SpectrumIdentificationAssump
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
@@ -120,10 +119,10 @@ public class AssumptionsTableModel extends DefaultTableModel {
             case 2:
                 if (assumption instanceof PeptideAssumption) {
                     Peptide peptide = ((PeptideAssumption) assumption).getPeptide();
-                    return peptide.getTaggedModifiedSequence(modificationProfile, true, true, true, false);
+                    return peptide.getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms);
                 } else if (assumption instanceof TagAssumption) {
                     TagAssumption tagAssumption = (TagAssumption) assumption;
-                    return tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, false, false);
+                    return tagAssumption.getTag().getTaggedModifiedSequence(modificationProfile, true, true, true, excludeAllFixedPtms, false);
                 } else {
                     throw new UnsupportedOperationException("Sequence display not implemented for assumption " + assumption.getClass() + ".");
                 }

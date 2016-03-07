@@ -47,7 +47,6 @@ import com.compomics.util.experiment.identification.amino_acid_tags.TagComponent
 import com.compomics.util.experiment.identification.amino_acid_tags.matchers.TagMatcher;
 import com.compomics.util.experiment.biology.MassGap;
 import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
 import com.compomics.util.experiment.io.identifications.IdfileReader;
 import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
@@ -2064,7 +2063,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     } else if (assumption instanceof PeptideAssumption) {
                                         PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
                                         HashMap<String, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
-                                                    peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
+                                                peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
                                         for (String peptideSequence : proteinMapping.keySet()) {
                                             if (!peptideFound) {
                                                 peptideFound = true;
@@ -3106,9 +3105,19 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             if (peptide.isModified()) {
                 for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
-                    if (modificationMatch.isVariable() && modificationMatch.getModificationSite() == aa) {
+                    if ((modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) && modificationMatch.getModificationSite() == aa) {
                         String ptmName = modificationMatch.getTheoreticPtm();
-                        String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (confident)<br>";
+                        
+                        String ptmConfidence;
+                        if (!modificationMatch.isVariable()) {
+                            ptmConfidence = "fixed";
+                        } else if (modificationMatch.isConfident()) {
+                            ptmConfidence = "confident";
+                        } else {
+                            ptmConfidence = "not confident";
+                        }
+                        
+                        String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (" + ptmConfidence + ")<br>";
                         if (!alreadyAnnotated.contains(temp)) {
                             tooltip += temp;
                             alreadyAnnotated.add(temp);
@@ -3147,17 +3156,24 @@ public class ResultsFrame extends javax.swing.JFrame {
                     for (ModificationMatch modificationMatch : aminoAcidPattern.getModificationsAt(site)) {
                         String affectedResidue = aminoAcidPattern.asSequence(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
-                        Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
-                        if (modificationMatch.isConfident()) {
-                            tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
-                                    + affectedResidue
-                                    + "</span>"
-                                    + ": " + modName + " (confident)<br>";
-                        } else {
-                            tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
-                                    + affectedResidue
-                                    + "</span>"
-                                    + ": " + modName + " (not confident)<br>";
+                        if (modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) {
+                            Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
+                            if (!modificationMatch.isVariable()) {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (fixed)<br>";
+                            } else if (modificationMatch.isConfident()) {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (confident)<br>";
+                            } else {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (not confident)<br>";
+                            }
                         }
                     }
                 }
@@ -3165,19 +3181,26 @@ public class ResultsFrame extends javax.swing.JFrame {
                 AminoAcidSequence aminoAcidSequence = (AminoAcidSequence) tagComponent;
                 for (int site = 1; site <= aminoAcidSequence.length(); site++) {
                     for (ModificationMatch modificationMatch : aminoAcidSequence.getModificationsAt(site)) {
-                        char affectedResidue = aminoAcidSequence.charAt(site - 1);
-                        String modName = modificationMatch.getTheoreticPtm();
-                        Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
-                        if (modificationMatch.isConfident()) {
-                            tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
-                                    + affectedResidue
-                                    + "</span>"
-                                    + ": " + modName + " (confident)<br>";
-                        } else {
-                            tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
-                                    + affectedResidue
-                                    + "</span>"
-                                    + ": " + modName + " (not confident)<br>";
+                        if (modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) {
+                            char affectedResidue = aminoAcidSequence.charAt(site - 1);
+                            String modName = modificationMatch.getTheoreticPtm();
+                            Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
+                            if (!modificationMatch.isVariable()) {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (fixed)<br>";
+                            } else if (modificationMatch.isConfident()) {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (confident)<br>";
+                            } else {
+                                tooltip += "<span style=\"color:#" + Util.color2Hex(ptmColor) + ";background:#" + Util.color2Hex(Color.WHITE) + "\">"
+                                        + affectedResidue
+                                        + "</span>"
+                                        + ": " + modName + " (not confident)<br>";
+                            }
                         }
                     }
                 }
@@ -3308,13 +3331,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                             }
                                                             modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         } else if (advocate == Advocate.direcTag.getIndex()) {
-                                                            Integer directagIndex = new Integer(modificationMatch.getTheoreticPtm());
-                                                            DirecTagParameters direcTagParameters = (DirecTagParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.direcTag.getIndex());
-                                                            String utilitiesPtmName = direcTagParameters.getUtilitiesPtmName(directagIndex);
-                                                            if (utilitiesPtmName == null) {
-                                                                throw new IllegalArgumentException("DirecTag PTM " + directagIndex + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
-                                                            }
-                                                            modificationMatch.setTheoreticPtm(utilitiesPtmName);
+                                                            // already mapped
                                                         } else if (advocate == Advocate.pNovo.getIndex()) {
                                                             // already mapped
                                                         } else if (advocate == Advocate.novor.getIndex()) {
