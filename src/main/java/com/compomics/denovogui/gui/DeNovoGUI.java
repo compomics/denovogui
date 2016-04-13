@@ -400,7 +400,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
             // load the enzymes
             try {
-                enzymeFactory.importEnzymes(new File(DeNovoSequencingHandler.getEnzymeFile()));
+                enzymeFactory.importEnzymes(new File(getJarFilePath(), DeNovoSequencingHandler.getEnzymeFile()));
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getEnzymeFile() + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
