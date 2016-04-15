@@ -1535,6 +1535,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 return "Peak list (.mgf)";
             }
         };
+        fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(filter);
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fc.setMultiSelectionEnabled(true);
@@ -1553,7 +1554,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                         }
                     }
                 } else {
-                    tempSpectrumFiles.add(file);
+                    if (fc.getFileFilter().accept(file)) {
+                        tempSpectrumFiles.add(file);
+                    }
                 }
             }
             spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
