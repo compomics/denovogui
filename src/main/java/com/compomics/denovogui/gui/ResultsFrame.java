@@ -64,6 +64,8 @@ import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
+import com.compomics.util.experiment.identification.protein_inference.PeptideMapper;
+import com.compomics.util.experiment.identification.protein_inference.PeptideMapperType;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
@@ -1764,7 +1766,9 @@ public class ResultsFrame extends javax.swing.JFrame {
                         try {
                             boolean peptideFound = true;
                             if (needMapping) {
-                                peptideFound = matchInProteins(mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
+                                SequenceMatchingPreferences sequenceMatchingPreferences = new SequenceMatchingPreferences(); //@TODO add dialog
+                                sequenceMatchingPreferences.setPeptideMapperType(PeptideMapperType.tree); //@TODO implement FMI
+                                peptideFound = matchInProteins(sequenceMatchingPreferences, mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                             }
                             if (!progressDialog.isRunCanceled()) {
@@ -1924,9 +1928,18 @@ public class ResultsFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Matches the tags to proteins.
+     * Matches the tags to a protein database
      *
-     * @return return a boolean indicating whether at least a peptide was found
+     * @param sequenceMatchingPreferences the sequence matching preferences
+     * @param fixedModifications the fixed modifications
+     * @param variableModifications the variable modifications
+     * @param waitingHandler a waiting handler
+     * @param scoreThreshold the score threshold
+     * @param greaterThan a boolean indicating whether the score has to be
+     * higher than the threshold
+     * @param aNumberOfMatches the limit in number of matches
+     *
+     * @return a boolean indicating whether the peptide could be mapped
      *
      * @throws IOException exception thrown whenever an error occurred while
      * reading or writing a file
@@ -1937,7 +1950,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @throws SQLException exception thrown whenever an error occurs while
      * interacting with the back-end database
      */
-    private boolean matchInProteins(ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
+    private boolean matchInProteins(SequenceMatchingPreferences sequenceMatchingPreferences, ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
             Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, ClassNotFoundException, InterruptedException, SQLException {
 
         double threshold = 0;
@@ -1980,16 +1993,19 @@ public class ResultsFrame extends javax.swing.JFrame {
         int cacheSize = (int) availableCachSize;
         sequenceFactory.setnCache(cacheSize);
 
-        ProteinTree proteinTree;
+        PeptideMapper peptideMapper;
         try {
-            proteinTree = sequenceFactory.getDefaultProteinTree(waitingHandler, exceptionHandler);
+            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, waitingHandler, exceptionHandler);
         } catch (SQLException e) {
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
             waitingHandler.setRunCanceled();
             return false;
         }
-        int treeKeyLength = proteinTree.getInitialTagSize();
+        int treeKeyLength = 0;
+        if (sequenceMatchingPreferences.getPeptideMapperType() == PeptideMapperType.tree) {
+            treeKeyLength = ((ProteinTree) peptideMapper).getInitialTagSize();
+        }
 
         waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
         waitingHandler.resetSecondaryProgressCounter();
@@ -2047,7 +2063,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
                                         int longestAminoAcidSequence = tagAssumption.getTag().getLongestAminoAcidSequence().length();
                                         if (longestAminoAcidSequence >= treeKeyLength) {
-                                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
+                                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = peptideMapper.getProteinMapping(
                                                     tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
                                             for (Peptide peptide : proteinMapping.keySet()) {
                                                 if (!peptideFound) {
@@ -2062,7 +2078,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         }
                                     } else if (assumption instanceof PeptideAssumption) {
                                         PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
-                                        HashMap<String, HashMap<String, ArrayList<Integer>>> proteinMapping = proteinTree.getProteinMapping(
+                                        HashMap<String, HashMap<String, ArrayList<Integer>>> proteinMapping = peptideMapper.getProteinMapping(
                                                 peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
                                         for (String peptideSequence : proteinMapping.keySet()) {
                                             if (!peptideFound) {
@@ -3107,7 +3123,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
                     if ((modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) && modificationMatch.getModificationSite() == aa) {
                         String ptmName = modificationMatch.getTheoreticPtm();
-                        
+
                         String ptmConfidence;
                         if (!modificationMatch.isVariable()) {
                             ptmConfidence = "fixed";
@@ -3116,7 +3132,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                         } else {
                             ptmConfidence = "not confident";
                         }
-                        
+
                         String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (" + ptmConfidence + ")<br>";
                         if (!alreadyAnnotated.contains(temp)) {
                             tooltip += temp;
