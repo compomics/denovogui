@@ -1995,7 +1995,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         PeptideMapper peptideMapper;
         try {
-            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, waitingHandler, exceptionHandler);
+            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters.getPtmSettings(), waitingHandler, exceptionHandler);
         } catch (SQLException e) {
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
