@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <version>1.11.0-beta</version>
     <name>DeNovoGUI</name>
-    <url>http://denovogui.googlecode.com</url>
+    <url>https://github.com/compomics/denovogui</url>
     <description>Graphical user interface for de novo sequencing of tandem mass spectra</description>
 
 
