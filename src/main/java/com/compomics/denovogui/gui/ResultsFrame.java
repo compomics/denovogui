@@ -1767,7 +1767,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                             boolean peptideFound = true;
                             if (needMapping) {
                                 SequenceMatchingPreferences sequenceMatchingPreferences = new SequenceMatchingPreferences(); //@TODO add dialog
-                                sequenceMatchingPreferences.setPeptideMapperType(PeptideMapperType.tree); //@TODO implement FMI
+                                sequenceMatchingPreferences.setPeptideMapperType(PeptideMapperType.fm_index);
                                 peptideFound = matchInProteins(sequenceMatchingPreferences, mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                             }
