@@ -203,7 +203,7 @@
                                           <Component id="addFixedModification" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
                                           <Component id="removeFixedModification" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="67" max="32767" attributes="0"/>
+                                          <EmptySpace pref="76" max="32767" attributes="0"/>
                                       </Group>
                                       <Component id="fixedModsJScrollPane" alignment="0" max="32767" attributes="0"/>
                                   </Group>
@@ -309,7 +309,7 @@
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
                                           <Component id="removeVariableModification" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="variableModsJScrollPane" pref="95" max="32767" attributes="0"/>
+                                      <Component id="variableModsJScrollPane" pref="102" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -414,7 +414,7 @@
                                   <Component id="openModificationSettingsJButton" alignment="2" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="modificationsJScrollPane" pref="250" max="32767" attributes="0"/>
+                              <Component id="modificationsJScrollPane" pref="266" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -529,47 +529,24 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="precursorMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="precursorMassToleranceSpinner" linkSize="5" min="-2" pref="62" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="precursorMassToleranceTypeComboBox" linkSize="5" pref="62" max="32767" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="fragmentMassToleranceLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+                              <Component id="fragmentMassToleranceLabel" min="-2" pref="162" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="fragmentMassToleranceSpinner" linkSize="5" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="fragmentMassToleranceTypeComboBox" linkSize="5" pref="62" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="numberOfSolutionsLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="numberOfSolutionsSpinner" min="-2" pref="130" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="numberOfThreadsLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="numberOfThreadsSpinner" min="-2" pref="130" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="useSpectrumChargeStageLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="useSpectrumChargeCmb" min="-2" pref="130" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="adjustPrecursorLabel" min="-2" pref="180" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="adjustPrecursorCmb" min="-2" pref="130" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
+                              <Component id="numberOfThreadsLabel" min="-2" pref="180" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="numberOfThreadsSpinner" min="-2" pref="130" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -590,17 +567,8 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="numberOfSolutionsLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="numberOfSolutionsSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="adjustPrecursorLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="adjustPrecursorCmb" alignment="2" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="numberOfThreadsLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="numberOfThreadsSpinner" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="useSpectrumChargeStageLabel" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="useSpectrumChargeCmb" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -636,18 +604,6 @@
                 <Property name="toolTipText" type="java.lang.String" value="Precursor mass tolerance - max 5.0 Da"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="numberOfSolutionsLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="#Solutions (max. 20)"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="numberOfSolutionsSpinner">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="10" maximum="2000" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JLabel" name="numberOfThreadsLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="#Threads/Cores"/>
@@ -657,36 +613,6 @@
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                   <SpinnerModel initial="1" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="adjustPrecursorLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Use Spectrum Precursor m/z"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JComboBox" name="adjustPrecursorCmb">
-              <Properties>
-                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="Yes"/>
-                    <StringItem index="1" value="No"/>
-                  </StringArray>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="useSpectrumChargeStageLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Use Spectrum Charge State"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JComboBox" name="useSpectrumChargeCmb">
-              <Properties>
-                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="Yes"/>
-                    <StringItem index="1" value="No"/>
-                  </StringArray>
                 </Property>
               </Properties>
             </Component>

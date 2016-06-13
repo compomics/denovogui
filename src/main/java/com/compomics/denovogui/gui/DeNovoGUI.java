@@ -24,6 +24,9 @@ import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
@@ -33,6 +36,7 @@ import com.compomics.util.gui.parameters.identification_parameters.SearchSetting
 import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.DirecTagSettingsDialog;
 import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.NovorSettingsDialog;
 import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.PNovoSettingsDialog;
+import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.PepNovoSettingsDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
@@ -755,8 +759,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 pepNovoSettingsJButtonMouseExited(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                pepNovoSettingsJButtonMouseReleased(evt);
+        });
+        pepNovoSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pepNovoSettingsJButtonActionPerformed(evt);
             }
         });
 
@@ -840,8 +846,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 novorSettingsJButtonMouseExited(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                novorSettingsJButtonMouseReleased(evt);
+        });
+        novorSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novorSettingsJButtonActionPerformed(evt);
             }
         });
 
@@ -1335,13 +1343,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         boolean validInput = true;
-        
+
         // check if there are less than 10 ptms (variable and fixed) for novor
-        if (novorCheckBox.isSelected()) {            
+        if (novorCheckBox.isSelected()) {
             if ((searchParameters.getPtmSettings().getFixedModifications().size() + searchParameters.getPtmSettings().getVariableModifications().size()) > 10) {
                 JOptionPane.showMessageDialog(this, "Maximum ten modifications are allowed when running Novor.\n"
-                            + "Please remove some of the modifications or disable Novor.", "Settings Error", JOptionPane.WARNING_MESSAGE);
-                    validInput = false;
+                        + "Please remove some of the modifications or disable Novor.", "Settings Error", JOptionPane.WARNING_MESSAGE);
+                validInput = false;
             }
         }
 
@@ -1553,10 +1561,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             tempSpectrumFiles.add(currentFile);
                         }
                     }
-                } else {
-                    if (fc.getFileFilter().accept(file)) {
-                        tempSpectrumFiles.add(file);
-                    }
+                } else if (fc.getFileFilter().accept(file)) {
+                    tempSpectrumFiles.add(file);
                 }
             }
             spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
@@ -1994,14 +2000,57 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void directTagSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonActionPerformed
-        DirecTagSettingsDialog direcTagSettingsDialog = new DirecTagSettingsDialog(this, searchParameters, true);
+        DirecTagParameters oldDirecTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
+        DirecTagSettingsDialog direcTagSettingsDialog = new DirecTagSettingsDialog(this, oldDirecTagParameters, true);
 
-        // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!direcTagSettingsDialog.isCancelled() && !checkSearchParameters(direcTagSettingsDialog.getSearchParametersFromGUI())) {
-            direcTagSettingsDialog.setVisible(true);
+        boolean direcTagParametersSet = false;
+
+        while (!direcTagParametersSet) {
+
+            if (!direcTagSettingsDialog.isCancelled()) {
+                DirecTagParameters newDirecTagParameters = direcTagSettingsDialog.getInput();
+
+                // see if there are changes to the parameters and ask the user if these are to be saved
+                if (!oldDirecTagParameters.equals(newDirecTagParameters)) {
+
+                    int value = JOptionPane.showConfirmDialog(this, "The search parameters have changed."
+                            + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    switch (value) {
+                        case JOptionPane.YES_OPTION:
+                            try {
+                                searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), newDirecTagParameters);
+                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                                if (error != null) {
+                                    JOptionPane.showMessageDialog(this,
+                                            error,
+                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                                }
+                                settingsFileJTextField.setText(parametersFile.getName());
+                                direcTagParametersSet = true;
+                            } catch (IOException e) {
+                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                                e.printStackTrace();
+                            }
+                            break;
+                        case JOptionPane.CANCEL_OPTION:
+                            direcTagSettingsDialog = new DirecTagSettingsDialog(this, newDirecTagParameters, true);
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            direcTagParametersSet = true;
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    direcTagParametersSet = true;
+                }
+            } else {
+                direcTagParametersSet = true;
+            }
         }
-
-        direcTagSettingsDialog.dispose();
     }//GEN-LAST:event_directTagSettingsJButtonActionPerformed
 
     /**
@@ -2056,15 +2105,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }//GEN-LAST:event_pepNovoSettingsJButtonMouseEntered
 
-    /**
-     * Show a message that there are no advanced PepNovo settings.
-     *
-     * @param evt
-     */
-    private void pepNovoSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonMouseReleased
-        JOptionPane.showMessageDialog(this, "There are no advanced settings for PepNovo+. Please use the general settings.", "PepNovo+ Advanced Settings", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_pepNovoSettingsJButtonMouseReleased
-
+    
     /**
      * Validate the input.
      *
@@ -2149,23 +2190,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_novorSettingsJButtonMouseExited
 
-    /**
-     * Open the Novor advanced settings.
-     *
-     * @param evt
-     */
-    private void novorSettingsJButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_novorSettingsJButtonMouseReleased
-
-        NovorSettingsDialog novorSettingsDialog = new NovorSettingsDialog(this, searchParameters, true);
-
-        // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!novorSettingsDialog.isCancelled() && !checkSearchParameters(novorSettingsDialog.getSearchParametersFromGUI())) {
-            novorSettingsDialog.setVisible(true);
-        }
-
-        novorSettingsDialog.dispose();
-    }//GEN-LAST:event_novorSettingsJButtonMouseReleased
-
+    
     /**
      * Edit the paths.
      *
@@ -2174,6 +2199,124 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private void resourceSettingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resourceSettingsMenuItemActionPerformed
         editPathSettings();
     }//GEN-LAST:event_resourceSettingsMenuItemActionPerformed
+
+    /**
+     * Open the Novor advanced settings.
+     *
+     * @param evt
+     */
+    private void novorSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novorSettingsJButtonActionPerformed
+        NovorParameters oldNovorParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
+        NovorSettingsDialog novorSettingsDialog = new NovorSettingsDialog(this, oldNovorParameters, true);
+
+        boolean novorParametersSet = false;
+
+        while (!novorParametersSet) {
+
+            if (!novorSettingsDialog.isCancelled()) {
+                NovorParameters newNovorParameters = novorSettingsDialog.getInput();
+
+                // see if there are changes to the parameters and ask the user if these are to be saved
+                if (!oldNovorParameters.equals(newNovorParameters)) {
+
+                    int value = JOptionPane.showConfirmDialog(this, "The search parameters have changed."
+                            + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    switch (value) {
+                        case JOptionPane.YES_OPTION:
+                            try {
+                                searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), newNovorParameters);
+                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                                if (error != null) {
+                                    JOptionPane.showMessageDialog(this,
+                                            error,
+                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                                }
+                                settingsFileJTextField.setText(parametersFile.getName());
+                                novorParametersSet = true;
+                            } catch (IOException e) {
+                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                                e.printStackTrace();
+                            }
+                            break;
+                        case JOptionPane.CANCEL_OPTION:
+                            novorSettingsDialog = new NovorSettingsDialog(this, newNovorParameters, true);
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            novorParametersSet = true;
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    novorParametersSet = true;
+                }
+            } else {
+                novorParametersSet = true;
+            }
+        }
+    }//GEN-LAST:event_novorSettingsJButtonActionPerformed
+
+    /**
+     * Open the PepNovo advanced settings.
+     *
+     * @param evt
+     */
+    private void pepNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonActionPerformed
+        PepnovoParameters oldPepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
+        PepNovoSettingsDialog pepNovoSettingsDialog = new PepNovoSettingsDialog(this, oldPepNovoParameters, true);
+
+        boolean pepNovoParametersSet = false;
+
+        while (!pepNovoParametersSet) {
+
+            if (!pepNovoSettingsDialog.isCancelled()) {
+                PepnovoParameters newPepNovoParameters = pepNovoSettingsDialog.getInput();
+
+                // see if there are changes to the parameters and ask the user if these are to be saved
+                if (!oldPepNovoParameters.equals(newPepNovoParameters)) {
+
+                    int value = JOptionPane.showConfirmDialog(this, "The search parameters have changed."
+                            + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    switch (value) {
+                        case JOptionPane.YES_OPTION:
+                            try {
+                                searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), newPepNovoParameters);
+                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                                if (error != null) {
+                                    JOptionPane.showMessageDialog(this,
+                                            error,
+                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                                }
+                                settingsFileJTextField.setText(parametersFile.getName());
+                                pepNovoParametersSet = true;
+                            } catch (IOException e) {
+                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                                e.printStackTrace();
+                            }
+                            break;
+                        case JOptionPane.CANCEL_OPTION:
+                            pepNovoSettingsDialog = new PepNovoSettingsDialog(this, newPepNovoParameters, true);
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            pepNovoParametersSet = true;
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    pepNovoParametersSet = true;
+                }
+            } else {
+                pepNovoParametersSet = true;
+            }
+        }
+    }//GEN-LAST:event_pepNovoSettingsJButtonActionPerformed
 
     /**
      * The main method.
