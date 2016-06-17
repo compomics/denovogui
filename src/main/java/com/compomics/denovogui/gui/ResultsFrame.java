@@ -69,6 +69,7 @@ import com.compomics.util.experiment.identification.protein_inference.PeptideMap
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
+import com.compomics.util.preferences.PeptideVariantsPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
@@ -1995,7 +1996,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         PeptideMapper peptideMapper;
         try {
-            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters.getPtmSettings(), waitingHandler, exceptionHandler);
+            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters.getPtmSettings(), PeptideVariantsPreferences.getNoVariantPreferences(), waitingHandler, exceptionHandler);
         } catch (SQLException e) {
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
