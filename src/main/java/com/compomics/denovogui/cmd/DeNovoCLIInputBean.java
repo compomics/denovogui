@@ -325,7 +325,7 @@ public class DeNovoCLIInputBean {
         }
 
         // Check the identification parameters
-        if (!CommandParameter.isValidStartup(aLine, false)) {
+        if (!IdentificationParametersInputBean.isValidStartup(aLine, false)) {
             return false;
         }
 
