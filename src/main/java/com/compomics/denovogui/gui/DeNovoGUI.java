@@ -4,7 +4,7 @@ import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.util.Properties;
-import com.compomics.software.CommandLineUtils;
+import com.compomics.software.cli.CommandLineUtils;
 import com.compomics.software.ToolFactory;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
 import com.compomics.util.experiment.biology.EnzymeFactory;

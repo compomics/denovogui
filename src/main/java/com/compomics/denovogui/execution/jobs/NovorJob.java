@@ -1,7 +1,7 @@
 package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
-import com.compomics.software.CommandLineUtils;
+import com.compomics.software.cli.CommandLineUtils;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;

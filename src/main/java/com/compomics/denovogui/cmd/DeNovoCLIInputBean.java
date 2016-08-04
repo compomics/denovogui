@@ -1,6 +1,7 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.software.CommandLineUtils;
+import com.compomics.software.cli.CommandLineUtils;
+import com.compomics.software.cli.CommandParameter;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.parameters_cli.IdentificationParametersInputBean;
 import com.compomics.util.preferences.IdentificationParameters;

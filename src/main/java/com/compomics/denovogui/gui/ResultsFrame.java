@@ -66,9 +66,11 @@ import com.compomics.util.experiment.identification.spectrum_annotation.Annotati
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import com.compomics.util.experiment.identification.protein_inference.PeptideMapper;
 import com.compomics.util.experiment.identification.protein_inference.PeptideMapperType;
+import com.compomics.util.experiment.identification.protein_inference.PeptideProteinMapping;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
+import com.compomics.util.preferences.PeptideVariantsPreferences;
 import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.awt.Color;
 import java.awt.Component;
@@ -1995,7 +1997,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         PeptideMapper peptideMapper;
         try {
-            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters.getPtmSettings(), waitingHandler, exceptionHandler);
+            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters.getPtmSettings(), PeptideVariantsPreferences.getNoVariantPreferences(), waitingHandler, exceptionHandler);
         } catch (SQLException e) {
             waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
             e.printStackTrace();
@@ -2063,13 +2065,12 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         TagAssumption tagAssumption = (TagAssumption) assumption;
                                         int longestAminoAcidSequence = tagAssumption.getTag().getLongestAminoAcidSequence().length();
                                         if (longestAminoAcidSequence >= treeKeyLength) {
-                                            HashMap<Peptide, HashMap<String, ArrayList<Integer>>> proteinMapping = peptideMapper.getProteinMapping(
+                                            ArrayList<PeptideProteinMapping> proteinMapping = peptideMapper.getProteinMapping(
                                                     tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
-                                            for (Peptide peptide : proteinMapping.keySet()) {
+                                            for (Peptide peptide : PeptideProteinMapping.getPeptides(proteinMapping)) {
                                                 if (!peptideFound) {
                                                     peptideFound = true;
                                                 }
-                                                peptide.setParentProteins(new ArrayList<String>(proteinMapping.get(peptide).keySet()));
                                                 PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
                                                         advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
                                                 peptideAssumption.addUrParam(tagAssumption);
@@ -2077,15 +2078,19 @@ public class ResultsFrame extends javax.swing.JFrame {
                                             }
                                         }
                                     } else if (assumption instanceof PeptideAssumption) {
-                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
-                                        HashMap<String, HashMap<String, ArrayList<Integer>>> proteinMapping = peptideMapper.getProteinMapping(
-                                                peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
-                                        for (String peptideSequence : proteinMapping.keySet()) {
-                                            if (!peptideFound) {
-                                                peptideFound = true;
-                                            }
-                                            peptideAssumption.getPeptide().setParentProteins(new ArrayList<String>(proteinMapping.get(peptideSequence).keySet()));
+                                        if (!peptideFound) {
+                                            peptideFound = true;
                                         }
+                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                        ArrayList<PeptideProteinMapping> proteinMapping = peptideMapper.getProteinMapping(
+                                                peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
+                                        HashSet<String> proteins = new HashSet<String>(proteinMapping.size());
+                                        for (PeptideProteinMapping peptideProteinMapping : proteinMapping) {
+                                            proteins.add(peptideProteinMapping.getProteinAccession());
+                                        }
+                                        ArrayList<String> sortedProteinList = new ArrayList<String>(proteins);
+                                        Collections.sort(sortedProteinList);
+                                        peptideAssumption.getPeptide().setParentProteins(sortedProteinList);
                                     } else {
                                         throw new UnsupportedOperationException("Peptide mapping not supported for assumption of type " + assumption.getClass() + ".");
                                     }
