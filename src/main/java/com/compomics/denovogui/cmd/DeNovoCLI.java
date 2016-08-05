@@ -73,7 +73,7 @@ public class DeNovoCLI implements Callable {
                 lPrintWriter.flush();
                 lPrintWriter.close();
 
-                System.exit(0);
+                System.exit(1);
             } else {
                 deNovoCLIInputBean = new DeNovoCLIInputBean(line);
                 call();
@@ -223,54 +223,54 @@ public class DeNovoCLI implements Callable {
             // check if the PepNovo folder is set
             if (pepNovoFolder == null && runPepNovo) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ location not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check of the PepNovo executable is set
             if (pepNovoExecutableTitle == null && runPepNovo) {
                 waitingHandlerCLIImpl.appendReport("\nPepNovo+ executable not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check if the DirecTag folder is set
             if (direcTagFolder == null && runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag location not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check of the DirecTag executable is set
             if (direcTagExecutableTitle == null && runDirecTag) {
                 waitingHandlerCLIImpl.appendReport("\nDirecTag executable not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check if the pNovo folder is set
             if (pNovoFolder == null && runPNovo) {
                 waitingHandlerCLIImpl.appendReport("\npNovo+ location not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check of the pNovo executable is set
             if (pNovoExecutableTitle == null && runPNovo) {
                 waitingHandlerCLIImpl.appendReport("\npNovo+ executable not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check of the Novor executable is set
             if (novorExecutableTitle == null && runNovor) {
                 waitingHandlerCLIImpl.appendReport("\nNovor executable not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // check if the Novor folder is set
             if (novorFolder == null && runNovor) {
                 waitingHandlerCLIImpl.appendReport("\nNovor location not set! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             if (!runPepNovo && !runDirecTag && !runPNovo && !runNovor) {
                 waitingHandlerCLIImpl.appendReport("\nNo sequencing algorithms selected! Sequencing canceled.", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             File searchParametersFile = deNovoCLIInputBean.getSearchParametersFile();
@@ -285,7 +285,7 @@ public class DeNovoCLI implements Callable {
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (searchParameters.getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
-                System.exit(0);
+                System.exit(1);
             }
 
             // starting the DeNovoCLI
@@ -310,9 +310,10 @@ public class DeNovoCLI implements Callable {
                     runPepNovo, runDirecTag, runPNovo, runNovor, waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
             exceptionHandler.catchException(e);
+            return 1;
         }
 
-        return null;
+        return 0;
     }
 
     /**
