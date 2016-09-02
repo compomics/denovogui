@@ -81,7 +81,7 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
+                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Retention Time (s)" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
                         + "Rank" + SEPARATOR + "Protein(s)" + SEPARATOR + "Peptide" + SEPARATOR + "Peptide Variable Modifications" + SEPARATOR + "Modified Sequence"
                         + SEPARATOR + "Tag" + SEPARATOR + "Longest Amino Acid Sequence" + SEPARATOR + "Tag Variable Modifications" + SEPARATOR + "Modified tag sequence" + SEPARATOR
                         + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
@@ -100,13 +100,13 @@ public class TextExporter {
                     for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
                         if (identification.matchExists(spectrumKey)) {
 
-                            String spectrumDetails = "";
+                            StringBuilder spectrumDetails = new StringBuilder();
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            spectrumDetails += mgfFile + SEPARATOR + spectrumTitle + SEPARATOR;
+                            spectrumDetails.append(mgfFile).append(SEPARATOR).append(spectrumTitle).append(SEPARATOR);
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + SEPARATOR + precursor.getPossibleChargesAsString() + SEPARATOR;
+                            spectrumDetails.append(precursor.getRt()).append(SEPARATOR).append(precursor.getMz()).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
 
                             ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
@@ -142,7 +142,7 @@ public class TextExporter {
 
                                 if (passesThreshold) {
 
-                                    b.write(spectrumDetails);
+                                    b.write(spectrumDetails.toString());
                                     b.write(peptideAssumption.getRank() + SEPARATOR);
 
                                     Peptide peptide = peptideAssumption.getPeptide();
@@ -274,7 +274,7 @@ public class TextExporter {
             BufferedWriter b = new BufferedWriter(f);
 
             try {
-                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
+                b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Retention Time (s)" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
                         + "Rank" + SEPARATOR + "Tag" + SEPARATOR + "Longest AminoAcid sequence" + SEPARATOR + "Variable Modifications" + SEPARATOR + "Modified Sequence" + SEPARATOR
                         + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
                         + "N-Gap" + SEPARATOR + "C-Gap" + SEPARATOR + "Theoretic m/z" + SEPARATOR + "Identification Charge");
@@ -292,10 +292,12 @@ public class TextExporter {
                         if (identification.matchExists(spectrumKey)) {
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
-                            String spectrumDetails = mgfFile + SEPARATOR + spectrumTitle + SEPARATOR;
+                            StringBuilder spectrumDetails = new StringBuilder();
+                            
+                            spectrumDetails.append(mgfFile).append(SEPARATOR).append(spectrumTitle).append(SEPARATOR);
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + SEPARATOR + precursor.getPossibleChargesAsString() + SEPARATOR;
+                            spectrumDetails.append(precursor.getRt()).append(SEPARATOR).append(precursor.getMz()).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
 
                             ArrayList<SpectrumIdentificationAssumption> allAssumptions = new ArrayList<SpectrumIdentificationAssumption>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
@@ -329,7 +331,7 @@ public class TextExporter {
                                 }
 
                                 if (passesThreshold) {
-                                    b.write(spectrumDetails);
+                                    b.write(spectrumDetails.toString());
                                     b.write(++rank + SEPARATOR);
                                     writeTagExportLine(b, assumption, searchParameters);
                                     b.newLine();
