@@ -26,6 +26,7 @@ import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
+import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.PrivacySettingsDialog;
@@ -403,12 +404,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
 
             // load the enzymes
-            try {
-                enzymeFactory.importEnzymes(new File(getJarFilePath(), DeNovoSequencingHandler.getEnzymeFile()));
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error while reading " + DeNovoSequencingHandler.getEnzymeFile() + ".", "Enzyme File Error", JOptionPane.ERROR_MESSAGE);
-            }
+            enzymeFactory = EnzymeFactory.getInstance();
 
             setIdentificationParameters(searchParametersFile);
 
@@ -420,13 +416,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             } catch (IOException e) {
 
             }
-
-            // set the default enzyme to trypsin
-            if (searchParameters.getEnzyme() == null) {
-                searchParameters.setEnzyme(EnzymeFactory.getInstance().getEnzyme("Trypsin"));
-            }
-
-            this.searchParameters = searchParameters;
 
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
@@ -2077,7 +2066,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
-        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, searchParameters, true);
+        PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.pNovo.getIndex());
+        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, pNovoParameters, true);
 
         // see if there are changes to the parameters and ask the user if these are to be saved
         while (!pNovoSettingsDialog.isCancelled() && !checkSearchParameters(pNovoSettingsDialog.getSearchParametersFromGUI())) {

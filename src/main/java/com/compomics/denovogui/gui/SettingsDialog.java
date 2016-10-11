@@ -10,6 +10,7 @@ import com.compomics.util.experiment.identification.identification_parameters.to
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
+import com.compomics.util.preferences.DigestionPreferences;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -1418,9 +1419,9 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         SearchParameters tempSearchParameters = new SearchParameters(searchParameters);
 
-        // set the enzyme
-        Enzyme enzyme = enzymeFactory.getEnzyme("Trypsin"); // only trypsin is supported by pepnovo anyway... // @TODO: but pNovo supports other enzymes...
-        tempSearchParameters.setEnzyme(enzyme);
+        // set the digestion preferences
+        DigestionPreferences digestionPreferences = DigestionPreferences.getDefaultPreferences();
+        searchParameters.setDigestionPreferences(digestionPreferences);
 
         // general parameters
         double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();

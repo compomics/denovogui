@@ -35,7 +35,7 @@ public class DeNovoCLI implements Callable {
     /**
      * The enzyme factory.
      */
-    private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+    private EnzymeFactory enzymeFactory;
     /**
      * The exception handler for the command line process.
      */
@@ -52,12 +52,8 @@ public class DeNovoCLI implements Callable {
 
         try {
             // load enzymes
-            try {
-                enzymeFactory.importEnzymes(DeNovoSequencingHandler.getEnzymesFile(getJarFilePath()));
-            } catch (Exception e) {
-                System.out.println("An error occurred while loading the enzymes.");
-                exceptionHandler.catchException(e);
-            }
+            enzymeFactory = EnzymeFactory.getInstance();
+
             Options lOptions = new Options();
             DeNovoCLIParams.createOptionsCLI(lOptions);
             BasicParser parser = new BasicParser();
@@ -93,7 +89,7 @@ public class DeNovoCLI implements Callable {
         if (pathSettingsCLIInputBean.getLogFolder() != null) {
             DeNovoCLI.redirectErrorStream(pathSettingsCLIInputBean.getLogFolder());
         }
-        
+
         if (pathSettingsCLIInputBean.hasInput()) {
             PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
             pathSettingsCLI.setPathSettings();
@@ -275,13 +271,13 @@ public class DeNovoCLI implements Callable {
 
             File searchParametersFile = deNovoCLIInputBean.getSearchParametersFile();
             SearchParameters searchParameters = SearchParameters.getIdentificationParameters(searchParametersFile);
-            
+
             // load the project specific ptms
             String error = DeNovoSequencingHandler.loadModifications(searchParameters);
             if (error != null) {
                 System.out.println(error);
             }
-            
+
             // check precursor tolerance, max is 5, but default for search params is 10...
             if (searchParameters.getPrecursorAccuracyDalton() > 5) {
                 waitingHandlerCLIImpl.appendReport("\nPrecursor tolerance has to be between 0 and 5.0!", false, true);
