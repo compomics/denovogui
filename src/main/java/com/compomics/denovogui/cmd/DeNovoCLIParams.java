@@ -66,7 +66,7 @@ public enum DeNovoCLIParams {
         }
         
         // Path setup
-        aOptions.addOption(PathSettingsCLIParams.ALL.id, true, PathSettingsCLIParams.ALL.description);
+        PathSettingsCLIParams.createOptionsCLI(aOptions);
     }
 
     /**
