@@ -1,9 +1,7 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.experiment.identification.parameters_cli.AbstractIdentificationParametersCli;
-import java.io.File;
 import org.apache.commons.cli.Options;
 
 /**
@@ -37,11 +35,6 @@ public class IdentificationParametersCLI extends AbstractIdentificationParameter
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected File getEnzymeFile() {
-        return new File(getJarFilePath(), DeNovoSequencingHandler.getEnzymeFile());
     }
 
     @Override

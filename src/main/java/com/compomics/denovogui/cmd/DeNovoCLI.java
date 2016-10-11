@@ -51,8 +51,6 @@ public class DeNovoCLI implements Callable {
     public DeNovoCLI(String[] args) {
 
         try {
-            // load enzymes
-            enzymeFactory = EnzymeFactory.getInstance();
 
             Options lOptions = new Options();
             DeNovoCLIParams.createOptionsCLI(lOptions);
@@ -113,6 +111,9 @@ public class DeNovoCLI implements Callable {
         } catch (Exception e) {
             System.out.println("Unable to load the path configurations. Default paths will be used.");
         }
+
+        // load enzymes
+        enzymeFactory = EnzymeFactory.getInstance();
 
         try {
             WaitingHandlerCLIImpl waitingHandlerCLIImpl = new WaitingHandlerCLIImpl();
