@@ -9,6 +9,7 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
+import com.compomics.util.preferences.DigestionPreferences;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -295,8 +296,9 @@ public class PNovoJob extends Job {
             br.write("ETDIONTYPE6=z 2 0 0 1.99129206512" + System.getProperty("line.separator")); // @TODO: should these be editable..?
 
             // set the enzyme
-            if (searchParameters.getEnzyme() != null) {
-                br.write("enzyme=" + getPNovoEnzyme() + System.getProperty("line.separator")); // @TODO: will this one ever be used? as an enzyme is not usually set?
+            DigestionPreferences digestionPreferences = searchParameters.getDigestionPreferences();
+            if (digestionPreferences.getCleavagePreference() == DigestionPreferences.CleavagePreference.enzyme) {
+                br.write("enzyme=" + getPNovoEnzyme(digestionPreferences.getEnzymes().get(0)) + System.getProperty("line.separator")); // @TODO: will this one ever be used? as an enzyme is not usually set?
             }
 
             // set multithreading
@@ -362,13 +364,12 @@ public class PNovoJob extends Job {
      *
      * @return the enzyme in the pNovo formatting
      */
-    private String getPNovoEnzyme() {
+    private String getPNovoEnzyme(Enzyme enzyme) {
 
         // #An enzyme can be set as: 
         // #[EnzymeName] [CleavageSites] [N/C] (Cleave at N- or C- terminal)
         // enzyme=Trypsin KR C
         String enzymeAsString = "";
-        Enzyme enzyme = searchParameters.getEnzyme();
         enzymeAsString += enzyme.getName() + " ";
         if (enzyme.getAminoAcidBefore().size() > 0) {
             for (Character aa : enzyme.getAminoAcidBefore()) {

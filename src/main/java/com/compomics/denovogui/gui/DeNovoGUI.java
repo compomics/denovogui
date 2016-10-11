@@ -2066,15 +2066,60 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
-        PNovoParameters pNovoParameters = (PNovoParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.pNovo.getIndex());
-        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, pNovoParameters, true);
-
-        // see if there are changes to the parameters and ask the user if these are to be saved
-        while (!pNovoSettingsDialog.isCancelled() && !checkSearchParameters(pNovoSettingsDialog.getSearchParametersFromGUI())) {
-            pNovoSettingsDialog.setVisible(true);
-        }
+        PNovoParameters oldPNovoParameters = (PNovoParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.pNovo.getIndex());
+        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, oldPNovoParameters, true);
 
         pNovoSettingsDialog.dispose();
+        
+
+        boolean pNovoParametersSet = false;
+
+        while (!pNovoParametersSet) {
+
+            if (!pNovoSettingsDialog.isCancelled()) {
+                PNovoParameters newPNovoParameters = pNovoSettingsDialog.getPNovoParameters();
+
+                // see if there are changes to the parameters and ask the user if these are to be saved
+                if (!newPNovoParameters.equals(oldPNovoParameters)) {
+
+                    int value = JOptionPane.showConfirmDialog(this, "The search parameters have changed."
+                            + "\nDo you want to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    switch (value) {
+                        case JOptionPane.YES_OPTION:
+                            try {
+                                searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), newPNovoParameters);
+                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                                if (error != null) {
+                                    JOptionPane.showMessageDialog(this,
+                                            error,
+                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
+                                }
+                                settingsFileJTextField.setText(parametersFile.getName());
+                                pNovoParametersSet = true;
+                            } catch (IOException e) {
+                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                                e.printStackTrace();
+                            }
+                            break;
+                        case JOptionPane.CANCEL_OPTION:
+                            pNovoSettingsDialog = new PNovoSettingsDialog(this, newPNovoParameters, true);
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            pNovoParametersSet = true;
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    pNovoParametersSet = true;
+                }
+            } else {
+                pNovoParametersSet = true;
+            }
+        }
     }//GEN-LAST:event_pNovoSettingsJButtonActionPerformed
 
     /**
