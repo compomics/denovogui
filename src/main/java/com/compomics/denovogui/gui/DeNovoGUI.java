@@ -44,6 +44,7 @@ import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
 import com.compomics.util.io.ConfigurationFile;
+import com.compomics.util.preferences.DigestionPreferences;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.LastSelectedFolder;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
@@ -1329,6 +1330,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         // no search parameters set, use the defaults
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
+            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
         }
 
         boolean validInput = true;
@@ -3092,6 +3094,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public void setIdentificationParameters(File parametersFile) {
         if (parametersFile == null) {
             searchParameters = new SearchParameters();
+            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
             setDefaultParameters(); // label the configs as default
         } else {
             try {
@@ -3110,6 +3113,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 e.printStackTrace();
                 setDefaultParameters(); // label the configs as default
                 searchParameters = new SearchParameters();
+            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
                 setDefaultParameters(); // label the configs as default
             }
         }

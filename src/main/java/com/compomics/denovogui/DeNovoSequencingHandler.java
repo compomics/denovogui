@@ -168,6 +168,16 @@ public class DeNovoSequencingHandler {
         int primaryProgressCounterMax = 1;
         if (enablePepNovo) {
             primaryProgressCounterMax += numberOfSpectrumFiles + 1;
+            // write the modification file
+            try {
+                File folder = new File(pepNovoFolder, "Models");
+                PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
+            } catch (Exception e) {
+                waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
+                exceptionHandler.catchException(e);
+                waitingHandler.setRunCanceled();
+                return;
+            }
         }
         if (enableDirecTag) {
             primaryProgressCounterMax += numberOfSpectrumFiles;
@@ -182,17 +192,6 @@ public class DeNovoSequencingHandler {
         waitingHandler.setMaxPrimaryProgressCounter(primaryProgressCounterMax);
         waitingHandler.increasePrimaryProgressCounter();
         waitingHandler.setSecondaryProgressCounterIndeterminate(true);
-
-        // write the modification file
-        try {
-            File folder = new File(pepNovoFolder, "Models");
-            PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
-        } catch (Exception e) {
-            waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
-            exceptionHandler.catchException(e);
-            waitingHandler.setRunCanceled();
-            return;
-        }
 
         // get the number of available threads
         String fileEnding = "";
@@ -221,7 +220,7 @@ public class DeNovoSequencingHandler {
         if (!waitingHandler.isRunCanceled()) {
             duration.end();
             waitingHandler.appendReport("De novo sequencing completed (" + duration.toString() + ").", true, true);
-            
+
             // store the pepnovo to utilities ptm mapping
             PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
             pepnovoParameters.setPepNovoPtmMap(PepNovoModificationFile.getInvertedModIdMap());
@@ -615,7 +614,7 @@ public class DeNovoSequencingHandler {
     public static void setUserModificationFile(String modificationFile) {
         DeNovoSequencingHandler.USER_MODIFICATIONS_FILE = modificationFile;
     }
-    
+
     /**
      * Verifies that the modifications backed-up in the search parameters are
      * loaded and returns an error message if one was already loaded, null

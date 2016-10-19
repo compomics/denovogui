@@ -1,12 +1,9 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTM;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
 import com.compomics.util.gui.ptm.ModificationsDialog;
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
@@ -169,8 +166,6 @@ public class SettingsDialog extends javax.swing.JDialog {
      * Insert the search parameters into the GUI.
      */
     private void insertData() {
-
-        PepnovoParameters pepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
 
         // mass tolerances
         fragmentMassToleranceSpinner.setValue(searchParameters.getFragmentIonAccuracy());
