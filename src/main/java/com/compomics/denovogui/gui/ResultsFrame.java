@@ -252,7 +252,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * The sequence factory retrieving information from the FASTA file.
      */
-    private SequenceFactory sequenceFactory = SequenceFactory.getInstance(30000);
+    private SequenceFactory sequenceFactory = SequenceFactory.getInstance();
     /**
      * The object cache used for the identification.
      */
@@ -1976,13 +1976,17 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         UtilitiesUserPreferences userPreferences = UtilitiesUserPreferences.loadUserPreferences();
         int memoryPreference = userPreferences.getMemoryPreference();
-        long fileSize = sequenceFactory.getCurrentFastaFile().length();
-        long nSequences = sequenceFactory.getNTargetSequences();
-        if (!sequenceFactory.isDefaultReversed()) {
+        int nSequences = sequenceFactory.getNSequences();
+        int cacheSizeInMb = nSequences * 112 / 1048576; // 112 is the size taken by one protein
+        if (!sequenceFactory.isDefaultReversed() || cacheSizeInMb < memoryPreference / 4) {
             nSequences = sequenceFactory.getNSequences();
+            sequenceFactory.setDecoyInMemory(true);
+        } else {
+            nSequences = sequenceFactory.getNTargetSequences();
+            sequenceFactory.setDecoyInMemory(false);
         }
-        long sequencesPerMb = 1048576 * nSequences / fileSize;
-        long availableCachSize = 3 * memoryPreference * sequencesPerMb / 4;
+        long availableCachSize = 1048576 * memoryPreference / 112; // 112 is the size taken by one protein
+        availableCachSize *= 0.8;
         if (availableCachSize > nSequences) {
             availableCachSize = nSequences;
         } else {

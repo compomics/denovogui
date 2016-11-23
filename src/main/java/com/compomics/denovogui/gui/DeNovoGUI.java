@@ -247,7 +247,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         enzymeFactory = EnzymeFactory.getInstance();
-        spectrumFactory = SpectrumFactory.getInstance(1000);
+        spectrumFactory = SpectrumFactory.getInstance();
         ptmFactory = PTMFactory.getInstance();
 
         // load the utilities user preferences
