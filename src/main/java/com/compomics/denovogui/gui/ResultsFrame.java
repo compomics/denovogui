@@ -2946,7 +2946,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         }
 
         // General annotation settings
-        highResAnnotationCheckBoxMenuItem.setSelected(annotationPreferences.isHighResolutionAnnotation());
+        highResAnnotationCheckBoxMenuItem.setSelected(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostAccurateMz); //@TODO: change to a drop down menu
         allCheckBoxMenuItem.setSelected(annotationPreferences.showAllPeaks());
     }
 
@@ -3022,7 +3022,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         }
 
         // The following preferences are kept for all spectra
-        annotationPreferences.setHighResolutionAnnotation(highResAnnotationCheckBoxMenuItem.isSelected());
+        SpectrumAnnotator.TiesResolution tiesResolution = highResAnnotationCheckBoxMenuItem.isSelected() ? SpectrumAnnotator.TiesResolution.mostAccurateMz : SpectrumAnnotator.TiesResolution.mostIntense;
+        annotationPreferences.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu
         annotationPreferences.setShowAllPeaks(allCheckBoxMenuItem.isSelected());
         annotationPreferences.setShowForwardIonDeNovoTags(forwardIonsDeNovoCheckBoxMenuItem.isSelected());
         annotationPreferences.setShowRewindIonDeNovoTags(rewindIonsDeNovoCheckBoxMenuItem.isSelected());
