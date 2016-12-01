@@ -1985,7 +1985,7 @@ public class ResultsFrame extends javax.swing.JFrame {
             nSequences = sequenceFactory.getNTargetSequences();
             sequenceFactory.setDecoyInMemory(false);
         }
-        long availableCachSize = 1048576 * memoryPreference / 112; // 112 is the size taken by one protein
+        long availableCachSize = 1048576l * memoryPreference / 112; // 112 is the size taken by one protein
         availableCachSize *= 0.8;
         if (availableCachSize > nSequences) {
             availableCachSize = nSequences;
