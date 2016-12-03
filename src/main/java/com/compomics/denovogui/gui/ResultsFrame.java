@@ -2071,7 +2071,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         if (longestAminoAcidSequence >= treeKeyLength) {
                                             ArrayList<PeptideProteinMapping> proteinMapping = peptideMapper.getProteinMapping(
                                                     tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
-                                            for (Peptide peptide : PeptideProteinMapping.getPeptides(proteinMapping)) {
+                                            for (Peptide peptide : PeptideProteinMapping.getPeptides(proteinMapping, deNovoGUI.getSequenceMatchingPreferences())) {
                                                 if (!peptideFound) {
                                                     peptideFound = true;
                                                 }
