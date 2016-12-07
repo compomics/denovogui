@@ -333,6 +333,7 @@ public class FindPanel extends javax.swing.JPanel {
 
                                 resultsFrame.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
                                 inputTxt.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                                inputTxt.requestFocus();
 
                             } else {
                                 indexLabel.setText("");
@@ -340,6 +341,7 @@ public class FindPanel extends javax.swing.JPanel {
                                 nextButton.setEnabled(false);
                                 inputTxt.setText(welcomeText);
                                 inputTxt.selectAll();
+                                inputTxt.requestFocus();
                             }
                         }
 
