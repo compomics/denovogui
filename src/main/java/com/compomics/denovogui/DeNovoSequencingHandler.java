@@ -7,6 +7,7 @@ import com.compomics.denovogui.execution.jobs.PNovoJob;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.PepNovoModificationFile;
+import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.PTMFactory;
@@ -15,6 +16,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Se
 import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
 import com.compomics.util.waiting.Duration;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -201,6 +203,14 @@ public class DeNovoSequencingHandler {
         String threadEnding = "";
         if (nThreads > 1) {
             threadEnding = "s";
+        }
+        
+        // set this version as the default DeNovoGUI version
+        if (!getJarFilePath().equalsIgnoreCase(".")) {
+            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            String versionNumber = Properties.getVersion();
+            utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+            UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
         }
 
         Duration duration = new Duration();
