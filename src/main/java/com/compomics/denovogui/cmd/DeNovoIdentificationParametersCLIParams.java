@@ -1,6 +1,6 @@
 package com.compomics.denovogui.cmd;
 
-import com.compomics.util.experiment.identification.parameters_cli.IdentificationParametersCLIParams;
+import com.compomics.cli.identification_parameters.IdentificationParametersCLIParams;
 import org.apache.commons.cli.Options;
 
 /**

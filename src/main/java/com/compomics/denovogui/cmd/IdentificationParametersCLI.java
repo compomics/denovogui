@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
+import com.compomics.cli.identification_parameters.AbstractIdentificationParametersCli;
 import com.compomics.software.CompomicsWrapper;
-import com.compomics.util.experiment.identification.parameters_cli.AbstractIdentificationParametersCli;
 import org.apache.commons.cli.Options;
 
 /**
