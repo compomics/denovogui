@@ -23,8 +23,10 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.OUT.id, true, IdentificationParametersCLIParams.OUT.description);
         aOptions.addOption(IdentificationParametersCLIParams.MODS.id, false, IdentificationParametersCLIParams.MODS.description);
 
+        aOptions.addOption(IdentificationParametersCLIParams.PREC_TOL.id, true, IdentificationParametersCLIParams.PREC_TOL.description);
         aOptions.addOption(IdentificationParametersCLIParams.PREC_PPM.id, true, IdentificationParametersCLIParams.PREC_PPM.description);
         aOptions.addOption(IdentificationParametersCLIParams.FRAG_TOL.id, true, IdentificationParametersCLIParams.FRAG_TOL.description);
+        aOptions.addOption(IdentificationParametersCLIParams.FRAG_PPM.id, true, IdentificationParametersCLIParams.FRAG_PPM.description);
         aOptions.addOption(IdentificationParametersCLIParams.ENZYME.id, true, IdentificationParametersCLIParams.ENZYME.description);
         aOptions.addOption(IdentificationParametersCLIParams.FIXED_MODS.id, true, IdentificationParametersCLIParams.FIXED_MODS.description);
         aOptions.addOption(IdentificationParametersCLIParams.VARIABLE_MODS.id, true, IdentificationParametersCLIParams.VARIABLE_MODS.description);
@@ -88,9 +90,10 @@ public class DeNovoIdentificationParametersCLIParams {
 
         output += "Mandatory Parameters:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.OUT.id) + " " + IdentificationParametersCLIParams.OUT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_PPM.id) + " " + IdentificationParametersCLIParams.PREC_PPM.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_TOL.id) + " " + IdentificationParametersCLIParams.PREC_TOL.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PREC_PPM.id) + " " + IdentificationParametersCLIParams.PREC_PPM.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.FRAG_TOL.id) + " " + IdentificationParametersCLIParams.FRAG_TOL.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.FRAG_PPM.id) + " " + IdentificationParametersCLIParams.FRAG_PPM.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.ENZYME.id) + " " + IdentificationParametersCLIParams.ENZYME.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.FIXED_MODS.id) + " " + IdentificationParametersCLIParams.FIXED_MODS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.VARIABLE_MODS.id) + " " + IdentificationParametersCLIParams.VARIABLE_MODS.description + "\n";
