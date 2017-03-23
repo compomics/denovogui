@@ -2027,9 +2027,9 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, waitingHandler);
 
-            while (psmIterator.hasNext()) {
+            SpectrumMatch spectrumMatch;
+            while ((spectrumMatch = psmIterator.next()) != null) {
 
-                SpectrumMatch spectrumMatch = psmIterator.next();
                 String spectrumKey = spectrumMatch.getKey();
                 HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
 

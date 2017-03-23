@@ -44,10 +44,10 @@ public class ScoreHistogram extends Chart {
         for (String spectrumFile : identification.getSpectrumFiles()) {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
+            
+            SpectrumMatch spectrumMatch;
+            while ((spectrumMatch = psmIterator.next()) != null) {
 
-            while (psmIterator.hasNext()) {
-
-                SpectrumMatch spectrumMatch = psmIterator.next();
                 ArrayList<Double> matchScores = new ArrayList<Double>(spectrumMatch.getAssumptionsMap().get(Advocate.pepnovo.getIndex()).keySet());
                 Collections.sort(matchScores);
                 scores.add(matchScores.get(0));
