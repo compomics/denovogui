@@ -20,6 +20,7 @@ import com.compomics.software.dialogs.JavaSettingsDialog;
 import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
 import com.compomics.software.settings.gui.PathSettingsDialog;
+import com.compomics.util.Util;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
 import com.compomics.util.experiment.biology.PTM;
@@ -403,6 +404,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
             // set the title of the frame and add the icon
             this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+            
+            // incrementing the counter for a new DenovoGUI run
+            if (utilitiesUserPreferences.isAutoUpdate()) {
+                Util.sendGAUpdate("UA-36198780-4", "toolstart", "denovogui-" + getVersion());
+            }
 
             // load the enzymes
             enzymeFactory = EnzymeFactory.getInstance();
@@ -1418,6 +1424,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             });
             waitingDialog.setCloseDialogWhenImportCompletes(true, true);
             waitingDialog.setLocationRelativeTo(this);
+            
+            // incrementing the counter for a new DenovoGUI run
+            if (utilitiesUserPreferences.isAutoUpdate()) {
+                Util.sendGAUpdate("UA-36198780-4", "startrun-gui", "denovogui-" + getVersion());
+            }
             startSequencing(waitingDialog);
         }
     }//GEN-LAST:event_startButtonActionPerformed

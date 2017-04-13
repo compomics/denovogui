@@ -3,14 +3,17 @@ package com.compomics.denovogui.cmd;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
+import static com.compomics.denovogui.util.Properties.getVersion;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.util.Util;
 import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
 import com.compomics.util.experiment.biology.*;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
+import com.compomics.util.preferences.UtilitiesUserPreferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -297,6 +300,12 @@ public class DeNovoCLI implements Callable {
                 spectrumFactory.addSpectra(spectrumFile, waitingHandlerCLIImpl);
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
+            
+            // incrementing the counter for a new DenovoGUI run
+            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            if (utilitiesUserPreferences.isAutoUpdate()) {
+                Util.sendGAUpdate("UA-36198780-4", "startrun-cl", "denovogui-" + getVersion());
+            }
 
             // start the sequencing
             DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
