@@ -3,7 +3,6 @@ package com.compomics.denovogui.cmd;
 import com.compomics.denovogui.DeNovoSequencingHandler;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
-import static com.compomics.denovogui.util.Properties.getVersion;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.settings.PathKey;
 import com.compomics.software.settings.UtilitiesPathPreferences;
@@ -304,7 +303,7 @@ public class DeNovoCLI implements Callable {
             // incrementing the counter for a new DenovoGUI run
             UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
             if (utilitiesUserPreferences.isAutoUpdate()) {
-                Util.sendGAUpdate("UA-36198780-4", "startrun-cl", "denovogui-" + getVersion());
+                Util.sendGAUpdate("UA-36198780-4", "startrun-cl", "denovogui-" + Properties.getVersion());
             }
 
             // start the sequencing
