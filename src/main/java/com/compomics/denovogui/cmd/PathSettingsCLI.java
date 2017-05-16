@@ -122,7 +122,7 @@ public class PathSettingsCLI {
         return System.getProperty("line.separator")
                 + "The DeNovoGUI path settings command line allows setting the path of every configuration file created by DeNovoGUI or set a temporary folder where all files will be stored." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
-                + "For further help see http://compomics.github.io/projects/denovogui.html and http://compomics.github.io/denovogui/wiki/denovocli.html." + System.getProperty("line.separator")
+                + "For further help see http://compomics.github.io/projects/denovogui.html and http://compomics.github.io/projects/denovogui/wiki/denovocli.html." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
                 + "Or contact the developers at https://groups.google.com/group/denovogui." + System.getProperty("line.separator")
                 + System.getProperty("line.separator")
