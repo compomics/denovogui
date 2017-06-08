@@ -1576,7 +1576,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         new HelpDialog(this, getClass().getResource("/html/SpectrumPanel.html"),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
                 Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/help.GIF")),
-                "Spectrum - Help");
+                "Spectrum Panel - Help");
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
     /**
