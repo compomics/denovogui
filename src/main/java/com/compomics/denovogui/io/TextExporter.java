@@ -192,6 +192,18 @@ public class TextExporter {
                                         b.write(massDeviation + SEPARATOR);
                                         massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + SEPARATOR);
+                                    } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);
+                                        b.write(SEPARATOR);  
                                     } else {
                                         b.write(SEPARATOR);
                                         b.write(SEPARATOR);
@@ -293,7 +305,7 @@ public class TextExporter {
 
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
                             StringBuilder spectrumDetails = new StringBuilder();
-                            
+
                             spectrumDetails.append(mgfFile).append(SEPARATOR).append(spectrumTitle).append(SEPARATOR);
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);

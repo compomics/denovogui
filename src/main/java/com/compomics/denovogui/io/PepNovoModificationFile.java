@@ -18,6 +18,7 @@ import java.util.Map;
  * specific format.
  *
  * @author Thilo Muth
+ * @author Harald Barsnes
  */
 public class PepNovoModificationFile {
 
@@ -62,9 +63,9 @@ public class PepNovoModificationFile {
     /**
      * This method writes the modifications to a file.
      *
-     * @param filePath The folder where the file shall be saved.
-     * @param modificationProfile The modification profile of the search.
-     * @throws java.io.IOException Exception thrown when the file access fails.
+     * @param filePath the folder where the file shall be saved
+     * @param modificationProfile the modification profile of the search
+     * @throws java.io.IOException thrown if the file access fails
      */
     public static void writeFile(File filePath, PtmSettings modificationProfile) throws IOException {
         // Init the buffered writer.
@@ -181,7 +182,6 @@ public class PepNovoModificationFile {
      */
     private static void fillModIdMap() {
 
-        // @TODO: is this method really needed anymore?
         modIdMap = new HashMap<String, String>();
         PTMFactory ptmFactory = PTMFactory.getInstance();
         List<String> mods = new ArrayList<String>();
@@ -194,7 +194,7 @@ public class PepNovoModificationFile {
         for (String mod : mods) {
             PTM ptm = ptmFactory.getPTM(mod);
             double ptmMass = ptm.getRoundedMass();
-            
+
             if (ptmMass > 0) {
                 connector = "+";
             } else {
@@ -240,17 +240,14 @@ public class PepNovoModificationFile {
      * @return The modification ID to name map
      */
     public static Map<String, String> getInvertedModIdMap() {
-        if (modIdMap == null) {
-            fillModIdMap();
+
+        fillModIdMap();
+
+        invertedModIdMap = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : modIdMap.entrySet()) {
+            invertedModIdMap.put(entry.getValue(), entry.getKey());
         }
 
-        // Lazy loading
-        if (invertedModIdMap == null) {
-            invertedModIdMap = new HashMap<String, String>();
-            for (Map.Entry<String, String> entry : modIdMap.entrySet()) {
-                invertedModIdMap.put(entry.getValue(), entry.getKey());
-            }
-        }
         return invertedModIdMap;
     }
 
@@ -261,9 +258,7 @@ public class PepNovoModificationFile {
      * @return the list of modification in a pep novo format
      */
     public static String getModsString(ArrayList<String> modifications) {
-        if (modIdMap == null) {
-            fillModIdMap();
-        }
+        fillModIdMap();
         Collections.sort(modifications);
         String result = "";
         // Append the selected modifications

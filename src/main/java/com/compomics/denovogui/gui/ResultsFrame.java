@@ -1930,7 +1930,7 @@ public class ResultsFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Matches the tags to a protein database
+     * Matches the tags to a protein database.
      *
      * @param sequenceMatchingPreferences the sequence matching preferences
      * @param fixedModifications the fixed modifications
