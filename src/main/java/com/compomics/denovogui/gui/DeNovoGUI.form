@@ -416,7 +416,6 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="toolTipText" type="java.lang.String" value="Enable DirecTag"/>
-                <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="direcTagCheckBoxActionPerformed"/>
@@ -426,7 +425,6 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="toolTipText" type="java.lang.String" value="Enable PepNovo+"/>
-                <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pepNovoCheckBoxActionPerformed"/>
@@ -455,7 +453,6 @@
             <Component class="javax.swing.JCheckBox" name="pNovoCheckBox">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Enable pNovo+"/>
-                <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pNovoCheckBoxActionPerformed"/>
@@ -577,7 +574,6 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="toolTipText" type="java.lang.String" value="Enable Novor"/>
-                <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="novorCheckBoxActionPerformed"/>

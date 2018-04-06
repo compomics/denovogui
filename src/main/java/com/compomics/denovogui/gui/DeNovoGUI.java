@@ -2511,6 +2511,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     public void startSequencing(WaitingHandler waitingHandler) {
 
+        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+        
         sequencingWorker = new SequencingWorker(waitingHandler, true);
         sequencingWorker.execute();
 
