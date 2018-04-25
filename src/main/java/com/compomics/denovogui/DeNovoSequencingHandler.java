@@ -450,7 +450,7 @@ public class DeNovoSequencingHandler {
 
             // pNovo+
             if (enablePNovo && !waitingHandler.isRunCanceled()) {
-
+                
                 Duration algorithmDuration = new Duration();
                 algorithmDuration.start();
 
@@ -458,8 +458,8 @@ public class DeNovoSequencingHandler {
                 waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using pNovo+.", true, true);
                 waitingHandler.appendReportEndLine();
 
-                threadExecutor = Executors.newFixedThreadPool(1);
-                PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, nThreads, outputFolder, searchParameters, waitingHandler, exceptionHandler);
+                threadExecutor = Executors.newFixedThreadPool(1); // @TODO: implement chunking so that pNovo can be run with more than one thread...
+                PNovoJob pNovoJob = new PNovoJob(pNovoFolder, pNovoExeTitle, spectrumFile, 1, outputFolder, searchParameters, waitingHandler, exceptionHandler);
                 threadExecutor.submit(pNovoJob);
                 jobs.add(pNovoJob);
 

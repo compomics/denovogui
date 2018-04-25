@@ -52,7 +52,7 @@ public class PNovoJob extends Job {
     /**
      * The name of the pNovo parameters file.
      */
-    private String parameterFileName = "pnovo_params.txt";
+    private String parameterFileName = "_pnovo_params.txt";
     /**
      * The post translational modifications factory.
      */
@@ -100,11 +100,11 @@ public class PNovoJob extends Job {
             createParameterFile();
 
             // add the parameters
-            procCommands.add(pNovoFolder.getAbsolutePath() + File.separator + parameterFileName);
+            procCommands.add(pNovoFolder.getAbsolutePath() + File.separator + outputFolder.getName() + parameterFileName);
 
             // add output folder
-            procCommands.add("\"\""); // @TODO: add folder name?
-
+            procCommands.add("\"\"");
+            
             procCommands.trimToSize();
 
             // save command line
@@ -208,7 +208,7 @@ public class PNovoJob extends Job {
             /////////////////////////////////////////////////////
             //
 
-            FileWriter r = new FileWriter(pNovoFolder.getAbsolutePath() + File.separator + parameterFileName);
+            FileWriter r = new FileWriter(pNovoFolder.getAbsolutePath() + File.separator + outputFolder.getName() + parameterFileName);
             BufferedWriter br = new BufferedWriter(r);
 
             br.write("[meta]" + System.getProperty("line.separator"));
@@ -348,6 +348,10 @@ public class PNovoJob extends Job {
             // set the number of peptides reported per spectrum
             br.write(System.getProperty("line.separator") + "#number of peptides reported" + System.getProperty("line.separator"));
             br.write("report_pep=" + pNovoParameters.getNumberOfPeptides() + System.getProperty("line.separator"));
+            
+            // new (undocumented parameters in v3.1.0)
+            br.write(System.getProperty("line.separator") + "report_temp=800" + System.getProperty("line.separator")); // @TODO: figure out what this parameter does...
+            br.write("max_node=300" + System.getProperty("line.separator")); // @TODO: figure out what this parameter does...
 
             br.close();
             r.close();

@@ -200,7 +200,7 @@ public class DeNovoCLI implements Callable {
                 if (osName.contains("mac os")) {
                     // unsupported OS version
                 } else if (osName.contains("windows")) {
-                    pNovoExecutableTitle = "pNovoplus.exe";
+                    pNovoExecutableTitle = "pNovo3.exe";
                 } else if (osName.contains("nix") || osName.contains("nux")) {
                     // unsupported OS version
                 } else {

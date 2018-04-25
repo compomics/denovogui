@@ -162,7 +162,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     /**
      * Title of the pNovo executable.
      */
-    private String pNovoExecutable = "pNovoplus.exe";
+    private String pNovoExecutable = "pNovo3.exe";
     /**
      * Title of the Novor executable.
      */
@@ -371,7 +371,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     pNovoCheckBox.setEnabled(false);
                 } else if (osName.contains("windows")) {
                     pNovoFolder = new File(getJarFilePath() + "/resources/pNovo/windows");
-                    pNovoExecutable = "pNovoplus.exe";
+                    pNovoExecutable = "pNovo3.exe";
                 } else if (osName.contains("nix") || osName.contains("nux")) {
                     if (arch.lastIndexOf("64") != -1) {
                         // linux 64 bit is not supported
@@ -2511,7 +2511,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     public void startSequencing(WaitingHandler waitingHandler) {
 
+        int nThreads = deNovoSequencingHandler.getNThreads();
         deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+        deNovoSequencingHandler.setNThreads(nThreads); // @TODO: find a better fix!!
         
         sequencingWorker = new SequencingWorker(waitingHandler, true);
         sequencingWorker.execute();
@@ -3085,7 +3087,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             String[] fileNames = deNovoFolder.list();
             int executableCounter = 0;
             for (String lFileName : fileNames) {
-                if (lFileName.startsWith("pNovoplus")) {
+                if (lFileName.startsWith("pNovo3")) {
                     executableCounter++;
                 }
             }
