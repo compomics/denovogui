@@ -2,10 +2,8 @@ package com.compomics.denovogui.gui.qc;
 
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.matches_iterators.PsmIterator;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,10 +42,9 @@ public class ScoreHistogram extends Chart {
         for (String spectrumFile : identification.getSpectrumFiles()) {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);
+            SpectrumMatch spectrumMatch;
 
-            while (psmIterator.hasNext()) {
-
-                SpectrumMatch spectrumMatch = psmIterator.next();
+            while ((spectrumMatch = psmIterator.next()) != null) {
                 ArrayList<Double> matchScores = new ArrayList<Double>(spectrumMatch.getAssumptionsMap().get(Advocate.pepnovo.getIndex()).keySet());
                 Collections.sort(matchScores);
                 scores.add(matchScores.get(0));

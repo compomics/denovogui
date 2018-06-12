@@ -2026,10 +2026,10 @@ public class ResultsFrame extends javax.swing.JFrame {
         for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, waitingHandler);
+            SpectrumMatch spectrumMatch;
 
-            while (psmIterator.hasNext()) {
+            while ((spectrumMatch = psmIterator.next()) != null) {
 
-                SpectrumMatch spectrumMatch = psmIterator.next();
                 String spectrumKey = spectrumMatch.getKey();
                 HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
 

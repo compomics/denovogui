@@ -380,9 +380,11 @@ public class TextExporter {
      * @param searchParameters the search parameters
      *
      * @throws IOException exception thrown whenever an error occurred while
-     * writing.
+     * writing
+     * @throws java.lang.InterruptedException exception thrown if a thread is
+     * interrupted
      */
-    public static void writeTagExportLine(BufferedWriter b, SpectrumIdentificationAssumption assumption, SearchParameters searchParameters) throws IOException {
+    public static void writeTagExportLine(BufferedWriter b, SpectrumIdentificationAssumption assumption, SearchParameters searchParameters) throws IOException, InterruptedException {
         if (assumption instanceof TagAssumption) {
             TagAssumption tagAssumption = (TagAssumption) assumption;
             writeTagExportLine(b, tagAssumption, searchParameters);
@@ -404,8 +406,10 @@ public class TextExporter {
      *
      * @throws IOException exception thrown whenever an error occurred while
      * writing.
+     * @throws java.lang.InterruptedException exception thrown if a thread is
+     * interrupted
      */
-    public static void writeTagExportLine(BufferedWriter b, PeptideAssumption peptideAssumption, SearchParameters searchParameters) throws IOException {
+    public static void writeTagExportLine(BufferedWriter b, PeptideAssumption peptideAssumption, SearchParameters searchParameters) throws IOException, InterruptedException {
 
         Peptide peptide = peptideAssumption.getPeptide();
         b.write(peptide.getSequence() + SEPARATOR);

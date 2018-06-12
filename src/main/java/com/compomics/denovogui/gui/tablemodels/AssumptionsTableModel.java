@@ -8,6 +8,8 @@ import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetai
 import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -131,7 +133,11 @@ public class AssumptionsTableModel extends DefaultTableModel {
                     TagAssumption tagAssumption = (TagAssumption) assumption;
                     return tagAssumption.getTheoreticMz(true, true);
                 } else {
-                    return assumption.getTheoreticMz();
+                    try {
+                        return assumption.getTheoreticMz();
+                    } catch (InterruptedException ex) {
+                        return null;
+                    }
                 }
             case 4:
                 return assumption.getIdentificationCharge().value;
