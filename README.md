@@ -16,8 +16,8 @@
 
 |   |   |   |
 | :------------------------- | :--------------- | :--: |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.16.1/DeNovoGUI-1.16.1-windows.zip) | *v1.16.1 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
-| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.16.1/DeNovoGUI-1.16.1-mac_and_linux.tar.gz) | *v1.16.1 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.16.2/DeNovoGUI-1.16.2-windows.zip) | *v1.16.2 - Windows* | [ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
+| [![download](https://github.com/compomics/denovogui/wiki/images/download_denovogui_button_mac_linux.png)](http://genesis.ugent.be/maven2/com/compomics/denovogui/DeNovoGUI/1.16.2/DeNovoGUI-1.16.2-mac_and_linux.tar.gz) | *v1.16.2 - Mac and Linux* |[ReleaseNotes](https://github.com/compomics/denovogui/wiki/ReleaseNotes) |
 
 ---
 
@@ -29,7 +29,7 @@
 
 ## Introduction ##
 
-**DeNovoGUI** provides a user-friendly open-source graphical user interface for running the [Novor](http://rapidnovor.com), [DirecTag](http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/), [PepNovo+](http://proteomics.ucsd.edu/Software/PepNovo.html) and [pNovo+](http://pfind.ict.ac.cn/software/pNovo/) (beta) and _de novo_ sequencing algorithms on Windows, Mac and Linux.
+**DeNovoGUI** provides a user-friendly open-source graphical user interface for running the _de novo_ sequencing algorithms [Novor](http://rapidnovor.com), [DirecTag](http://fenchurch.mc.vanderbilt.edu/bumbershoot/directag/), [PepNovo+](http://proteomics.ucsd.edu/Software/PepNovo.html) and [pNovo+](http://pfind.ict.ac.cn/software/pNovo/) (beta) on Windows, Mac and Linux.
 
 To start using DeNovoGUI, unzip the downloaded file, and double-click the `DeNovoGUI-X.Y.Z.jar file`. No additional installation required!
 
