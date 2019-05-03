@@ -427,8 +427,8 @@ public class ResultsFrame extends javax.swing.JFrame {
         querySpectraTable.getColumn("ID").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, idColorMap, idTooltipMap));
 
         querySpectraTable.getColumn("  ").setCellRenderer(new TrueFalseIconRenderer(
-                new ImageIcon(this.getClass().getResource("/icons/accept.png")),
-                new ImageIcon(this.getClass().getResource("/icons/Error_3.png")),
+                new ImageIcon(this.getClass().getResource("/icons/accept-new.png")),
+                new ImageIcon(this.getClass().getResource("/icons/error-new.png")),
                 "De Novo Solution", "No De Novo Solution"));
         querySpectraTable.getColumn("Charge").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCharge, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Charge").getCellRenderer()).showNumberAndChart(true, labelWidth - 30);
