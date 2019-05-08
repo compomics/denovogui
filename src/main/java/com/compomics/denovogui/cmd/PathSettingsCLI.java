@@ -7,10 +7,12 @@ import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Allows the user to set the path settings in command line.
@@ -182,5 +184,61 @@ public class PathSettingsCLI {
         return "PathSettingsCLI{"
                 + ", cliInputBean=" + pathSettingsCLIInputBean
                 + '}';
+    }
+    
+    /**
+     * If the arguments contains changes to the paths these arguments will be
+     * extracted and the paths updated, before the remaining non-path options
+     * are returned for further processing.
+     *
+     * @param args the command line arguments
+     * @return a list of all non-path related arguments
+     * @throws ParseException if a ParseException occurs
+     */
+    public static String[] extractAndUpdatePathOptions(String[] args) throws ParseException {
+
+        ArrayList<String> allPathOptions = PathSettingsCLIParams.getOptionIDs();
+
+        ArrayList<String> pathSettingArgs = new ArrayList<String>();
+        ArrayList<String> nonPathSettingArgs = new ArrayList<String>();
+
+        for (int i = 0; i < args.length; i++) {
+
+            String currentArg = args[i];
+
+            boolean pathOption = allPathOptions.contains(currentArg);
+
+            if (pathOption) {
+                pathSettingArgs.add(currentArg);
+            } else {
+                nonPathSettingArgs.add(currentArg);
+            }
+
+            // check if the argument has a parameter
+            if (i + 1 < args.length) {
+                String nextArg = args[i + 1];
+                if (!nextArg.startsWith("-")) {
+                    if (pathOption) {
+                        pathSettingArgs.add(args[++i]);
+                    } else {
+                        nonPathSettingArgs.add(args[++i]);
+                    }
+                }
+            }
+        }
+
+        String[] pathSettingArgsAsList = pathSettingArgs.toArray(new String[pathSettingArgs.size()]);
+        String[] nonPathSettingArgsAsList = nonPathSettingArgs.toArray(new String[nonPathSettingArgs.size()]);
+
+        // update the paths if needed
+        Options pathOptions = new Options();
+        PathSettingsCLIParams.createOptionsCLI(pathOptions);
+        BasicParser parser = new BasicParser();
+        CommandLine line = parser.parse(pathOptions, pathSettingArgsAsList);
+        PathSettingsCLIInputBean pathSettingsCLIInputBean = new PathSettingsCLIInputBean(line);
+        PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
+        pathSettingsCLI.setPathSettings();
+
+        return nonPathSettingArgsAsList;
     }
 }

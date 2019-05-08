@@ -2,6 +2,7 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.software.settings.UtilitiesPathPreferences;
+import java.util.ArrayList;
 import org.apache.commons.cli.Options;
 
 /**
@@ -49,6 +50,28 @@ public enum PathSettingsCLIParams {
         for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
             aOptions.addOption(utilitiesPathKey.getId(), true, utilitiesPathKey.getDescription());
         }
+    }
+    
+    /**
+     * Returns the list of supported command line options.
+     * 
+     * @return the list of supported command line options
+     */
+    public static ArrayList<String> getOptionIDs() {
+        
+        ArrayList<String> options = new ArrayList<String>();
+        
+        for (PathSettingsCLIParams pathSettingsCLIParam : values()) {
+            options.add("-" + pathSettingsCLIParam.id);
+        }
+        for (DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey : DeNovoGUIPathPreferences.DeNovoGUIPathKey.values()) {
+            options.add("-" + denovoguiPathKey.getId());
+        }
+        for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
+            options.add("-" + utilitiesPathKey.getId());
+        }
+        
+        return options;
     }
 
     /**
