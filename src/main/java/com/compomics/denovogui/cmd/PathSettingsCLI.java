@@ -57,6 +57,9 @@ public class PathSettingsCLI {
      */
     public void setPathSettings() {
 
+        if (waitingHandler == null)
+            waitingHandler = new WaitingHandlerCLIImpl();
+        
         if (pathSettingsCLIInputBean.getLogFolder() != null) {
             DeNovoCLI.redirectErrorStream(pathSettingsCLIInputBean.getLogFolder());
         }
@@ -237,8 +240,8 @@ public class PathSettingsCLI {
         CommandLine line = parser.parse(pathOptions, pathSettingArgsAsList);
         PathSettingsCLIInputBean pathSettingsCLIInputBean = new PathSettingsCLIInputBean(line);
         PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
-        pathSettingsCLI.call();
-
+        pathSettingsCLI.setPathSettings();
+        
         return nonPathSettingArgsAsList;
     }
 }
