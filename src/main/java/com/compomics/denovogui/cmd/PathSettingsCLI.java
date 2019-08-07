@@ -237,7 +237,7 @@ public class PathSettingsCLI {
         CommandLine line = parser.parse(pathOptions, pathSettingArgsAsList);
         PathSettingsCLIInputBean pathSettingsCLIInputBean = new PathSettingsCLIInputBean(line);
         PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);
-        pathSettingsCLI.setPathSettings();
+        pathSettingsCLI.call();
 
         return nonPathSettingArgsAsList;
     }
