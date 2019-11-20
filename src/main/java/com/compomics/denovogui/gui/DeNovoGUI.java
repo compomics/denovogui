@@ -62,7 +62,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -3375,10 +3375,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             // no internet connection
             System.out.println("Checking for new version failed. No internet connection.");
             return false;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (ConnectException ex) {
+            // connection refused
+            System.out.println("Checking for new version failed. Connection refused.");
             return false;
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
