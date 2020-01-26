@@ -140,7 +140,7 @@ public class DeNovoCLIInputBean {
         // get the number of threads
         if (aLine.hasOption(DeNovoCLIParams.THREADS.id)) {
             arg = aLine.getOptionValue(DeNovoCLIParams.THREADS.id);
-            nThreads = new Integer(arg);
+            nThreads = Integer.parseInt(arg);
         }
         
         // identification parameters

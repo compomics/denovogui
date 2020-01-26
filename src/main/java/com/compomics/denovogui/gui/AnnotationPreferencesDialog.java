@@ -275,6 +275,6 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
      */
     private void updateGUI() {
         intensitySpinner.setValue((int) (annotationPreferences.getAnnotationIntensityLimit() * 100));
-        accuracySpinner.setValue(new Double(annotationPreferences.getFragmentIonAccuracy()));
+        accuracySpinner.setValue(Double.valueOf(annotationPreferences.getFragmentIonAccuracy()));
     }
 }

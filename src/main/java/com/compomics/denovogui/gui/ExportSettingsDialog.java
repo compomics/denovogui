@@ -233,7 +233,7 @@ public class ExportSettingsDialog extends javax.swing.JDialog {
         boolean valid = true;
 
         try {
-            numberOfHits = new Integer(numberHitsTextField.getText());
+            numberOfHits = Integer.parseInt(numberHitsTextField.getText());
 
             if (numberOfHits < 1) {
                 JOptionPane.showMessageDialog(this, "The number of hits per spectrum has to be a positive integer!", "Input Error", JOptionPane.WARNING_MESSAGE);
@@ -247,7 +247,7 @@ public class ExportSettingsDialog extends javax.swing.JDialog {
 
         if (valid) {
             try {
-                threshold = new Double(scoreThresholdTextField.getText());
+                threshold = Double.parseDouble(scoreThresholdTextField.getText());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "The score threshold has to be a number!", "Input Error", JOptionPane.WARNING_MESSAGE);
                 valid = false;
