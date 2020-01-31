@@ -2,7 +2,7 @@
 
   * [Introduction](#introduction)
   * [Command Line](#command-line)
-  * [Errors, questions, and bug report](#Errors-questions-and-bug-report)
+  * [Issues, Questions and Bug Reports](#Issues-questions-and-bug-reports)
   
   * [Bioinformatics for Proteomics Tutorial](http://compomics.com/bioinformatics-for-proteomics/)
 
@@ -46,7 +46,7 @@ DeNovoGUI can also be used via the command line, see [DeNovoCLI](https://github.
 ---
 
 
-## Errors, questions, and bug report ##
+## Issues, Questions and Bug Reports ##
 
 ### Code of Conduct
 
