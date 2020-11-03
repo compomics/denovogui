@@ -1,16 +1,16 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoGUIWrapper;
-import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
-import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathParameters;
+import com.compomics.software.settings.UtilitiesPathParameters;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -68,7 +68,7 @@ public class PathSettingsCLI {
         String path = pathSettingsCLIInputBean.getTempFolder();
         if (!path.equals("")) {
             try {
-                DeNovoGUIPathPreferences.setAllPathsIn(path);
+                DeNovoGUIPathParameters.setAllPathsIn(path);
             } catch (Exception e) {
                 System.out.println("An error occurred when setting the temporary folder path.");
                 e.printStackTrace();
@@ -79,16 +79,16 @@ public class PathSettingsCLI {
         HashMap<String, String> pathInput = pathSettingsCLIInputBean.getPaths();
         for (String id : pathInput.keySet()) {
             try {
-                DeNovoGUIPathPreferences.DeNovoGUIPathKey denovoguiPathKey = DeNovoGUIPathPreferences.DeNovoGUIPathKey.getKeyFromId(id);
+                DeNovoGUIPathParameters.DeNovoGUIPathKey denovoguiPathKey = DeNovoGUIPathParameters.DeNovoGUIPathKey.getKeyFromId(id);
                 if (denovoguiPathKey == null) {
-                    UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey = UtilitiesPathPreferences.UtilitiesPathKey.getKeyFromId(id);
+                    UtilitiesPathParameters.UtilitiesPathKey utilitiesPathKey = UtilitiesPathParameters.UtilitiesPathKey.getKeyFromId(id);
                     if (utilitiesPathKey == null) {
                         System.out.println("Path id " + id + " not recognized.");
                     } else {
-                        UtilitiesPathPreferences.setPathPreference(utilitiesPathKey, pathInput.get(id));
+                        UtilitiesPathParameters.setPathParameter(utilitiesPathKey, pathInput.get(id));
                     }
                 } else {
-                    DeNovoGUIPathPreferences.setPathPreference(denovoguiPathKey, pathInput.get(id));
+                    DeNovoGUIPathParameters.setPathParameter(denovoguiPathKey, pathInput.get(id));
                 }
             } catch (Exception e) {
                 System.out.println("An error occurred when setting the path " + id + ".");
@@ -98,9 +98,9 @@ public class PathSettingsCLI {
         }
 
         // Write path file preference
-        File destinationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+        File destinationFile = new File(getJarFilePath(), UtilitiesPathParameters.configurationFileName);
         try {
-            DeNovoGUIPathPreferences.writeConfigurationToFile(destinationFile);
+            DeNovoGUIPathParameters.writeConfigurationToFile(destinationFile);
         } catch (Exception e) {
             System.out.println("An error occurred when saving the path preference to " + destinationFile.getAbsolutePath() + ".");
             e.printStackTrace();
@@ -151,7 +151,7 @@ public class PathSettingsCLI {
         try {
             Options lOptions = new Options();
             PathSettingsCLIParams.createOptionsCLI(lOptions);
-            BasicParser parser = new BasicParser();
+            DefaultParser parser = new DefaultParser();
             CommandLine line = parser.parse(lOptions, args);
 
             if (args.length == 0) {
@@ -237,7 +237,7 @@ public class PathSettingsCLI {
         // update the paths if needed
         Options pathOptions = new Options();
         PathSettingsCLIParams.createOptionsCLI(pathOptions);
-        BasicParser parser = new BasicParser();
+        DefaultParser parser = new DefaultParser();
         CommandLine line = parser.parse(pathOptions, pathSettingArgsAsList);
         PathSettingsCLIInputBean pathSettingsCLIInputBean = new PathSettingsCLIInputBean(line);
         PathSettingsCLI pathSettingsCLI = new PathSettingsCLI(pathSettingsCLIInputBean);

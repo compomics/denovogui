@@ -7,56 +7,54 @@ import com.compomics.denovogui.util.Properties;
 import com.compomics.software.cli.CommandLineUtils;
 import com.compomics.software.ToolFactory;
 import com.compomics.util.examples.BareBonesBrowserLaunch;
-import com.compomics.util.experiment.biology.EnzymeFactory;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
-import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences.DeNovoGUIPathKey;
+import com.compomics.denovogui.preferences.DeNovoGUIPathParameters;
+import com.compomics.denovogui.preferences.DeNovoGUIPathParameters.DeNovoGUIPathKey;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.autoupdater.MavenJarFile;
 import com.compomics.software.dialogs.JavaHomeOrMemoryDialogParent;
-import com.compomics.software.dialogs.JavaSettingsDialog;
+import com.compomics.software.dialogs.JavaParametersDialog;
 import com.compomics.software.settings.PathKey;
-import com.compomics.software.settings.UtilitiesPathPreferences;
-import com.compomics.software.settings.gui.PathSettingsDialog;
+import com.compomics.software.settings.UtilitiesPathParameters;
+import com.compomics.software.settings.gui.PathParametersDialog;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
 import com.compomics.util.exceptions.exception_handlers.WaitingDialogExceptionHandler;
-import com.compomics.util.experiment.biology.PTM;
+import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.gui.PrivacySettingsDialog;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
+import com.compomics.util.experiment.io.mass_spectrometry.cms.CmsFolder;
+import com.compomics.util.gui.PrivacyParametersDialog;
 import com.compomics.util.gui.UtilitiesGUIDefaults;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
-import com.compomics.util.gui.parameters.identification_parameters.SearchSettingsDialog;
-import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.DirecTagSettingsDialog;
-import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.NovorSettingsDialog;
-import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.PNovoSettingsDialog;
-import com.compomics.util.gui.parameters.identification_parameters.algorithm_settings.PepNovoSettingsDialog;
-import com.compomics.util.gui.ptm.ModificationsDialog;
+import com.compomics.util.gui.modification.ModificationsDialog;
+import com.compomics.util.gui.parameters.identification.algorithm.DirecTagParametersDialog;
+import com.compomics.util.gui.parameters.identification.algorithm.NovorParametersDialog;
+import com.compomics.util.gui.parameters.identification.algorithm.PNovoParametersDialog;
+import com.compomics.util.gui.parameters.identification.algorithm.PepNovoParametersDialog;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
 import com.compomics.util.waiting.WaitingActionListener;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingDialog;
-import com.compomics.util.io.ConfigurationFile;
-import com.compomics.util.preferences.DigestionPreferences;
-import com.compomics.util.preferences.IdentificationParameters;
-import com.compomics.util.preferences.LastSelectedFolder;
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.io.file.LastSelectedFolder;
+import com.compomics.util.parameters.UtilitiesUserParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.parameters.identification.search.DigestionParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.DirecTagParameters;
+import com.compomics.util.parameters.identification.tool_specific.NovorParameters;
+import com.compomics.util.parameters.identification.tool_specific.PNovoParameters;
+import com.compomics.util.parameters.identification.tool_specific.PepnovoParameters;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -71,7 +69,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -95,13 +92,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private EnzymeFactory enzymeFactory;
     /**
-     * The spectrum factory.
-     */
-    private SpectrumFactory spectrumFactory;
-    /**
      * The factory used to handle the modifications.
      */
-    private PTMFactory ptmFactory;
+    private ModificationFactory modFactory;
+    /**
+     * The handler for mass spectrometry files.
+     */
+    private MsFileHandler msFileHandler = new MsFileHandler();
     /**
      * The search handler.
      */
@@ -215,11 +212,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     /**
      * The utilities user preferences.
      */
-    private UtilitiesUserPreferences utilitiesUserPreferences = null;
+    private UtilitiesUserParameters utilitiesUserParameters = null;
     /**
      * The sequence matching preferences.
      */
-    private SequenceMatchingPreferences sequenceMatchingPreferences;
+    private SequenceMatchingParameters sequenceMatchingParameters;
 
     /**
      * Creates a new DeNovoGUI.
@@ -240,7 +237,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             // Will be taken care of next 
         }
         try {
-            if (!DeNovoGUIPathPreferences.getErrorKeys().isEmpty()) {
+            if (!DeNovoGUIPathParameters.getErrorKeys().isEmpty()) {
                 editPathSettings();
             }
         } catch (Exception e) {
@@ -248,12 +245,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         enzymeFactory = EnzymeFactory.getInstance();
-        spectrumFactory = SpectrumFactory.getInstance();
-        ptmFactory = PTMFactory.getInstance();
+        modFactory = ModificationFactory.getInstance();
 
         // load the utilities user preferences
         try {
-            utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "An error occurred when reading the user preferences.", "File Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -261,7 +257,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         // check for new version
         boolean newVersion = false;
-        if (!getJarFilePath().equalsIgnoreCase(".") && utilitiesUserPreferences.isAutoUpdate()) {
+        if (!getJarFilePath().equalsIgnoreCase(".") && utilitiesUserParameters.isAutoUpdate()) {
             newVersion = checkForNewVersion();
         }
 
@@ -298,9 +294,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             // set this version as the default DeNovoGUI version
             if (!getJarFilePath().equalsIgnoreCase(".")) {
                 String versionNumber = new com.compomics.denovogui.util.Properties().getVersion();
-                UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-                utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
-                UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
+                UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
+                utilitiesUserParameters.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+                UtilitiesUserParameters.saveUserParameters(utilitiesUserParameters);
             }
 
             // set the font color for the titlted borders, looks better than the default black
@@ -395,7 +391,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 novorExecutable = "novor.jar";
             }
 
-            deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+            deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder, msFileHandler);
 
             setUpGUI();
 
@@ -406,7 +402,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
             
             // incrementing the counter for a new DenovoGUI run
-            if (utilitiesUserPreferences.isAutoUpdate()) {
+            if (utilitiesUserParameters.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "toolstart", "denovogui-" + getVersion());
             }
 
@@ -414,15 +410,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             enzymeFactory = EnzymeFactory.getInstance();
 
             setIdentificationParameters(searchParametersFile);
-
-            File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
-            File modUseFile = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
-            ConfigurationFile configFile = new ConfigurationFile(modUseFile); // @TODO: standardize the use of the ConfigurationFile
-            try {
-                modificationUse = SearchSettingsDialog.loadModificationsUse(configFile);
-            } catch (IOException e) {
-
-            }
 
             // set the results folder
             if (outputFolder != null && outputFolder.exists()) {
@@ -445,9 +432,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathParameters.configurationFileName);
         if (pathConfigurationFile.exists()) {
-            DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+            DeNovoGUIPathParameters.loadPathParametersFromFile(pathConfigurationFile);
         }
     }
 
@@ -1279,7 +1266,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         dispose();
-        saveModificationUsage();
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
@@ -1336,14 +1322,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         // no search parameters set, use the defaults
         if (searchParameters == null) {
             searchParameters = new SearchParameters();
-            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
+            searchParameters.setDigestionParameters(DigestionParameters.getDefaultParameters());
         }
 
         boolean validInput = true;
 
         // check if there are less than 10 ptms (variable and fixed) for novor
         if (novorCheckBox.isSelected()) {
-            if ((searchParameters.getPtmSettings().getFixedModifications().size() + searchParameters.getPtmSettings().getVariableModifications().size()) > 10) {
+            if ((searchParameters.getModificationParameters().getFixedModifications().size() + searchParameters.getModificationParameters().getVariableModifications().size()) > 10) {
                 JOptionPane.showMessageDialog(this, "Maximum ten modifications are allowed when running Novor.\n"
                         + "Please remove some of the modifications or disable Novor.", "Settings Error", JOptionPane.WARNING_MESSAGE);
                 validInput = false;
@@ -1352,9 +1338,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
         // check if all ptms are valid for pNovo+
         if (pNovoCheckBox.isSelected()) {
-            for (String tempPtm : searchParameters.getPtmSettings().getAllModifications()) {
-                PTM currentPtm = ptmFactory.getPTM(tempPtm);
-                if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
+            for (String tempPtm : searchParameters.getModificationParameters().getAllModifications()) {
+                Modification currentPtm = modFactory.getModification(tempPtm);
+                if (currentPtm.getModificationType().isCTerm() || currentPtm.getModificationType().isNTerm()) {
                     JOptionPane.showMessageDialog(this, "Terminal modifications are currently not supported for pNovo+.\n"
                             + "Please remove \'" + tempPtm + "\' or disable pNovo+.", "Settings Error", JOptionPane.WARNING_MESSAGE);
                     validInput = false;
@@ -1365,9 +1351,9 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         // check if all ptms are valid for DirecTag
         if (direcTagCheckBox.isSelected()) {
             boolean terminalPtmsSelected = false;
-            for (String tempPtm : searchParameters.getPtmSettings().getAllModifications()) {
-                PTM currentPtm = ptmFactory.getPTM(tempPtm);
-                if (currentPtm.isCTerm() || currentPtm.isNTerm()) {
+            for (String tempPtm : searchParameters.getModificationParameters().getAllModifications()) {
+                Modification currentPtm = modFactory.getModification(tempPtm);
+                if (currentPtm.getModificationType().isCTerm() || currentPtm.getModificationType().isNTerm()) {
                     terminalPtmsSelected = true;
                 }
             }
@@ -1405,8 +1391,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         if (validInput) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
-            saveModificationUsage(); // save the ptms usage
+            sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
 
             waitingDialog = new WaitingDialog(this,
                     Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
@@ -1426,7 +1411,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             waitingDialog.setLocationRelativeTo(this);
             
             // incrementing the counter for a new DenovoGUI run
-            if (utilitiesUserPreferences.isAutoUpdate()) {
+            if (utilitiesUserParameters.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "startrun-gui", "denovogui-" + getVersion());
             }
             startSequencing(waitingDialog);
@@ -1506,12 +1491,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void clearSpectraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSpectraButtonActionPerformed
         setSpectrumFiles(new ArrayList<File>());
-        spectrumFactory.clearFactory();
-        try {
-            spectrumFactory.closeFiles();
-        } catch (IOException e) {
-            catchException(e);
-        }
+        msFileHandler = new MsFileHandler();
         spectrumFilesTextField.setText(getSpectrumFiles().size() + " file(s) selected");
         validateInput(false);
     }//GEN-LAST:event_clearSpectraButtonActionPerformed
@@ -1567,10 +1547,67 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     tempSpectrumFiles.add(file);
                 }
             }
-            spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
-            setSpectrumFiles(tempSpectrumFiles);
-            //filename = spectraFiles.get(0).getName();
-            // @TODO: re-add the progress bar..?
+            
+             // Load the files
+            progressDialog = new ProgressDialogX(
+                    this,
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denvogui.gif")),
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denvogui-orange.gif")),
+                    true
+            );
+            progressDialog.setPrimaryProgressCounterIndeterminate(true);
+            progressDialog.setTitle("Loading Files. Please Wait...");
+
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        progressDialog.setVisible(true);
+                    } catch (IndexOutOfBoundsException e) {
+                        // ignore
+                    }
+                }
+            }, "ProgressDialog").start();
+
+            new Thread("loadingThread") {
+                public void run() {
+
+                    boolean allLoaded = true;
+
+                    for (File file : tempSpectrumFiles) {
+
+                        try {
+
+                            File folder = CmsFolder.getParentFolder() == null ? file.getParentFile() : new File(CmsFolder.getParentFolder());
+
+                            msFileHandler.register(file, folder, progressDialog);
+
+                        } catch (Exception e) {
+
+                            progressDialog.setRunCanceled();
+
+                            allLoaded = false;
+
+                            JOptionPane.showMessageDialog(
+                                    null,
+                                    "An error occurred while reading the following file.\n"
+                                    + file.getAbsolutePath() + "\n\nError:\n" + e.getLocalizedMessage(),
+                                    "File error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+
+                            e.printStackTrace();
+                        }
+                    }
+
+                    progressDialog.setRunFinished();
+
+                    if (allLoaded) {
+                        spectrumFilesTextField.setText(tempSpectrumFiles.size() + " file(s) selected");
+                        setSpectrumFiles(tempSpectrumFiles);
+                    }
+
+                }
+            }.start();            
         }
 
         validateInput(false);
@@ -1753,8 +1790,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-        if (sequenceMatchingPreferences == null) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
+        if (sequenceMatchingParameters == null) {
+            sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
         }
         new ResultsFrame(this, null, searchParameters);
     }//GEN-LAST:event_openMenuItemActionPerformed
@@ -1791,7 +1828,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     spectrumFiles = new ArrayList<File>();
                     File tempSpectrumFile = new File(getJarFilePath(), exampleMgf);
                     spectrumFiles.add(tempSpectrumFile);
-                    spectrumFactory.addSpectra(tempSpectrumFile, progressDialog);
+                    msFileHandler = new MsFileHandler();
+                    msFileHandler.register(tempSpectrumFile, progressDialog);
 
                     ArrayList<File> outFiles = new ArrayList<File>();
                     outFiles.add(new File(getJarFilePath(), exampleOutFile));
@@ -1800,8 +1838,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
                     progressDialog.setRunFinished();
                     setVisible(false);
-                    if (sequenceMatchingPreferences == null) {
-                        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
+                    if (sequenceMatchingParameters == null) {
+                        sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
                     }
                     new ResultsFrame(DeNovoGUI.this, outFiles, searchParameters);
                 } catch (ClassNotFoundException e) {
@@ -1905,7 +1943,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void javaSettingsJMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_javaSettingsJMenuItemActionPerformed
-        new JavaSettingsDialog(this, this, null, "DeNovoGUI", true);
+        new JavaParametersDialog(this, this, null, "DeNovoGUI", true);
     }//GEN-LAST:event_javaSettingsJMenuItemActionPerformed
 
     /**
@@ -1914,7 +1952,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      * @param evt
      */
     private void privacyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privacyMenuItemActionPerformed
-        new PrivacySettingsDialog(this, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
+        new PrivacyParametersDialog(this, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
     }//GEN-LAST:event_privacyMenuItemActionPerformed
 
     /**
@@ -2003,7 +2041,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void directTagSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directTagSettingsJButtonActionPerformed
         DirecTagParameters oldDirecTagParameters = (DirecTagParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
-        DirecTagSettingsDialog direcTagSettingsDialog = new DirecTagSettingsDialog(this, oldDirecTagParameters, true);
+        DirecTagParametersDialog direcTagSettingsDialog = new DirecTagParametersDialog(this, oldDirecTagParameters, true);
 
         boolean direcTagParametersSet = false;
 
@@ -2038,7 +2076,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             }
                             break;
                         case JOptionPane.CANCEL_OPTION:
-                            direcTagSettingsDialog = new DirecTagSettingsDialog(this, newDirecTagParameters, true);
+                            direcTagSettingsDialog = new DirecTagParametersDialog(this, newDirecTagParameters, true);
                             break;
                         case JOptionPane.NO_OPTION:
                             direcTagParametersSet = true;
@@ -2080,7 +2118,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void pNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pNovoSettingsJButtonActionPerformed
         PNovoParameters oldPNovoParameters = (PNovoParameters) searchParameters.getAlgorithmSpecificParameters().get(Advocate.pNovo.getIndex());
-        PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, oldPNovoParameters, true);
+        PNovoParametersDialog pNovoSettingsDialog = new PNovoParametersDialog(this, oldPNovoParameters, true);
 
         pNovoSettingsDialog.dispose();
         
@@ -2118,7 +2156,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             }
                             break;
                         case JOptionPane.CANCEL_OPTION:
-                            pNovoSettingsDialog = new PNovoSettingsDialog(this, newPNovoParameters, true);
+                            pNovoSettingsDialog = new PNovoParametersDialog(this, newPNovoParameters, true);
                             break;
                         case JOptionPane.NO_OPTION:
                             pNovoParametersSet = true;
@@ -2255,7 +2293,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void novorSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novorSettingsJButtonActionPerformed
         NovorParameters oldNovorParameters = (NovorParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
-        NovorSettingsDialog novorSettingsDialog = new NovorSettingsDialog(this, oldNovorParameters, true);
+        NovorParametersDialog novorSettingsDialog = new NovorParametersDialog(this, oldNovorParameters, true);
 
         boolean novorParametersSet = false;
 
@@ -2290,7 +2328,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             }
                             break;
                         case JOptionPane.CANCEL_OPTION:
-                            novorSettingsDialog = new NovorSettingsDialog(this, newNovorParameters, true);
+                            novorSettingsDialog = new NovorParametersDialog(this, newNovorParameters, true);
                             break;
                         case JOptionPane.NO_OPTION:
                             novorParametersSet = true;
@@ -2314,7 +2352,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     private void pepNovoSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pepNovoSettingsJButtonActionPerformed
         PepnovoParameters oldPepNovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex());
-        PepNovoSettingsDialog pepNovoSettingsDialog = new PepNovoSettingsDialog(this, oldPepNovoParameters, true);
+        PepNovoParametersDialog pepNovoSettingsDialog = new PepNovoParametersDialog(this, oldPepNovoParameters, true);
 
         boolean pepNovoParametersSet = false;
 
@@ -2349,7 +2387,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                             }
                             break;
                         case JOptionPane.CANCEL_OPTION:
-                            pepNovoSettingsDialog = new PepNovoSettingsDialog(this, newPepNovoParameters, true);
+                            pepNovoSettingsDialog = new PepNovoParametersDialog(this, newPepNovoParameters, true);
                             break;
                         case JOptionPane.NO_OPTION:
                             pepNovoParametersSet = true;
@@ -2427,13 +2465,13 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             if (output) {
                 outputFolder = new File(arg);
             }
-            if (arg.equals(ToolFactory.searchGuiSpectrumFileOption)) { // @TODO: generalize the option names
+            if (arg.equals(ToolFactory.SEARCHGUI_SPECTRUM_FILE_OPTION)) { // @TODO: generalize the option names
                 spectrum = true;
             }
-            if (arg.equals(ToolFactory.searchGuiParametersFileOption)) { // @TODO: generalize the option names
+            if (arg.equals(ToolFactory.SEARCHGUI_PARAMETERS_FILE_OPTION)) { // @TODO: generalize the option names
                 parameters = true;
             }
-            if (arg.equals(ToolFactory.outputFolderOption)) {
+            if (arg.equals(ToolFactory.OUTPUT_FOLDER_OPTION)) {
                 parameters = true;
             }
         }
@@ -2512,7 +2550,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public void startSequencing(WaitingHandler waitingHandler) {
 
         int nThreads = deNovoSequencingHandler.getNThreads();
-        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+        deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder, msFileHandler);
         deNovoSequencingHandler.setNThreads(nThreads); // @TODO: find a better fix!!
         
         sequencingWorker = new SequencingWorker(waitingHandler, true);
@@ -2566,8 +2604,8 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }
 
     @Override
-    public UtilitiesUserPreferences getUtilitiesUserPreferences() {
-        return utilitiesUserPreferences;
+    public UtilitiesUserParameters getUtilitiesUserParameters() {
+        return utilitiesUserParameters;
     }
 
     @SuppressWarnings("rawtypes")
@@ -2609,10 +2647,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             waitingHandler.appendReportEndLine();
 
             try {
-                waitingHandler.appendReport("Loading the spectra.", true, true);
-                loadSpectra(spectrumFiles, waitingHandler);
-                waitingHandler.appendReport("Done loading the spectra.", true, true);
-                waitingHandler.appendReportEndLine();
                 deNovoSequencingHandler.startSequencing(spectrumFiles, searchParameters, outputFolder, parametersFile, pepNovoExecutable, direcTagExecutable, pNovoExecutable, novorExecutable,
                         pepNovoCheckBox.isSelected(), direcTagCheckBox.isSelected(), pNovoCheckBox.isSelected(), novorCheckBox.isSelected(), waitingHandler, exceptionHandler);
             } catch (Exception e) {
@@ -2692,26 +2726,10 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     private void displayResults(ArrayList<File> resultFiles) throws Exception {
 
         setVisible(false);
-        if (sequenceMatchingPreferences == null) {
-            sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
+        if (sequenceMatchingParameters == null) {
+            sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
         }
         new ResultsFrame(this, resultFiles, searchParameters);
-    }
-
-    /**
-     * Loads the mgf files in the spectrum factory.
-     *
-     * @param mgfFiles loads the mgf files in the spectrum factory
-     * @param waitingHandler the waiting handler
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void loadSpectra(List<File> mgfFiles, WaitingHandler waitingHandler) throws FileNotFoundException, IOException, ClassNotFoundException {
-        // Add spectrum files to the spectrum factory
-        for (File spectrumFile : mgfFiles) {
-            spectrumFactory.addSpectra(spectrumFile, waitingHandler);
-        }
     }
 
     /**
@@ -2737,7 +2755,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 jarFilePath = jarFilePath.substring(1);
             }
 
-            //utilitiesUserPreferences.setDeNovoPath(jarFilePath); // @TODO: add this method to utilities
+            //utilitiesUserParameters.setDeNovoPath(jarFilePath); // @TODO: add this method to utilities
             String iconFileLocation = jarFilePath + "\\resources\\denovogui.ico";
             String jarFileLocation = jarFilePath + "\\DeNovoGUI-" + new Properties().getVersion() + ".jar";
 
@@ -2763,7 +2781,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public LastSelectedFolder getLastSelectedFolder() {
         if (lastSelectedFolder == null) {
             lastSelectedFolder = new LastSelectedFolder();
-            utilitiesUserPreferences.setLastSelectedFolder(lastSelectedFolder);
+            utilitiesUserParameters.setLastSelectedFolder(lastSelectedFolder);
         }
         return lastSelectedFolder;
     }
@@ -3109,7 +3127,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     public void setIdentificationParameters(File parametersFile) {
         if (parametersFile == null) {
             searchParameters = new SearchParameters();
-            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
+            searchParameters.setDigestionParameters(DigestionParameters.getDefaultParameters());
             setDefaultParameters(); // label the configs as default
         } else {
             try {
@@ -3128,11 +3146,11 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 e.printStackTrace();
                 setDefaultParameters(); // label the configs as default
                 searchParameters = new SearchParameters();
-            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
+            searchParameters.setDigestionParameters(DigestionParameters.getDefaultParameters());
                 setDefaultParameters(); // label the configs as default
             }
         }
-        sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
+        sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
         validateInput(false);
     }
 
@@ -3261,32 +3279,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
     }
 
     /**
-     * This method saves PTM usage in the conf folder.
-     */
-    private void saveModificationUsage() {
-
-        File folder = new File(getJarFilePath() + File.separator + "resources" + File.separator + "conf" + File.separator);
-
-        if (!folder.exists()) {
-            JOptionPane.showMessageDialog(this, new String[]{"Unable to find folder: '" + folder.getAbsolutePath() + "'!",
-                "Could not save PTM usage."}, "Folder Not Found", JOptionPane.WARNING_MESSAGE);
-        } else {
-            File output = new File(folder, DeNovoSequencingHandler.DENOVOGUI_COMFIGURATION_FILE);
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(output));
-                bw.write("Modification use:" + System.getProperty("line.separator"));
-                bw.write(SearchSettingsDialog.getModificationUseAsString(modificationUse) + System.getProperty("line.separator"));
-                bw.flush();
-                bw.close();
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-                JOptionPane.showMessageDialog(this, new String[]{"Unable to write file: '" + ioe.getMessage() + "'!",
-                    "Could not save PTM usage."}, "File Error", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }
-
-    /**
      * Returns the tips of the day.
      *
      * @return the tips of the day in an ArrayList
@@ -3390,17 +3382,17 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      *
      * @return the sequence matching preferences
      */
-    public SequenceMatchingPreferences getSequenceMatchingPreferences() {
-        return sequenceMatchingPreferences;
+    public SequenceMatchingParameters getSequenceMatchingParameters() {
+        return sequenceMatchingParameters;
     }
 
     /**
      * Sets the sequence matching preferences.
      *
-     * @param sequenceMatchingPreferences the sequence matching preferences
+     * @param sequenceMatchingParameters the sequence matching preferences
      */
-    public void setSequenceMatchingPreferences(SequenceMatchingPreferences sequenceMatchingPreferences) {
-        this.sequenceMatchingPreferences = sequenceMatchingPreferences;
+    public void setSequenceMatchingParameters(SequenceMatchingParameters sequenceMatchingParameters) {
+        this.sequenceMatchingParameters = sequenceMatchingParameters;
     }
 
     /**
@@ -3410,24 +3402,24 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         try {
             HashMap<PathKey, String> pathSettings = new HashMap<PathKey, String>();
             for (DeNovoGUIPathKey deNovoGUIPathKey : DeNovoGUIPathKey.values()) {
-                pathSettings.put(deNovoGUIPathKey, DeNovoGUIPathPreferences.getPathPreference(deNovoGUIPathKey));
+                pathSettings.put(deNovoGUIPathKey, DeNovoGUIPathParameters.getPathParameter(deNovoGUIPathKey));
             }
-            for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
-                pathSettings.put(utilitiesPathKey, UtilitiesPathPreferences.getPathPreference(utilitiesPathKey));
+            for (UtilitiesPathParameters.UtilitiesPathKey utilitiesPathKey : UtilitiesPathParameters.UtilitiesPathKey.values()) {
+                pathSettings.put(utilitiesPathKey, UtilitiesPathParameters.getPathParameter(utilitiesPathKey));
             }
-            PathSettingsDialog pathSettingsDialog = new PathSettingsDialog(this, "DeNovoGUI", pathSettings);
+            PathParametersDialog pathSettingsDialog = new PathParametersDialog(this, "DeNovoGUI", pathSettings);
             if (!pathSettingsDialog.isCanceled()) {
                 HashMap<PathKey, String> newSettings = pathSettingsDialog.getKeyToPathMap();
                 for (PathKey pathKey : pathSettings.keySet()) {
                     String newPath = newSettings.get(pathKey);
                     if (!pathSettings.get(pathKey).equals(newPath)) {
-                        DeNovoGUIPathPreferences.setPathPreference(pathKey, newPath);
+                        DeNovoGUIPathParameters.setPathParameter(pathKey, newPath);
                     }
                 }
                 // write path file preference
-                File destinationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+                File destinationFile = new File(getJarFilePath(), UtilitiesPathParameters.configurationFileName);
                 try {
-                    DeNovoGUIPathPreferences.writeConfigurationToFile(destinationFile);
+                    DeNovoGUIPathParameters.writeConfigurationToFile(destinationFile);
                     restart();
                 } catch (Exception e) {
                     catchException(e);
@@ -3570,5 +3562,14 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         }
 
         return true;
+    }
+    
+    /**
+     * Returns the MsFileHandler.
+     * 
+     * @return the MsFileHandler
+     */
+    public MsFileHandler getMsFileHandler () {
+        return msFileHandler;
     }
 }

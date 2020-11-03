@@ -1,15 +1,13 @@
 package com.compomics.denovogui.gui.tablemodels;
 
-import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
-import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
+import com.compomics.util.experiment.refinement_parameters.PepnovoAssumptionDetails;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -27,7 +25,11 @@ public class AssumptionsTableModel extends DefaultTableModel {
     /**
      * The modification profile of the search.
      */
-    private PtmSettings modificationProfile = null;
+    private ModificationParameters modificationProfile = null;
+    /**
+     * The mass spectrometry file handler.
+     */
+    private final MsFileHandler msFileHandler = new MsFileHandler();
     /**
      * If true, the fixed PTMs are indicated in the peptide sequences.
      */
@@ -47,7 +49,7 @@ public class AssumptionsTableModel extends DefaultTableModel {
      * @param excludeAllFixedPtms are fixed PTMs are to be indicated in the
      * table
      */
-    public AssumptionsTableModel(ArrayList<SpectrumIdentificationAssumption> assumptions, PtmSettings modificationProfile, boolean excludeAllFixedPtms) {
+    public AssumptionsTableModel(ArrayList<SpectrumIdentificationAssumption> assumptions, ModificationParameters modificationProfile, boolean excludeAllFixedPtms) {
         this.assumptions = assumptions;
         this.modificationProfile = modificationProfile;
         this.excludeAllFixedPtms = excludeAllFixedPtms;
@@ -133,14 +135,10 @@ public class AssumptionsTableModel extends DefaultTableModel {
                     TagAssumption tagAssumption = (TagAssumption) assumption;
                     return tagAssumption.getTheoreticMz(true, true);
                 } else {
-                    try {
-                        return assumption.getTheoreticMz();
-                    } catch (InterruptedException ex) {
-                        return null;
-                    }
+                    return assumption.getTheoreticMz();
                 }
             case 4:
-                return assumption.getIdentificationCharge().value;
+                return assumption.getIdentificationCharge();
             case 5:
                 if (assumption instanceof TagAssumption) {
                     TagAssumption tagAssumption = (TagAssumption) assumption;

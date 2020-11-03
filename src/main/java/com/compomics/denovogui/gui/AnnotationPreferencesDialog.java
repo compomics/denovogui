@@ -1,7 +1,7 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
-import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
 import java.awt.Toolkit;
 
 /**
@@ -15,7 +15,7 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
     /**
      * The annotation preferences.
      */
-    private AnnotationSettings annotationPreferences;
+    private AnnotationParameters annotationParameters;
     /**
      * The ResultsFrame parent.
      */
@@ -29,7 +29,7 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
     public AnnotationPreferencesDialog(ResultsFrame resultsFrame) {
         super(resultsFrame, true);
         this.resultsFrame = resultsFrame;
-        this.annotationPreferences = resultsFrame.getAnnotationPreferences();
+        this.annotationParameters = resultsFrame.getAnnotationParameters();
         initComponents();
         updateGUI();
         this.setLocationRelativeTo(resultsFrame);
@@ -209,9 +209,9 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
      * @param evt
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        annotationPreferences.setIntensityLimit(((Integer) intensitySpinner.getValue()) / 100.0);
-        annotationPreferences.setFragmentIonAccuracy((Double) accuracySpinner.getValue());
-        resultsFrame.setAnnotationPreferences(annotationPreferences);
+        annotationParameters.setIntensityLimit(((Integer) intensitySpinner.getValue()) / 100.0);
+        annotationParameters.setFragmentIonAccuracy((Double) accuracySpinner.getValue());
+        resultsFrame.setAnnotationParameters(annotationParameters);
         resultsFrame.updateSpectrum();
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
@@ -274,7 +274,7 @@ public class AnnotationPreferencesDialog extends javax.swing.JDialog {
      * Refresh the selection.
      */
     private void updateGUI() {
-        intensitySpinner.setValue((int) (annotationPreferences.getAnnotationIntensityLimit() * 100));
-        accuracySpinner.setValue(Double.valueOf(annotationPreferences.getFragmentIonAccuracy()));
+        intensitySpinner.setValue((int) (annotationParameters.getAnnotationIntensityLimit() * 100));
+        accuracySpinner.setValue(Double.valueOf(annotationParameters.getFragmentIonAccuracy()));
     }
 }

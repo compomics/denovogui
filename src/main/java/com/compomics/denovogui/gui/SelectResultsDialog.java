@@ -1,9 +1,9 @@
 package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.io.FileProcessor;
-import com.compomics.util.Util;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.gui.filehandling.FileSelectionDialog;
+import com.compomics.util.gui.file_handling.FileChooserUtil;
+import com.compomics.util.gui.file_handling.FileSelectionDialog;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -457,7 +457,7 @@ public class SelectResultsDialog extends javax.swing.JDialog {
      */
     private void browseParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseParametersButtonActionPerformed
 
-        File selectedFile = Util.getUserSelectedFile(this, ".par", "DeNovoGUI settings (.par)", "Select Settings File", lastSelectedFolder, null, true);
+        File selectedFile = FileChooserUtil.getUserSelectedFile(this, ".par", "DeNovoGUI settings (.par)", "Select Settings File", lastSelectedFolder, null, true);
 
         if (selectedFile != null) {
             File tempParamtersFile = selectedFile;

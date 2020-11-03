@@ -1,18 +1,19 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.amino_acid_tags.Tag;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.refinement_parameters.PepnovoAssumptionDetails;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +23,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
+import java.util.Iterator;
+import java.util.TreeMap;
 
 /**
  * This class allows exporting the results in a text file.
@@ -45,6 +47,7 @@ public class TextExporter {
      * Exports the peptide matching results to a given file.
      *
      * @param destinationFile the destination file
+     * @param msFileHandler the ms file handler
      * @param identification the identification object containing identification
      * details
      * @param searchParameters the search parameters used for the search
@@ -58,13 +61,11 @@ public class TextExporter {
      * @throws IOException thrown if an IO exception occurs
      * @throws SQLException thrown if an SQL exception occurs
      * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
-     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
-     * extracted from a spectrum
      * @throws InterruptedException thrown if the process is interrupted
      */
-    public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters,
+    public static void exportPeptides(File destinationFile, MsFileHandler msFileHandler, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
-            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -96,25 +97,29 @@ public class TextExporter {
                     waitingHandler.setMaxSecondaryProgressCounter(identification.getSpectrumIdentificationSize());
                 }
 
-                for (String mgfFile : identification.getSpectrumFiles()) {
-                    for (String spectrumKey : identification.getSpectrumIdentification(mgfFile)) {
-                        if (identification.matchExists(spectrumKey)) {
+                for (String mgfFile : msFileHandler.getOrderedFileNamesWithoutExtensions()) {
+                    
+                    for (String spectrumTitle : msFileHandler.getSpectrumTitles(mgfFile)) {
+                        
+                        long spectrumMatchKey = SpectrumMatch.getKey(mgfFile, spectrumTitle);
+                        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumMatchKey);
+                        
+                        if (spectrumMatch != null) {
 
                             StringBuilder spectrumDetails = new StringBuilder();
 
-                            String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
                             spectrumDetails.append(mgfFile).append(SEPARATOR).append(spectrumTitle).append(SEPARATOR);
 
-                            Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails.append(precursor.getRt()).append(SEPARATOR).append(precursor.getMz()).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
+                            Precursor precursor = msFileHandler.getPrecursor(mgfFile, spectrumTitle);
+                            spectrumDetails.append(precursor.getRtInMinutes()).append(SEPARATOR).append(precursor.mz).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
 
-                            ArrayList<PeptideAssumption> assumptions = new ArrayList<PeptideAssumption>();
+                            ArrayList<PeptideAssumption> assumptions = new ArrayList<>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
                                 if (advocateMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
+                                    ArrayList<Double> scores = new ArrayList<>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
                                         for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
@@ -147,21 +152,23 @@ public class TextExporter {
 
                                     Peptide peptide = peptideAssumption.getPeptide();
                                     String proteinText = "";
-                                    ArrayList<String> proteins = peptide.getParentProteinsNoRemapping();
+                                    TreeMap<String,int[]> proteins = peptide.getProteinMapping();
                                     if (proteins != null) {
-                                        Collections.sort(proteins);
-                                        for (String accession : proteins) {
+                                        Iterator<String> iterator = proteins.keySet().iterator();
+                                        while (iterator.hasNext()){
+                                            String proteinAccession = iterator.next();
                                             if (!proteinText.equals("")) {
                                                 proteinText += SEPARATOR_2;
                                             }
-                                            proteinText += accession;
+                                            proteinText += proteinAccession;
+                                           
                                         }
                                     }
                                     b.write(proteinText + SEPARATOR);
 
                                     b.write(peptide.getSequence() + SEPARATOR);
                                     b.write(getPeptideModificationsAsString(peptide) + SEPARATOR);
-                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
+                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
 
                                     // tag section if any
                                     TagAssumption tagAssumption = new TagAssumption();
@@ -171,7 +178,7 @@ public class TextExporter {
                                         b.write(tag.asSequence() + SEPARATOR);
                                         b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
                                         b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
-                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
+                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
                                         if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
                                             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
                                             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
@@ -187,10 +194,10 @@ public class TextExporter {
                                         b.write(tag.getNTerminalGap() + SEPARATOR);
                                         b.write(tag.getCTerminalGap() + SEPARATOR);
                                         b.write(tag.getMass() + SEPARATOR);
-                                        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
-                                        double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
+                                        b.write(tagAssumption.getIdentificationCharge() + SEPARATOR);
+                                        double massDeviation = tagAssumption.getDeltaMass(precursor.mz, false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + SEPARATOR);
-                                        massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
+                                        massDeviation = tagAssumption.getDeltaMass(precursor.mz, true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + SEPARATOR);
                                     } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
                                         b.write(SEPARATOR);
@@ -221,11 +228,11 @@ public class TextExporter {
                                         b.write(SEPARATOR);
                                         b.write(SEPARATOR);
                                     }
-                                    Double massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
+                                    Double massDeviation = peptideAssumption.getDeltaMass(precursor.mz, false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                     b.write(massDeviation + SEPARATOR);
-                                    massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
+                                    massDeviation = peptideAssumption.getDeltaMass(precursor.mz, true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                     b.write(massDeviation + SEPARATOR);
-                                    b.write(peptideAssumption.getIsotopeNumber(precursor.getMz(), searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection()) + SEPARATOR);
+                                    b.write(peptideAssumption.getIsotopeNumber(precursor.mz, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection()) + SEPARATOR);
                                     b.newLine();
                                 }
                             }
@@ -263,13 +270,11 @@ public class TextExporter {
      * @throws IOException thrown if an IO exception occurs
      * @throws SQLException thrown if an SQL exception occurs
      * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
-     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
-     * extracted from a spectrum
      * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
-            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -309,15 +314,15 @@ public class TextExporter {
                             spectrumDetails.append(mgfFile).append(SEPARATOR).append(spectrumTitle).append(SEPARATOR);
 
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails.append(precursor.getRt()).append(SEPARATOR).append(precursor.getMz()).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
+                            spectrumDetails.append(precursor.getRtInMinutes()).append(SEPARATOR).append(precursor.mz).append(SEPARATOR).append(precursor.getPossibleChargesAsString()).append(SEPARATOR);
 
-                            ArrayList<SpectrumIdentificationAssumption> allAssumptions = new ArrayList<SpectrumIdentificationAssumption>();
+                            ArrayList<SpectrumIdentificationAssumption> allAssumptions = new ArrayList<>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
                                 if (advocateMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
+                                    ArrayList<Double> scores = new ArrayList<>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
                                         for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
@@ -415,7 +420,7 @@ public class TextExporter {
         b.write(peptide.getSequence() + SEPARATOR);
         b.write(peptide.getSequence() + SEPARATOR);
         b.write(Peptide.getPeptideModificationsAsString(peptide, true) + SEPARATOR);
-        b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
+        b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
         if (peptideAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) peptideAssumption.getUrParam(pepnovoAssumptionDetails);
@@ -431,7 +436,7 @@ public class TextExporter {
         b.write(0 + SEPARATOR);
         b.write(0 + SEPARATOR);
         b.write(peptide.getMass() + SEPARATOR);
-        b.write(peptideAssumption.getIdentificationCharge().value + SEPARATOR);
+        b.write(peptideAssumption.getIdentificationCharge() + SEPARATOR);
     }
 
     /**
@@ -451,7 +456,7 @@ public class TextExporter {
         b.write(tag.asSequence() + SEPARATOR);
         b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
         b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
-        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
+        b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
         if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
             PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
             pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
@@ -467,7 +472,7 @@ public class TextExporter {
         b.write(tag.getNTerminalGap() + SEPARATOR);
         b.write(tag.getCTerminalGap() + SEPARATOR);
         b.write(tag.getMass() + SEPARATOR);
-        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
+        b.write(tagAssumption.getIdentificationCharge() + SEPARATOR);
     }
 
     /**
@@ -492,7 +497,8 @@ public class TextExporter {
      * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler,
-            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) 
+            throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         double threshold = 0;
@@ -523,14 +529,14 @@ public class TextExporter {
                             String spectrumTitle = Spectrum.getSpectrumTitle(spectrumKey);
                             spectrumDetails += mgfFile + SEPARATOR_2 + spectrumTitle + SEPARATOR_2;
                             Precursor precursor = SpectrumFactory.getInstance().getPrecursor(spectrumKey);
-                            spectrumDetails += precursor.getMz() + SEPARATOR_2 + precursor.getPossibleChargesAsString() + SEPARATOR_2;
-                            ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<SpectrumIdentificationAssumption>();
+                            spectrumDetails += precursor.mz + SEPARATOR_2 + precursor.getPossibleChargesAsString() + SEPARATOR_2;
+                            ArrayList<SpectrumIdentificationAssumption> assumptions = new ArrayList<>();
                             HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap = identification.getAssumptions(spectrumKey);
 
                             for (int algorithmId : assumptionsMap.keySet()) {
                                 HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> advocateMap = assumptionsMap.get(algorithmId);
                                 if (advocateMap != null) {
-                                    ArrayList<Double> scores = new ArrayList<Double>(advocateMap.keySet());
+                                    ArrayList<Double> scores = new ArrayList<>(advocateMap.keySet());
                                     Collections.sort(scores, Collections.reverseOrder());
                                     for (Double score : scores) {
                                         for (SpectrumIdentificationAssumption assumption : advocateMap.get(score)) {
@@ -615,16 +621,16 @@ public class TextExporter {
             if (peptide.isModified()) {
                 for (ModificationMatch modificationMatch : peptide.getModificationMatches()) {
                     if (modificationMatch.isVariable()) {
-                        if (!modMap.containsKey(modificationMatch.getTheoreticPtm())) {
-                            modMap.put(modificationMatch.getTheoreticPtm(), new ArrayList<Integer>());
+                        if (!modMap.containsKey(modificationMatch.getModification())) {
+                            modMap.put(modificationMatch.getModification(), new ArrayList<Integer>());
                         }
-                        modMap.get(modificationMatch.getTheoreticPtm()).add(modificationMatch.getModificationSite());
+                        modMap.get(modificationMatch.getModification()).add(modificationMatch.getModificationSite());
                     }
                 }
             }
 
             boolean first = true, first2;
-            ArrayList<String> mods = new ArrayList<String>(modMap.keySet());
+            ArrayList<String> mods = new ArrayList<>(modMap.keySet());
 
             Collections.sort(mods);
             for (String mod : mods) {

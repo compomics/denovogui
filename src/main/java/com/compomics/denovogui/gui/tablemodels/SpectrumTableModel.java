@@ -3,10 +3,10 @@ package com.compomics.denovogui.gui.tablemodels;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
@@ -20,10 +20,6 @@ import javax.swing.table.DefaultTableModel;
 public class SpectrumTableModel extends DefaultTableModel {
 
     /**
-     * The spectrum factory.
-     */
-    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
-    /**
      * The identification
      */
     private Identification identification;
@@ -34,7 +30,11 @@ public class SpectrumTableModel extends DefaultTableModel {
     /**
      * The ordered spectrum keys.
      */
-    private ArrayList<String> orderedSpectrumTitles = null;
+    private String[] orderedSpectrumTitles = null;
+    /**
+     * The mass spectrometry file handler.
+     */
+    private MsFileHandler msFileHandler = null;
     /**
      * Boolean indicating whether the content of the table should be updated.
      */
@@ -50,17 +50,19 @@ public class SpectrumTableModel extends DefaultTableModel {
      * Constructor.
      *
      * @param spectrumFile the spectrum file
+     * @param msFileHandler the ms file handler
      * @param identification the identifications
      * @param orderedSpectrumTitles the spectrum keys in the desired order. If
      * null the default order will be used
      */
-    public SpectrumTableModel(String spectrumFile, Identification identification, ArrayList<String> orderedSpectrumTitles) {
+    public SpectrumTableModel(String spectrumFile, MsFileHandler msFileHandler, Identification identification, String[] orderedSpectrumTitles) {
         this.spectrumFile = spectrumFile;
+        this.msFileHandler = msFileHandler;
         this.identification = identification;
         if (orderedSpectrumTitles != null) {
             this.orderedSpectrumTitles = orderedSpectrumTitles;
         } else {
-            this.orderedSpectrumTitles = spectrumFactory.getSpectrumTitles(spectrumFile);
+            this.orderedSpectrumTitles = msFileHandler.getSpectrumTitles(spectrumFile);
         }
     }
 
@@ -69,7 +71,7 @@ public class SpectrumTableModel extends DefaultTableModel {
         if (spectrumFile == null) {
             return 0;
         }
-        return spectrumFactory.getNSpectra(spectrumFile);
+        return msFileHandler.getSpectrumTitles(spectrumFile).length;
     }
 
     @Override
@@ -114,15 +116,16 @@ public class SpectrumTableModel extends DefaultTableModel {
     @Override
     public Object getValueAt(int row, int column) {
 
-        String spectrumTitle = orderedSpectrumTitles.get(row);
+        String spectrumTitle = orderedSpectrumTitles[row];
+        long spectrumMatchKey = SpectrumMatch.getKey(spectrumFile, spectrumTitle);
+        SpectrumMatch spectrumMatch = identification.getSpectrumMatch(spectrumMatchKey);
 
         switch (column) {
             case 0:
                 return row + 1;
             case 1:
                 try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
+                    if (update && spectrumMatch != null) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                         return allAssumptions.keySet().size();
                     }
@@ -135,19 +138,19 @@ public class SpectrumTableModel extends DefaultTableModel {
                 return spectrumTitle;
             case 3:
                 try {
-                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    return precursor.getMz();
+                    Precursor precursor = msFileHandler.getPrecursor(spectrumFile, spectrumTitle);
+                    return precursor.mz;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 4:
                 try {
-                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    if (precursor.getPossibleCharges().size() == 1) {
-                        return precursor.getPossibleCharges().get(0).value;
-                    } else if (precursor.getPossibleCharges().size() > 1) {
-                        return precursor.getPossibleCharges().get(0).value; // @TODO: better support for multiple charges
+                    Precursor precursor = msFileHandler.getPrecursor(spectrumFile, spectrumTitle);
+                    if (precursor.possibleCharges.length == 1) {
+                        return precursor.possibleCharges[0];
+                    } else if (precursor.possibleCharges.length > 1) {
+                        return precursor.possibleCharges[0]; // @TODO: better support for multiple charges
                     } else {
                         return null;
                     }
@@ -157,32 +160,31 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 5:
                 try {
-                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    return precursor.getIntensity();
+                    Precursor precursor = msFileHandler.getPrecursor(spectrumFile, spectrumTitle);
+                    return precursor.intensity;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 6:
                 try {
-                    Precursor precursor = spectrumFactory.getPrecursor(spectrumFile, spectrumTitle);
-                    return precursor.getRt();
+                    Precursor precursor = msFileHandler.getPrecursor(spectrumFile, spectrumTitle);
+                    return precursor.rt;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 7:
                 try {
-                    MSnSpectrum spectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumFile, spectrumTitle);
-                    return spectrum.getPeakList().size();
+                    Spectrum spectrum = msFileHandler.getSpectrum(spectrumFile, spectrumTitle);
+                    return spectrum.mz.length;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             case 8:
                 try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
+                    if (update && spectrumMatch != null) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.pepnovo.getIndex());
                         if (hitMap != null) {
@@ -202,8 +204,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 9:
                 try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
+                    if (update && spectrumMatch != null) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.direcTag.getIndex());
                         if (hitMap != null) {
@@ -223,8 +224,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 10:
                 try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
+                    if (update && spectrumMatch != null) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.pNovo.getIndex());
                         if (hitMap != null) {
@@ -244,8 +244,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 11:
                 try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
+                    if (update && spectrumMatch != null) {
                         HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.novor.getIndex());
                         if (hitMap != null) {
@@ -264,8 +263,7 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 12:
-                String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                return identification.matchExists(spectrumKey);
+                return spectrumMatch != null;
             default:
                 return null;
         }

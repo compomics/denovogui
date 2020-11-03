@@ -2,7 +2,7 @@ package com.compomics.denovogui.preferences;
 
 import com.compomics.denovogui.gui.ResultsFrame;
 import com.compomics.software.settings.PathKey;
-import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathParameters;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  *
  * @author Marc Vaudel
  */
-public class DeNovoGUIPathPreferences {
+public class DeNovoGUIPathParameters {
 
     /**
      * Enum of the paths which can be set in DeNovoGUI.
@@ -99,14 +99,14 @@ public class DeNovoGUIPathPreferences {
      * @throws FileNotFoundException thrown if the file is not found
      * @throws IOException thrown if there are errors accessing the file
      */
-    public static void loadPathPreferencesFromFile(File inputFile) throws FileNotFoundException, IOException {
+    public static void loadPathParametersFromFile(File inputFile) throws FileNotFoundException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(inputFile));
         try {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 if (!line.equals("") && !line.startsWith("#")) {
-                    loadPathPreferenceFromLine(line);
+                    loadPathParameterFromLine(line);
                 }
             }
         } finally {
@@ -120,17 +120,17 @@ public class DeNovoGUIPathPreferences {
      * @param line the line where to read the path from
      * @throws FileNotFoundException thrown if the file cannot be found
      */
-    public static void loadPathPreferenceFromLine(String line) throws FileNotFoundException {
-        String id = UtilitiesPathPreferences.getPathID(line);
+    public static void loadPathParameterFromLine(String line) throws FileNotFoundException {
+        String id = UtilitiesPathParameters.getPathID(line);
         if (id.equals("")) {
             throw new IllegalArgumentException("Impossible to parse path in " + line + ".");
         }
         DeNovoGUIPathKey denovoguiPathKey = DeNovoGUIPathKey.getKeyFromId(id);
         if (denovoguiPathKey == null) {
-            UtilitiesPathPreferences.loadPathPreferenceFromLine(line);
+            UtilitiesPathParameters.loadPathParameterFromLine(line);
         } else {
-            String path = UtilitiesPathPreferences.getPath(line);
-            if (!path.equals(UtilitiesPathPreferences.defaultPath)) {
+            String path = UtilitiesPathParameters.getPath(line);
+            if (!path.equals(UtilitiesPathParameters.defaultPath)) {
                 File file = new File(path);
                 if (!file.exists()) {
                     throw new FileNotFoundException("File " + path + " not found.");
@@ -138,7 +138,7 @@ public class DeNovoGUIPathPreferences {
                 if (denovoguiPathKey.isDirectory && !file.isDirectory()) {
                     throw new FileNotFoundException("Found a file when expecting a directory for " + denovoguiPathKey.id + ".");
                 }
-                setPathPreference(denovoguiPathKey, path);
+                setPathParameter(denovoguiPathKey, path);
             }
         }
     }
@@ -152,7 +152,7 @@ public class DeNovoGUIPathPreferences {
      *
      * @throws FileNotFoundException thrown if an FileNotFoundException occurs
      */
-    public static String getPathPreference(DeNovoGUIPathKey deNovoGuiPathKey) throws IOException {
+    public static String getPathParameter(DeNovoGUIPathKey deNovoGuiPathKey) throws IOException {
         switch (deNovoGuiPathKey) {
             case matchesDirectory:
                 return ResultsFrame.getCacheDirectoryParent();
@@ -167,7 +167,7 @@ public class DeNovoGUIPathPreferences {
      * @param deNovoGuiPathKey the key of the path
      * @param path the path to be set
      */
-    public static void setPathPreference(DeNovoGUIPathKey deNovoGuiPathKey, String path) {
+    public static void setPathParameter(DeNovoGUIPathKey deNovoGuiPathKey, String path) {
         switch (deNovoGuiPathKey) {
             case matchesDirectory:
                 ResultsFrame.setCacheDirectoryParent(path);
@@ -185,13 +185,13 @@ public class DeNovoGUIPathPreferences {
      *
      * @throws FileNotFoundException thrown if an FileNotFoundException occurs
      */
-    public static void setPathPreference(PathKey pathKey, String path) throws IOException {
+    public static void setPathParameter(PathKey pathKey, String path) throws IOException {
         if (pathKey instanceof DeNovoGUIPathKey) {
             DeNovoGUIPathKey peptideShakerPathKey = (DeNovoGUIPathKey) pathKey;
-            DeNovoGUIPathPreferences.setPathPreference(peptideShakerPathKey, path);
-        } else if (pathKey instanceof UtilitiesPathPreferences.UtilitiesPathKey) {
-            UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey = (UtilitiesPathPreferences.UtilitiesPathKey) pathKey;
-            UtilitiesPathPreferences.setPathPreference(utilitiesPathKey, path);
+            DeNovoGUIPathParameters.setPathParameter(peptideShakerPathKey, path);
+        } else if (pathKey instanceof UtilitiesPathParameters.UtilitiesPathKey) {
+            UtilitiesPathParameters.UtilitiesPathKey utilitiesPathKey = (UtilitiesPathParameters.UtilitiesPathKey) pathKey;
+            UtilitiesPathParameters.setPathParameter(utilitiesPathKey, path);
         } else {
             throw new UnsupportedOperationException("Path " + pathKey.getId() + " not implemented.");
         }
@@ -214,9 +214,9 @@ public class DeNovoGUIPathPreferences {
             if (!newFile.exists()) {
                 throw new FileNotFoundException(newFile.getAbsolutePath() + " could not be created.");
             }
-            setPathPreference(denovoguiPathKey, newFile.getAbsolutePath());
+            setPathParameter(denovoguiPathKey, newFile.getAbsolutePath());
         }
-        UtilitiesPathPreferences.setAllPathsIn(path);
+        UtilitiesPathParameters.setAllPathsIn(path);
     }
 
     /**
@@ -248,7 +248,7 @@ public class DeNovoGUIPathPreferences {
         for (DeNovoGUIPathKey pathKey : DeNovoGUIPathKey.values()) {
             writePathToFile(bw, pathKey);
         }
-        UtilitiesPathPreferences.writeConfigurationToFile(bw);
+        UtilitiesPathParameters.writeConfigurationToFile(bw);
     }
 
     /**
@@ -260,12 +260,12 @@ public class DeNovoGUIPathPreferences {
      * @throws IOException thrown if there are issues writing
      */
     public static void writePathToFile(BufferedWriter bw, DeNovoGUIPathKey pathKey) throws IOException {
-        bw.write(pathKey.id + UtilitiesPathPreferences.separator);
+        bw.write(pathKey.id + UtilitiesPathParameters.separator);
         switch (pathKey) {
             case matchesDirectory:
                 String toWrite = ResultsFrame.getCacheDirectoryParent();
                 if (toWrite == null) {
-                    toWrite = UtilitiesPathPreferences.defaultPath;
+                    toWrite = UtilitiesPathParameters.defaultPath;
                 }
                 bw.write(toWrite);
                 break;
@@ -288,12 +288,12 @@ public class DeNovoGUIPathPreferences {
     public static ArrayList<PathKey> getErrorKeys() throws IOException {
         ArrayList<PathKey> result = new ArrayList<PathKey>();
         for (DeNovoGUIPathKey deNovoGUIPathKey : DeNovoGUIPathKey.values()) {
-            String folder = DeNovoGUIPathPreferences.getPathPreference(deNovoGUIPathKey);
-            if (folder != null && !UtilitiesPathPreferences.testPath(folder)) {
+            String folder = DeNovoGUIPathParameters.getPathParameter(deNovoGUIPathKey);
+            if (folder != null && !UtilitiesPathParameters.testPath(folder)) {
                 result.add(deNovoGUIPathKey);
             }
         }
-        result.addAll(UtilitiesPathPreferences.getErrorKeys());
+        result.addAll(UtilitiesPathParameters.getErrorKeys());
         return result;
     }
 }

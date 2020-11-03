@@ -1,7 +1,7 @@
 package com.compomics.denovogui.execution;
 
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -69,9 +69,9 @@ public abstract class Job implements Executable, Runnable {
      */
     protected ExceptionHandler exceptionHandler;
     /**
-     * The spectrum factory.
+     * The mass spectrometry file handler.
      */
-    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
+    protected MsFileHandler msFileHandler;
 
     /**
      * Executes a job.

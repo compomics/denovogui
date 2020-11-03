@@ -1,6 +1,6 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.Util;
+import com.compomics.util.io.IoUtil;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -205,7 +205,7 @@ public class FileProcessor {
      * @return the corresponding out file
      */
     public static File getOutFile(File outFolder, File spectrumFile) {
-        return new File(outFolder, Util.getFileName(spectrumFile) + ".out");
+        return new File(outFolder, IoUtil.getFileName(spectrumFile) + ".out");
     }
 
     /**
@@ -256,7 +256,7 @@ public class FileProcessor {
      * recognized
      */
     public static File getMgfFile(File outFile) throws IllegalArgumentException {
-        String fileName = Util.getFileName(outFile);
+        String fileName = IoUtil.getFileName(outFile);
         if (fileName.endsWith(".out")) {
             String mgfName = fileName.substring(0, fileName.lastIndexOf("."));
             return new File(outFile.getParent(), mgfName);

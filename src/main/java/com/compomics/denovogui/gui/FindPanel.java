@@ -4,8 +4,8 @@ import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -20,10 +20,6 @@ import java.util.HashMap;
  */
 public class FindPanel extends javax.swing.JPanel {
 
-    /**
-     * The spectrum factory.
-     */
-    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
     /**
      * Counts the number of times the users has pressed a key on the keyboard in
      * the search field.
@@ -259,9 +255,11 @@ public class FindPanel extends javax.swing.JPanel {
                                 resultsFrame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
                                 inputTxt.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 
+                                MsFileHandler msFileHandler = resultsFrame.getDeNovoGUI().getMsFileHandler();
+                                
                                 // find the peptide matches
-                                for (String spectrumFileName : spectrumFactory.getMgfFileNames()) {
-                                    for (String spectrumTitle : spectrumFactory.getSpectrumTitles(spectrumFileName)) {
+                                for (String spectrumFileName : msFileHandler.getOrderedFileNamesWithoutExtensions()) {
+                                    for (String spectrumTitle : msFileHandler.getSpectrumTitles(spectrumFileName)) {
 
                                         String psmKey = Spectrum.getSpectrumKey(spectrumFileName, spectrumTitle);
 

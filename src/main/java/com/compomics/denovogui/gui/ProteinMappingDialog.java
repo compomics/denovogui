@@ -1,14 +1,11 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
-import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.gui.modification.ModificationsDialog;
+import com.compomics.util.gui.parameters.identification.search.SequenceDbDetailsDialog;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JColorChooser;
@@ -29,13 +26,9 @@ import org.jfree.chart.plot.PlotOrientation;
 public class ProteinMappingDialog extends javax.swing.JDialog{
 
     /**
-     * The protein sequence factory.
-     */
-    private SequenceFactory sequenceFactory = SequenceFactory.getInstance();
-    /**
      * The post translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory modFactory = ModificationFactory.getInstance();
     /**
      * The parent result frame.
      */
@@ -64,7 +57,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
      * @param modificationProfile the modification profile used for the
      * identification
      */
-    public ProteinMappingDialog(ResultsFrame resultFrame, PtmSettings modificationProfile) {
+    public ProteinMappingDialog(ResultsFrame resultFrame, ModificationParameters modificationProfile) {
         super(resultFrame, true);
         this.resultsFrame = resultFrame;
         if (modificationProfile != null) {
@@ -94,10 +87,6 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
      * Sets up the GUI.
      */
     private void setUpGUI() {
-
-        if (sequenceFactory.getCurrentFastaFile() != null) {
-            databaseSettingsTxt.setText(sequenceFactory.getCurrentFastaFile().getAbsolutePath());
-        }
 
         modificationTableToolTips = new ArrayList<String>();
         modificationTableToolTips.add(null);
@@ -135,7 +124,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
      */
     private void updateModificationList() {
 
-        ArrayList<String> allModificationsList = ptmFactory.getPTMs();
+        ArrayList<String> allModificationsList = modFactory.getModifications();
         String[] allModificationsAsArray = new String[allModificationsList.size()];
 
         for (int i = 0; i < allModificationsList.size(); i++) {
@@ -168,9 +157,9 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
 
         for (String mod : allModificationsAsArray) {
             ((DefaultTableModel) modificationsTable.getModel()).addRow(
-                    new Object[]{ptmFactory.getColor(mod),
+                    new Object[]{modFactory.getColor(mod),
                         mod,
-                        ptmFactory.getPTM(mod).getMass(),
+                        modFactory.getModification(mod).getMass(),
                         variableModifications.contains(mod),
                         fixedModifications.contains(mod)});
         }
@@ -181,12 +170,12 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
         double maxMass = Double.MIN_VALUE;
         double minMass = Double.MAX_VALUE;
 
-        for (String ptm : ptmFactory.getPTMs()) {
-            if (ptmFactory.getPTM(ptm).getMass() > maxMass) {
-                maxMass = ptmFactory.getPTM(ptm).getMass();
+        for (String ptm : modFactory.getModifications()) {
+            if (modFactory.getModification(ptm).getMass() > maxMass) {
+                maxMass = modFactory.getModification(ptm).getMass();
             }
-            if (ptmFactory.getPTM(ptm).getMass() < minMass) {
-                minMass = ptmFactory.getPTM(ptm).getMass();
+            if (modFactory.getModification(ptm).getMass() < minMass) {
+                minMass = modFactory.getModification(ptm).getMass();
             }
         }
 
@@ -559,7 +548,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
                 Color newColor = JColorChooser.showDialog(this, "Pick a Color", (Color) modificationsTable.getValueAt(row, column));
 
                 if (newColor != null) {
-                    ptmFactory.setColor((String) modificationsTable.getValueAt(row, 1), newColor);
+                    modFactory.setColor((String) modificationsTable.getValueAt(row, 1), newColor.getRGB());
                     modificationsTable.setValueAt(newColor, row, 0);
                     ((DefaultTableModel) modificationsTable.getModel()).fireTableDataChanged();
                     modificationsTable.repaint();

@@ -4,13 +4,14 @@ import com.compomics.denovogui.execution.Job;
 import com.compomics.software.cli.CommandLineUtils;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.NovorParameters;
-import com.compomics.util.preferences.IdentificationParameters;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.UtilitiesUserParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.NovorParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,7 +66,7 @@ public class NovorJob extends Job {
     /**
      * The post translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory modFactory = ModificationFactory.getInstance();
     /**
      * The Novor to utilities PTM map. Key: Novor PTM short name, element:
      * utilities PTM name.
@@ -104,9 +105,9 @@ public class NovorJob extends Job {
             novorExecutable.setExecutable(true);
 
             // set java home
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
             CompomicsWrapper wrapper = new CompomicsWrapper();
-            ArrayList<String> javaHomeAndOptions = wrapper.getJavaHomeAndOptions(utilitiesUserPreferences.getDeNovoGuiPath());
+            ArrayList<String> javaHomeAndOptions = wrapper.getJavaHomeAndOptions(utilitiesUserParameters.getDeNovoGuiPath());
             procCommands.add(javaHomeAndOptions.get(0)); // set java home
 
             // set java options
@@ -248,19 +249,19 @@ public class NovorJob extends Job {
             novorPtmMap = new HashMap<String, String>();
 
             // variable modifications
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+            if (!searchParameters.getModificationParameters().getVariableModifications().isEmpty()) {
                 bufferedParameterWriter.write("# Variable modifications" + System.getProperty("line.separator"));
                 String variableModsAsString = "";
 
-                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
-                    PTM ptm = ptmFactory.getPTM(variableModification);
-                    addModification(bufferedModsWriter, ptm);
+                for (String variableModification : searchParameters.getModificationParameters().getVariableModifications()) {
+                    Modification mod = modFactory.getModification(variableModification);
+                    addModification(bufferedModsWriter, mod);
 
                     // update the modifications string
                     if (!variableModsAsString.isEmpty()) {
                         variableModsAsString += ", ";
                     }
-                    variableModsAsString += ptm.getName();
+                    variableModsAsString += mod.getName();
                 }
 
                 // add the modification to the parameter file
@@ -269,19 +270,19 @@ public class NovorJob extends Job {
             }
 
             // fixed modifications
-            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
+            if (!searchParameters.getModificationParameters().getFixedModifications().isEmpty()) {
                 bufferedParameterWriter.write("# Fixed modifications" + System.getProperty("line.separator"));
                 String fixedModsAsString = "";
 
-                for (String fixedModification : searchParameters.getPtmSettings().getFixedModifications()) {
-                    PTM ptm = ptmFactory.getPTM(fixedModification);
-                    addModification(bufferedModsWriter, ptm);
+                for (String fixedModification : searchParameters.getModificationParameters().getFixedModifications()) {
+                    Modification mod = modFactory.getModification(fixedModification);
+                    addModification(bufferedModsWriter, mod);
 
                     // update the modifications string
                     if (!fixedModsAsString.isEmpty()) {
                         fixedModsAsString += ", ";
                     }
-                    fixedModsAsString += ptm.getName();
+                    fixedModsAsString += mod.getName();
                 }
 
                 // add the modification to the parameter file
@@ -316,31 +317,33 @@ public class NovorJob extends Job {
      * Converts a modification to the Novor format.
      *
      * @param bufferedModsWriter the writer to add the modification to
-     * @param ptm the current PTM
+     * @param mod the current modification
      * @param modsAsString the current modifications as a string
      * @throws IOException thrown if an IOException occurs
      */
-    private void addModification(BufferedWriter bufferedModsWriter, PTM ptm) throws IOException {
+    private void addModification(BufferedWriter bufferedModsWriter, Modification mod) throws IOException {
 
         // modification id
-        bufferedModsWriter.write(ptm.getName() + ", ");
+        bufferedModsWriter.write(mod.getName() + ", ");
 
         // short name
         bufferedModsWriter.write(novorPtmMap.keySet().size() + ", ");
-        novorPtmMap.put("" + novorPtmMap.keySet().size(), ptm.getName());
+        novorPtmMap.put("" + novorPtmMap.keySet().size(), mod.getName());
 
         // long name
-        bufferedModsWriter.write(ptm.getName() + ", ");
+        bufferedModsWriter.write(mod.getName() + ", ");
 
         // the groups involved in the modification
-        if (ptm.isNTerm()) {
-            if (ptm.getType() == PTM.MODNAA || ptm.getType() == PTM.MODNPAA) {
+        if (mod.getModificationType().isNTerm()) {
+            if (mod.getModificationType() == ModificationType.modnaa_peptide 
+                    || mod.getModificationType() == ModificationType.modnaa_protein) {
                 bufferedModsWriter.write("nr-, ");
             } else {
                 bufferedModsWriter.write("n--, ");
             }
-        } else if (ptm.isCTerm()) {
-            if (ptm.getType() == PTM.MODCAA || ptm.getType() == PTM.MODCPAA) {
+        } else if (mod.getModificationType().isCTerm()) {
+            if (mod.getModificationType() == ModificationType.modcaa_peptide 
+                    || mod.getModificationType() == ModificationType.modcaa_protein) {
                 bufferedModsWriter.write("-rc, ");
             } else {
                 bufferedModsWriter.write("--c, ");
@@ -350,8 +353,8 @@ public class NovorJob extends Job {
         }
 
         // the affected residues
-        if (ptm.getPattern() != null) {
-            for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
+        if (mod.getPattern() != null) {
+            for (Character target : mod.getPattern().getAminoAcidsAtTarget()) {
                 bufferedModsWriter.write(target);
             }
             bufferedModsWriter.write(", ");
@@ -363,7 +366,7 @@ public class NovorJob extends Job {
         bufferedModsWriter.write(", "); // @TOOD: we use this one instead of the mass?
 
         // the mass change
-        bufferedModsWriter.write("" + ptm.getRoundedMass());
+        bufferedModsWriter.write("" + mod.getRoundedMass());
 
         // add new line
         bufferedModsWriter.write(System.getProperty("line.separator"));

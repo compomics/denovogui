@@ -3,7 +3,7 @@ package com.compomics.denovogui.gui.qc;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
-import com.compomics.util.experiment.identification.matches_iterators.PsmIterator;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,17 +17,19 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
 /**
- * <p>
- * Class to plot a histogram of the number of peaks of all intensity values.</p>
+ * Class to plot a histogram of the number of peaks of all intensity values.
  *
  * @author Thilo Muth
  */
 public class ScoreHistogram extends Chart {
 
+    /**
+     * The data.
+     */
     private double[] data;
 
     /**
-     * Constructs a de novo score histogram
+     * Constructs a de novo score histogram.
      *
      * @param identification the identification
      */
@@ -38,7 +40,7 @@ public class ScoreHistogram extends Chart {
     @Override
     protected void process(Identification identification) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
         // List of all the scores
-        List<Double> scores = new ArrayList<Double>();
+        List<Double> scores = new ArrayList<>();
         for (String spectrumFile : identification.getSpectrumFiles()) {
 
             PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, null);

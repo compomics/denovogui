@@ -5,9 +5,9 @@ import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.PepnovoParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
@@ -96,10 +96,10 @@ public class PepNovoJob extends Job {
             procCommands.add(pepNovoParameters.getFragmentationModel());
 
             // Add modifications
-            ArrayList<String> modifications = searchParameters.getPtmSettings().getAllModifications();
+            ArrayList<String> modifications = searchParameters.getModificationParameters().getAllModifications();
             if (!modifications.isEmpty()) {
                 procCommands.add("-PTMs");
-                procCommands.add(PepNovoModificationFile.getModsString(searchParameters.getPtmSettings().getAllModifications()));
+                procCommands.add(PepNovoModificationFile.getModsString(searchParameters.getModificationParameters().getAllModifications()));
             }
 
             // Add fragment tolerance

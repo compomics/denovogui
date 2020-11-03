@@ -1,8 +1,9 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -67,7 +68,7 @@ public class PepNovoModificationFile {
      * @param modificationProfile the modification profile of the search
      * @throws java.io.IOException thrown if the file access fails
      */
-    public static void writeFile(File filePath, PtmSettings modificationProfile) throws IOException {
+    public static void writeFile(File filePath, ModificationParameters modificationProfile) throws IOException {
         // Init the buffered writer.
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath, name)));
 
@@ -101,10 +102,10 @@ public class PepNovoModificationFile {
      */
     private static void writePtmLine(BufferedWriter writer, String mod, String variable) throws IOException {
 
-        // Get the PTMFactory
-        PTMFactory ptmFactory = PTMFactory.getInstance();
-        PTM ptm = ptmFactory.getPTM(mod);
-        double ptmMass = ptm.getRoundedMass();
+        // Get the ModificationFactory
+        ModificationFactory modificationFactory = ModificationFactory.getInstance();
+        Modification tempMod = modificationFactory.getModification(mod);
+        double ptmMass = tempMod.getRoundedMass();
 
         if (ptmMass > maxMassOffsetValue) {
 
@@ -114,63 +115,63 @@ public class PepNovoModificationFile {
             }
 
             // Write a line for each residue
-            if (ptm.getPattern() == null || ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+            if (tempMod.getPattern() == null || tempMod.getPattern().getAminoAcidsAtTarget().isEmpty()) {
 
                 if (variable.equalsIgnoreCase(FIXED_PTM)) {
                     variable = VARIABLE_PTM; // PepNovo+ does not support fixed PTMs at the terminals...
                 }
 
-                if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
-                        || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
+                if (modificationFactory.getModification(mod).getModificationType() == ModificationType.modn_peptide || modificationFactory.getModification(mod).getModificationType() == ModificationType.modnaa_peptide
+                        || modificationFactory.getModification(mod).getModificationType() == ModificationType.modn_protein || modificationFactory.getModification(mod).getModificationType() == ModificationType.modnaa_protein) {
                     writer.append("N_TERM" + SEP);
                     writer.append(ptmMass + SPACE);
                     writer.append(variable + SPACE);
                     writer.append("N_TERM" + SPACE);
                     writer.append("^" + connector + Long.toString(Math.round(ptmMass)) + SPACE);
-                    modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptmMass)));
-                    writer.append(ptm.getName().toUpperCase());
+                    modIdMap.put(tempMod.getName(), "^" + connector + Long.toString(Math.round(ptmMass)));
+                    writer.append(tempMod.getName().toUpperCase());
                     writer.newLine();
-                } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
-                        || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
+                } else if (modificationFactory.getModification(mod).getModificationType() == ModificationType.modc_peptide || modificationFactory.getModification(mod).getModificationType() == ModificationType.modcaa_peptide
+                        || modificationFactory.getModification(mod).getModificationType() == ModificationType.modc_protein || modificationFactory.getModification(mod).getModificationType() == ModificationType.modcaa_protein) {
                     writer.append("C_TERM" + SEP);
                     writer.append(ptmMass + SPACE);
                     writer.append(variable + SPACE);
                     writer.append("C_TERM" + SPACE);
                     writer.append("$" + connector + Long.toString(Math.round(ptmMass)) + SPACE);
-                    modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptmMass)));
-                    writer.append(ptm.getName().toUpperCase());
+                    modIdMap.put(tempMod.getName(), "$" + connector + Long.toString(Math.round(ptmMass)));
+                    writer.append(tempMod.getName().toUpperCase());
                     writer.newLine();
                 }
             } else {
 
-                for (Character residue : ptm.getPattern().getAminoAcidsAtTarget()) {
+                for (Character residue : tempMod.getPattern().getAminoAcidsAtTarget()) {
 
-                    if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
+                    if (modificationFactory.getModification(mod).getModificationType() == ModificationType.modn_peptide || modificationFactory.getModification(mod).getModificationType() == ModificationType.modnaa_peptide
+                            || modificationFactory.getModification(mod).getModificationType() == ModificationType.modn_protein || modificationFactory.getModification(mod).getModificationType() == ModificationType.modnaa_protein) {
                         writer.append(residue + SEP);
                         writer.append(ptmMass + SPACE);
                         writer.append(variable + SPACE);
                         writer.append("+1" + SPACE);
                         writer.append(residue + connector + Long.toString(Math.round(ptmMass)) + SPACE);
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
-                    } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                    } else if (modificationFactory.getModification(mod).getModificationType() == ModificationType.modc_peptide || modificationFactory.getModification(mod).getModificationType() == ModificationType.modcaa_peptide
+                            || modificationFactory.getModification(mod).getModificationType() == ModificationType.modc_protein || modificationFactory.getModification(mod).getModificationType() == ModificationType.modcaa_protein) {
                         writer.append(residue + SEP);
                         writer.append(ptmMass + SPACE);
                         writer.append(variable + SPACE);
                         writer.append("-1" + SPACE);
                         writer.append(residue + connector + Long.toString(Math.round(ptmMass)) + SPACE);
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
                     } else {
                         writer.append(residue + SEP);
                         writer.append(ptmMass + SPACE);
                         writer.append(variable + SPACE);
                         writer.append(ALL_LOCATIONS + SPACE);
                         writer.append(residue + connector + Long.toString(Math.round(ptmMass)) + SPACE);
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
                     }
 
-                    writer.append(ptm.getName().toUpperCase());
+                    writer.append(tempMod.getName().toUpperCase());
                     writer.newLine();
                 }
             }
@@ -183,17 +184,17 @@ public class PepNovoModificationFile {
     private static void fillModIdMap() {
 
         modIdMap = new HashMap<String, String>();
-        PTMFactory ptmFactory = PTMFactory.getInstance();
+        ModificationFactory modFactory = ModificationFactory.getInstance();
         List<String> mods = new ArrayList<String>();
-        mods.addAll(ptmFactory.getDefaultModifications());
-        mods.addAll(ptmFactory.getUserModifications());
+        mods.addAll(modFactory.getDefaultModifications());
+        mods.addAll(modFactory.getUserModifications());
         // Connector string: plus for positive modifications, minus for negative ones
         String connector;
 
         // Write the modifications
         for (String mod : mods) {
-            PTM ptm = ptmFactory.getPTM(mod);
-            double ptmMass = ptm.getRoundedMass();
+            Modification tempMod = modFactory.getModification(mod);
+            double ptmMass = tempMod.getRoundedMass();
 
             if (ptmMass > 0) {
                 connector = "+";
@@ -201,24 +202,24 @@ public class PepNovoModificationFile {
                 connector = "";
             }
 
-            if (ptm.getPattern() == null || ptm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-                if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
-                        || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                    modIdMap.put(ptm.getName(), "^" + connector + Long.toString(Math.round(ptmMass)));
-                } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
-                        || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                    modIdMap.put(ptm.getName(), "$" + connector + Long.toString(Math.round(ptmMass)));
+            if (tempMod.getPattern() == null || tempMod.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+                if (modFactory.getModification(mod).getModificationType() == ModificationType.modn_peptide || modFactory.getModification(mod).getModificationType() == ModificationType.modnaa_peptide
+                        || modFactory.getModification(mod).getModificationType() == ModificationType.modn_protein || modFactory.getModification(mod).getModificationType() == ModificationType.modnaa_protein) {
+                    modIdMap.put(tempMod.getName(), "^" + connector + Long.toString(Math.round(ptmMass)));
+                } else if (modFactory.getModification(mod).getModificationType() == ModificationType.modc_peptide || modFactory.getModification(mod).getModificationType() == ModificationType.modcaa_peptide
+                        || modFactory.getModification(mod).getModificationType() == ModificationType.modc_protein || modFactory.getModification(mod).getModificationType() == ModificationType.modcaa_protein) {
+                    modIdMap.put(tempMod.getName(), "$" + connector + Long.toString(Math.round(ptmMass)));
                 }
             } else {
-                for (Character residue : ptmFactory.getPTM(mod).getPattern().getAminoAcidsAtTarget()) {
-                    if (ptmFactory.getPTM(mod).getType() == PTM.MODN || ptmFactory.getPTM(mod).getType() == PTM.MODNAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODNP || ptmFactory.getPTM(mod).getType() == PTM.MODNPAA) {
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
-                    } else if (ptmFactory.getPTM(mod).getType() == PTM.MODC || ptmFactory.getPTM(mod).getType() == PTM.MODCAA
-                            || ptmFactory.getPTM(mod).getType() == PTM.MODCP || ptmFactory.getPTM(mod).getType() == PTM.MODCPAA) {
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                for (Character residue : modFactory.getModification(mod).getPattern().getAminoAcidsAtTarget()) {
+                    if (modFactory.getModification(mod).getModificationType() == ModificationType.modn_peptide || modFactory.getModification(mod).getModificationType() == ModificationType.modnaa_peptide
+                            || modFactory.getModification(mod).getModificationType() == ModificationType.modn_protein || modFactory.getModification(mod).getModificationType() == ModificationType.modnaa_protein) {
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                    } else if (modFactory.getModification(mod).getModificationType() == ModificationType.modc_peptide || modFactory.getModification(mod).getModificationType() == ModificationType.modcaa_peptide
+                            || modFactory.getModification(mod).getModificationType() == ModificationType.modc_protein || modFactory.getModification(mod).getModificationType() == ModificationType.modcaa_protein) {
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
                     } else {
-                        modIdMap.put(ptm.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
+                        modIdMap.put(tempMod.getName(), residue + connector + Long.toString(Math.round(ptmMass)));
                     }
                 }
             }

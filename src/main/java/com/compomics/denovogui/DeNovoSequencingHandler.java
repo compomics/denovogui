@@ -10,13 +10,13 @@ import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.UtilitiesUserParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.PepnovoParameters;
 import com.compomics.util.waiting.Duration;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -102,10 +102,6 @@ public class DeNovoSequencingHandler {
      */
     private ExecutorService threadExecutor = null;
     /**
-     * The spectrum factory.
-     */
-    private SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
-    /**
      * The job queue.
      */
     private Deque<Job> jobs;
@@ -116,7 +112,11 @@ public class DeNovoSequencingHandler {
     /**
      * The factory used to handle the modifications.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory modFactory = ModificationFactory.getInstance();
+    /**
+     * The mass spectrometry file handler.
+     */
+    private final MsFileHandler msFileHandler;
 
     /**
      * Constructor.
@@ -126,11 +126,12 @@ public class DeNovoSequencingHandler {
      * @param pNovoFolder the pNovo folder
      * @param novorFolder the Novor folder
      */
-    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder, File novorFolder) {
+    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder, File novorFolder, MsFileHandler msFileHandler) {
         this.pepNovoFolder = pepNovoFolder;
         this.direcTagFolder = direcTagFolder;
         this.pNovoFolder = pNovoFolder;
         this.novorFolder = novorFolder;
+        this.msFileHandler = msFileHandler;
     }
 
     /**
@@ -173,7 +174,7 @@ public class DeNovoSequencingHandler {
             // write the modification file
             try {
                 File folder = new File(pepNovoFolder, "Models");
-                PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
+                PepNovoModificationFile.writeFile(folder, searchParameters.getModificationParameters());
             } catch (Exception e) {
                 waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
                 exceptionHandler.catchException(e);
@@ -197,7 +198,7 @@ public class DeNovoSequencingHandler {
 
         // get the number of available threads
         String fileEnding = "";
-        if (spectrumFactory.getMgfFileNames().size() > 1) {
+        if (msFileHandler.getOrderedFileNamesWithoutExtensions().length > 1) {
             fileEnding = "s";
         }
         String threadEnding = "";
@@ -207,17 +208,23 @@ public class DeNovoSequencingHandler {
         
         // set this version as the default DeNovoGUI version
         if (!getJarFilePath().equalsIgnoreCase(".")) {
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
             String versionNumber = Properties.getVersion();
-            utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
-            UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
+            utilitiesUserParameters.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+            UtilitiesUserParameters.saveUserParameters(utilitiesUserParameters);
         }
 
         Duration duration = new Duration();
         duration.start();
 
-        waitingHandler.appendReport("Starting de novo sequencing: " + spectrumFactory.getNSpectra() + " spectra in "
-                + spectrumFactory.getMgfFileNames().size() + " file" + fileEnding + " using " + nThreads + " thread" + threadEnding + ".", true, true);
+        int totalSpectrumCount = 0;
+        
+        for (String tempFileName : msFileHandler.getOrderedFileNamesWithoutExtensions()) {
+            totalSpectrumCount += msFileHandler.getSpectrumTitles(tempFileName).length;
+        }
+        
+        waitingHandler.appendReport("Starting de novo sequencing: " + totalSpectrumCount + " spectra in "
+                + msFileHandler.getOrderedFileNamesWithoutExtensions().length + " file" + fileEnding + " using " + nThreads + " thread" + threadEnding + ".", true, true);
         waitingHandler.appendReportEndLine();
 
         for (File spectrumFile : spectrumFiles) {
@@ -365,7 +372,7 @@ public class DeNovoSequencingHandler {
                 threadExecutor = Executors.newFixedThreadPool(nThreads);
 
                 // job queue
-                int nSpectra = spectrumFactory.getNSpectra(spectrumFile.getName());
+                int nSpectra = msFileHandler.getSpectrumTitles(spectrumFile.getName()).length;
                 if (nThreads > 1) {
                     int remaining = nSpectra % nThreads;
                     int chunkSize = nSpectra / nThreads;
@@ -635,7 +642,7 @@ public class DeNovoSequencingHandler {
      */
     public static String loadModifications(SearchParameters searchParameters) {
         String error = null;
-        ArrayList<String> toCheck = PTMFactory.getInstance().loadBackedUpModifications(searchParameters, true);
+        ArrayList<String> toCheck = ModificationFactory.getInstance().loadBackedUpModifications(searchParameters, true);
         if (!toCheck.isEmpty()) {
             error = "The definition of the following PTM(s) seems to have changed and were overwritten:\n";
             for (int i = 0; i < toCheck.size(); i++) {

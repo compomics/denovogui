@@ -2,14 +2,15 @@ package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.software.cli.CommandLineUtils;
-import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.io.IoUtil;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.DirecTagParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
@@ -35,9 +36,9 @@ public class DirecTagJob extends Job {
      */
     private SearchParameters searchParameters;
     /**
-     * The post translational modifications factory.
+     * The post-translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory modFactory = ModificationFactory.getInstance();
     /**
      * The path to the executable.
      */
@@ -105,10 +106,10 @@ public class DirecTagJob extends Job {
 
             // add fixed mods
             String fixedModsAsString = "";
-            ArrayList<String> fixedPtms = searchParameters.getPtmSettings().getFixedModifications();
+            ArrayList<String> fixedPtms = searchParameters.getModificationParameters().getFixedModifications();
             for (String ptmName : fixedPtms) {
-                PTM ptm = ptmFactory.getPTM(ptmName);
-                if (ptm.getType() == PTM.MODAA) {
+                Modification mod = modFactory.getModification(ptmName);
+                if (mod.getModificationType()== ModificationType.modaa) {
                     fixedModsAsString += getFixedPtmFormattedForDirecTag(ptmName);
                 }
             }
@@ -121,10 +122,10 @@ public class DirecTagJob extends Job {
             // add variable mods
             ArrayList<String> utilitiesPtms = new ArrayList<String>();
             String variableModsAsString = "";
-            ArrayList<String> variablePtms = searchParameters.getPtmSettings().getVariableModifications();
+            ArrayList<String> variablePtms = searchParameters.getModificationParameters().getVariableModifications();
             for (String ptmName : variablePtms) {
-                PTM ptm = ptmFactory.getPTM(ptmName);
-                if (ptm.getType() == PTM.MODAA) {
+                Modification ptm = modFactory.getModification(ptmName);
+                if (ptm.getModificationType() == ModificationType.modaa) {
                     variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, utilitiesPtms);
                 }
             }
@@ -132,7 +133,7 @@ public class DirecTagJob extends Job {
             if (!variableModsAsString.isEmpty()) {
                 procCommands.add("-DynamicMods");
                 procCommands.add(CommandLineUtils.getQuoteType() + variableModsAsString + CommandLineUtils.getQuoteType());
-                direcTagParameters.setPtms(utilitiesPtms);
+                direcTagParameters.setModifications(utilitiesPtms);
             }
 
             // fragment tolerance
@@ -239,7 +240,7 @@ public class DirecTagJob extends Job {
 
             procCommands.trimToSize();
 
-            outputFile = new File(outputFolder, Util.getFileName(spectrumFile) + "_directag.log");
+            outputFile = new File(outputFolder, IoUtil.getFileName(spectrumFile) + "_directag.log");
 
             // save command line
             for (String commandComponent : procCommands) {
@@ -294,13 +295,13 @@ public class DirecTagJob extends Job {
      */
     private String getVariablePtmFormattedForDirecTag(String ptmName, ArrayList<String> utilitiesPtms) {
 
-        PTM tempPtm = ptmFactory.getPTM(ptmName);
+        Modification tempMod = modFactory.getModification(ptmName);
         String ptmAsString = "";
 
         // get the targeted amino acids
-        if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-            for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-                ptmAsString += " " + aa + " " + modIndex++ + " " + tempPtm.getRoundedMass();
+        if (tempMod.getPattern() != null && !tempMod.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+            for (Character aa : tempMod.getPattern().getAminoAcidsAtTarget()) {
+                ptmAsString += " " + aa + " " + modIndex++ + " " + tempMod.getRoundedMass();
                 utilitiesPtms.add(ptmName);
             }
         }
@@ -317,13 +318,13 @@ public class DirecTagJob extends Job {
      */
     private String getFixedPtmFormattedForDirecTag(String ptmName) {
 
-        PTM tempPtm = ptmFactory.getPTM(ptmName);
+        Modification tempMod = modFactory.getModification(ptmName);
         String ptmAsString = "";
 
         // get the targeted amino acids
-        if (tempPtm.getPattern() != null && !tempPtm.getPattern().getAminoAcidsAtTarget().isEmpty()) {
-            for (Character aa : tempPtm.getPattern().getAminoAcidsAtTarget()) {
-                ptmAsString += " " + aa + " " + tempPtm.getRoundedMass();
+        if (tempMod.getPattern() != null && !tempMod.getPattern().getAminoAcidsAtTarget().isEmpty()) {
+            for (Character aa : tempMod.getPattern().getAminoAcidsAtTarget()) {
+                ptmAsString += " " + aa + " " + tempMod.getRoundedMass();
             }
         }
 

@@ -1,18 +1,18 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.DeNovoSequencingHandler;
-import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
+import com.compomics.denovogui.preferences.DeNovoGUIPathParameters;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.settings.PathKey;
-import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathParameters;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
-import com.compomics.util.experiment.biology.*;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.experiment.io.mass_spectrometry.MsFileHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.UtilitiesUserParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,6 +39,10 @@ public class DeNovoCLI implements Callable {
      */
     private EnzymeFactory enzymeFactory;
     /**
+     * The mass spectrometry file handler.
+     */
+    private final MsFileHandler msFileHandler = new MsFileHandler();
+    /**
      * The exception handler for the command line process.
      */
     private CommandLineExceptionHandler exceptionHandler = new CommandLineExceptionHandler();
@@ -56,7 +60,7 @@ public class DeNovoCLI implements Callable {
 
             Options lOptions = new Options();
             DeNovoCLIParams.createOptionsCLI(lOptions);
-            BasicParser parser = new BasicParser();
+            DefaultParser parser = new DefaultParser();
             CommandLine line = parser.parse(lOptions, args);
 
             if (!DeNovoCLIInputBean.isValidStartup(line)) {
@@ -102,7 +106,7 @@ public class DeNovoCLI implements Callable {
             }
         }
         try {
-            ArrayList<PathKey> errorKeys = DeNovoGUIPathPreferences.getErrorKeys();
+            ArrayList<PathKey> errorKeys = DeNovoGUIPathParameters.getErrorKeys();
             if (!errorKeys.isEmpty()) {
                 System.out.println("Unable to write in the following configuration folders. Please use a temporary folder, "
                         + "the path configuration command line, or edit the configuration paths from the graphical interface.");
@@ -293,21 +297,20 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReportEndLine();
 
             // load the spectra into the factory
-            SpectrumFactory spectrumFactory = SpectrumFactory.getInstance();
             waitingHandlerCLIImpl.appendReport("Loading the spectra.", true, true);
             for (File spectrumFile : deNovoCLIInputBean.getSpectrumFiles()) {
-                spectrumFactory.addSpectra(spectrumFile, waitingHandlerCLIImpl);
+                msFileHandler.register(spectrumFile, waitingHandlerCLIImpl);
             }
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
             
             // incrementing the counter for a new DenovoGUI run
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-            if (utilitiesUserPreferences.isAutoUpdate()) {
+            UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
+            if (utilitiesUserParameters.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "startrun-cl", "denovogui-" + Properties.getVersion());
             }
 
             // start the sequencing
-            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder, msFileHandler);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     searchParameters,
@@ -325,9 +328,9 @@ public class DeNovoCLI implements Callable {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathParameters.configurationFileName);
         if (pathConfigurationFile.exists()) {
-            DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
+            DeNovoGUIPathParameters.loadPathParametersFromFile(pathConfigurationFile);
         }
     }
 
