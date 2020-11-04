@@ -27,10 +27,6 @@ public class AssumptionsTableModel extends DefaultTableModel {
      */
     private ModificationParameters modificationProfile = null;
     /**
-     * The mass spectrometry file handler.
-     */
-    private final MsFileHandler msFileHandler = new MsFileHandler();
-    /**
      * If true, the fixed PTMs are indicated in the peptide sequences.
      */
     private boolean excludeAllFixedPtms = true;
