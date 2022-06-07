@@ -404,7 +404,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
 
             // set the title of the frame and add the icon
             this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")));
-            
+
             // incrementing the counter for a new DenovoGUI run
             if (utilitiesUserPreferences.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "toolstart", "denovogui-" + getVersion());
@@ -1424,7 +1424,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
             });
             waitingDialog.setCloseDialogWhenImportCompletes(true, true);
             waitingDialog.setLocationRelativeTo(this);
-            
+
             // incrementing the counter for a new DenovoGUI run
             if (utilitiesUserPreferences.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "startrun-gui", "denovogui-" + getVersion());
@@ -2021,22 +2021,22 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     switch (value) {
                         case JOptionPane.YES_OPTION:
                             try {
-                                searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), newDirecTagParameters);
-                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
-                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
-                                if (error != null) {
-                                    JOptionPane.showMessageDialog(this,
-                                            error,
-                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
-                                }
-                                settingsFileJTextField.setText(parametersFile.getName());
-                                direcTagParametersSet = true;
-                            } catch (IOException e) {
-                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                                e.printStackTrace();
+                            searchParameters.setIdentificationAlgorithmParameter(Advocate.direcTag.getIndex(), newDirecTagParameters);
+                            SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                            String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                            if (error != null) {
+                                JOptionPane.showMessageDialog(this,
+                                        error,
+                                        "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
                             }
-                            break;
+                            settingsFileJTextField.setText(parametersFile.getName());
+                            direcTagParametersSet = true;
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        break;
                         case JOptionPane.CANCEL_OPTION:
                             direcTagSettingsDialog = new DirecTagSettingsDialog(this, newDirecTagParameters, true);
                             break;
@@ -2083,7 +2083,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         PNovoSettingsDialog pNovoSettingsDialog = new PNovoSettingsDialog(this, oldPNovoParameters, true);
 
         pNovoSettingsDialog.dispose();
-        
 
         boolean pNovoParametersSet = false;
 
@@ -2101,22 +2100,22 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     switch (value) {
                         case JOptionPane.YES_OPTION:
                             try {
-                                searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), newPNovoParameters);
-                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
-                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
-                                if (error != null) {
-                                    JOptionPane.showMessageDialog(this,
-                                            error,
-                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
-                                }
-                                settingsFileJTextField.setText(parametersFile.getName());
-                                pNovoParametersSet = true;
-                            } catch (IOException e) {
-                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                                e.printStackTrace();
+                            searchParameters.setIdentificationAlgorithmParameter(Advocate.pNovo.getIndex(), newPNovoParameters);
+                            SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                            String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                            if (error != null) {
+                                JOptionPane.showMessageDialog(this,
+                                        error,
+                                        "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
                             }
-                            break;
+                            settingsFileJTextField.setText(parametersFile.getName());
+                            pNovoParametersSet = true;
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        break;
                         case JOptionPane.CANCEL_OPTION:
                             pNovoSettingsDialog = new PNovoSettingsDialog(this, newPNovoParameters, true);
                             break;
@@ -2153,7 +2152,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }//GEN-LAST:event_pepNovoSettingsJButtonMouseEntered
 
-    
     /**
      * Validate the input.
      *
@@ -2238,7 +2236,6 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_novorSettingsJButtonMouseExited
 
-    
     /**
      * Edit the paths.
      *
@@ -2273,22 +2270,22 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     switch (value) {
                         case JOptionPane.YES_OPTION:
                             try {
-                                searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), newNovorParameters);
-                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
-                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
-                                if (error != null) {
-                                    JOptionPane.showMessageDialog(this,
-                                            error,
-                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
-                                }
-                                settingsFileJTextField.setText(parametersFile.getName());
-                                novorParametersSet = true;
-                            } catch (IOException e) {
-                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                                e.printStackTrace();
+                            searchParameters.setIdentificationAlgorithmParameter(Advocate.novor.getIndex(), newNovorParameters);
+                            SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                            String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                            if (error != null) {
+                                JOptionPane.showMessageDialog(this,
+                                        error,
+                                        "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
                             }
-                            break;
+                            settingsFileJTextField.setText(parametersFile.getName());
+                            novorParametersSet = true;
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        break;
                         case JOptionPane.CANCEL_OPTION:
                             novorSettingsDialog = new NovorSettingsDialog(this, newNovorParameters, true);
                             break;
@@ -2332,22 +2329,22 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                     switch (value) {
                         case JOptionPane.YES_OPTION:
                             try {
-                                searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), newPepNovoParameters);
-                                SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
-                                String error = DeNovoSequencingHandler.loadModifications(searchParameters);
-                                if (error != null) {
-                                    JOptionPane.showMessageDialog(this,
-                                            error,
-                                            "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
-                                }
-                                settingsFileJTextField.setText(parametersFile.getName());
-                                pepNovoParametersSet = true;
-                            } catch (IOException e) {
-                                JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
-                                        + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-                                e.printStackTrace();
+                            searchParameters.setIdentificationAlgorithmParameter(Advocate.pepnovo.getIndex(), newPepNovoParameters);
+                            SearchParameters.saveIdentificationParameters(searchParameters, parametersFile);
+                            String error = DeNovoSequencingHandler.loadModifications(searchParameters);
+                            if (error != null) {
+                                JOptionPane.showMessageDialog(this,
+                                        error,
+                                        "PTM Definition Changed", JOptionPane.WARNING_MESSAGE);
                             }
-                            break;
+                            settingsFileJTextField.setText(parametersFile.getName());
+                            pepNovoParametersSet = true;
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(this, "An error occurred when saving the settings:\n"
+                                    + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        break;
                         case JOptionPane.CANCEL_OPTION:
                             pepNovoSettingsDialog = new PepNovoSettingsDialog(this, newPepNovoParameters, true);
                             break;
@@ -2514,7 +2511,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
         int nThreads = deNovoSequencingHandler.getNThreads();
         deNovoSequencingHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
         deNovoSequencingHandler.setNThreads(nThreads); // @TODO: find a better fix!!
-        
+
         sequencingWorker = new SequencingWorker(waitingHandler, true);
         sequencingWorker.execute();
 
@@ -3128,7 +3125,7 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
                 e.printStackTrace();
                 setDefaultParameters(); // label the configs as default
                 searchParameters = new SearchParameters();
-            searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
+                searchParameters.setDigestionPreferences(DigestionPreferences.getDefaultPreferences());
                 setDefaultParameters(); // label the configs as default
             }
         }
@@ -3365,12 +3362,36 @@ public class DeNovoGUI extends javax.swing.JFrame implements JavaHomeOrMemoryDia
      */
     public boolean checkForNewVersion() {
         try {
-            File jarFile = new File(DeNovoGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            File jarFile = new File(
+                    DeNovoGUI.class
+                            .getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .toURI()
+                            .getPath()
+            );
+
             MavenJarFile oldMavenJarFile = new MavenJarFile(jarFile.toURI());
-            URL jarRepository = new URL("http", "genesis.ugent.be", new StringBuilder().append("/maven2/").toString());
-            return CompomicsWrapper.checkForNewDeployedVersion("DeNovoGUI", oldMavenJarFile, jarRepository, "denovogui.ico",
-                    false, true, true, Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
-                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")), true);
+
+            URL jarRepository = new URL(
+                    "https",
+                    "genesis.ugent.be",
+                    "/archiva/repository/maven2/"
+            );
+
+            return CompomicsWrapper.checkForNewDeployedVersion(
+                    "DeNovoGUI",
+                    oldMavenJarFile,
+                    jarRepository,
+                    "denovogui.ico",
+                    false,
+                    true,
+                    true,
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui.png")),
+                    Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/denovogui_orange.png")),
+                    true
+            );
+
         } catch (UnknownHostException ex) {
             // no internet connection
             System.out.println("Checking for new version failed. No internet connection.");
