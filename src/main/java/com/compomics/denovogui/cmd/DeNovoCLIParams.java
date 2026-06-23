@@ -22,10 +22,14 @@ public enum DeNovoCLIParams {
     DIRECT_TAG("directag", "Turn the DirecTag sequencing on or off (1: on, 0: off, default is '1'). (At least one sequencing method has to be enabled.)", false),
     PNOVO("pnovo", "Turn the pNovo+ sequencing on or off (1: on, 0: off, default is '0'). (At least one sequencing method has to be enabled.)", false),
     NOVOR("novor", "Turn the Novor sequencing on or off (1: on, 0: off, default is '0'). (At least one sequencing method has to be enabled.)", false),
+    INSTANOVO("instanovo", "Turn the InstaNovo sequencing on or off (1: on, 0: off, default is '0'). (At least one sequencing method has to be enabled.)", false),
+    INSTANOVO_PLUS("instanovo_plus", "Turn the InstaNovo+ sequencing on or off (1: on, 0: off, default is '0'). (At least one sequencing method has to be enabled.)", false),
+    INSTANOVO_REFINE("instanovo_refine", "Turn InstaNovo with refinement on or off (1: on, 0: off, default is '0'). Refinement uses InstaNovo+.", false),
     PEPNOVO_LOCATION("pepnovo_folder", "The PepNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
     DIRECTAG_LOCATION("directag_folder", "The DirecTag executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
     PNOVO_LOCATION("pnovo_folder", "The pNovo+ executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
-    NOVOR_LOCATION("novor_folder", "The Novor executable, defaults to the OS dependent versions included with DeNovoGUI.", false);
+    NOVOR_LOCATION("novor_folder", "The Novor executable, defaults to the OS dependent versions included with DeNovoGUI.", false),
+    INSTANOVO_LOCATION("instanovo_folder", "The InstaNovo checkout or installation folder. DeNovoGUI checks .venv/bin/instanovo, .venv/Scripts/instanovo(.exe), and instanovo(.exe) in this folder before falling back to PATH.", false);
 
     /**
      * Short Id for the CLI parameter.
@@ -89,12 +93,16 @@ public enum DeNovoCLIParams {
         output += "-" + String.format(formatter, DIRECT_TAG.id) + " " + DIRECT_TAG.description + "\n";
         output += "-" + String.format(formatter, PNOVO.id) + " " + PNOVO.description + "\n";
         output += "-" + String.format(formatter, NOVOR.id) + " " + NOVOR.description + "\n";
+        output += "-" + String.format(formatter, INSTANOVO.id) + " " + INSTANOVO.description + "\n";
+        output += "-" + String.format(formatter, INSTANOVO_PLUS.id) + " " + INSTANOVO_PLUS.description + "\n";
+        output += "-" + String.format(formatter, INSTANOVO_REFINE.id) + " " + INSTANOVO_REFINE.description + "\n";
 
         output += "\n\nOptional Advanced Parameters:\n\n";
         output += "-" + String.format(formatter, PEPNOVO_LOCATION.id) + " " + PEPNOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, DIRECTAG_LOCATION.id) + " " + DIRECTAG_LOCATION.description + "\n";
         output += "-" + String.format(formatter, PNOVO_LOCATION.id) + " " + PNOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, NOVOR_LOCATION.id) + " " + NOVOR_LOCATION.description + "\n";
+        output += "-" + String.format(formatter, INSTANOVO_LOCATION.id) + " " + INSTANOVO_LOCATION.description + "\n";
         output += "-" + String.format(formatter, THREADS.id) + " " + THREADS.description + "\n";
 
         output += "\n\nOptional Temporary Folder:\n\n";

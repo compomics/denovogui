@@ -1,18 +1,20 @@
 package com.compomics.denovogui.io;
 
-import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.denovogui.io.SpectrumFactory;
+
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.amino_acid_tags.Tag;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
+import com.compomics.util.experiment.refinement_parameters.PepnovoAssumptionDetails;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
 /**
  * This class allows exporting the results in a text file.
@@ -58,13 +59,13 @@ public class TextExporter {
      * @throws IOException thrown if an IO exception occurs
      * @throws SQLException thrown if an SQL exception occurs
      * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
-     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * @throws IOException thrown if a precursor cannot be
      * extracted from a spectrum
      * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportPeptides(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
-            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -84,7 +85,8 @@ public class TextExporter {
                 b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Retention Time (s)" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
                         + "Rank" + SEPARATOR + "Protein(s)" + SEPARATOR + "Peptide" + SEPARATOR + "Peptide Variable Modifications" + SEPARATOR + "Modified Sequence"
                         + SEPARATOR + "Tag" + SEPARATOR + "Longest Amino Acid Sequence" + SEPARATOR + "Tag Variable Modifications" + SEPARATOR + "Modified tag sequence" + SEPARATOR
-                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
+                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR
+                        + "Novor Score" + SEPARATOR + "InstaNovo Score" + SEPARATOR + "InstaNovo+ Score" + SEPARATOR + "InstaNovo with refinement Score" + SEPARATOR
                         + "N-Gap" + SEPARATOR + "C-Gap" + SEPARATOR + "Theoretic m/z" + SEPARATOR + "Identification Charge" + SEPARATOR + "Tag Mass Error (Da)"
                         + SEPARATOR + "Tag Mass Error (ppm)" + SEPARATOR + "Peptide Mass Error (Da)" + SEPARATOR + "Peptide Mass Error (ppm)" + SEPARATOR + "Isotope");
                 b.newLine();
@@ -161,65 +163,29 @@ public class TextExporter {
 
                                     b.write(peptide.getSequence() + SEPARATOR);
                                     b.write(getPeptideModificationsAsString(peptide) + SEPARATOR);
-                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
+                                    b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
 
                                     // tag section if any
-                                    TagAssumption tagAssumption = new TagAssumption();
-                                    tagAssumption = (TagAssumption) peptideAssumption.getUrParam(tagAssumption);
+                                    TagAssumption tagAssumption = null;
                                     if (tagAssumption != null) {
                                         Tag tag = tagAssumption.getTag();
                                         b.write(tag.asSequence() + SEPARATOR);
                                         b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
                                         b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
-                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
-                                        if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-                                            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-                                            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-                                            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
-                                            b.write(tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
-                                        } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-                                            b.write(SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
-                                        } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-                                            b.write(SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR);
-                                        } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-                                            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR);
-                                        }
+                                        b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
+                                        writeScoreColumns(b, tagAssumption);
                                         b.write(tag.getNTerminalGap() + SEPARATOR);
                                         b.write(tag.getCTerminalGap() + SEPARATOR);
                                         b.write(tag.getMass() + SEPARATOR);
-                                        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
+                                        b.write(tagAssumption.getIdentificationCharge() + SEPARATOR);
                                         double massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + SEPARATOR);
                                         massDeviation = tagAssumption.getDeltaMass(precursor.getMz(), true, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                         b.write(massDeviation + SEPARATOR);
-                                    } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);  
                                     } else {
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
-                                        b.write(SEPARATOR);
+                                        writeEmptyColumns(b, 4);
+                                        writeScoreColumns(b, peptideAssumption);
+                                        writeEmptyColumns(b, 6);
                                     }
                                     Double massDeviation = peptideAssumption.getDeltaMass(precursor.getMz(), false, searchParameters.getMinIsotopicCorrection(), searchParameters.getMaxIsotopicCorrection());
                                     b.write(massDeviation + SEPARATOR);
@@ -263,13 +229,13 @@ public class TextExporter {
      * @throws IOException thrown if an IO exception occurs
      * @throws SQLException thrown if an SQL exception occurs
      * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
-     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * @throws IOException thrown if a precursor cannot be
      * extracted from a spectrum
      * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportTags(File destinationFile, Identification identification, SearchParameters searchParameters,
             WaitingHandler waitingHandler, Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches)
-            throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
 
@@ -288,7 +254,8 @@ public class TextExporter {
             try {
                 b.write("File Name" + SEPARATOR + "Spectrum Title" + SEPARATOR + "Retention Time (s)" + SEPARATOR + "Measured m/z" + SEPARATOR + "Measured Charge" + SEPARATOR
                         + "Rank" + SEPARATOR + "Tag" + SEPARATOR + "Longest AminoAcid sequence" + SEPARATOR + "Variable Modifications" + SEPARATOR + "Modified Sequence" + SEPARATOR
-                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR + "Novor Score" + SEPARATOR
+                        + "PepNovo RankScore" + SEPARATOR + "PepNovo Score" + SEPARATOR + "DirecTag E-value" + SEPARATOR + "pNovo+ Score" + SEPARATOR
+                        + "Novor Score" + SEPARATOR + "InstaNovo Score" + SEPARATOR + "InstaNovo+ Score" + SEPARATOR + "InstaNovo with refinement Score" + SEPARATOR
                         + "N-Gap" + SEPARATOR + "C-Gap" + SEPARATOR + "Theoretic m/z" + SEPARATOR + "Identification Charge");
                 b.newLine();
 
@@ -397,6 +364,66 @@ public class TextExporter {
     }
 
     /**
+     * Writes the score columns for the given assumption.
+     *
+     * @param b the writer
+     * @param assumption the assumption
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * writing
+     */
+    private static void writeScoreColumns(BufferedWriter b, SpectrumIdentificationAssumption assumption) throws IOException {
+        int advocate = assumption.getAdvocate();
+        if (advocate == Advocate.pepnovo.getIndex()) {
+            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
+            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) assumption.getUrParam(pepnovoAssumptionDetails);
+            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 6);
+        } else if (advocate == Advocate.direcTag.getIndex()) {
+            writeEmptyColumns(b, 2);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 5);
+        } else if (advocate == Advocate.pNovo.getIndex()) {
+            writeEmptyColumns(b, 3);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 4);
+        } else if (advocate == Advocate.novor.getIndex()) {
+            writeEmptyColumns(b, 4);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 3);
+        } else if (advocate == Advocate.instanovo.getIndex()) {
+            writeEmptyColumns(b, 5);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 2);
+        } else if (advocate == Advocate.instanovoPlus.getIndex()) {
+            writeEmptyColumns(b, 6);
+            b.write(assumption.getScore() + SEPARATOR);
+            writeEmptyColumns(b, 1);
+        } else if (advocate == Advocate.instanovoRefined.getIndex()) {
+            writeEmptyColumns(b, 7);
+            b.write(assumption.getScore() + SEPARATOR);
+        } else {
+            writeEmptyColumns(b, 8);
+        }
+    }
+
+    /**
+     * Writes empty tab-separated columns.
+     *
+     * @param b the writer
+     * @param nColumns the number of columns
+     *
+     * @throws IOException exception thrown whenever an error occurred while
+     * writing
+     */
+    private static void writeEmptyColumns(BufferedWriter b, int nColumns) throws IOException {
+        for (int i = 0; i < nColumns; i++) {
+            b.write(SEPARATOR);
+        }
+    }
+
+    /**
      * Writes the details on the given peptide assumption to the given writer in
      * the form of a tag export.
      *
@@ -415,23 +442,12 @@ public class TextExporter {
         b.write(peptide.getSequence() + SEPARATOR);
         b.write(peptide.getSequence() + SEPARATOR);
         b.write(Peptide.getPeptideModificationsAsString(peptide, true) + SEPARATOR);
-        b.write(peptide.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
-        if (peptideAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) peptideAssumption.getUrParam(pepnovoAssumptionDetails);
-            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
-            b.write(peptideAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
-        } else if (peptideAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
-        } else if (peptideAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR + SEPARATOR);
-        } else if (peptideAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + peptideAssumption.getScore() + SEPARATOR);
-        }
+        b.write(peptide.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
+        writeScoreColumns(b, peptideAssumption);
         b.write(0 + SEPARATOR);
         b.write(0 + SEPARATOR);
         b.write(peptide.getMass() + SEPARATOR);
-        b.write(peptideAssumption.getIdentificationCharge().value + SEPARATOR);
+        b.write(peptideAssumption.getIdentificationCharge() + SEPARATOR);
     }
 
     /**
@@ -451,23 +467,12 @@ public class TextExporter {
         b.write(tag.asSequence() + SEPARATOR);
         b.write(tag.getLongestAminoAcidSequence() + SEPARATOR);
         b.write(Tag.getTagModificationsAsString(tag) + SEPARATOR);
-        b.write(tag.getTaggedModifiedSequence(searchParameters.getPtmSettings(), false, false, true, false) + SEPARATOR);
-        if (tagAssumption.getAdvocate() == Advocate.pepnovo.getIndex()) {
-            PepnovoAssumptionDetails pepnovoAssumptionDetails = new PepnovoAssumptionDetails();
-            pepnovoAssumptionDetails = (PepnovoAssumptionDetails) tagAssumption.getUrParam(pepnovoAssumptionDetails);
-            b.write(pepnovoAssumptionDetails.getRankScore() + SEPARATOR);
-            b.write(tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR);
-        } else if (tagAssumption.getAdvocate() == Advocate.direcTag.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR + SEPARATOR);
-        } else if (tagAssumption.getAdvocate() == Advocate.pNovo.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR + SEPARATOR);
-        } else if (tagAssumption.getAdvocate() == Advocate.novor.getIndex()) {
-            b.write(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + tagAssumption.getScore() + SEPARATOR);
-        }
+        b.write(tag.getTaggedModifiedSequence(searchParameters.getModificationParameters(), false, false, true, false) + SEPARATOR);
+        writeScoreColumns(b, tagAssumption);
         b.write(tag.getNTerminalGap() + SEPARATOR);
         b.write(tag.getCTerminalGap() + SEPARATOR);
         b.write(tag.getMass() + SEPARATOR);
-        b.write(tagAssumption.getIdentificationCharge().value + SEPARATOR);
+        b.write(tagAssumption.getIdentificationCharge() + SEPARATOR);
     }
 
     /**
@@ -487,12 +492,12 @@ public class TextExporter {
      * @throws IOException thrown if an IO exception occurs
      * @throws SQLException thrown if an SQL exception occurs
      * @throws ClassNotFoundException thrown if a ClassNotFoundException occurs
-     * @throws MzMLUnmarshallerException thrown if a precursor cannot be
+     * @throws IOException thrown if a precursor cannot be
      * extracted from a spectrum
      * @throws InterruptedException thrown if the process is interrupted
      */
     public static void exportBlastPSMs(File destinationFile, Identification identification, SearchParameters searchParameters, WaitingHandler waitingHandler,
-            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, MzMLUnmarshallerException, InterruptedException {
+            Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, SQLException, ClassNotFoundException, InterruptedException {
 
         FileWriter f = new FileWriter(destinationFile);
         double threshold = 0;

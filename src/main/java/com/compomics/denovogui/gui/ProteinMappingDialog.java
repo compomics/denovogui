@@ -1,10 +1,11 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.io.biology.protein.FastaParameters;
 import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
-import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.protein_sequences_manager.gui.SequenceDbDetailsDialog;
+import com.compomics.util.gui.modification.ModificationsDialog;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
+import com.compomics.util.gui.parameters.identification.search.SequenceDbDetailsDialog;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
     /**
      * The post translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The parent result frame.
      */
@@ -64,7 +65,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
      * @param modificationProfile the modification profile used for the
      * identification
      */
-    public ProteinMappingDialog(ResultsFrame resultFrame, PtmSettings modificationProfile) {
+    public ProteinMappingDialog(ResultsFrame resultFrame, ModificationParameters modificationProfile) {
         super(resultFrame, true);
         this.resultsFrame = resultFrame;
         if (modificationProfile != null) {
@@ -170,7 +171,7 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
             ((DefaultTableModel) modificationsTable.getModel()).addRow(
                     new Object[]{ptmFactory.getColor(mod),
                         mod,
-                        ptmFactory.getPTM(mod).getMass(),
+                        ptmFactory.getModification(mod).getMass(),
                         variableModifications.contains(mod),
                         fixedModifications.contains(mod)});
         }
@@ -182,11 +183,11 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
         double minMass = Double.MAX_VALUE;
 
         for (String ptm : ptmFactory.getPTMs()) {
-            if (ptmFactory.getPTM(ptm).getMass() > maxMass) {
-                maxMass = ptmFactory.getPTM(ptm).getMass();
+            if (ptmFactory.getModification(ptm).getMass() > maxMass) {
+                maxMass = ptmFactory.getModification(ptm).getMass();
             }
-            if (ptmFactory.getPTM(ptm).getMass() < minMass) {
-                minMass = ptmFactory.getPTM(ptm).getMass();
+            if (ptmFactory.getModification(ptm).getMass() < minMass) {
+                minMass = ptmFactory.getModification(ptm).getMass();
             }
         }
 
@@ -491,8 +492,15 @@ public class ProteinMappingDialog extends javax.swing.JDialog{
             }
         }
 
-        SequenceDbDetailsDialog sequenceDbDetailsDialog = new SequenceDbDetailsDialog(resultsFrame, 
-                resultsFrame.getDeNovoGUI().getLastSelectedFolder(), true, resultsFrame.getNormalIcon(), resultsFrame.getWaitingIcon());
+        SequenceDbDetailsDialog sequenceDbDetailsDialog = new SequenceDbDetailsDialog(
+                resultsFrame,
+                "FASTA Database",
+                new FastaParameters(),
+                resultsFrame.getDeNovoGUI().getLastSelectedFolder(),
+                true,
+                resultsFrame.getNormalIcon(),
+                resultsFrame.getWaitingIcon()
+        );
 
         boolean success = sequenceDbDetailsDialog.selectDB(true);
         if (success) {

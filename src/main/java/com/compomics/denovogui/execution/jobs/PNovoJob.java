@@ -2,14 +2,14 @@ package com.compomics.denovogui.execution.jobs;
 
 import com.compomics.denovogui.execution.Job;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.AminoAcid;
-import com.compomics.util.experiment.biology.Enzyme;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.aminoacids.AminoAcid;
+import com.compomics.util.experiment.biology.enzymes.Enzyme;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PNovoParameters;
-import com.compomics.util.preferences.DigestionPreferences;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.PNovoParameters;
+import com.compomics.util.parameters.identification.search.DigestionParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -56,7 +56,7 @@ public class PNovoJob extends Job {
     /**
      * The post translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The number of threads.
      */
@@ -217,7 +217,7 @@ public class PNovoJob extends Job {
             int variableModCount = 0;
 
             // add the variable modifications
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+            if (!searchParameters.getModificationParameters().getVariableModifications().isEmpty()) {
                 br.write("#variable modifications" + System.getProperty("line.separator"));
             }
 
@@ -226,14 +226,14 @@ public class PNovoJob extends Job {
             HashMap<Character, Character> modificationLetterToResidueMap = new HashMap<Character, Character>();
 
             // variable modifications targetting specific amino acids
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
-                    PTM ptm = ptmFactory.getPTM(variableModification);
+            if (!searchParameters.getModificationParameters().getVariableModifications().isEmpty()) {
+                for (String variableModification : searchParameters.getModificationParameters().getVariableModifications()) {
+                    Modification ptm = ptmFactory.getModification(variableModification);
                     if (!ptm.isCTerm() && !ptm.isNTerm() && ptm.getPattern() != null) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
 
                             if (variableModCount > variableModificationsCharacters.length) {
-                                System.out.println("The number of variable PTM targets have to be smaller than " + variableModificationsCharacters.length + "!"); // @TODO: handle this better!
+                                System.out.println("The number of variable Modification targets have to be smaller than " + variableModificationsCharacters.length + "!"); // @TODO: handle this better!
                                 break;
                             }
 
@@ -250,9 +250,9 @@ public class PNovoJob extends Job {
             pNovoParameters.setPNovoPtmResiduesMap(modificationLetterToResidueMap);
 
             // variable modifications targetting the n or c term
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-                for (String variableModification : searchParameters.getPtmSettings().getVariableModifications()) {
-                    PTM ptm = ptmFactory.getPTM(variableModification);
+            if (!searchParameters.getModificationParameters().getVariableModifications().isEmpty()) {
+                for (String variableModification : searchParameters.getModificationParameters().getVariableModifications()) {
+                    Modification ptm = ptmFactory.getModification(variableModification);
                     if (ptm.isNTerm()) {
                         br.write("n-term=" + ptm.getRoundedMass() + System.getProperty("line.separator"));
                     } else if (ptm.isCTerm()) {
@@ -264,11 +264,11 @@ public class PNovoJob extends Job {
             }
 
             // add the fixed modifications
-            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
+            if (!searchParameters.getModificationParameters().getFixedModifications().isEmpty()) {
                 br.write(System.getProperty("line.separator") + "#fixed modifications" + System.getProperty("line.separator"));
 
-                for (String fixedModification : searchParameters.getPtmSettings().getFixedModifications()) {
-                    PTM ptm = ptmFactory.getPTM(fixedModification);
+                for (String fixedModification : searchParameters.getModificationParameters().getFixedModifications()) {
+                    Modification ptm = ptmFactory.getModification(fixedModification);
                     if (ptm.getPattern() != null) {
                         for (Character target : ptm.getPattern().getAminoAcidsAtTarget()) {
                             br.write(target + "=" + (AminoAcid.getAminoAcid(target).getMonoisotopicMass() + ptm.getRoundedMass()) + System.getProperty("line.separator"));
@@ -296,8 +296,8 @@ public class PNovoJob extends Job {
             br.write("ETDIONTYPE6=z 2 0 0 1.99129206512" + System.getProperty("line.separator")); // @TODO: should these be editable..?
 
             // set the enzyme
-            DigestionPreferences digestionPreferences = searchParameters.getDigestionPreferences();
-            if (digestionPreferences.getCleavagePreference() == DigestionPreferences.CleavagePreference.enzyme) {
+            DigestionParameters digestionPreferences = searchParameters.getDigestionParameters();
+            if (digestionPreferences.getCleavagePreference() == DigestionParameters.CleavagePreference.enzyme) {
                 br.write("enzyme=" + getPNovoEnzyme(digestionPreferences.getEnzymes().get(0)) + System.getProperty("line.separator")); // @TODO: will this one ever be used? as an enzyme is not usually set?
             }
 

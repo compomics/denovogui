@@ -1,7 +1,9 @@
 package com.compomics.denovogui.execution;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,7 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract class of a job to be executed. Implements the interface Executable
@@ -59,7 +62,7 @@ public abstract class Job implements Executable, Runnable {
     /**
      * Init the job logger.
      */
-    protected static Logger log = Logger.getLogger(Job.class);
+    protected static Logger log = LogManager.getLogger(Job.class);
     /**
      * Waiting handler displaying feedback to the user.
      */

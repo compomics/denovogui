@@ -1,12 +1,14 @@
 package com.compomics.denovogui.gui.tablemodels;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
@@ -74,7 +76,7 @@ public class SpectrumTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 13;
+        return 16;
     }
 
     @Override
@@ -105,6 +107,12 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 11:
                 return "Score (N)";
             case 12:
+                return "Score (I)";
+            case 13:
+                return "Score (I+)";
+            case 14:
+                return "Score (Ir)";
+            case 15:
                 return "  ";
             default:
                 return "";
@@ -173,8 +181,8 @@ public class SpectrumTableModel extends DefaultTableModel {
                 }
             case 7:
                 try {
-                    MSnSpectrum spectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumFile, spectrumTitle);
-                    return spectrum.getPeakList().size();
+                    Spectrum spectrum = (Spectrum) spectrumFactory.getSpectrum(spectrumFile, spectrumTitle);
+                    return spectrum.getNPeaks();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -243,30 +251,48 @@ public class SpectrumTableModel extends DefaultTableModel {
                     return null;
                 }
             case 11:
-                try {
-                    String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
-                    if (update && identification.matchExists(spectrumKey)) {
-                        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
-                        HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(Advocate.novor.getIndex());
-                        if (hitMap != null) {
-                            double bestScore = 0;
-                            for (double score : hitMap.keySet()) {
-                                if (score > bestScore) {
-                                    bestScore = score;
-                                }
-                            }
-                            return bestScore;
-                        }
-                    }
-                    return null;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
+                return getBestScore(spectrumTitle, Advocate.novor.getIndex());
             case 12:
+                return getBestScore(spectrumTitle, Advocate.instanovo.getIndex());
+            case 13:
+                return getBestScore(spectrumTitle, Advocate.instanovoPlus.getIndex());
+            case 14:
+                return getBestScore(spectrumTitle, Advocate.instanovoRefined.getIndex());
+            case 15:
                 String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
                 return identification.matchExists(spectrumKey);
             default:
+                return null;
+        }
+    }
+
+    /**
+     * Returns the best score for the given advocate and spectrum.
+     *
+     * @param spectrumTitle the spectrum title
+     * @param advocateIndex the advocate index
+     *
+     * @return the best score, or null if no score was found
+     */
+    private Double getBestScore(String spectrumTitle, int advocateIndex) {
+        try {
+            String spectrumKey = Spectrum.getSpectrumKey(spectrumFile, spectrumTitle);
+            if (update && identification.matchExists(spectrumKey)) {
+                HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
+                HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> hitMap = allAssumptions.get(advocateIndex);
+                if (hitMap != null) {
+                    double bestScore = 0;
+                    for (double score : hitMap.keySet()) {
+                        if (bestScore == 0 || score > bestScore) {
+                            bestScore = score;
+                        }
+                    }
+                    return bestScore;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
                 return null;
         }
     }
@@ -288,8 +314,11 @@ public class SpectrumTableModel extends DefaultTableModel {
             case 9:
             case 10:
             case 11:
-                return Double.class;
             case 12:
+            case 13:
+            case 14:
+                return Double.class;
+            case 15:
                 return Boolean.class;
             default:
                 return null;

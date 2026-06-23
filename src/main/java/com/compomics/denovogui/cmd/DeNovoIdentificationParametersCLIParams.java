@@ -35,14 +35,13 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.MC.id, true, IdentificationParametersCLIParams.MC.description);
         aOptions.addOption(IdentificationParametersCLIParams.FI.id, true, IdentificationParametersCLIParams.FI.description);
         aOptions.addOption(IdentificationParametersCLIParams.RI.id, true, IdentificationParametersCLIParams.RI.description);
-        aOptions.addOption(IdentificationParametersCLIParams.DB.id, true, IdentificationParametersCLIParams.DB.description);
 
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_DISCARD_SPECTRA.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
-        aOptions.addOption(IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
+        aOptions.addOption(IdentificationParametersCLIParams.PEPNOVO_ESTIMATE_CHARGE.id, true, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description);
 
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id, true, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.id, true, IdentificationParametersCLIParams.DIRECTAG_COMPLEMENT_MZ_TOLERANCE.description);
@@ -53,14 +52,14 @@ public class DeNovoIdentificationParametersCLIParams {
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.id, true, IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.id, true, IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.id, true, IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.description);
-        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.id, true, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.description);
+        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MAX_PRECURSOR_ADJUSTMENT.id, true, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECURSOR_ADJUSTMENT.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.id, true, IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.description);
-        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.id, true, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.description);
+        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MIN_PRECURSOR_ADJUSTMENT.id, true, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECURSOR_ADJUSTMENT.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.id, true, IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.id, true, IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.id, true, IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.id, true, IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.description);
-        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.id, true, IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.description);
+        aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_PRECURSOR_ADJUSTMENT_STEP.id, true, IdentificationParametersCLIParams.DIRECTAG_PRECURSOR_ADJUSTMENT_STEP.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id, true, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id, true, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description);
         aOptions.addOption(IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id, true, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description);
@@ -102,7 +101,6 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.MC.id) + " " + IdentificationParametersCLIParams.MC.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.FI.id) + " " + IdentificationParametersCLIParams.FI.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.RI.id) + " " + IdentificationParametersCLIParams.RI.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DB.id) + " " + IdentificationParametersCLIParams.DB.description + "\n";
 
         output += "\n\nPepNovo+ Advanced Parameters:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.id) + " " + IdentificationParametersCLIParams.PEPNOVO_CORRECT_PREC_MASS.description + "\n";
@@ -110,7 +108,7 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.id) + " " + IdentificationParametersCLIParams.PEPNOVO_FRAGMENTATION_MODEL.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.id) + " " + IdentificationParametersCLIParams.PEPNOVO_GENERATE_BLAST.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.id) + " " + IdentificationParametersCLIParams.PEPNOVO_HITLIST_LENGTH.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.id) + " " + IdentificationParametersCLIParams.PEPTNOVO_ESTIMATE_CHARGE.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.PEPNOVO_ESTIMATE_CHARGE.id) + " " + IdentificationParametersCLIParams.PEPNOVO_ESTIMATE_CHARGE.description + "\n";
 
         output += "\n\nDirecTag Advanced Parameters:\n\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
@@ -122,14 +120,14 @@ public class DeNovoIdentificationParametersCLIParams {
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ISOTOPE_MZ_TOLERANCE.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_DYNAMIC_MODS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_PEAK_COUNT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_PRECUSOR_ADJUSTMENT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_PRECURSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_PRECURSOR_ADJUSTMENT.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MAX_TAG_COUNT.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MIN_PRECUSOR_ADJUSTMENT.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MIN_PRECURSOR_ADJUSTMENT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MIN_PRECURSOR_ADJUSTMENT.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.id) + " " + IdentificationParametersCLIParams.DIRECTAG_MZ_FIDELITY_SCORE_WEIGHT.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.id) + " " + IdentificationParametersCLIParams.DIRECTAG_NUM_CHARGE_STATES.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.id) + " " + IdentificationParametersCLIParams.DIRECTAG_NUM_INTENSITY_CLASSES.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.id) + " " + IdentificationParametersCLIParams.DIRECTAG_OUTPUT_SUFFIX.description + "\n";
-        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.id) + " " + IdentificationParametersCLIParams.DIRECTAG_PRECUSOR_ADJUSTMENT_STEP.description + "\n";
+        output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_PRECURSOR_ADJUSTMENT_STEP.id) + " " + IdentificationParametersCLIParams.DIRECTAG_PRECURSOR_ADJUSTMENT_STEP.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TAG_LENGTH.id) + " " + IdentificationParametersCLIParams.DIRECTAG_ADJUST_PRECURSOR_MASS.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.id) + " " + IdentificationParametersCLIParams.DIRECTAG_TIC_CUTOFF_PERCENTAGE.description + "\n";
         output += "-" + String.format(formatter, IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.id) + " " + IdentificationParametersCLIParams.DIRECTAG_USE_CHARGE_STATE_FROM_MS.description + "\n";

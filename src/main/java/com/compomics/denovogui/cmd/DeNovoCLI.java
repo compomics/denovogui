@@ -1,18 +1,21 @@
 package com.compomics.denovogui.cmd;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.denovogui.DeNovoSequencingHandler;
+import com.compomics.denovogui.execution.jobs.InstaNovoJob;
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.software.settings.PathKey;
-import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathParameters;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.exception_handlers.CommandLineExceptionHandler;
-import com.compomics.util.experiment.biology.*;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.UtilitiesUserParameters;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,7 +59,7 @@ public class DeNovoCLI implements Callable {
 
             Options lOptions = new Options();
             DeNovoCLIParams.createOptionsCLI(lOptions);
-            BasicParser parser = new BasicParser();
+            DefaultParser parser = new DefaultParser();
             CommandLine line = parser.parse(lOptions, args);
 
             if (!DeNovoCLIInputBean.isValidStartup(line)) {
@@ -124,11 +127,15 @@ public class DeNovoCLI implements Callable {
             boolean runDirecTag = deNovoCLIInputBean.enableDirecTag();
             boolean runPNovo = deNovoCLIInputBean.enablePNovo();
             boolean runNovor = deNovoCLIInputBean.enableNovor();
+            boolean runInstaNovo = deNovoCLIInputBean.enableInstaNovo();
+            boolean runInstaNovoPlus = deNovoCLIInputBean.enableInstaNovoPlus();
+            boolean runInstaNovoRefine = deNovoCLIInputBean.enableInstaNovoRefine();
 
             File pepNovoExecutable = deNovoCLIInputBean.getPepNovoExecutable();
             File direcTagExecutable = deNovoCLIInputBean.getDirecTagExecutable();
             File pNovoExecutable = deNovoCLIInputBean.getPNovoExecutable();
             File novorExecutable = deNovoCLIInputBean.getNovorExecutable();
+            File instaNovoFolder = deNovoCLIInputBean.getInstaNovoFolder();
             File pepNovoFolder = null, direcTagFolder = null, pNovoFolder = null, novorFolder = null;
             String pepNovoExecutableTitle = null, direcTagExecutableTitle = null, pNovoExecutableTitle = null, novorExecutableTitle = null;
 
@@ -267,7 +274,14 @@ public class DeNovoCLI implements Callable {
                 System.exit(1);
             }
 
-            if (!runPepNovo && !runDirecTag && !runPNovo && !runNovor) {
+            if ((runInstaNovo || runInstaNovoPlus || runInstaNovoRefine)
+                    && instaNovoFolder != null
+                    && !InstaNovoJob.getExecutable(instaNovoFolder).exists()) {
+                waitingHandlerCLIImpl.appendReport("\nInstaNovo executable not found in the selected InstaNovo folder! Sequencing canceled.", false, true);
+                System.exit(1);
+            }
+
+            if (!runPepNovo && !runDirecTag && !runPNovo && !runNovor && !runInstaNovo && !runInstaNovoPlus && !runInstaNovoRefine) {
                 waitingHandlerCLIImpl.appendReport("\nNo sequencing algorithms selected! Sequencing canceled.", false, true);
                 System.exit(1);
             }
@@ -301,18 +315,20 @@ public class DeNovoCLI implements Callable {
             waitingHandlerCLIImpl.appendReport("Done loading the spectra.", true, true);
             
             // incrementing the counter for a new DenovoGUI run
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
-            if (utilitiesUserPreferences.isAutoUpdate()) {
+            UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
+            if (utilitiesUserParameters.isAutoUpdate()) {
                 Util.sendGAUpdate("UA-36198780-4", "startrun-cl", "denovogui-" + Properties.getVersion());
             }
 
             // start the sequencing
-            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder);
+            DeNovoSequencingHandler searchHandler = new DeNovoSequencingHandler(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder, instaNovoFolder);
             searchHandler.setNThreads(deNovoCLIInputBean.getNThreads());
             searchHandler.startSequencing(deNovoCLIInputBean.getSpectrumFiles(),
                     searchParameters,
                     deNovoCLIInputBean.getOutputFile(), searchParametersFile, pepNovoExecutableTitle, direcTagExecutableTitle, pNovoExecutableTitle, novorExecutableTitle,
-                    runPepNovo, runDirecTag, runPNovo, runNovor, waitingHandlerCLIImpl, exceptionHandler);
+                    runPepNovo, runDirecTag, runPNovo, runNovor,
+                    runInstaNovo, runInstaNovoPlus, runInstaNovoRefine,
+                    waitingHandlerCLIImpl, exceptionHandler);
         } catch (Exception e) {
             exceptionHandler.catchException(e);
             return 1;
@@ -325,7 +341,7 @@ public class DeNovoCLI implements Callable {
      * Sets the path configuration.
      */
     private void setPathConfiguration() throws IOException {
-        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathPreferences.configurationFileName);
+        File pathConfigurationFile = new File(getJarFilePath(), UtilitiesPathParameters.configurationFileName);
         if (pathConfigurationFile.exists()) {
             DeNovoGUIPathPreferences.loadPathPreferencesFromFile(pathConfigurationFile);
         }

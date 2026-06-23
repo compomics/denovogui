@@ -1,7 +1,10 @@
 package com.compomics.denovogui;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.denovogui.execution.Job;
 import com.compomics.denovogui.execution.jobs.DirecTagJob;
+import com.compomics.denovogui.execution.jobs.InstaNovoJob;
 import com.compomics.denovogui.execution.jobs.NovorJob;
 import com.compomics.denovogui.execution.jobs.PNovoJob;
 import com.compomics.denovogui.execution.jobs.PepNovoJob;
@@ -10,13 +13,13 @@ import com.compomics.denovogui.io.PepNovoModificationFile;
 import com.compomics.denovogui.util.Properties;
 import com.compomics.software.CompomicsWrapper;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.PepnovoParameters;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
 import com.compomics.util.gui.waiting.waitinghandlers.WaitingHandlerCLIImpl;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.UtilitiesUserParameters;
 import com.compomics.util.waiting.Duration;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
@@ -58,6 +61,10 @@ public class DeNovoSequencingHandler {
      */
     private File novorFolder;
     /**
+     * The InstaNovo folder.
+     */
+    private File instaNovoFolder;
+    /**
      * If true, PepNovo will be run.
      */
     private boolean enablePepNovo = true;
@@ -74,7 +81,19 @@ public class DeNovoSequencingHandler {
      */
     private boolean enableNovor = false;
     /**
-     * Default PTM selection.
+     * If true, InstaNovo will be run.
+     */
+    private boolean enableInstaNovo = false;
+    /**
+     * If true, InstaNovo+ will be run.
+     */
+    private boolean enableInstaNovoPlus = false;
+    /**
+     * If true, InstaNovo with refinement will be run.
+     */
+    private boolean enableInstaNovoRefined = false;
+    /**
+     * Default Modification selection.
      */
     public static final String DENOVOGUI_COMFIGURATION_FILE = "DeNovoGUI_configuration.txt";
     /**
@@ -116,7 +135,7 @@ public class DeNovoSequencingHandler {
     /**
      * The factory used to handle the modifications.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
 
     /**
      * Constructor.
@@ -127,10 +146,24 @@ public class DeNovoSequencingHandler {
      * @param novorFolder the Novor folder
      */
     public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder, File novorFolder) {
+        this(pepNovoFolder, direcTagFolder, pNovoFolder, novorFolder, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pepNovoFolder the PepNovo+ folder
+     * @param direcTagFolder the DirecTag folder
+     * @param pNovoFolder the pNovo folder
+     * @param novorFolder the Novor folder
+     * @param instaNovoFolder the InstaNovo folder
+     */
+    public DeNovoSequencingHandler(File pepNovoFolder, File direcTagFolder, File pNovoFolder, File novorFolder, File instaNovoFolder) {
         this.pepNovoFolder = pepNovoFolder;
         this.direcTagFolder = direcTagFolder;
         this.pNovoFolder = pNovoFolder;
         this.novorFolder = novorFolder;
+        this.instaNovoFolder = instaNovoFolder;
     }
 
     /**
@@ -159,11 +192,49 @@ public class DeNovoSequencingHandler {
      */
     public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, File searchParametersFile, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle,
             boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, boolean enableNovor, WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
+        startSequencing(spectrumFiles, searchParameters, outputFolder, searchParametersFile, pepNovoExeTitle, direcTagExeTitle, pNovoExeTitle, novorExeTitle,
+                enablePepNovo, enableDirecTag, enablePNovo, enableNovor, false, false, false, waitingHandler, exceptionHandler);
+    }
+
+    /**
+     * Starts the sequencing for a list of files which will be processed
+     * sequentially.
+     *
+     * @param spectrumFiles the spectrum files to process
+     * @param searchParameters the search parameters
+     * @param outputFolder the output folder
+     * @param searchParametersFile the file where to save the search parameters
+     * @param pepNovoExeTitle the name of the PepNovo+ executable
+     * @param direcTagExeTitle the name of the DirecTag executable
+     * @param pNovoExeTitle the name of the pNovo+ executable
+     * @param novorExeTitle the name of the Novor executable
+     * @param enablePepNovo run PepNovo?
+     * @param enableDirecTag run DirecTag?
+     * @param enablePNovo run pNovo?
+     * @param enableNovor run Novor?
+     * @param enableInstaNovo run InstaNovo?
+     * @param enableInstaNovoPlus run InstaNovo+?
+     * @param enableInstaNovoRefined run InstaNovo with refinement?
+     * @param waitingHandler the waiting handler
+     * @param exceptionHandler the exception handler to use when an exception is
+     * caught
+     *
+     * @throws IOException thrown if there is an IO issue
+     * @throws ClassNotFoundException thrown if the search parameters cannot be
+     * processed from file
+     */
+    public void startSequencing(List<File> spectrumFiles, SearchParameters searchParameters, File outputFolder, File searchParametersFile, String pepNovoExeTitle, String direcTagExeTitle, String pNovoExeTitle, String novorExeTitle,
+            boolean enablePepNovo, boolean enableDirecTag, boolean enablePNovo, boolean enableNovor,
+            boolean enableInstaNovo, boolean enableInstaNovoPlus, boolean enableInstaNovoRefined,
+            WaitingHandler waitingHandler, ExceptionHandler exceptionHandler) throws IOException, ClassNotFoundException {
 
         this.enablePepNovo = enablePepNovo;
         this.enableDirecTag = enableDirecTag;
         this.enablePNovo = enablePNovo;
         this.enableNovor = enableNovor;
+        this.enableInstaNovo = enableInstaNovo;
+        this.enableInstaNovoPlus = enableInstaNovoPlus;
+        this.enableInstaNovoRefined = enableInstaNovoRefined;
         this.exceptionHandler = exceptionHandler;
 
         int numberOfSpectrumFiles = spectrumFiles.size();
@@ -173,7 +244,7 @@ public class DeNovoSequencingHandler {
             // write the modification file
             try {
                 File folder = new File(pepNovoFolder, "Models");
-                PepNovoModificationFile.writeFile(folder, searchParameters.getPtmSettings());
+                PepNovoModificationFile.writeFile(folder, searchParameters.getModificationParameters());
             } catch (Exception e) {
                 waitingHandler.appendReport("An error occurred while writing the modification file: " + e.getMessage(), true, true);
                 exceptionHandler.catchException(e);
@@ -188,6 +259,15 @@ public class DeNovoSequencingHandler {
             primaryProgressCounterMax += numberOfSpectrumFiles;
         }
         if (enableNovor) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        }
+        if (enableInstaNovo) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        }
+        if (enableInstaNovoPlus) {
+            primaryProgressCounterMax += numberOfSpectrumFiles;
+        }
+        if (enableInstaNovoRefined) {
             primaryProgressCounterMax += numberOfSpectrumFiles;
         }
 
@@ -207,10 +287,10 @@ public class DeNovoSequencingHandler {
         
         // set this version as the default DeNovoGUI version
         if (!getJarFilePath().equalsIgnoreCase(".")) {
-            UtilitiesUserPreferences utilitiesUserPreferences = UtilitiesUserPreferences.loadUserPreferences();
+            UtilitiesUserParameters utilitiesUserParameters = UtilitiesUserParameters.loadUserParameters();
             String versionNumber = Properties.getVersion();
-            utilitiesUserPreferences.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
-            UtilitiesUserPreferences.saveUserPreferences(utilitiesUserPreferences);
+            utilitiesUserParameters.setDeNovoGuiPath(new File(getJarFilePath(), "DeNovoGUI-" + versionNumber + ".jar").getAbsolutePath());
+            UtilitiesUserParameters.saveUserParameters(utilitiesUserParameters);
         }
 
         Duration duration = new Duration();
@@ -241,7 +321,9 @@ public class DeNovoSequencingHandler {
             }
 
             // check if we have any output files
-            ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles, enablePepNovo, enableDirecTag, enablePNovo, enableNovor);
+            ArrayList<File> resultFiles = FileProcessor.getAllResultFiles(outputFolder, spectrumFiles,
+                    enablePepNovo, enableDirecTag, enablePNovo, enableNovor,
+                    enableInstaNovo, enableInstaNovoPlus, enableInstaNovoRefined);
 
             if (resultFiles.isEmpty()) {
                 waitingHandler.appendReportEndLine();
@@ -272,6 +354,21 @@ public class DeNovoSequencingHandler {
 
         try {
             jobs = new ArrayDeque<Job>();
+
+            // InstaNovo
+            if (enableInstaNovo && !waitingHandler.isRunCanceled()) {
+                runInstaNovo(spectrumFile, searchParameters, outputFolder, waitingHandler, InstaNovoJob.Mode.transformer, "InstaNovo");
+            }
+
+            // InstaNovo+
+            if (enableInstaNovoPlus && !waitingHandler.isRunCanceled()) {
+                runInstaNovo(spectrumFile, searchParameters, outputFolder, waitingHandler, InstaNovoJob.Mode.diffusion, "InstaNovo+");
+            }
+
+            // InstaNovo with refinement
+            if (enableInstaNovoRefined && !waitingHandler.isRunCanceled()) {
+                runInstaNovo(spectrumFile, searchParameters, outputFolder, waitingHandler, InstaNovoJob.Mode.refined, "InstaNovo with refinement");
+            }
 
             // Novor
             if (enableNovor && !waitingHandler.isRunCanceled()) {
@@ -495,6 +592,52 @@ public class DeNovoSequencingHandler {
     }
 
     /**
+     * Runs an InstaNovo job.
+     *
+     * @param spectrumFile the spectrum file
+     * @param searchParameters the search parameters
+     * @param outputFolder the output folder
+     * @param waitingHandler the waiting handler
+     * @param mode the execution mode
+     * @param name the display name
+     */
+    private void runInstaNovo(File spectrumFile, SearchParameters searchParameters, File outputFolder, WaitingHandler waitingHandler,
+            InstaNovoJob.Mode mode, String name) {
+
+        Duration algorithmDuration = new Duration();
+        algorithmDuration.start();
+
+        waitingHandler.appendReportEndLine();
+        waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using " + name + ".", true, true);
+        waitingHandler.appendReportEndLine();
+
+        threadExecutor = Executors.newFixedThreadPool(1);
+        InstaNovoJob instaNovoJob = new InstaNovoJob(instaNovoFolder, spectrumFile, outputFolder, searchParameters, mode, waitingHandler, exceptionHandler);
+        threadExecutor.submit(instaNovoJob);
+        jobs.add(instaNovoJob);
+
+        threadExecutor.shutdown();
+
+        try {
+            threadExecutor.awaitTermination(12, TimeUnit.HOURS);
+        } catch (InterruptedException ex) {
+            if (!waitingHandler.isRunCanceled()) {
+                threadExecutor.shutdownNow();
+                exceptionHandler.catchException(ex);
+            }
+        }
+
+        if (!waitingHandler.isRunCanceled()) {
+            algorithmDuration.end();
+
+            waitingHandler.appendReportEndLine();
+            waitingHandler.appendReport("Sequencing " + spectrumFile.getName() + " using " + name + " completed (" + algorithmDuration.toString() + ").", true, true);
+            waitingHandler.appendReportEndLine();
+            waitingHandler.increasePrimaryProgressCounter();
+        }
+    }
+
+    /**
      * Cancels the sequencing process.
      *
      * @param outputFolder the output folder
@@ -635,9 +778,9 @@ public class DeNovoSequencingHandler {
      */
     public static String loadModifications(SearchParameters searchParameters) {
         String error = null;
-        ArrayList<String> toCheck = PTMFactory.getInstance().loadBackedUpModifications(searchParameters, true);
+        ArrayList<String> toCheck = ModificationFactory.getInstance().loadBackedUpModifications(searchParameters, true);
         if (!toCheck.isEmpty()) {
-            error = "The definition of the following PTM(s) seems to have changed and were overwritten:\n";
+            error = "The definition of the following Modification(s) seems to have changed and were overwritten:\n";
             for (int i = 0; i < toCheck.size(); i++) {
                 if (i > 0) {
                     if (i < toCheck.size() - 1) {
@@ -648,7 +791,7 @@ public class DeNovoSequencingHandler {
                 }
                 error += toCheck.get(i);
             }
-            error += ".\nPlease verify the definition of the PTM(s) in the modifications editor.";
+            error += ".\nPlease verify the definition of the Modification(s) in the modifications editor.";
         }
         return error;
     }

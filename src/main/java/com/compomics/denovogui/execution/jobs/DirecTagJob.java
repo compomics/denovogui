@@ -4,12 +4,12 @@ import com.compomics.denovogui.execution.Job;
 import com.compomics.software.cli.CommandLineUtils;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.identification.Advocate;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.DirecTagParameters;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.tool_specific.DirecTagParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.waiting.WaitingHandler;
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class DirecTagJob extends Job {
     /**
      * The post translational modifications factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The path to the executable.
      */
@@ -105,10 +105,10 @@ public class DirecTagJob extends Job {
 
             // add fixed mods
             String fixedModsAsString = "";
-            ArrayList<String> fixedPtms = searchParameters.getPtmSettings().getFixedModifications();
+            ArrayList<String> fixedPtms = searchParameters.getModificationParameters().getFixedModifications();
             for (String ptmName : fixedPtms) {
-                PTM ptm = ptmFactory.getPTM(ptmName);
-                if (ptm.getType() == PTM.MODAA) {
+                Modification ptm = ptmFactory.getModification(ptmName);
+                if (ptm.getType() == Modification.MODAA) {
                     fixedModsAsString += getFixedPtmFormattedForDirecTag(ptmName);
                 }
             }
@@ -121,10 +121,10 @@ public class DirecTagJob extends Job {
             // add variable mods
             ArrayList<String> utilitiesPtms = new ArrayList<String>();
             String variableModsAsString = "";
-            ArrayList<String> variablePtms = searchParameters.getPtmSettings().getVariableModifications();
+            ArrayList<String> variablePtms = searchParameters.getModificationParameters().getVariableModifications();
             for (String ptmName : variablePtms) {
-                PTM ptm = ptmFactory.getPTM(ptmName);
-                if (ptm.getType() == PTM.MODAA) {
+                Modification ptm = ptmFactory.getModification(ptmName);
+                if (ptm.getType() == Modification.MODAA) {
                     variableModsAsString += getVariablePtmFormattedForDirecTag(ptmName, utilitiesPtms);
                 }
             }
@@ -286,15 +286,15 @@ public class DirecTagJob extends Job {
     /**
      * Get the given modification as a string in the DirecTag format.
      *
-     * @param ptmName the utilities name of the PTM
+     * @param ptmName the utilities name of the Modification
      * @param utilitiesPtms the list of utilities PTMs, index is the index used
-     * in the DirecTag output (note that the same PTM may occur more than once
-     * in the list as multiple DirecTag PTM can map to the same utilities PTM)
+     * in the DirecTag output (note that the same Modification may occur more than once
+     * in the list as multiple DirecTag Modification can map to the same utilities Modification)
      * @return the given modification as a string in the DirecTag format
      */
     private String getVariablePtmFormattedForDirecTag(String ptmName, ArrayList<String> utilitiesPtms) {
 
-        PTM tempPtm = ptmFactory.getPTM(ptmName);
+        Modification tempPtm = ptmFactory.getModification(ptmName);
         String ptmAsString = "";
 
         // get the targeted amino acids
@@ -312,12 +312,12 @@ public class DirecTagJob extends Job {
     /**
      * Get the given modification as a string in the DirecTag format.
      *
-     * @param ptmName the utilities name of the PTM
+     * @param ptmName the utilities name of the Modification
      * @return the given modification as a string in the DirecTag format
      */
     private String getFixedPtmFormattedForDirecTag(String ptmName) {
 
-        PTM tempPtm = ptmFactory.getPTM(ptmName);
+        Modification tempPtm = ptmFactory.getModification(ptmName);
         String ptmAsString = "";
 
         // get the targeted amino acids
