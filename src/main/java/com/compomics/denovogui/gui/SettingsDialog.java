@@ -1,13 +1,13 @@
 package com.compomics.denovogui.gui;
 
-import com.compomics.util.experiment.biology.EnzymeFactory;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.compomics.util.gui.error_handlers.HelpDialog;
-import com.compomics.util.gui.ptm.ModificationsDialog;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.preferences.DigestionPreferences;
+import com.compomics.util.gui.modification.ModificationsDialog;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
+import com.compomics.util.parameters.identification.search.DigestionParameters;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -39,7 +39,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     /**
      * The factory used to handle the modifications.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The compomics enzyme factory.
      */
@@ -58,7 +58,7 @@ public class SettingsDialog extends javax.swing.JDialog {
      */
     private int keyPressedCounter = 0;
     /**
-     * The current PTM search string.
+     * The current Modification search string.
      */
     private String currentPtmSearchString = "";
     /**
@@ -186,7 +186,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         // add the modifications
         ArrayList<String> missingPtms = new ArrayList<String>();
-        PtmSettings modificationProfile = searchParameters.getPtmSettings();
+        ModificationParameters modificationProfile = searchParameters.getModificationParameters();
         if (modificationProfile != null) {
             ArrayList<String> fixedMods = modificationProfile.getFixedModifications();
 
@@ -226,7 +226,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             fixedModel.getDataVector().removeAllElements();
 
             for (String fixedMod : fixedMods) {
-                ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getPtmSettings().getColor(fixedMod), fixedMod, ptmFactory.getPTM(fixedMod).getMass()});
+                ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationParameters().getColor(fixedMod), fixedMod, ptmFactory.getModification(fixedMod).getMass()});
             }
             ((DefaultTableModel) fixedModsTable.getModel()).fireTableDataChanged();
             fixedModsTable.repaint();
@@ -269,7 +269,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             variableModel.getDataVector().removeAllElements();
             for (String variableMod : variableMods) {
                 ((DefaultTableModel) variableModsTable.getModel()).addRow(
-                        new Object[]{searchParameters.getPtmSettings().getColor(variableMod), variableMod, ptmFactory.getPTM(variableMod).getMass()});
+                        new Object[]{searchParameters.getModificationParameters().getColor(variableMod), variableMod, ptmFactory.getModification(variableMod).getMass()});
             }
             ((DefaultTableModel) variableModsTable.getModel()).fireTableDataChanged();
             variableModsTable.repaint();
@@ -886,7 +886,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         fixedModel.getDataVector().removeAllElements();
 
         for (String fixedMod : fixedModifications) {
-            ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getPtmSettings().getColor(fixedMod), fixedMod, ptmFactory.getPTM(fixedMod).getMass()});
+            ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationParameters().getColor(fixedMod), fixedMod, ptmFactory.getModification(fixedMod).getMass()});
         }
 
         ((DefaultTableModel) fixedModsTable.getModel()).fireTableDataChanged();
@@ -925,7 +925,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         fixedModel.getDataVector().removeAllElements();
 
         for (String fixedMod : fixedModifications) {
-            ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getPtmSettings().getColor(fixedMod), fixedMod, ptmFactory.getPTM(fixedMod).getMass()});
+            ((DefaultTableModel) fixedModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationParameters().getColor(fixedMod), fixedMod, ptmFactory.getModification(fixedMod).getMass()});
         }
         ((DefaultTableModel) fixedModsTable.getModel()).fireTableDataChanged();
         fixedModsTable.repaint();
@@ -944,7 +944,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_fixedModsTableMouseExited
 
     /**
-     * Change the color of a fixed PTM.
+     * Change the color of a fixed Modification.
      *
      * @param evt
      */
@@ -957,7 +957,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                 Color newColor = JColorChooser.showDialog(this, "Pick a Color", (Color) fixedModsTable.getValueAt(row, column));
 
                 if (newColor != null) {
-                    searchParameters.getPtmSettings().setColor((String) fixedModsTable.getValueAt(row, 1), newColor);
+                    searchParameters.getModificationParameters().setColor((String) fixedModsTable.getValueAt(row, 1), newColor);
                     fixedModsTable.setValueAt(newColor, row, 0);
                     ((DefaultTableModel) fixedModsTable.getModel()).fireTableDataChanged();
                     fixedModsTable.repaint();
@@ -979,7 +979,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         if (row != -1) {
             String ptmName = (String) fixedModsTable.getValueAt(row, fixedModsTable.getColumn("Name").getModelIndex());
-            PTM ptm = ptmFactory.getPTM(ptmName);
+            Modification ptm = ptmFactory.getModification(ptmName);
             fixedModsTable.setToolTipText(ptm.getHtmlTooltip());
 
             if (column == fixedModsTable.getColumn(" ").getModelIndex()) {
@@ -1030,7 +1030,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         variableModel.getDataVector().removeAllElements();
 
         for (String variabledMod : variableModifications) {
-            ((DefaultTableModel) variableModsTable.getModel()).addRow(new Object[]{searchParameters.getPtmSettings().getColor(variabledMod), variabledMod, ptmFactory.getPTM(variabledMod).getMass()});
+            ((DefaultTableModel) variableModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationParameters().getColor(variabledMod), variabledMod, ptmFactory.getModification(variabledMod).getMass()});
         }
         ((DefaultTableModel) variableModsTable.getModel()).fireTableDataChanged();
         variableModsTable.repaint();
@@ -1074,7 +1074,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         variableModel.getDataVector().removeAllElements();
 
         for (String variabledMod : variableModifications) {
-            ((DefaultTableModel) variableModsTable.getModel()).addRow(new Object[]{searchParameters.getPtmSettings().getColor(variabledMod), variabledMod, ptmFactory.getPTM(variabledMod).getMass()});
+            ((DefaultTableModel) variableModsTable.getModel()).addRow(new Object[]{searchParameters.getModificationParameters().getColor(variabledMod), variabledMod, ptmFactory.getModification(variabledMod).getMass()});
         }
         ((DefaultTableModel) variableModsTable.getModel()).fireTableDataChanged();
         variableModsTable.repaint();
@@ -1093,7 +1093,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_variableModsTableMouseExited
 
     /**
-     * Change the color of a fixed PTM.
+     * Change the color of a fixed Modification.
      *
      * @param evt
      */
@@ -1106,7 +1106,7 @@ public class SettingsDialog extends javax.swing.JDialog {
                 Color newColor = JColorChooser.showDialog(this, "Pick a Color", (Color) variableModsTable.getValueAt(row, column));
 
                 if (newColor != null) {
-                    searchParameters.getPtmSettings().setColor((String) variableModsTable.getValueAt(row, 1), newColor);
+                    searchParameters.getModificationParameters().setColor((String) variableModsTable.getValueAt(row, 1), newColor);
                     variableModsTable.setValueAt(newColor, row, 0);
                     ((DefaultTableModel) variableModsTable.getModel()).fireTableDataChanged();
                     variableModsTable.repaint();
@@ -1128,7 +1128,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         if (row != -1) {
             String ptmName = (String) variableModsTable.getValueAt(row, variableModsTable.getColumn("Name").getModelIndex());
-            PTM ptm = ptmFactory.getPTM(ptmName);
+            Modification ptm = ptmFactory.getModification(ptmName);
             variableModsTable.setToolTipText(ptm.getHtmlTooltip());
 
             if (column == variableModsTable.getColumn(" ").getModelIndex()) {
@@ -1161,7 +1161,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_modificationsListComboActionPerformed
 
     /**
-     * Opens a file chooser where the color for the PTM can be changed.
+     * Opens a file chooser where the color for the Modification can be changed.
      *
      * @param evt
      */
@@ -1237,7 +1237,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         if (row != -1) {
             String ptmName = (String) modificationsTable.getValueAt(row, modificationsTable.getColumn("Name").getModelIndex());
-            PTM ptm = ptmFactory.getPTM(ptmName);
+            Modification ptm = ptmFactory.getModification(ptmName);
             modificationsTable.setToolTipText(ptm.getHtmlTooltip());
 
             if (column == modificationsTable.getColumn(" ").getModelIndex()) {
@@ -1311,7 +1311,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_openDialogHelpJButtonActionPerformed
 
     /**
-     * Jump to the row with the PTM starting with the typed letters.
+     * Jump to the row with the Modification starting with the typed letters.
      *
      * @param evt
      */
@@ -1415,8 +1415,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         SearchParameters tempSearchParameters = new SearchParameters(searchParameters);
 
         // set the digestion preferences
-        DigestionPreferences digestionPreferences = DigestionPreferences.getDefaultPreferences();
-        searchParameters.setDigestionPreferences(digestionPreferences);
+        DigestionParameters digestionPreferences = DigestionParameters.getDefaultPreferences();
+        searchParameters.setDigestionParameters(digestionPreferences);
 
         // general parameters
         double fragmentIonTolerance = (Double) fragmentMassToleranceSpinner.getValue();
@@ -1435,16 +1435,16 @@ public class SettingsDialog extends javax.swing.JDialog {
         }
 
         // set the modifications
-        PtmSettings modificationProfile = new PtmSettings();
+        ModificationParameters modificationProfile = new ModificationParameters();
         for (int i = 0; i < fixedModsTable.getRowCount(); i++) {
             String modName = (String) fixedModsTable.getValueAt(i, 1);
-            modificationProfile.addFixedModification(ptmFactory.getPTM(modName));
+            modificationProfile.addFixedModification(ptmFactory.getModification(modName));
             modificationProfile.setColor(modName, (Color) fixedModsTable.getValueAt(i, 0));
         }
 
         for (int i = 0; i < variableModsTable.getRowCount(); i++) {
             String modName = (String) variableModsTable.getValueAt(i, 1);
-            modificationProfile.addVariableModification(ptmFactory.getPTM(modName));
+            modificationProfile.addVariableModification(ptmFactory.getModification(modName));
             modificationProfile.setColor(modName, (Color) variableModsTable.getValueAt(i, 0));
         }
         tempSearchParameters.setPtmSettings(modificationProfile);
@@ -1547,7 +1547,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         }
 
         for (String mod : allModificationsAsArray) {
-            ((DefaultTableModel) modificationsTable.getModel()).addRow(new Object[]{ptmFactory.getColor(mod), mod, ptmFactory.getPTM(mod).getMass(), deNovoGUI.getModificationUse().contains(mod)});
+            ((DefaultTableModel) modificationsTable.getModel()).addRow(new Object[]{ptmFactory.getColor(mod), mod, ptmFactory.getModification(mod).getMass(), deNovoGUI.getModificationUse().contains(mod)});
         }
         ((DefaultTableModel) modificationsTable.getModel()).fireTableDataChanged();
         modificationsTable.repaint();
@@ -1557,11 +1557,11 @@ public class SettingsDialog extends javax.swing.JDialog {
         double minMass = Double.MAX_VALUE;
 
         for (String ptm : ptmFactory.getPTMs()) {
-            if (ptmFactory.getPTM(ptm).getMass() > maxMass) {
-                maxMass = ptmFactory.getPTM(ptm).getMass();
+            if (ptmFactory.getModification(ptm).getMass() > maxMass) {
+                maxMass = ptmFactory.getModification(ptm).getMass();
             }
-            if (ptmFactory.getPTM(ptm).getMass() < minMass) {
-                minMass = ptmFactory.getPTM(ptm).getMass();
+            if (ptmFactory.getModification(ptm).getMass() < minMass) {
+                minMass = ptmFactory.getModification(ptm).getMass();
             }
         }
 
@@ -1585,7 +1585,7 @@ public class SettingsDialog extends javax.swing.JDialog {
     }
 
     /**
-     * Enable/disable the add/remove PTM buttons.
+     * Enable/disable the add/remove Modification buttons.
      */
     private void enableAddRemoveButtons() {
         removeVariableModification.setEnabled(variableModsTable.getSelectedRow() != -1);

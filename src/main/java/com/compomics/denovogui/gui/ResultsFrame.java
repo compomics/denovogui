@@ -1,5 +1,7 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.denovogui.DeNovoGUIWrapper;
 import com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel;
 import com.compomics.denovogui.gui.tablemodels.SpectrumTableModel;
@@ -7,53 +9,45 @@ import com.compomics.denovogui.io.ExportType;
 import com.compomics.denovogui.io.TextExporter;
 import com.compomics.denovogui.util.BareBonesBrowserLaunch;
 import com.compomics.util.Util;
-import com.compomics.util.db.DerbyUtil;
-import com.compomics.util.db.ObjectsCache;
+import com.compomics.util.db.object.ObjectsCache;
+import com.compomics.util.db.object.ObjectsDB;
 import com.compomics.util.exceptions.exception_handlers.FrameExceptionHandler;
-import com.compomics.util.experiment.MsExperiment;
-import com.compomics.util.experiment.ProteomicAnalysis;
-import com.compomics.util.experiment.SampleAnalysisSet;
-import com.compomics.util.experiment.biology.AminoAcid;
-import com.compomics.util.experiment.biology.AminoAcidPattern;
-import com.compomics.util.experiment.biology.AminoAcidSequence;
-import com.compomics.util.experiment.biology.Ion;
-import com.compomics.util.experiment.biology.IonFactory;
-import com.compomics.util.experiment.biology.NeutralLoss;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.biology.Sample;
-import com.compomics.util.experiment.biology.ions.ReporterIon;
-import com.compomics.util.experiment.biology.ions.TagFragmentIon;
+import com.compomics.util.experiment.biology.aminoacids.AminoAcid;
+import com.compomics.util.experiment.biology.aminoacids.sequence.AminoAcidPattern;
+import com.compomics.util.experiment.biology.aminoacids.sequence.AminoAcidSequence;
+import com.compomics.util.experiment.biology.ions.Ion;
+import com.compomics.util.experiment.biology.ions.IonFactory;
+import com.compomics.util.experiment.biology.ions.NeutralLoss;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.proteins.Peptide;
+import com.compomics.util.experiment.biology.ions.impl.ReporterIon;
+import com.compomics.util.experiment.biology.ions.impl.TagFragmentIon;
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.IdentificationMethod;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
-import com.compomics.util.experiment.identification.identification_parameters.tool_specific.PepnovoParameters;
-import com.compomics.util.experiment.identification.identifications.Ms2Identification;
+import com.compomics.util.parameters.identification.tool_specific.PepnovoParameters;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.matches_iterators.PsmIterator;
-import com.compomics.util.experiment.identification.protein_inference.proteintree.ProteinTree;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.TagSpectrumAnnotator;
 import com.compomics.util.experiment.identification.amino_acid_tags.Tag;
 import com.compomics.util.experiment.identification.amino_acid_tags.TagComponent;
-import com.compomics.util.experiment.identification.amino_acid_tags.matchers.TagMatcher;
-import com.compomics.util.experiment.biology.MassGap;
-import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
-import com.compomics.util.experiment.io.identifications.IdfileReader;
-import com.compomics.util.experiment.io.identifications.IdfileReaderFactory;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
-import com.compomics.util.experiment.refinementparameters.PepnovoAssumptionDetails;
+import com.compomics.util.experiment.identification.amino_acid_tags.MassGap;
+import com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
+import com.compomics.util.experiment.io.identification.IdfileReader;
+import com.compomics.util.experiment.io.identification.IdfileReaderFactory;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
+import com.compomics.util.experiment.refinement_parameters.PepnovoAssumptionDetails;
 import com.compomics.util.gui.JOptionEditorPane;
 import com.compomics.util.gui.error_handlers.BugReport;
 import com.compomics.util.gui.error_handlers.HelpDialog;
@@ -62,16 +56,13 @@ import com.compomics.util.gui.renderers.AlignedListCellRenderer;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import com.compomics.util.waiting.WaitingHandler;
 import com.compomics.util.gui.waiting.waitinghandlers.ProgressDialogX;
-import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.experiment.identification.protein_inference.PeptideMapper;
-import com.compomics.util.experiment.identification.protein_inference.PeptideMapperType;
-import com.compomics.util.experiment.identification.protein_inference.PeptideProteinMapping;
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationParameters;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
-import com.compomics.util.preferences.PeptideVariantsPreferences;
-import com.compomics.util.preferences.UtilitiesUserPreferences;
+import com.compomics.util.parameters.identification.advanced.PeptideVariantsParameters;
+import com.compomics.util.parameters.UtilitiesUserParameters;
 import java.awt.Color;
 import java.awt.Component;
 import static java.awt.Frame.MAXIMIZED_BOTH;
@@ -86,10 +77,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Map;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -112,7 +104,6 @@ import no.uib.jsparklines.renderers.JSparklinesBarChartTableCellRenderer;
 import no.uib.jsparklines.renderers.JSparklinesIntegerColorTableCellRenderer;
 import no.uib.jsparklines.renderers.JSparklinesIntervalChartTableCellRenderer;
 import org.jfree.chart.plot.PlotOrientation;
-import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
 /**
  * Frame for showing the results of de novo sequencing.
@@ -136,11 +127,11 @@ public class ResultsFrame extends javax.swing.JFrame {
     /**
      * The annotation preferences.
      */
-    private AnnotationSettings annotationPreferences = new AnnotationSettings();
+    private AnnotationParameters annotationPreferences = new AnnotationParameters();
     /**
      * The specific annotation preferences.
      */
-    private SpecificAnnotationSettings specificAnnotationPreferences;
+    private SpecificAnnotationParameters specificAnnotationPreferences;
     /**
      * The charge menus.
      */
@@ -150,9 +141,9 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     private HashMap<NeutralLoss, JCheckBoxMenuItem> lossMenus = new HashMap<NeutralLoss, JCheckBoxMenuItem>();
     /**
-     * The compomics PTM factory.
+     * The compomics Modification factory.
      */
-    private PTMFactory ptmFactory = PTMFactory.getInstance();
+    private ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The query spectra table column header tooltips.
      */
@@ -225,6 +216,18 @@ public class ResultsFrame extends javax.swing.JFrame {
      * The maximal Novor score.
      */
     private double maxNovorScore = Double.MIN_VALUE;
+    /**
+     * The maximal InstaNovo score.
+     */
+    private double maxInstaNovoScore = Double.MIN_VALUE;
+    /**
+     * The maximal InstaNovo+ score.
+     */
+    private double maxInstaNovoPlusScore = Double.MIN_VALUE;
+    /**
+     * The maximal InstaNovo with refinement score.
+     */
+    private double maxInstaNovoRefinedScore = Double.MIN_VALUE;
     /**
      * The maximal n gap.
      */
@@ -365,6 +368,9 @@ public class ResultsFrame extends javax.swing.JFrame {
         querySpectraTableToolTips.add("Min DirecTag E-Value");
         querySpectraTableToolTips.add("Max pNovo+ Score");
         querySpectraTableToolTips.add("Max Novor Score");
+        querySpectraTableToolTips.add("Max InstaNovo Score");
+        querySpectraTableToolTips.add("Max InstaNovo+ Score");
+        querySpectraTableToolTips.add("Max InstaNovo with refinement Score");
         querySpectraTableToolTips.add("De Novo Solution");
 
         deNovoPeptidesTableToolTips = new ArrayList<String>();
@@ -380,6 +386,9 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoPeptidesTableToolTips.add("DirecTag E-Value");
         deNovoPeptidesTableToolTips.add("pNovo+ Score");
         deNovoPeptidesTableToolTips.add("Novor Score");
+        deNovoPeptidesTableToolTips.add("InstaNovo Score");
+        deNovoPeptidesTableToolTips.add("InstaNovo+ Score");
+        deNovoPeptidesTableToolTips.add("InstaNovo with refinement Score");
         deNovoPeptidesTableToolTips.add("BLAST Sequence");
 
         // set the title
@@ -451,6 +460,12 @@ public class ResultsFrame extends javax.swing.JFrame {
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         querySpectraTable.getColumn("Score (N)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNovorScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (N)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (I)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (I)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (I+)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoPlusScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (I+)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        querySpectraTable.getColumn("Score (Ir)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoRefinedScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) querySpectraTable.getColumn("Score (Ir)").getCellRenderer()).showNumberAndChart(true, labelWidth);
 
         // make sure that the user is made aware that the tool is doing something during sorting of the query table
         querySpectraTable.getRowSorter().addRowSorterListener(new RowSorterListener() {
@@ -503,6 +518,12 @@ public class ResultsFrame extends javax.swing.JFrame {
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (p)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("Score (N)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNovorScore, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (N)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (I)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (I)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (I+)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoPlusScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (I+)").getCellRenderer()).showNumberAndChart(true, labelWidth);
+        deNovoMatchesTable.getColumn("Score (Ir)").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxInstaNovoRefinedScore, sparklineColor));
+        ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("Score (Ir)").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("N-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxNGap, sparklineColor));
         ((JSparklinesBarChartTableCellRenderer) deNovoMatchesTable.getColumn("N-Gap").getCellRenderer()).showNumberAndChart(true, labelWidth);
         deNovoMatchesTable.getColumn("C-Gap").setCellRenderer(new JSparklinesBarChartTableCellRenderer(PlotOrientation.HORIZONTAL, maxCGap, sparklineColor));
@@ -517,6 +538,19 @@ public class ResultsFrame extends javax.swing.JFrame {
                 "Click to BLAST tag sequence", null));
 
         deNovoMatchesTable.getColumn("SA").setCellRenderer(new JSparklinesIntegerColorTableCellRenderer(Color.LIGHT_GRAY, Advocate.getAdvocateColorMap(), Advocate.getAdvocateToolTipMap()));
+    }
+
+    /**
+     * Sets a table model and rebuilds the visible columns from the model.
+     *
+     * @param table the table
+     * @param tableModel the table model
+     */
+    private void setTableModel(JTable table, TableModel tableModel) {
+        table.setAutoCreateColumnsFromModel(true);
+        table.setModel(tableModel);
+        table.createDefaultColumnsFromModel();
+        table.setAutoCreateRowSorter(true);
     }
 
     /**
@@ -605,7 +639,13 @@ public class ResultsFrame extends javax.swing.JFrame {
                     public String getToolTipText(MouseEvent e) {
                         java.awt.Point p = e.getPoint();
                         int index = columnModel.getColumnIndexAtX(p.x);
+                        if (index < 0 || index >= columnModel.getColumnCount()) {
+                            return null;
+                        }
                         int realIndex = columnModel.getColumn(index).getModelIndex();
+                        if (realIndex < 0 || realIndex >= querySpectraTableToolTips.size()) {
+                            return null;
+                        }
                         String tip = (String) querySpectraTableToolTips.get(realIndex);
                         return tip;
                     }
@@ -622,7 +662,13 @@ public class ResultsFrame extends javax.swing.JFrame {
                     public String getToolTipText(MouseEvent e) {
                         java.awt.Point p = e.getPoint();
                         int index = columnModel.getColumnIndexAtX(p.x);
+                        if (index < 0 || index >= columnModel.getColumnCount()) {
+                            return null;
+                        }
                         int realIndex = columnModel.getColumn(index).getModelIndex();
+                        if (realIndex < 0 || realIndex >= deNovoPeptidesTableToolTips.size()) {
+                            return null;
+                        }
                         String tip = (String) deNovoPeptidesTableToolTips.get(realIndex);
                         return tip;
                     }
@@ -965,7 +1011,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         querySpectraPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Query Spectra"));
         querySpectraPanel.setOpaque(false);
 
-        querySpectraTable.setModel(new SpectrumTableModel());
+        setTableModel(querySpectraTable, new SpectrumTableModel());
         querySpectraTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         querySpectraTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -1019,7 +1065,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         deNovoMatchesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("De Novo Matches"));
         deNovoMatchesPanel.setOpaque(false);
 
-        deNovoMatchesTable.setModel(new com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel());
+        setTableModel(deNovoMatchesTable, new com.compomics.denovogui.gui.tablemodels.AssumptionsTableModel());
         deNovoMatchesTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         deNovoMatchesTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
@@ -1736,7 +1782,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION;
                 final ProteinMappingDialog mappingDialog;
                 if (needMapping) {
-                    mappingDialog = new ProteinMappingDialog(this, searchParameters.getPtmSettings());
+                    mappingDialog = new ProteinMappingDialog(this, searchParameters.getModificationParameters());
                     if (mappingDialog.isCanceled() || sequenceFactory.getCurrentFastaFile() == null) {
                         return;
                     }
@@ -1768,8 +1814,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                         try {
                             boolean peptideFound = true;
                             if (needMapping) {
-                                SequenceMatchingPreferences sequenceMatchingPreferences = new SequenceMatchingPreferences(); //@TODO add dialog
-                                sequenceMatchingPreferences.setPeptideMapperType(PeptideMapperType.fm_index);
+                                SequenceMatchingParameters sequenceMatchingPreferences = new SequenceMatchingParameters(); //@TODO add dialog
                                 peptideFound = matchInProteins(sequenceMatchingPreferences, mappingDialog.getFixedModifications(), mappingDialog.getVariableModifications(), progressDialog,
                                         exportSettingsDialog.getThreshold(), exportSettingsDialog.isGreaterThenThreshold(), exportSettingsDialog.getNumberOfPeptides());
                             }
@@ -1952,186 +1997,13 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @throws SQLException exception thrown whenever an error occurs while
      * interacting with the back-end database
      */
-    private boolean matchInProteins(SequenceMatchingPreferences sequenceMatchingPreferences, ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
+    private boolean matchInProteins(SequenceMatchingParameters sequenceMatchingPreferences, ArrayList<String> fixedModifications, ArrayList<String> variableModifications, WaitingHandler waitingHandler,
             Double scoreThreshold, boolean greaterThan, Integer aNumberOfMatches) throws IOException, ClassNotFoundException, InterruptedException, SQLException {
 
-        double threshold = 0;
-        if (scoreThreshold != null) {
-            threshold = scoreThreshold;
-        }
-        int numberOfMatches = 10;
-        if (aNumberOfMatches != null) {
-            numberOfMatches = aNumberOfMatches;
-        }
-
-        waitingHandler.setWaitingText("Importing FASTA File (Step 1 of 2). Please Wait...");
-        waitingHandler.setSecondaryProgressCounterIndeterminate(false);
-
-        if (waitingHandler.isRunCanceled()) {
-            return false;
-        }
-
-        waitingHandler.resetSecondaryProgressCounter();
-        waitingHandler.setSecondaryProgressCounterIndeterminate(true);
-
-        UtilitiesUserPreferences userPreferences = UtilitiesUserPreferences.loadUserPreferences();
-        int memoryPreference = userPreferences.getMemoryPreference();
-        int nSequences = sequenceFactory.getNSequences();
-        int cacheSizeInMb = nSequences * 112 / 1048576; // 112 is the size taken by one protein
-        if (!sequenceFactory.isDefaultReversed() || cacheSizeInMb < memoryPreference / 4) {
-            nSequences = sequenceFactory.getNSequences();
-            sequenceFactory.setDecoyInMemory(true);
-        } else {
-            nSequences = sequenceFactory.getNTargetSequences();
-            sequenceFactory.setDecoyInMemory(false);
-        }
-        long availableCachSize = 1048576l * memoryPreference / 112; // 112 is the size taken by one protein
-        availableCachSize *= 0.8;
-        if (availableCachSize > nSequences) {
-            availableCachSize = nSequences;
-        } else {
-            waitingHandler.appendReport("Warning: DeNovoGUI cannot load your FASTA file into memory. This will slow down the processing. "
-                    + "Note that using large large databases also increases the number of false positives. "
-                    + "Try to either (i) use a smaller database, (ii) increase the memory provided to DeNovoGUI, or (iii) improve the reading speed by using an SSD disc. "
-                    + "(See also http://compomics.github.io/projects/compomics-utilities/wiki/proteininference.html.)", true, true);
-
-        }
-        int cacheSize = (int) availableCachSize;
-        sequenceFactory.setnCache(cacheSize);
-
-        PeptideMapper peptideMapper;
-        try {
-            peptideMapper = sequenceFactory.getDefaultPeptideMapper(sequenceMatchingPreferences, searchParameters, PeptideVariantsPreferences.getNoVariantPreferences(), waitingHandler, exceptionHandler);
-        } catch (SQLException e) {
-            waitingHandler.appendReport("Database " + sequenceFactory.getCurrentFastaFile().getName() + " could not be accessed, make sure that the file is not used by another program.", true, true);
-            e.printStackTrace();
-            waitingHandler.setRunCanceled();
-            return false;
-        }
-        int treeKeyLength = 0;
-        if (sequenceMatchingPreferences.getPeptideMapperType() == PeptideMapperType.tree) {
-            treeKeyLength = ((ProteinTree) peptideMapper).getInitialTagSize();
-        }
-
-        waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2). Please Wait...");
-        waitingHandler.resetSecondaryProgressCounter();
-        waitingHandler.setSecondaryProgressCounterIndeterminate(false);
-        int total = identification.getSpectrumIdentificationSize();
-        waitingHandler.setMaxSecondaryProgressCounter(total);
-        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(false); // @TODO: remove when the objectDB is stable
-        TagMatcher tagMatcher = new TagMatcher(fixedModifications, variableModifications, deNovoGUI.getSequenceMatchingPreferences());
-
-        int progress = 0;
-        boolean peptideFound = false;
-        for (String spectrumFile : identification.getOrderedSpectrumFileNames()) {
-
-            PsmIterator psmIterator = identification.getPsmIterator(spectrumFile, true, waitingHandler);
-            SpectrumMatch spectrumMatch;
-
-            while ((spectrumMatch = psmIterator.next()) != null) {
-
-                String spectrumKey = spectrumMatch.getKey();
-                HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> allAssumptions = identification.getAssumptions(spectrumKey);
-
-                for (Advocate advocate : DeNovoGUI.implementedAlgorithms) {
-
-                    int advocateIndex = advocate.getIndex();
-                    HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> assumptionsMap = allAssumptions.get(advocateIndex);
-
-                    if (assumptionsMap != null) {
-                        ArrayList<Double> scores = new ArrayList<Double>(assumptionsMap.keySet());
-                        if (advocate.getIndex() == Advocate.pepnovo.getIndex()
-                                || advocate.getIndex() == Advocate.pNovo.getIndex()
-                                || advocate.getIndex() == Advocate.novor.getIndex()) {
-                            Collections.sort(scores, Collections.reverseOrder());
-                        } else {
-                            Collections.sort(scores);
-                        }
-
-                        for (int i = 0; i < scores.size() && i < numberOfMatches; i++) {
-
-                            double score = scores.get(i);
-                            ArrayList<SpectrumIdentificationAssumption> tempAssumptions = assumptionsMap.get(score);
-                            ArrayList<SpectrumIdentificationAssumption> denovoAssumptions = new ArrayList<SpectrumIdentificationAssumption>(tempAssumptions);
-
-                            for (SpectrumIdentificationAssumption assumption : denovoAssumptions) {
-
-                                boolean passesThreshold;
-
-                                if (greaterThan) {
-                                    passesThreshold = assumption.getScore() >= threshold;
-                                } else { // less than
-                                    passesThreshold = assumption.getScore() <= threshold;
-                                }
-
-                                if (passesThreshold) {
-                                    if (assumption instanceof TagAssumption) {
-                                        TagAssumption tagAssumption = (TagAssumption) assumption;
-                                        int longestAminoAcidSequence = tagAssumption.getTag().getLongestAminoAcidSequence().length();
-                                        if (longestAminoAcidSequence >= treeKeyLength) {
-                                            ArrayList<PeptideProteinMapping> proteinMapping = peptideMapper.getProteinMapping(
-                                                    tagAssumption.getTag(), tagMatcher, deNovoGUI.getSequenceMatchingPreferences(), searchParameters.getFragmentIonAccuracy());
-                                            for (Peptide peptide : PeptideProteinMapping.getPeptides(proteinMapping, deNovoGUI.getSequenceMatchingPreferences())) {
-                                                if (!peptideFound) {
-                                                    peptideFound = true;
-                                                }
-                                                PeptideAssumption peptideAssumption = new PeptideAssumption(peptide, tagAssumption.getRank(),
-                                                        advocateIndex, assumption.getIdentificationCharge(), score, assumption.getIdentificationFile());
-                                                peptideAssumption.addUrParam(tagAssumption);
-                                                tempAssumptions.add(peptideAssumption);
-                                            }
-                                        }
-                                    } else if (assumption instanceof PeptideAssumption) {
-                                        if (!peptideFound) {
-                                            peptideFound = true;
-                                        }
-                                        PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
-                                        ArrayList<PeptideProteinMapping> proteinMapping = peptideMapper.getProteinMapping(
-                                                peptideAssumption.getPeptide().getSequence(), deNovoGUI.getSequenceMatchingPreferences());
-                                        HashSet<String> proteins = new HashSet<String>(proteinMapping.size());
-                                        for (PeptideProteinMapping peptideProteinMapping : proteinMapping) {
-                                            proteins.add(peptideProteinMapping.getProteinAccession());
-                                        }
-                                        ArrayList<String> sortedProteinList = new ArrayList<String>(proteins);
-                                        Collections.sort(sortedProteinList);
-                                        peptideAssumption.getPeptide().setParentProteins(sortedProteinList);
-                                    } else {
-                                        throw new UnsupportedOperationException("Peptide mapping not supported for assumption of type " + assumption.getClass() + ".");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                identification.updateAssumptions(spectrumKey, allAssumptions);
-
-                // free memory if needed
-                if (memoryUsed() > 0.8 && !objectsCache.isEmpty()) {
-                    objectsCache.reduceMemoryConsumption(0.5, null);
-                }
-                waitingHandler.increaseSecondaryProgressCounter();
-                waitingHandler.setWaitingText("Mapping Tags (Step 2 of 2, Spectrum " + ++progress + " of " + total + "). Please Wait...");
-
-                if (waitingHandler.isRunCanceled()) {
-                    break;
-                }
-            }
-
-            if (waitingHandler.isRunCanceled()) {
-                break;
-            }
-        }
-
-        if (waitingHandler.isRunCanceled()) {
-            return false;
-        }
-
-        ((SpectrumTableModel) querySpectraTable.getModel()).setUpdate(true); //@TODO: remove when the objectDB is stable
-        waitingHandler.setRunFinished();
-
-        return peptideFound;
+        waitingHandler.appendReport("Protein database mapping is not available with the Utilities 5 migration.", true, true);
+        return false;
     }
+
 
     /**
      * Returns the share of memory being used.
@@ -2181,7 +2053,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         progressDialog.setTitle("Updating Display. Please Wait...");
 
         TableModel tableModel = new SpectrumTableModel(getSelectedSpectrumFile(), identification, orderedSpectrumTitles);
-        querySpectraTable.setModel(tableModel);
+        setTableModel(querySpectraTable, tableModel);
         setSpectrumTableProperties();
 
         ((DefaultTableModel) querySpectraTable.getModel()).fireTableDataChanged();
@@ -2409,8 +2281,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                     }
                 }
 
-                TableModel tableModel = new AssumptionsTableModel(assumptions, searchParameters.getPtmSettings(), !fixedPtmsCheckBoxMenuItem.isSelected());
-                deNovoMatchesTable.setModel(tableModel);
+                TableModel tableModel = new AssumptionsTableModel(assumptions, searchParameters.getModificationParameters(), !fixedPtmsCheckBoxMenuItem.isSelected());
+                setTableModel(deNovoMatchesTable, tableModel);
 
                 ((DefaultTableModel) deNovoMatchesTable.getModel()).fireTableDataChanged();
                 setAssumptionsTableProperties();
@@ -2464,7 +2336,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     int maxPrecursorCharge = 1;
                     ArrayList<ModificationMatch> allModifications = new ArrayList<ModificationMatch>();
 
-                    MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
+                    Spectrum currentSpectrum = (Spectrum) spectrumFactory.getSpectrum(spectrumKey);
 
                     // add the data to the spectrum panel
                     Precursor precursor = currentSpectrum.getPrecursor();
@@ -2503,20 +2375,39 @@ public class ResultsFrame extends javax.swing.JFrame {
                         for (int i = 0; i < deNovoMatchesTable.getSelectedRowCount(); i++) {
 
                             SpectrumIdentificationAssumption assumption = assumptions.get(deNovoMatchesTable.convertRowIndexToModel(deNovoMatchesTable.getSelectedRows()[i]));
-                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, assumption, SequenceMatchingPreferences.defaultStringMatching, SequenceMatchingPreferences.defaultStringMatching);
+                            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumKey, assumption, SequenceMatchingParameters.defaultStringMatching, SequenceMatchingParameters.defaultStringMatching);
                             updateAnnotationPreferences();
                             ArrayList<IonMatch> annotations;
                             if (assumption instanceof TagAssumption) {
                                 TagAssumption tagAssumption = (TagAssumption) assumption;
-                                annotations = tagSpectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, tagAssumption.getTag());
+                                annotations = new ArrayList<IonMatch>(Arrays.asList(tagSpectrumAnnotator.getSpectrumAnnotation(
+                                        annotationPreferences,
+                                        searchParameters.getModificationParameters(),
+                                        SequenceMatchingParameters.defaultStringMatching,
+                                        specificAnnotationPreferences,
+                                        getSelectedSpectrumFile(),
+                                        getSelectedSpectrumTitle(),
+                                        currentSpectrum,
+                                        tagAssumption.getTag()
+                                )));
                             } else if (assumption instanceof PeptideAssumption) {
                                 PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
-                                annotations = peptideSpectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, peptideAssumption.getPeptide());
+                                annotations = new ArrayList<IonMatch>(Arrays.asList(peptideSpectrumAnnotator.getSpectrumAnnotation(
+                                        annotationPreferences,
+                                        specificAnnotationPreferences,
+                                        getSelectedSpectrumFile(),
+                                        getSelectedSpectrumTitle(),
+                                        currentSpectrum,
+                                        peptideAssumption.getPeptide(),
+                                        searchParameters.getModificationParameters(),
+                                        null,
+                                        SequenceMatchingParameters.defaultStringMatching
+                                )));
                             } else {
                                 throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                             }
                             if (i == 0) {
-                                spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                                spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations.toArray(new IonMatch[0])));
 
                                 // convert the amino acid scores to alpha levels
                                 ArrayList<float[]> alphaValues = null;
@@ -2547,7 +2438,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                                 }
                             } else {
-                                spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+                                spectrumPanel.setAnnotationsMirrored(SpectrumAnnotator.getSpectrumAnnotation(annotations.toArray(new IonMatch[0])));
 
                                 // convert the amino acid scores to alpha levels
                                 ArrayList<float[]> alphaValues = null;
@@ -2611,7 +2502,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     modifiedSequence += " vs. ";
                                 }
 
-                                modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
+                                modifiedSequence += tag.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationParameters(), false, false, true, false);
 
                             } else if (assumption instanceof PeptideAssumption) {
                                 PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
@@ -2626,14 +2517,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     modifiedSequence += " vs. ";
                                 }
 
-                                modifiedSequence += peptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getPtmSettings(), false, false, true, false);
+                                modifiedSequence += peptide.getTaggedModifiedSequence(deNovoGUI.getSearchParameters().getModificationParameters(), false, false, true, false);
                             } else {
                                 throw new UnsupportedOperationException("Operation not supported for assumption of type " + assumption.getClass() + ".");
                             }
 
                             // Update max precursor charge
-                            if (assumption.getIdentificationCharge().value > maxPrecursorCharge) {
-                                maxPrecursorCharge = assumption.getIdentificationCharge().value;
+                            if (assumption.getIdentificationCharge() > maxPrecursorCharge) {
+                                maxPrecursorCharge = assumption.getIdentificationCharge();
                             }
                         }
 
@@ -2845,13 +2736,16 @@ public class ResultsFrame extends javax.swing.JFrame {
         HashMap<String, NeutralLoss> neutralLosses = new HashMap<String, NeutralLoss>();
 
         // add the general neutral losses
-        for (NeutralLoss neutralLoss : IonFactory.getInstance().getDefaultNeutralLosses()) {
-            neutralLosses.put(neutralLoss.name, neutralLoss);
+        for (String neutralLossName : IonFactory.getDefaultNeutralLosses()) {
+            NeutralLoss neutralLoss = NeutralLoss.getNeutralLoss(neutralLossName);
+            if (neutralLoss != null) {
+                neutralLosses.put(neutralLoss.name, neutralLoss);
+            }
         }
 
         // add the sequence specific neutral losses
         for (ModificationMatch modMatch : modificationMatches) {
-            PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
+            Modification ptm = ptmFactory.getModification(modMatch.getTheoreticPtm());
             for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
                 neutralLosses.put(neutralLoss.name, neutralLoss);
             }
@@ -2922,7 +2816,7 @@ public class ResultsFrame extends javax.swing.JFrame {
 
         ArrayList<Integer> selectedCharges;
         if (specificAnnotationPreferences != null) {
-            selectedCharges = specificAnnotationPreferences.getSelectedCharges();
+            selectedCharges = new ArrayList<Integer>(specificAnnotationPreferences.getSelectedCharges());
         } else {
             selectedCharges = new ArrayList<Integer>();
             selectedCharges.add(1);
@@ -3046,7 +2940,7 @@ public class ResultsFrame extends javax.swing.JFrame {
         ArrayList<Integer> reporterIonsSubtypes = new ArrayList<Integer>();
 
         for (String mod : modifications) {
-            PTM ptm = ptmFactory.getPTM(mod);
+            Modification ptm = ptmFactory.getModification(mod);
             for (ReporterIon reporterIon : ptm.getReporterIons()) {
                 int subType = reporterIon.getSubType();
                 if (!reporterIonsSubtypes.contains(subType)) {
@@ -3090,16 +2984,10 @@ public class ResultsFrame extends javax.swing.JFrame {
             StringBuilder spectraAsMgf = new StringBuilder();
 
             try {
-                MSnSpectrum currentSpectrum = (MSnSpectrum) spectrumFactory.getSpectrum(spectrumKey);
+                Spectrum currentSpectrum = (Spectrum) spectrumFactory.getSpectrum(spectrumKey);
                 spectraAsMgf.append(currentSpectrum.asMgf());
                 return spectraAsMgf.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
-            } catch (MzMLUnmarshallerException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "An error occurred when reading the spectrum.", "File Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -3143,7 +3031,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                             ptmConfidence = "not confident";
                         }
 
-                        String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getPtmSettings(), 1, true, true) + ": " + ptmName + " (" + ptmConfidence + ")<br>";
+                        String temp = AminoAcidSequence.getTaggedResidue(aminoAcid, ptmName, searchParameters.getModificationParameters(), 1, true, true) + ": " + ptmName + " (" + ptmConfidence + ")<br>";
                         if (!alreadyAnnotated.contains(temp)) {
                             tooltip += temp;
                             alreadyAnnotated.add(temp);
@@ -3183,7 +3071,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                         String affectedResidue = aminoAcidPattern.asSequence(site - 1);
                         String modName = modificationMatch.getTheoreticPtm();
                         if (modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) {
-                            Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
+                            Color ptmColor = new Color(deNovoGUI.getSearchParameters().getModificationParameters().getColor(modName));
                             if (!modificationMatch.isVariable()) {
                                 tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                         + affectedResidue
@@ -3210,7 +3098,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                         if (modificationMatch.isVariable() || (!modificationMatch.isVariable() && fixedPtmsCheckBoxMenuItem.isSelected())) {
                             char affectedResidue = aminoAcidSequence.charAt(site - 1);
                             String modName = modificationMatch.getTheoreticPtm();
-                            Color ptmColor = deNovoGUI.getSearchParameters().getPtmSettings().getColor(modName);
+                            Color ptmColor = new Color(deNovoGUI.getSearchParameters().getModificationParameters().getColor(modName));
                             if (!modificationMatch.isVariable()) {
                                 tooltip += "<span style=\"color:#" + Util.color2Hex(Color.WHITE) + ";background:#" + Util.color2Hex(ptmColor) + "\">"
                                         + affectedResidue
@@ -3258,39 +3146,27 @@ public class ResultsFrame extends javax.swing.JFrame {
      */
     public Identification importDeNovoResults(ArrayList<File> resultFiles, SearchParameters searchParameters, WaitingHandler waitingHandler) throws Exception {
 
-        // @TODO: let the user reference his project
-        String projectReference = "DeNovoGUI";
-        String sampleReference = "sample reference";
-        int replicateNumber = 0;
-        String identificationReference = Identification.getDefaultReference(projectReference, sampleReference, replicateNumber);
-        MsExperiment experiment = new MsExperiment(projectReference);
-        Sample sample = new Sample(sampleReference);
-        SampleAnalysisSet analysisSet = new SampleAnalysisSet(sample, new ProteomicAnalysis(replicateNumber));
-        experiment.addAnalysisSet(sample, analysisSet);
-        ProteomicAnalysis analysis = experiment.getAnalysisSet(sample).getProteomicAnalysis(replicateNumber);
-        analysis.addIdentificationResults(IdentificationMethod.MS2_IDENTIFICATION, new Ms2Identification(identificationReference));
-
-        // The identification object
-        Identification tempIdentification = analysis.getIdentification(IdentificationMethod.MS2_IDENTIFICATION);
-
         // The cache used whenever the identification becomes too big
         String dbFolder = getCacheDirectory(getJarFilePath()).getAbsolutePath();
+        ObjectsDB objectsDB = new ObjectsDB(dbFolder, "DeNovoGUI", true);
+        Identification tempIdentification = new Identification(objectsDB);
+        objectsCache = objectsDB.getObjectsCache();
         objectsCache.setAutomatedMemoryManagement(true);
-        try {
-            tempIdentification.establishConnection(dbFolder, true, objectsCache);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(ResultsFrame.this, "An error occurred while creating the identification database. "
-                    + "Please make sure that no other instance of DeNovoGUI is running.", "Database Connection error", JOptionPane.WARNING_MESSAGE);
-            e.printStackTrace();
-            return null;
-        }
 
         numAdvocatesLoaded = 0;
         boolean pepNovoDataLoaded = false;
         boolean direcTagDataLoaded = false;
         boolean pNovoDataLoaded = false;
         boolean novorDataLoaded = false;
-
+        boolean instaNovoDataLoaded = false;
+        boolean instaNovoPlusDataLoaded = false;
+        boolean instaNovoRefinedDataLoaded = false;
+        SequenceMatchingParameters sequenceMatchingParameters = deNovoGUI.getSequenceMatchingParameters();
+        if (sequenceMatchingParameters == null) {
+            sequenceMatchingParameters = SequenceMatchingParameters.getDefaultSequenceMatching();
+            deNovoGUI.setSequenceMatchingParameters(sequenceMatchingParameters);
+        }
+	
         for (int i = 0; i < resultFiles.size(); i++) {
 
             File resultFile = resultFiles.get(i);
@@ -3306,7 +3182,13 @@ public class ResultsFrame extends javax.swing.JFrame {
 
             if (idfileReader != null) {
 
-                LinkedList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(waitingHandler, searchParameters);
+                ArrayList<SpectrumMatch> spectrumMatches = idfileReader.getAllSpectrumMatches(
+                        spectrumFactory.getSpectrumProvider(),
+                        waitingHandler,
+                        searchParameters,
+                        sequenceMatchingParameters,
+                        true
+                );
                 progressDialog.setPrimaryProgressCounterIndeterminate(true);
 
                 // remap the ptms and set GUI min/max values
@@ -3324,6 +3206,12 @@ public class ResultsFrame extends javax.swing.JFrame {
                             pNovoDataLoaded = true;
                         } else if (advocate == Advocate.novor.getIndex()) {
                             novorDataLoaded = true;
+                        } else if (advocate == Advocate.instanovo.getIndex()) {
+                            instaNovoDataLoaded = true;
+                        } else if (advocate == Advocate.instanovoPlus.getIndex()) {
+                            instaNovoPlusDataLoaded = true;
+                        } else if (advocate == Advocate.instanovoRefined.getIndex()) {
+                            instaNovoRefinedDataLoaded = true;
                         }
 
                         HashMap<Double, ArrayList<SpectrumIdentificationAssumption>> tempAssumptions = assumptionsMap.get(advocate);
@@ -3337,7 +3225,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     Tag tag = tagAssumption.getTag();
 
                                     // add the fixed PTMs
-                                    ptmFactory.checkFixedModifications(searchParameters.getPtmSettings(), tag, deNovoGUI.getSequenceMatchingPreferences());
+                                    ptmFactory.addFixedModifications(searchParameters.getModificationParameters(), tag, deNovoGUI.getSequenceMatchingParameters());
 
                                     // rename the variable modifications
                                     for (TagComponent tagComponent : tag.getContent()) {
@@ -3353,7 +3241,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                             PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                             String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                             if (utilitiesPtmName == null) {
-                                                                throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                                throw new IllegalArgumentException("PepNovo Modification " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                             }
                                                             modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         } else if (advocate == Advocate.direcTag.getIndex()) {
@@ -3362,12 +3250,16 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                             // already mapped
                                                         } else if (advocate == Advocate.novor.getIndex()) {
                                                             // already mapped
+                                                        } else if (advocate == Advocate.instanovo.getIndex()
+                                                                || advocate == Advocate.instanovoPlus.getIndex()
+                                                                || advocate == Advocate.instanovoRefined.getIndex()) {
+                                                            // already mapped
                                                         } else {
                                                             Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                             if (notImplemented == null) {
                                                                 throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
                                                             }
-                                                            throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                                                            throw new IllegalArgumentException("Modification mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                         }
                                                     }
                                                 }
@@ -3384,7 +3276,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                             PepnovoParameters pepnovoParameters = (PepnovoParameters) searchParameters.getIdentificationAlgorithmParameter(advocate);
                                                             String utilitiesPtmName = pepnovoParameters.getUtilitiesPtmName(pepnovoPtmName);
                                                             if (utilitiesPtmName == null) {
-                                                                throw new IllegalArgumentException("PepNovo PTM " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
+                                                                throw new IllegalArgumentException("PepNovo Modification " + pepnovoPtmName + " not recognized in spectrum " + spectrumMatch.getKey() + ".");
                                                             }
                                                             modificationMatch.setTheoreticPtm(utilitiesPtmName);
                                                         } else if (advocate == Advocate.direcTag.getIndex()) {
@@ -3393,12 +3285,16 @@ public class ResultsFrame extends javax.swing.JFrame {
                                                             // already mapped
                                                         } else if (advocate == Advocate.novor.getIndex()) {
                                                             // already mapped
+                                                        } else if (advocate == Advocate.instanovo.getIndex()
+                                                                || advocate == Advocate.instanovoPlus.getIndex()
+                                                                || advocate == Advocate.instanovoRefined.getIndex()) {
+                                                            // already mapped
                                                         } else {
                                                             Advocate notImplemented = Advocate.getAdvocate(advocate);
                                                             if (notImplemented == null) {
                                                                 throw new IllegalArgumentException("Advocate of id " + advocate + " not recognized.");
                                                             }
-                                                            throw new IllegalArgumentException("PTM mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
+                                                            throw new IllegalArgumentException("Modification mapping not implemented for " + Advocate.getAdvocate(advocate).getName() + ".");
                                                         }
                                                     }
                                                 }
@@ -3415,8 +3311,8 @@ public class ResultsFrame extends javax.swing.JFrame {
                                     if (mz > maxIdentificationMz) {
                                         maxIdentificationMz = mz;
                                     }
-                                    if (tagAssumption.getIdentificationCharge().value > maxIdentificationCharge) {
-                                        maxIdentificationCharge = tagAssumption.getIdentificationCharge().value;
+                                    if (tagAssumption.getIdentificationCharge() > maxIdentificationCharge) {
+                                        maxIdentificationCharge = tagAssumption.getIdentificationCharge();
                                     }
                                     double nGap = tag.getNTerminalGap();
                                     if (nGap > maxNGap) {
@@ -3461,6 +3357,18 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         if (score < minNovorScore) {
                                             minNovorScore = score;
                                         }
+                                    } else if (advocate == Advocate.instanovo.getIndex()) {
+                                        if (score > maxInstaNovoScore) {
+                                            maxInstaNovoScore = score;
+                                        }
+                                    } else if (advocate == Advocate.instanovoPlus.getIndex()) {
+                                        if (score > maxInstaNovoPlusScore) {
+                                            maxInstaNovoPlusScore = score;
+                                        }
+                                    } else if (advocate == Advocate.instanovoRefined.getIndex()) {
+                                        if (score > maxInstaNovoRefinedScore) {
+                                            maxInstaNovoRefinedScore = score;
+                                        }
                                     } else {
                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
                                         if (notImplemented == null) {
@@ -3469,6 +3377,14 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         throw new IllegalArgumentException("Unsupported advocate " + Advocate.getAdvocate(advocate).getName() + ".");
                                     }
                                 } else if (assumption instanceof PeptideAssumption) {
+
+                                    PeptideAssumption peptideAssumption = (PeptideAssumption) assumption;
+                                    peptideAssumption.getPeptide().estimateTheoreticMass(
+                                            searchParameters.getModificationParameters(),
+                                            null,
+                                            SequenceMatchingParameters.DEFAULT_STRING_MATCHING
+                                    );
+
                                     //@TODO: implement other algorithms?
                                     if (advocate == Advocate.novor.getIndex()) {
                                         if (score > maxNovorScore) {
@@ -3476,6 +3392,18 @@ public class ResultsFrame extends javax.swing.JFrame {
                                         }
                                         if (score < minNovorScore) {
                                             minNovorScore = score;
+                                        }
+                                    } else if (advocate == Advocate.instanovo.getIndex()) {
+                                        if (score > maxInstaNovoScore) {
+                                            maxInstaNovoScore = score;
+                                        }
+                                    } else if (advocate == Advocate.instanovoPlus.getIndex()) {
+                                        if (score > maxInstaNovoPlusScore) {
+                                            maxInstaNovoPlusScore = score;
+                                        }
+                                    } else if (advocate == Advocate.instanovoRefined.getIndex()) {
+                                        if (score > maxInstaNovoRefinedScore) {
+                                            maxInstaNovoRefinedScore = score;
                                         }
                                     } else {
                                         Advocate notImplemented = Advocate.getAdvocate(advocate);
@@ -3493,7 +3421,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 }
 
                 // put the matches in the identification object
-                tempIdentification.addSpectrumMatches(spectrumMatches);
+                addOrMergeSpectrumMatches(tempIdentification, spectrumMatches);
 
                 idfileReader.close();
 
@@ -3519,10 +3447,92 @@ public class ResultsFrame extends javax.swing.JFrame {
         if (novorDataLoaded) {
             numberOfAdvocateLoaded++;
         }
+        if (instaNovoDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+        if (instaNovoPlusDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
+        if (instaNovoRefinedDataLoaded) {
+            numberOfAdvocateLoaded++;
+        }
 
         numAdvocatesLoaded = numberOfAdvocateLoaded;
 
         return tempIdentification;
+    }
+
+    /**
+     * Adds imported spectrum matches while preserving assumptions already
+     * imported for the same spectra by another de novo algorithm.
+     *
+     * @param identification the identification object
+     * @param spectrumMatches the imported spectrum matches
+     */
+    private void addOrMergeSpectrumMatches(
+            Identification identification,
+            ArrayList<SpectrumMatch> spectrumMatches
+    ) {
+
+        HashMap<Long, Object> newMatches = new HashMap<>();
+
+        for (SpectrumMatch spectrumMatch : spectrumMatches) {
+
+            long key = spectrumMatch.getKey();
+
+            if (newMatches.containsKey(key)) {
+
+                SpectrumMatch existingMatch = (SpectrumMatch) newMatches.get(key);
+                mergeSpectrumMatchAssumptions(existingMatch, spectrumMatch);
+
+            } else if (identification.contains(key)) {
+
+                SpectrumMatch existingMatch = identification.getSpectrumMatch(key);
+                mergeSpectrumMatchAssumptions(existingMatch, spectrumMatch);
+                identification.updateObject(key, existingMatch);
+
+            } else {
+
+                newMatches.put(key, spectrumMatch);
+
+            }
+        }
+
+        if (!newMatches.isEmpty()) {
+
+            identification.addSpectrumMatches(newMatches, null, false);
+
+        }
+    }
+
+    /**
+     * Adds all assumptions from the imported match to the existing match.
+     *
+     * @param existingMatch the match already present in the identification
+     * @param importedMatch the match imported from a result file
+     */
+    private void mergeSpectrumMatchAssumptions(
+            SpectrumMatch existingMatch,
+            SpectrumMatch importedMatch
+    ) {
+
+        HashMap<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> assumptionsMap
+                = importedMatch.getAssumptionsMap();
+
+        for (Map.Entry<Integer, HashMap<Double, ArrayList<SpectrumIdentificationAssumption>>> advocateEntry
+                : assumptionsMap.entrySet()) {
+
+            int advocate = advocateEntry.getKey();
+
+            for (ArrayList<SpectrumIdentificationAssumption> assumptions : advocateEntry.getValue().values()) {
+
+                for (SpectrumIdentificationAssumption assumption : assumptions) {
+
+                    existingMatch.addHit(advocate, assumption, false);
+
+                }
+            }
+        }
     }
 
     /**
@@ -3555,7 +3565,6 @@ public class ResultsFrame extends javax.swing.JFrame {
 //                public void run() {
             try {
                 identification.close();
-                DerbyUtil.closeConnection();
                 File matchFolder = getCacheDirectory(getJarFilePath());
                 File[] tempFiles = matchFolder.listFiles();
 
@@ -3605,7 +3614,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      * @return the modifications found in this project
      */
     public ArrayList<String> getFoundModifications() {
-        return searchParameters.getPtmSettings().getAllModifications();
+        return searchParameters.getModificationParameters().getAllModifications();
     }
 
     /**
@@ -3613,7 +3622,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      *
      * @return the annotation preferences
      */
-    public AnnotationSettings getAnnotationPreferences() {
+    public AnnotationParameters getAnnotationPreferences() {
         return annotationPreferences;
     }
 
@@ -3622,7 +3631,7 @@ public class ResultsFrame extends javax.swing.JFrame {
      *
      * @param annotationPreferences the annotation preferences
      */
-    public void setAnnotationPreferences(AnnotationSettings annotationPreferences) {
+    public void setAnnotationPreferences(AnnotationParameters annotationPreferences) {
         this.annotationPreferences = annotationPreferences;
     }
 
@@ -3667,13 +3676,13 @@ public class ResultsFrame extends javax.swing.JFrame {
 //        knownMassDeltas.put(4d, "18O"); // @TODO: should this be added to neutral losses??
 //        knownMassDeltas.put(44d, "PEG"); // @TODO: should this be added to neutral losses??
         // add the modifications
-        PtmSettings modificationProfile = searchParameters.getPtmSettings();
+        ModificationParameters modificationProfile = searchParameters.getModificationParameters();
         ArrayList<String> modificationList = modificationProfile.getAllModifications();
         Collections.sort(modificationList);
 
         // iterate the modifications list and add the non-terminal modifications
         for (String modification : modificationList) {
-            PTM ptm = ptmFactory.getPTM(modification);
+            Modification ptm = ptmFactory.getModification(modification);
 
             if (ptm != null) {
 
@@ -3681,7 +3690,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                 AminoAcidPattern ptmPattern = ptm.getPattern();
                 double mass = ptm.getMass();
 
-                if (ptm.getType() == PTM.MODAA && ptmPattern != null) {
+                if (ptm.getType() == Modification.MODAA && ptmPattern != null) {
                     for (Character aa : ptmPattern.getAminoAcidsAtTarget()) {
                         if (!knownMassDeltas.containsValue(aa + "<" + shortName + ">")) {
                             AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
@@ -3691,7 +3700,7 @@ public class ResultsFrame extends javax.swing.JFrame {
                     }
                 }
             } else {
-                System.out.println("Error: PTM not found: " + modification);
+                System.out.println("Error: Modification not found: " + modification);
             }
         }
 

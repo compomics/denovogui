@@ -235,6 +235,45 @@ public class FileProcessor {
     }
 
     /**
+     * Returns the InstaNovo result file corresponding to the given spectrum
+     * file and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding result file
+     */
+    public static File getInstaNovoResultFile(File outFolder, File spectrumFile) {
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".instanovo.csv");
+    }
+
+    /**
+     * Returns the InstaNovo+ result file corresponding to the given spectrum
+     * file and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding result file
+     */
+    public static File getInstaNovoPlusResultFile(File outFolder, File spectrumFile) {
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".instanovoplus.csv");
+    }
+
+    /**
+     * Returns the InstaNovo with refinement result file corresponding to the
+     * given spectrum file and output folder.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFile the spectrum file
+     * @return the corresponding result file
+     */
+    public static File getInstaNovoRefinedResultFile(File outFolder, File spectrumFile) {
+        String mgfName = spectrumFile.getName().substring(0, spectrumFile.getName().lastIndexOf("."));
+        return new File(outFolder, mgfName + ".instanovo.refined.csv");
+    }
+
+    /**
      * Returns the DirectTag result file corresponding to the given spectrum
      * file and output folder.
      *
@@ -262,6 +301,15 @@ public class FileProcessor {
             return new File(outFile.getParent(), mgfName);
         } else if (fileName.endsWith(".tags")) {
             String mgfName = fileName.substring(0, fileName.lastIndexOf("."));
+            return new File(outFile.getParent(), mgfName + ".mgf");
+        } else if (fileName.endsWith(".instanovo.refined.csv")) {
+            String mgfName = fileName.substring(0, fileName.length() - ".instanovo.refined.csv".length());
+            return new File(outFile.getParent(), mgfName + ".mgf");
+        } else if (fileName.endsWith(".instanovoplus.csv")) {
+            String mgfName = fileName.substring(0, fileName.length() - ".instanovoplus.csv".length());
+            return new File(outFile.getParent(), mgfName + ".mgf");
+        } else if (fileName.endsWith(".instanovo.csv")) {
+            String mgfName = fileName.substring(0, fileName.length() - ".instanovo.csv".length());
             return new File(outFile.getParent(), mgfName + ".mgf");
         }
         throw new IllegalArgumentException("Output file " + fileName + " format not recognized.");
@@ -344,6 +392,63 @@ public class FileProcessor {
     }
 
     /**
+     * Returns a list of InstaNovo result files expected from a list of spectrum
+     * files.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of result files
+     */
+    public static ArrayList<File> getInstaNovoResultFiles(File outFolder, List<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            File tempFile = getInstaNovoResultFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
+        }
+        return outFiles;
+    }
+
+    /**
+     * Returns a list of InstaNovo+ result files expected from a list of
+     * spectrum files.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of result files
+     */
+    public static ArrayList<File> getInstaNovoPlusResultFiles(File outFolder, List<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            File tempFile = getInstaNovoPlusResultFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
+        }
+        return outFiles;
+    }
+
+    /**
+     * Returns a list of InstaNovo with refinement result files expected from a
+     * list of spectrum files.
+     *
+     * @param outFolder the output folder
+     * @param spectrumFiles list of spectrum files
+     * @return expected list of result files
+     */
+    public static ArrayList<File> getInstaNovoRefinedResultFiles(File outFolder, List<File> spectrumFiles) {
+        ArrayList<File> outFiles = new ArrayList<File>();
+        for (File file : spectrumFiles) {
+            File tempFile = getInstaNovoRefinedResultFile(outFolder, file);
+            if (tempFile.exists()) {
+                outFiles.add(tempFile);
+            }
+        }
+        return outFiles;
+    }
+
+    /**
      * Returns a list of result files expected from a list of spectrum files.
      *
      * @param resultsFolder the results folder
@@ -351,7 +456,7 @@ public class FileProcessor {
      * @return expected list of out files
      */
     public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles) {
-        return getAllResultFiles(resultsFolder, spectrumFiles, true, true, true, true);
+        return getAllResultFiles(resultsFolder, spectrumFiles, true, true, true, true, true, true, true);
     }
 
     /**
@@ -365,8 +470,28 @@ public class FileProcessor {
      * @param novor add Novor files
      * @return expected list of out files
      */
-    public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles, 
+    public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles,
             boolean pepNovo, boolean direcTag, boolean pNovo, boolean novor) {
+        return getAllResultFiles(resultsFolder, spectrumFiles, pepNovo, direcTag, pNovo, novor, false, false, false);
+    }
+
+    /**
+     * Returns a list of result files expected from a list of spectrum files.
+     *
+     * @param resultsFolder the results folder
+     * @param spectrumFiles list of spectrum files
+     * @param pepNovo add PepNovo files
+     * @param direcTag add DirecTag files
+     * @param pNovo add pNovo files
+     * @param novor add Novor files
+     * @param instaNovo add InstaNovo files
+     * @param instaNovoPlus add InstaNovo+ files
+     * @param instaNovoRefined add InstaNovo with refinement files
+     * @return expected list of out files
+     */
+    public static ArrayList<File> getAllResultFiles(File resultsFolder, List<File> spectrumFiles,
+            boolean pepNovo, boolean direcTag, boolean pNovo, boolean novor,
+            boolean instaNovo, boolean instaNovoPlus, boolean instaNovoRefined) {
         ArrayList<File> resultFiles = new ArrayList<File>();
         if (pepNovo) {
             resultFiles.addAll(getOutFiles(resultsFolder, spectrumFiles));
@@ -379,6 +504,15 @@ public class FileProcessor {
         }
         if (novor) {
             resultFiles.addAll(getNovorResultFiles(resultsFolder, spectrumFiles));
+        }
+        if (instaNovo) {
+            resultFiles.addAll(getInstaNovoResultFiles(resultsFolder, spectrumFiles));
+        }
+        if (instaNovoPlus) {
+            resultFiles.addAll(getInstaNovoPlusResultFiles(resultsFolder, spectrumFiles));
+        }
+        if (instaNovoRefined) {
+            resultFiles.addAll(getInstaNovoRefinedResultFiles(resultsFolder, spectrumFiles));
         }
         return resultFiles;
     }

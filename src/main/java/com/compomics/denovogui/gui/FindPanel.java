@@ -1,11 +1,13 @@
 package com.compomics.denovogui.gui;
 
+import com.compomics.denovogui.io.SpectrumFactory;
+
 import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.SpectrumIdentificationAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.identification.spectrum_assumptions.TagAssumption;
-import com.compomics.util.experiment.massspectrometry.Spectrum;
-import com.compomics.util.experiment.massspectrometry.SpectrumFactory;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.experiment.mass_spectrometry.SpectrumProvider;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;

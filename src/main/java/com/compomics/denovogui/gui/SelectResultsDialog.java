@@ -2,8 +2,8 @@ package com.compomics.denovogui.gui;
 
 import com.compomics.denovogui.io.FileProcessor;
 import com.compomics.util.Util;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.gui.filehandling.FileSelectionDialog;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.gui.file_handling.FileSelectionDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -311,13 +311,16 @@ public class SelectResultsDialog extends javax.swing.JDialog {
                         || myFile.getName().toLowerCase().endsWith(".tags")
                         || myFile.getName().toLowerCase().endsWith(".pnovo.txt")
                         || myFile.getName().toLowerCase().endsWith(".novor.csv")
+                        || myFile.getName().toLowerCase().endsWith(".instanovo.csv")
+                        || myFile.getName().toLowerCase().endsWith(".instanovoplus.csv")
+                        || myFile.getName().toLowerCase().endsWith(".instanovo.refined.csv")
                         || myFile.getName().toLowerCase().endsWith(".mzid")
                         || myFile.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "Supported formats: DirecTag (.tags), PepNovo+ (.out), pNovo+ (.pnovo.txt) and Novor (.novor.csv)";
+                return "Supported formats: DirecTag (.tags), PepNovo+ (.out), pNovo+ (.pnovo.txt), Novor (.novor.csv), InstaNovo (.instanovo.csv), InstaNovo+ (.instanovoplus.csv) and InstaNovo with refinement (.instanovo.refined.csv)";
             }
         };
 

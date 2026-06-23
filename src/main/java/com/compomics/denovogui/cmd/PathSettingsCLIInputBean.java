@@ -1,7 +1,7 @@
 package com.compomics.denovogui.cmd;
 
 import com.compomics.denovogui.preferences.DeNovoGUIPathPreferences;
-import com.compomics.software.settings.UtilitiesPathPreferences;
+import com.compomics.software.settings.UtilitiesPathParameters;
 import java.io.File;
 import java.util.HashMap;
 import org.apache.commons.cli.CommandLine;
@@ -47,7 +47,7 @@ public class PathSettingsCLIInputBean {
                 paths.put(id, aLine.getOptionValue(id));
             }
         }
-        for (UtilitiesPathPreferences.UtilitiesPathKey utilitiesPathKey : UtilitiesPathPreferences.UtilitiesPathKey.values()) {
+        for (UtilitiesPathParameters.UtilitiesPathKey utilitiesPathKey : UtilitiesPathParameters.UtilitiesPathKey.values()) {
             String id = utilitiesPathKey.getId();
             if (aLine.hasOption(id)) {
                 paths.put(id, aLine.getOptionValue(id));

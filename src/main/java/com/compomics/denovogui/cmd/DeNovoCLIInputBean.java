@@ -2,8 +2,8 @@ package com.compomics.denovogui.cmd;
 
 import com.compomics.cli.identification_parameters.IdentificationParametersInputBean;
 import com.compomics.software.cli.CommandLineUtils;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,6 +48,18 @@ public class DeNovoCLIInputBean {
      */
     private boolean novorEnabled = false;
     /**
+     * If true, InstaNovo is enabled.
+     */
+    private boolean instaNovoEnabled = false;
+    /**
+     * If true, InstaNovo+ is enabled.
+     */
+    private boolean instaNovoPlusEnabled = false;
+    /**
+     * If true, InstaNovo with refinement is enabled.
+     */
+    private boolean instaNovoRefineEnabled = false;
+    /**
      * The PepNovo executable. Full path.
      */
     private File pepNovoExecutable = null;
@@ -63,6 +75,10 @@ public class DeNovoCLIInputBean {
      * The Novor executable. Full path.
      */
     private File novorExecutable = null;
+    /**
+     * The InstaNovo checkout or installation folder.
+     */
+    private File instaNovoFolder = null;
     /**
      * Number of threads to use. Defaults to the number of cores available.
      */
@@ -118,6 +134,18 @@ public class DeNovoCLIInputBean {
             String novorOption = aLine.getOptionValue(DeNovoCLIParams.NOVOR.id);
             novorEnabled = novorOption.trim().equals("1");
         }
+        if (aLine.hasOption(DeNovoCLIParams.INSTANOVO.id)) {
+            String instaNovoOption = aLine.getOptionValue(DeNovoCLIParams.INSTANOVO.id);
+            instaNovoEnabled = instaNovoOption.trim().equals("1");
+        }
+        if (aLine.hasOption(DeNovoCLIParams.INSTANOVO_PLUS.id)) {
+            String instaNovoPlusOption = aLine.getOptionValue(DeNovoCLIParams.INSTANOVO_PLUS.id);
+            instaNovoPlusEnabled = instaNovoPlusOption.trim().equals("1");
+        }
+        if (aLine.hasOption(DeNovoCLIParams.INSTANOVO_REFINE.id)) {
+            String instaNovoRefineOption = aLine.getOptionValue(DeNovoCLIParams.INSTANOVO_REFINE.id);
+            instaNovoRefineEnabled = instaNovoRefineOption.trim().equals("1");
+        }
 
         // search engine folders
         if (aLine.hasOption(DeNovoCLIParams.PEPNOVO_LOCATION.id)) {
@@ -135,6 +163,10 @@ public class DeNovoCLIInputBean {
         if (aLine.hasOption(DeNovoCLIParams.NOVOR_LOCATION.id)) {
             String tempNovorExecutable = aLine.getOptionValue(DeNovoCLIParams.NOVOR_LOCATION.id);
             this.novorExecutable = new File(tempNovorExecutable);
+        }
+        if (aLine.hasOption(DeNovoCLIParams.INSTANOVO_LOCATION.id)) {
+            String tempInstaNovoFolder = aLine.getOptionValue(DeNovoCLIParams.INSTANOVO_LOCATION.id);
+            this.instaNovoFolder = new File(tempInstaNovoFolder);
         }
 
         // get the number of threads
@@ -228,6 +260,15 @@ public class DeNovoCLIInputBean {
     }
 
     /**
+     * Returns the InstaNovo checkout or installation folder. Null if not set.
+     *
+     * @return the InstaNovo checkout or installation folder
+     */
+    public File getInstaNovoFolder() {
+        return instaNovoFolder;
+    }
+
+    /**
      * Returns if PepNovo+ is to be run or not.
      *
      * @return if PepNovo+ is to be run or not
@@ -243,6 +284,33 @@ public class DeNovoCLIInputBean {
      */
     public boolean enableNovor() {
         return novorEnabled;
+    }
+
+    /**
+     * Returns if InstaNovo is to be run or not.
+     *
+     * @return if InstaNovo is to be run or not
+     */
+    public boolean enableInstaNovo() {
+        return instaNovoEnabled;
+    }
+
+    /**
+     * Returns if InstaNovo+ is to be run or not.
+     *
+     * @return if InstaNovo+ is to be run or not
+     */
+    public boolean enableInstaNovoPlus() {
+        return instaNovoPlusEnabled;
+    }
+
+    /**
+     * Returns if InstaNovo with refinement is to be run or not.
+     *
+     * @return if InstaNovo with refinement is to be run or not
+     */
+    public boolean enableInstaNovoRefine() {
+        return instaNovoRefineEnabled;
     }
 
     /**
